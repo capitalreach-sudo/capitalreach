@@ -51,7 +51,7 @@ export function ShortcutsHelp() {
   return (
     <div
       className="fixed inset-0 z-[130] flex items-center justify-center"
-      style={{ background: "rgba(26,22,18,0.45)", padding: "16px" }}
+      style={{ background: "var(--cr-scrim)", padding: "16px" }}
       onClick={() => setOpen(false)}
     >
       <div
@@ -64,21 +64,21 @@ export function ShortcutsHelp() {
           maxWidth: "380px",
           background: "var(--cr-paper-2)",
           border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "10px",
+          borderRadius: "6px",
           boxShadow: "0 24px 64px rgba(26,22,18,0.28)",
-          padding: "20px",
+          padding: "24px",
         }}
       >
-        <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "17px", color: "var(--cr-ink)", marginBottom: "14px" }}>
+        <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "16px" }}>
           {t("shortcuts.title")}
         </p>
-        <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "10px 14px", alignItems: "center" }}>
+        <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "12px 16px", alignItems: "center" }}>
           {rows.map(([keys, label]) => (
             <div key={keys} style={{ display: "contents" }}>
               <dt>
                 <kbd style={{
                   fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-2)",
-                  border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "3px 7px",
+                  border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 8px",
                   background: "var(--cr-paper-3)", whiteSpace: "nowrap",
                 }}>
                   {keys}

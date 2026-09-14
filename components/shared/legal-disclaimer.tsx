@@ -40,8 +40,8 @@ export function AiReportDisclaimer() {
       background: "var(--cr-copper-bg)",
       border: "1px solid var(--cr-copper-br)",
       borderRadius: "6px",
-      padding: "14px 16px",
-      marginBottom: "20px",
+      padding: "12px 16px",
+      marginBottom: "16px",
     }}>
       <p style={{
         fontFamily: "'DM Sans', sans-serif",

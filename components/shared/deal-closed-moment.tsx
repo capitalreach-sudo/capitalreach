@@ -43,9 +43,12 @@ export function DealClosedMoment({ amount, currency, counterpartName, onDone }: 
       }}>
       <div style={{ textAlign: "center", padding: 24 }}>
         {/* The stamp lands first: verdigris wax on the biggest moment. */}
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 16 }}>
           <WaxSeal size={88} stamp />
         </div>
+        {/* Display art, not a UI label: the ceremony's kicker keeps its wide
+            0.3em tracking (stamp-adjacent, like the wax seal's own type) and
+            its band ink; size and weight sit on the platform caps voice. */}
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.3em", color: "var(--cr-copper-l)", marginBottom: 16 }}>
           {t("closed.kicker")}
         </p>

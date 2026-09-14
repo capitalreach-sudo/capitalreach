@@ -74,8 +74,10 @@ const FIG_LEAD = "clamp(40px, 5vw + 16px, 64px)";
 const FIG_2 = "clamp(20px, 1.4vw + 12px, 28px)";
 
 const capsLabel: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px / 500 / 0.08em on ink-3 -- 10px ink-4 caps sat
+  // below the platform contrast floor.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const monoFigure: React.CSSProperties = {
@@ -305,7 +307,7 @@ function ScorePill({ score }: { score: number | null }) {
       // The tint alone frames the chip; a border on top of it was a second
       // frame around the same number.
       color, background: `color-mix(in srgb, ${color} 8%, transparent)`,
-      borderRadius: "3px", padding: "2px 8px",
+      borderRadius: "4px", padding: "2px 8px",
     }}>
       {score}
     </span>
@@ -387,6 +389,8 @@ function PairedColumns({ labels, series, ariaLabel }: {
                   const h = Math.round((v / max) * PLOT_H);
                   return (
                     <div key={s.key} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", minWidth: 0 }}>
+                      {/* Chart-internal annotation: axis/value text holds the
+                          10px chart voice, exempt from the 11px UI floor. */}
                       <span style={{
                         fontFamily: "'JetBrains Mono', monospace", fontSize: "10px",
                         fontVariantNumeric: "tabular-nums",
@@ -801,7 +805,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                                     figures are partial counts and must say so
                                     in the same cell that names the month. */}
                                 {lastInProgress && i === monthly.length - 1 && (
-                                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", marginLeft: "8px" }}>
+                                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginLeft: "8px" }}>
                                     {tf("data.soFar", "so far")}
                                   </span>
                                 )}
@@ -993,7 +997,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                                   a percentage of the cell would give the same
                                   count a longer bar on a wider row. 6px deep
                                   so the meter reads as a mark, not a rule. */}
-                              <div style={{ height: "6px", maxWidth: "120px", background: "var(--cr-paper-3)", borderRadius: "3px", overflow: "hidden", marginTop: "auto" }}>
+                              <div style={{ height: "6px", maxWidth: "120px", background: "var(--cr-paper-3)", borderRadius: "4px", overflow: "hidden", marginTop: "auto" }}>
                                 <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
                               </div>
                             </div>
@@ -1228,9 +1232,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                 became a table, so one moment on the surface is a band and it
                 is the one asking for something. */}
             <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 5vw, 32px)", textAlign: "center" }}>
-              <div aria-hidden style={{ fontSize: "14px", color: "var(--cr-copper)", marginBottom: ROW_GAP, lineHeight: 1 }}>{"✦"}</div>
+              <div aria-hidden style={{ fontSize: "15px", color: "var(--cr-copper)", marginBottom: ROW_GAP, lineHeight: 1 }}>{"✦"}</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "12px" }}>{t("data.featuredHere")}</h2>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
                 {t("data.featuredHereSub")}
               </p>
               {/* The register's own control radius, not a pill; text on the

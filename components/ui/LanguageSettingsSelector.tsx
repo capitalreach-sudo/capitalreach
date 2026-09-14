@@ -71,7 +71,7 @@ export function LanguageSettingsSelector({ initialLocale, translations }: Props)
                 <div className="text-[11px] text-[var(--cr-ink-4)] mt-0.5">{meta.name}</div>
               </div>
               {meta.rtl && (
-                <span className="text-[9px] text-[var(--cr-ink-4)] uppercase tracking-[0.06em] flex-shrink-0">
+                <span className="text-[11px] font-medium text-[var(--cr-ink-3)] uppercase tracking-[0.08em] flex-shrink-0">
                   {t("locale.rtl")}
                 </span>
               )}
@@ -93,8 +93,9 @@ export function LanguageSettingsSelector({ initialLocale, translations }: Props)
         >
           {isPending ? savingLabel : saveLabel}
         </button>
+        {/* Saved is a quality state: copper -- green stays money direction. */}
         {saved && (
-          <span className="text-[13px] text-[var(--cr-up)] flex items-center gap-1.5">
+          <span className="text-[13px] text-[var(--cr-copper)] flex items-center gap-1.5">
             <Check className="w-3.5 h-3.5" />
             {savedLabel}
           </span>

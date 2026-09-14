@@ -40,8 +40,9 @@ import { formatMoney } from "@/lib/currency";
 // ── House register (docs/DESIGN-SPEC.md) ────────────────────────────────────
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px / 500 / 0.08em on ink-3 (the platform floor).
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const DATA: CSSProperties = {
@@ -55,19 +56,19 @@ const BODY: CSSProperties = {
 };
 
 const NAME: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
   color: "var(--cr-ink)", margin: 0,
 };
 
 const PRIMARY: CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
   background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "none",
   borderRadius: 999, minHeight: 40, padding: "0 16px", cursor: "pointer",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13,
 };
 
 const SECONDARY: CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
   background: "transparent", color: "var(--cr-ink)",
   border: "1px solid var(--cr-paper-4)", borderRadius: 999, minHeight: 40,
   padding: "0 16px", cursor: "pointer",
@@ -214,7 +215,7 @@ export function DealProposals({ onChanged, variant = "strip" }: { onChanged?: ()
     return (
       <div style={{ width: "264px", flexShrink: 0, display: "flex", flexDirection: "column", maxHeight: "calc(100vh - 260px)" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 3, padding: "3px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-copper)" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "4px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-copper)" }}>
             <Handshake style={{ width: 11, height: 11 }} /> {t("deals.colProposal")}
           </span>
           {/* Weight 300, like every other column count on the board. */}

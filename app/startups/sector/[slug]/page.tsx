@@ -74,10 +74,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-// Shared label styles for the teaser figures.
+// Shared label styles for the teaser figures -- the one caps voice:
+// 11px/500/0.08em on ink-3.
 const TEASER_LABEL: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em",
 };
 
 // Copy follows the visitor's locale cookie like every other page; a crawler
@@ -141,15 +142,15 @@ export default async function SectorPage({ params }: Props) {
   // One empty state for both audiences: with no active rounds there is
   // nothing to mask, so anonymous and member honestly see the same thing.
   const emptyState = (
-    <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "8px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
-      <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "17px", color: "var(--cr-ink)", marginBottom: "8px" }}>
+    <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "6px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
+      <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "8px" }}>
         {t("sector.emptyTitle", { industry })}
       </p>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", maxWidth: "44ch", margin: "0 auto 16px", lineHeight: 1.7 }}>
         {t("sector.emptyBody", { industry })}
       </p>
       <Link href="/auth/signup?role=startup"
-        style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
+        style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", borderRadius: "4px", padding: "12px 24px", textDecoration: "none" }}>
         {t("nav.listStartup")}
       </Link>
     </div>
@@ -160,17 +161,18 @@ export default async function SectorPage({ params }: Props) {
       <Navbar />
       <main style={{ background: "var(--cr-paper)", minHeight: "70vh" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "48px 24px 80px" }}>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--cr-copper)", marginBottom: "10px" }}>
+          {/* Kicker in the one caps voice; the CTA owns this page's accent. */}
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", marginBottom: "8px" }}>
             {industry}
           </p>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "clamp(28px, 4vw, 40px)", color: "var(--cr-ink)", marginBottom: "10px" }}>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "clamp(28px, 4vw, 40px)", color: "var(--cr-ink)", marginBottom: "8px" }}>
             {t("sector.title", { industry })}
           </h1>
           {anonymous ? (
             // The anonymous intro describes what this visitor actually gets:
             // live figures with the identities held for members. Claiming
             // "shown up front" over masked cards would be a lie.
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "60ch", lineHeight: 1.7, marginBottom: "36px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "60ch", lineHeight: 1.7, marginBottom: "32px" }}>
               {t("sector.introAnon", { industry })}
             </p>
           ) : (
@@ -178,7 +180,7 @@ export default async function SectorPage({ params }: Props) {
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "60ch", lineHeight: 1.7, marginBottom: "10px" }}>
                 {t("sector.introMember")}
               </p>
-              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "36px" }}>
+              <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "32px" }}>
                 <Link href={`/startups?industries=${encodeURIComponent(industry)}`}
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
                   {t("sector.filterCta")} →
@@ -194,7 +196,8 @@ export default async function SectorPage({ params }: Props) {
               {/* Sector snapshot: the same ledger-panel idiom as the homepage
                   data panel -- hairline grid, mono figures, no accent. The
                   one copper thing in this view is the sign-up CTA below. */}
-              <section aria-label={`${industry} sector snapshot`} style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", marginBottom: "24px" }}>
+              {/* 6px: panel radius. */}
+              <section aria-label={`${industry} sector snapshot`} style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", overflow: "hidden", marginBottom: "24px" }}>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1px", background: "var(--cr-rule)" }}>
                   {([
                     [String(teaser.activeCount), teaser.activeCount === 1 ? t("sector.activeRound") : t("sector.activeRounds")],
@@ -210,7 +213,7 @@ export default async function SectorPage({ params }: Props) {
                   ))}
                 </div>
                 {teaser.stages.length > 0 && (
-                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "20px", rowGap: "8px", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", padding: "12px 16px" }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", alignItems: "baseline", columnGap: "16px", rowGap: "8px", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)", padding: "12px 16px" }}>
                     <span style={TEASER_LABEL}>{t("sector.byStage")}</span>
                     {teaser.stages.map(({ stage, count }) => (
                       <span key={stage} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px" }}>
@@ -240,16 +243,16 @@ export default async function SectorPage({ params }: Props) {
                   return (
                     // Index as key: the masked payload carries no identifier
                     // on purpose, and a static list needs nothing better.
-                    <div key={i} style={{ display: "flex", flexDirection: "column", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
+                    <div key={i} style={{ display: "flex", flexDirection: "column", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px" }}>
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
                         {meta}
                       </p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-2)", lineHeight: 1.6, flex: 1, marginBottom: "16px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.6, flex: 1, marginBottom: "16px" }}>
                         {e.tagline}
                       </p>
                       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
                         <div>
-                          <div style={{ ...TEASER_LABEL, fontSize: "9px", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("sector.raisingLabel")}</div>
+                          <div style={{ ...TEASER_LABEL, marginBottom: "3px" }}>{t("sector.raisingLabel")}</div>
                           <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
                             {safeFormatCurrency(e.funding_target)}
                           </div>
@@ -266,14 +269,15 @@ export default async function SectorPage({ params }: Props) {
               {/* The one CTA, phrased around the sector. Sign-up is the only
                   door the masked cards can honestly point at. */}
               <div style={{ marginTop: "48px", borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "32px", textAlign: "center" }}>
-                <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)", marginBottom: "8px" }}>
+                {/* 22px: a true section title on the scale. */}
+                <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>
                   {t("sector.seeCompanies", { industry })}
                 </p>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", maxWidth: "48ch", margin: "0 auto 16px", lineHeight: 1.7 }}>
                   {t("sector.accountOpens", { industry })}
                 </p>
                 <Link href="/auth/signup"
-                  style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", borderRadius: "4px", padding: "11px 24px", textDecoration: "none" }}>
+                  style={{ display: "inline-flex", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", borderRadius: "4px", padding: "12px 24px", textDecoration: "none" }}>
                   {t("sector.createAccount")}
                 </Link>
               </div>
@@ -288,15 +292,16 @@ export default async function SectorPage({ params }: Props) {
 
           {/* Sector index, so every sector page links every other -- crawlers
               find the whole set from any one of them. */}
-          <div style={{ marginTop: "56px", borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "20px" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+          <div style={{ marginTop: "48px", borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "16px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
               {t("sector.browseBySector")}
             </p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {SECTOR_SLUGS.map(({ slug, industry: name }) => (
                 <Link key={slug} href={`/startups/sector/${slug}`}
                   style={{
-                    fontFamily: "'DM Sans', sans-serif", fontSize: "12px", borderRadius: "999px", padding: "5px 12px", textDecoration: "none",
+                    // 999px: these tags are true pills already, not buttons.
+                    fontFamily: "'DM Sans', sans-serif", fontSize: "12px", borderRadius: "999px", padding: "4px 12px", textDecoration: "none",
                     border: name === industry ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
                     background: name === industry ? "var(--cr-copper-bg)" : "var(--cr-paper-2)",
                     color: name === industry ? "var(--cr-copper)" : "var(--cr-ink-3)",

@@ -49,8 +49,9 @@ import { TRUST_LADDER, effectiveTrustLevel } from "@/lib/trust";
 // ── House register (docs/DESIGN-SPEC.md) ────────────────────────────────────
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const DATA: CSSProperties = {
@@ -73,33 +74,34 @@ const RULE: CSSProperties = { borderTop: "1px solid var(--cr-rule)" };
 const CARD: CSSProperties = {
   background: "var(--cr-paper)",
   border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px",
+  // 6px: the card/panel radius.
+  borderRadius: "6px",
   boxShadow: "var(--cr-card-shadow)",
 };
 
 const BADGE: CSSProperties = {
-  ...LABEL, fontSize: "9px", borderRadius: "3px", padding: "3px 6px",
+  ...LABEL, borderRadius: "4px", padding: "3px 8px",
   border: "1px solid var(--cr-rule-dark)", whiteSpace: "nowrap", flexShrink: 0,
 };
 
 const FIELD: CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
-  fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)",
+  fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)",
   background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px", padding: "10px 12px", width: "100%", minWidth: 0,
+  borderRadius: "4px", padding: "12px 12px", width: "100%", minWidth: 0,
 };
 
 const PRIMARY: CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
   color: "var(--cr-on-accent)", background: "var(--cr-copper)",
-  border: "none", borderRadius: "999px", padding: "0 20px",
+  border: "none", borderRadius: "999px", padding: "0px 16px",
   minHeight: "40px", cursor: "pointer",
 };
 
 const SECONDARY: CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
   color: "var(--cr-ink)", background: "transparent",
-  border: "1px solid var(--cr-paper-4)", borderRadius: "999px", padding: "0 20px",
+  border: "1px solid var(--cr-paper-4)", borderRadius: "999px", padding: "0px 16px",
   minHeight: "40px", cursor: "pointer",
 };
 
@@ -337,7 +339,7 @@ function AskStrip({ ask }: { ask: TheAsk }) {
         {cells.map((c) => (
           <div key={c.label} style={{ minWidth: 0 }}>
             <div style={{ ...LABEL, marginBottom: "4px" }}>{c.label}</div>
-            <div style={{ ...DATA, fontSize: "14px", fontWeight: 600, color: "var(--cr-ink)" }}>{c.value}</div>
+            <div style={{ ...DATA, fontSize: "15px", fontWeight: 600, color: "var(--cr-ink)" }}>{c.value}</div>
           </div>
         ))}
       </div>
@@ -349,7 +351,7 @@ function Empty() {
   const { t } = useTranslation();
   return (
     <div style={{ ...CARD, padding: "48px 24px", textAlign: "center" }}>
-      <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "14px", lineHeight: 1, marginBottom: "12px" }}>✦</span>
+      <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "13px", lineHeight: 1, marginBottom: "12px" }}>✦</span>
       <p style={{ ...TITLE, marginBottom: "8px" }}>{t("offerInbox.empty")}</p>
       <p style={{ ...BODY, maxWidth: "48ch", margin: "0 auto 16px" }}>{t("offerInbox.emptyBody")}</p>
       <Link
@@ -1002,7 +1004,7 @@ function SettledRow({ chain }: { chain: OfferChain }) {
     <div style={{ ...RULE, display: "flex", alignItems: "center", gap: "12px", padding: "12px 0", flexWrap: "wrap" }}>
       <EntityLogo name={chain.investor.name} logoUrl={chain.investor.logoUrl} logoColor={chain.investor.logoColor} size={28} radius={4} />
       <div style={{ flex: "1 1 160px", minWidth: 0 }}>
-        <p style={{ ...TITLE, fontSize: "14px", overflowWrap: "anywhere" }}>{chain.investor.name}</p>
+        <p style={{ ...TITLE, overflowWrap: "anywhere" }}>{chain.investor.name}</p>
         <p style={{ ...LABEL, marginTop: "2px" }}>{day(o.createdAt)}</p>
       </div>
       <span style={{ ...DATA, fontSize: "12px", color: "var(--cr-ink-3)", whiteSpace: "nowrap" }}>

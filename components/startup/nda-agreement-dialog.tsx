@@ -166,7 +166,7 @@ export function NdaAgreementDialog({ open, startupId, startupName, onCancel, onA
         </div>
 
         <div style={{ padding: "16px 24px", overflowY: "auto" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "14px", lineHeight: 1.55 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: "16px", lineHeight: 1.55 }}>
             {t("startupDetail.ndaIntro", { name: startupName })}
           </p>
 
@@ -177,7 +177,7 @@ export function NdaAgreementDialog({ open, startupId, startupName, onCancel, onA
           )}
 
           {loadFailed && (
-            <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "10px" }}>
+            <div style={{ padding: "16px 0", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "8px" }}>
               <p role="alert" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.55 }}>
                 {t("nda.loadFailed")}
               </p>
@@ -191,7 +191,7 @@ export function NdaAgreementDialog({ open, startupId, startupName, onCancel, onA
           {agreement && (
             <>
               <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 12px", alignItems: "baseline", marginBottom: "12px" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>
                   {t("nda.parties")}
                 </span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>
@@ -203,13 +203,13 @@ export function NdaAgreementDialog({ open, startupId, startupName, onCancel, onA
                 </span>
               </div>
 
-              <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 18px", margin: 0 }}>
+              <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px 16px", margin: 0 }}>
                 {agreement.text}
               </pre>
 
               <div style={{ marginTop: "16px", display: "grid", gap: "8px" }}>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 10px", alignItems: "baseline" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px 8px", alignItems: "baseline" }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>
                     {t("nda.fingerprint")}
                   </span>
                   <code style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 500, fontSize: "11px", letterSpacing: "0.02em", color: "var(--cr-ink-2)", wordBreak: "break-all" }}>
@@ -241,32 +241,33 @@ export function NdaAgreementDialog({ open, startupId, startupName, onCancel, onA
           )}
 
           {refusal && (
-            <div role="alert" style={{ marginTop: "14px", padding: "12px 14px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
+            <div role="alert" style={{ marginTop: "16px", padding: "12px 16px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.55, marginBottom: "8px" }}>
                 {refusal.message}
               </p>
               <Link href={refusal.href}
-                style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
                 {refusal.cta} →
               </Link>
             </div>
           )}
 
+          {/* 12px: the small-print step of the type scale. */}
           {error && (
-            <p role="alert" style={{ marginTop: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12.5px", color: "var(--cr-down)" }}>
+            <p role="alert" style={{ marginTop: "12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-down)" }}>
               {error}
             </p>
           )}
         </div>
 
-        <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end", padding: "16px 24px 24px", borderTop: "1px solid var(--cr-rule)" }}>
+        <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", padding: "16px 24px 24px", borderTop: "1px solid var(--cr-rule)" }}>
           <button onClick={onCancel} disabled={busy}
-            style={{ height: "40px", padding: "0 18px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+            style={{ height: "40px", padding: "0px 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
             {alreadySigned ? t("common.close") : t("common.cancel")}
           </button>
           {!alreadySigned && (
             <button onClick={accept} disabled={!agreement || busy}
-              style={{ height: "40px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: !agreement || busy ? "default" : "pointer", opacity: !agreement || busy ? 0.5 : 1 }}>
+              style={{ height: "40px", padding: "0px 24px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: !agreement || busy ? "default" : "pointer", opacity: !agreement || busy ? 0.5 : 1 }}>
               {busy ? t("common.saving") : t("startupDetail.ndaAcceptBtn")}
             </button>
           )}

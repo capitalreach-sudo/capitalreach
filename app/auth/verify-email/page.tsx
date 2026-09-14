@@ -102,11 +102,12 @@ function VerifyEmailInner() {
         <Link href="/" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "40px", marginBottom: "32px", textDecoration: "none" }}>
           <span className="ruled-label">CapitalReach</span>
         </Link>
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px", textAlign: "center" }}>
+        {/* 6px: card radius. */}
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px", textAlign: "center" }}>
           <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
             <Mail style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h1>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "24px" }}>
             {t("auth.verifyEmailSent")}{" "}
             {email ? <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)" }}>{email}</strong> : <span>{t("auth.email").toLowerCase()}</span>}.
@@ -134,7 +135,8 @@ function VerifyEmailInner() {
               {t("auth.tryDifferentEmail")}
             </Link>
           </p>
-          <Link href="/auth/login" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "40px", borderRadius: "999px", border: "1px solid var(--cr-rule-dark)", background: "transparent", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", textDecoration: "none", boxSizing: "border-box" }}>
+          {/* 4px: a rectangular button is never a pill. */}
+          <Link href="/auth/login" style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "40px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", background: "transparent", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", textDecoration: "none", boxSizing: "border-box" }}>
             {t("auth.goToSignIn")}
           </Link>
         </div>

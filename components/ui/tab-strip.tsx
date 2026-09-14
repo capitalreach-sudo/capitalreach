@@ -87,7 +87,9 @@ export function TabStrip<K extends string>({ tabs, active, onSelect, idBase, lab
               display: "inline-flex", alignItems: "center",
               minHeight: "40px", padding: 0,
               background: "none", cursor: "pointer",
-              color: on ? "var(--cr-ink)" : "var(--cr-ink-4)",
+              // Idle tabs sit at ink-3, never ink-4: caps labels below ink-3
+              // fail the platform contrast floor.
+              color: on ? "var(--cr-ink)" : "var(--cr-ink-3)",
               border: "none",
               // The active mark sits ON the strip's own hairline, not under it.
               borderBottom: on ? "2px solid var(--cr-copper)" : "2px solid transparent",

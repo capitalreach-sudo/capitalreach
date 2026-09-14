@@ -130,16 +130,18 @@ export function BottomNav() {
                     position: "absolute",
                     top: "-5px",
                     insetInlineEnd: "-9px",
-                    minWidth: "15px",
-                    height: "15px",
+                    // 16px tall so an 11px count sits centred: 9px type is
+                    // below the platform floor even inside a badge.
+                    minWidth: "16px",
+                    height: "16px",
                     padding: "0 4px",
                     borderRadius: "999px",
                     background: "var(--cr-copper)",
                     color: "var(--cr-on-accent)",
                     fontFamily: "'DM Sans', sans-serif",
                     fontWeight: 700,
-                    fontSize: "9px",
-                    lineHeight: "15px",
+                    fontSize: "11px",
+                    lineHeight: "16px",
                     textAlign: "center",
                   }}
                 >

@@ -159,9 +159,9 @@ export function VerifiedBadge({
 
 const CHIP_BASE = {
   display: "inline-flex", alignItems: "center", gap: "4px",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  borderRadius: "3px", padding: "3px 8px",
-  textTransform: "uppercase" as const, letterSpacing: "0.06em",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  borderRadius: "4px", padding: "4px 8px",
+  textTransform: "uppercase" as const, letterSpacing: "0.08em",
   whiteSpace: "nowrap" as const,
 };
 

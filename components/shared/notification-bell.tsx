@@ -117,7 +117,7 @@ export function NotificationBell() {
       >
         <Bell className="h-4 w-4" style={pulse ? { animation: "bellPulse 800ms ease" } : undefined} />
         {unread > 0 && (
-          <span style={{ position: "absolute", top: "-5px", right: "-6px", animation: pulse ? "badgePop 500ms cubic-bezier(.16,1,.3,1)" : undefined, minWidth: "15px", height: "15px", padding: "0 3px", borderRadius: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+          <span style={{ position: "absolute", top: "-5px", right: "-6px", animation: pulse ? "badgePop 500ms cubic-bezier(.16,1,.3,1)" : undefined, minWidth: "16px", height: "16px", padding: "0 4px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
             {unread > 9 ? "9+" : unread}
           </span>
         )}
@@ -125,7 +125,7 @@ export function NotificationBell() {
 
       {open && (
         <div style={{ position: "absolute", right: 0, top: "26px", width: "320px", maxHeight: "400px", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "0 6px 24px rgba(26,22,18,0.12)", zIndex: 100 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 12px", borderBottom: "1px solid var(--cr-rule)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px", borderBottom: "1px solid var(--cr-rule)" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)" }}>
               {t("notifications.title")}
             </span>
@@ -146,9 +146,9 @@ export function NotificationBell() {
               const { Icon, color } = TYPE_ICON[n.type] ?? FALLBACK_ICON;
               const inner = (
                 <>
-                  <div style={{ display: "flex", alignItems: "flex-start", gap: "7px" }}>
+                  <div style={{ display: "flex", alignItems: "flex-start", gap: "8px" }}>
                     {!n.read_at && (
-                      <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--cr-copper)", marginTop: "5px", flexShrink: 0 }} />
+                      <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--cr-copper)", marginTop: "4px", flexShrink: 0 }} />
                     )}
                     <Icon
                       aria-hidden
@@ -163,7 +163,7 @@ export function NotificationBell() {
                           {notifBody(n, t)}
                         </p>
                       )}
-                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-4)", marginTop: "3px" }}>
+                      <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                         {formatDate(n.created_at)}
                       </p>
                     </div>
@@ -172,7 +172,7 @@ export function NotificationBell() {
               );
 
               const style: React.CSSProperties = {
-                display: "block", padding: "10px 12px",
+                display: "block", padding: "12px",
                 borderBottom: "1px solid var(--cr-rule)",
                 background: n.read_at ? "transparent" : "var(--cr-copper-bg)",
                 textDecoration: "none", cursor: "pointer",
@@ -212,7 +212,7 @@ export function NotificationBell() {
           <Link
             href="/dashboard/notifications"
             onClick={() => setOpen(false)}
-            style={{ display: "block", textAlign: "center", padding: "9px 12px", borderTop: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 500, color: "var(--cr-copper)", textDecoration: "none" }}
+            style={{ display: "block", textAlign: "center", padding: "8px 12px", borderTop: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", fontWeight: 500, color: "var(--cr-copper)", textDecoration: "none" }}
           >
             {t("notifications.viewAll")}
           </Link>

@@ -38,23 +38,26 @@ const BODY: CSSProperties = {
 };
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.07em",
+  // The one caps voice: 11px/500/0.08em; ink-3 is the floor -- status
+  // colours (verdigris, copper) may sit on it, ink-4 may not.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em",
 };
 
 const CARD: CSSProperties = {
   background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px",
+  // 6px: the card/panel radius.
+  borderRadius: "6px",
 };
 
 const BADGE: CSSProperties = {
-  ...LABEL, fontSize: "9px", borderRadius: "3px", padding: "3px 6px",
+  ...LABEL, borderRadius: "4px", padding: "3px 8px",
   border: "1px solid var(--cr-rule-dark)", whiteSpace: "nowrap", flexShrink: 0,
 };
 
 const BTN_PRIMARY: CSSProperties = {
   display: "inline-flex", alignItems: "center", justifyContent: "center",
-  minHeight: "40px", padding: "0 18px", borderRadius: "999px",
+  minHeight: "40px", padding: "0px 16px", borderRadius: "999px",
   background: "var(--cr-copper)", border: "1px solid var(--cr-copper)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
   color: "var(--cr-on-accent)", textDecoration: "none", whiteSpace: "nowrap", cursor: "pointer",
@@ -177,8 +180,8 @@ export function FeePortal() {
 
       {fees.length === 0 ? (
         <div style={{ textAlign: "center", padding: "48px 24px" }}>
-          <p style={{ color: "var(--cr-copper)", fontSize: "14px", marginBottom: "12px" }} aria-hidden>✦</p>
-          <p style={{ ...BODY, fontSize: "14px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
+          <p style={{ color: "var(--cr-copper)", fontSize: "13px", marginBottom: "12px" }} aria-hidden>✦</p>
+          <p style={{ ...BODY, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "16px" }}>
             {t("feePortal.empty")}
           </p>
           <Link href="/dashboard/startup" style={{ ...BTN_TEXT, color: "var(--cr-copper)", textDecoration: "none" }}>
@@ -251,8 +254,8 @@ function LoadFailed({ onRetry }: { onRetry: () => Promise<void> }) {
   }
 
   return (
-    <div style={{ ...CARD, padding: "20px" }}>
-      <p style={{ ...BODY, fontSize: "14px", color: "var(--cr-ink)", margin: 0 }}>
+    <div style={{ ...CARD, padding: "16px" }}>
+      <p style={{ ...BODY, fontSize: "15px", color: "var(--cr-ink)", margin: 0 }}>
         {t("feePortal.loadFailed")}
       </p>
       <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "8px", maxWidth: "60ch" }}>
@@ -268,10 +271,10 @@ function LoadFailed({ onRetry }: { onRetry: () => Promise<void> }) {
 function Metric({ label, value, tone, divided }: { label: string; value: string; tone: string; divided?: boolean }) {
   return (
     <div style={{
-      flex: "1 1 160px", padding: "16px 20px",
+      flex: "1 1 160px", padding: "16px 16px",
       borderLeft: divided ? "1px solid var(--cr-rule)" : "none",
     }}>
-      <p style={{ ...LABEL, color: "var(--cr-ink-4)", marginBottom: "6px" }}>{label}</p>
+      <p style={{ ...LABEL, color: "var(--cr-ink-3)", marginBottom: "8px" }}>{label}</p>
       <p style={{ ...MONO, fontWeight: 700, fontSize: "15px", color: tone, margin: 0 }}>{value}</p>
     </div>
   );
@@ -290,7 +293,7 @@ function Standing({ e }: { e: Enforcement }) {
     return (
       <div style={{
         display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "32px",
-        padding: "16px 20px", borderRadius: "4px",
+        padding: "16px 16px", borderRadius: "4px",
         background: "color-mix(in srgb, var(--verdigris) 8%, transparent)",
         border: "1px solid color-mix(in srgb, var(--verdigris) 25%, transparent)",
       }}>
@@ -311,12 +314,12 @@ function Standing({ e }: { e: Enforcement }) {
   return (
     <div style={{
       display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "32px",
-      padding: "16px 20px", borderRadius: "4px",
+      padding: "16px 16px", borderRadius: "4px",
       background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)",
     }}>
       <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "13px", lineHeight: 1.4 }}>✦</span>
       <div style={{ minWidth: 0 }}>
-        <p style={{ ...LABEL, color: "var(--cr-copper)", marginBottom: "6px" }}>
+        <p style={{ ...LABEL, color: "var(--cr-copper)", marginBottom: "8px" }}>
           {e.accountRestricted ? t("feePortal.restrictedTitle") : t("feePortal.pausedTitle")}
         </p>
         <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-2)", margin: 0, maxWidth: "60ch" }}>
@@ -367,7 +370,7 @@ function FeeRow({ fee, first, primary, onChanged }: { fee: Fee; first: boolean; 
   const canAct = fee.state === "outstanding" || fee.state === "unbillable";
 
   return (
-    <div style={{ padding: "20px", borderTop: first ? "none" : "1px solid var(--cr-rule)" }}>
+    <div style={{ padding: "16px", borderTop: first ? "none" : "1px solid var(--cr-rule)" }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
           <p style={{ ...MONO, fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", margin: 0, lineHeight: 1.2 }}>
@@ -405,7 +408,7 @@ function FeeRow({ fee, first, primary, onChanged }: { fee: Fee; first: boolean; 
       {/* What happens next, and when. Stated before it happens, never after. */}
       {(fee.next || fee.frozen || fee.enforcement === "listing_paused" || fee.enforcement === "account_restricted") && (
         <div style={{ borderTop: "1px solid var(--cr-rule)", marginTop: "16px", paddingTop: "12px" }}>
-          <p style={{ ...LABEL, color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("feePortal.nextTitle")}</p>
+          <p style={{ ...LABEL, color: "var(--cr-ink-3)", marginBottom: "8px" }}>{t("feePortal.nextTitle")}</p>
           {fee.enforcement === "listing_paused" && (
             <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-2)", marginBottom: "4px" }}>
               {t("feePortal.step.listing_paused")}
@@ -428,7 +431,7 @@ function FeeRow({ fee, first, primary, onChanged }: { fee: Fee; first: boolean; 
             </p>
           ) : null}
           {fee.overdueInstalment && (
-            <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "6px" }}>
+            <p style={{ ...BODY, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
               {t("feePortal.missedInstalment", { n: fee.overdueInstalment.seq, date: day(fee.overdueInstalment.due) })}
             </p>
           )}
@@ -459,7 +462,7 @@ function FeeRow({ fee, first, primary, onChanged }: { fee: Fee; first: boolean; 
               style={{
                 width: "100%", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
                 borderRadius: "4px", ...BODY, fontSize: "13px", color: "var(--cr-ink)",
-                padding: "10px 12px", outline: "none", resize: "vertical",
+                padding: "12px 12px", outline: "none", resize: "vertical",
               }} />
             <p style={{ ...BODY, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "8px" }}>{t("feePortal.disputeNote")}</p>
             <div style={{ display: "flex", alignItems: "center", gap: "16px", marginTop: "8px" }}>
@@ -520,7 +523,7 @@ function FeePlan({ dealId, state, currency, onChanged }: { dealId: string; state
     const paid = data.instalments.filter(i => i.paid_at).length;
     return (
       <div style={{ marginTop: "16px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
-        <p style={{ ...LABEL, color: "var(--cr-ink-4)", marginBottom: "8px" }}>
+        <p style={{ ...LABEL, color: "var(--cr-ink-3)", marginBottom: "8px" }}>
           {t("feePlan.scheduleTitle", { paid, count: data.instalments.length })}
         </p>
         <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -559,7 +562,7 @@ function FeePlan({ dealId, state, currency, onChanged }: { dealId: string; state
           style={{
             minHeight: "40px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
             borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
-            fontSize: "13px", color: "var(--cr-ink)", padding: "0 10px",
+            fontSize: "13px", color: "var(--cr-ink)", padding: "0px 12px",
           }}>
           {Array.from({ length: data.maxMonths - data.minMonths + 1 }, (_, i) => data.minMonths + i).map(m => (
             <option key={m} value={m}>{t("feePlan.months", { n: m })}</option>
@@ -590,7 +593,7 @@ function Ladder({ e }: { e: Enforcement }) {
       <div style={CARD}>
         {steps.map((s, i) => (
           <div key={s.day} style={{
-            display: "flex", gap: "16px", alignItems: "baseline", padding: "16px 20px",
+            display: "flex", gap: "16px", alignItems: "baseline", padding: "16px 16px",
             borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none",
           }}>
             <span style={{ ...MONO, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", flexShrink: 0 }}>

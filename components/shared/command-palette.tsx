@@ -210,7 +210,7 @@ export function CommandPalette() {
           overflow: "hidden",
         }}
       >
-        <div className="flex items-center gap-2" style={{ padding: "0 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+        <div className="flex items-center gap-2" style={{ padding: "0 16px", borderBottom: "1px solid var(--cr-rule)" }}>
           <Search size={16} style={{ color: "var(--cr-ink-4)", flexShrink: 0 }} aria-hidden />
           <input
             ref={inputRef}
@@ -226,17 +226,17 @@ export function CommandPalette() {
           />
           <kbd
             style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)",
-              border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 5px",
+              fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)",
+              border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 4px",
             }}
           >
             ESC
           </kbd>
         </div>
 
-        <div ref={listRef} role="listbox" aria-label={t("palette.results")} style={{ maxHeight: "56vh", overflowY: "auto", padding: "6px" }}>
+        <div ref={listRef} role="listbox" aria-label={t("palette.results")} style={{ maxHeight: "56vh", overflowY: "auto", padding: "8px" }}>
           {rows.length === 0 && (
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "22px 12px", textAlign: "center" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-4)", padding: "24px 12px", textAlign: "center" }}>
               {q.trim().length >= 2 ? t("palette.noResults", { q: q.trim() }) : t("palette.hint")}
             </p>
           )}
@@ -258,8 +258,8 @@ export function CommandPalette() {
                 onMouseEnter={() => setActive(i)}
                 onClick={() => go(row)}
                 style={{
-                  width: "100%", display: "flex", alignItems: "center", gap: "10px",
-                  minHeight: "44px", padding: "8px 10px", borderRadius: "6px",
+                  width: "100%", display: "flex", alignItems: "center", gap: "8px",
+                  minHeight: "44px", padding: "8px 12px", borderRadius: "6px",
                   border: "none", cursor: "pointer", textAlign: "start",
                   background: isActive ? "var(--cr-copper-bg)" : "transparent",
                 }}
@@ -288,11 +288,11 @@ export function CommandPalette() {
         </div>
 
         {/* The keybar: how a terminal signs its name. */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", padding: "8px 14px", borderTop: "1px solid var(--cr-rule)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", padding: "8px 16px", borderTop: "1px solid var(--cr-rule)" }}>
           {[["\u2191\u2193", t("shortcuts.move")], ["\u21B5", t("shortcuts.open")], ["esc", t("shortcuts.close")], ["s\u00A0/\u00A0i", t("palette.results")]].map(([k, label]) => (
-            <span key={k} style={{ display: "inline-flex", alignItems: "baseline", gap: "6px" }}>
-              <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 4px" }}>{k}</kbd>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>{label}</span>
+            <span key={k} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px" }}>
+              <kbd style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "1px 4px" }}>{k}</kbd>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{label}</span>
             </span>
           ))}
         </div>

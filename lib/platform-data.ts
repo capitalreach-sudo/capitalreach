@@ -155,10 +155,15 @@ export async function computePlatformData(): Promise<PlatformData | null> {
           .order("id", { ascending: true })
           .range(from, to),
       ),
+      // The directory's own definition, so /data and /investors agree: a
+      // profile row alone also counts unlisted test fixtures (is_public
+      // false) and demo seeds, which inflated this figure after the purge.
       supabase
-        .from("profiles")
+        .from("investors")
         .select("id", { count: "exact", head: true })
-        .eq("role", "investor"),
+        .eq("is_public", true)
+        .eq("is_external", false)
+        .eq("is_demo", false),
       // Every deal, not just closed ones -- the pipeline breakdown below needs
       // the open stages too. Deliberately selects nothing that identifies a
       // party: no startup_id, no investor_id, no names. Deals are private

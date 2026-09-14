@@ -6,7 +6,8 @@ import { useState, useEffect, useRef, useMemo, type CSSProperties } from "react"
 import Link from "next/link";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { Zap, TrendingUp, Info, Building2, ArrowRight, Brain, Sparkles } from "lucide-react";
+import { Zap, Info, ArrowRight, Brain, Sparkles } from "lucide-react";
+import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 import { FOUNDER_PLANS_LIST, INVESTOR_PLANS_LIST, annualPricingFrom, PLAN_CURRENCY} from "@/lib/plans";
 import type { FounderPlan, InvestorPlan } from "@/lib/plans";
 // Type only: lib/pricing-stage reaches the database, so the value side of it
@@ -100,19 +101,21 @@ function investorFeatureRows(plan: InvestorPlan, t: TFn): FeatureRow[] {
 // other two are described rather than disparaged -- a house that tells you the
 // alternative is hopeless is arguing, not stating.
 
+/* Caps labels speak in the one platform voice: 11px/500/0.08em on ink-3.
+   The old 10px ink-4 row labels were below the contrast floor. */
 const CMP_COLHEAD: CSSProperties = {
   textAlign: "start", verticalAlign: "bottom",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px",
-  textTransform: "uppercase", letterSpacing: "0.07em",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em",
   color: "var(--cr-ink-3)", padding: "0 16px 12px",
   borderBottom: "1px solid var(--cr-rule-dark)",
 };
 
 const CMP_ROWLABEL: CSSProperties = {
   textAlign: "start", verticalAlign: "top",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.07em",
-  color: "var(--cr-ink-4)", padding: "12px 16px 12px 0",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em",
+  color: "var(--cr-ink-3)", padding: "12px 16px 12px 0",
   borderBottom: "1px solid var(--cr-rule)", whiteSpace: "nowrap",
 };
 
@@ -215,13 +218,13 @@ function PlanCard({
     ? t("pricing.contactSales")
     : free
       ? t("pricing.getStartedFree")
-      : `${t("pricing.getStarted")} — ${plan.name}`;
+      : `${t("pricing.getStarted")} · ${plan.name}`; // house separator, no dash
 
   return (
     <div className={hi ? "plan-card featured" : "plan-card"}
       style={{
         position: "relative", display: "flex", flexDirection: "column",
-        borderRadius: "4px", overflow: "hidden",
+        borderRadius: "6px", overflow: "hidden", // 6px: card radius
         border: hi ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
         transition: "border-color 150ms ease",
       }}
@@ -229,37 +232,45 @@ function PlanCard({
       onMouseLeave={e => { if (!hi) (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; }}>
       {hi && <div style={{ height: "3px", background: "var(--cr-copper)" }} />}
 
+      {/* Chips speak the one caps voice (11/500/0.08em). "Current plan" is a
+          statement of fact, not an accent: ink, quiet border. The featured
+          badge keeps its copper fill -- it IS the page's accent moment -- so
+          its ink is on-accent, not ink-3. */}
       {isCurrent && (
-        <div style={{ position: "absolute", top: "18px", right: "18px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <div style={{ position: "absolute", top: "16px", right: "16px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "3px 8px", borderRadius: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             {t("dashboard.currentPlan")}
           </span>
         </div>
       )}
       {hi && !isCurrent && (
-        <div style={{ position: "absolute", top: "18px", right: "18px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <div style={{ position: "absolute", top: "16px", right: "16px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "3px 8px", borderRadius: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             <Zap style={{ width: 10, height: 10 }} /> {t(plan.highlightKey!)}
           </span>
         </div>
       )}
 
       <div style={{ padding: "24px", display: "flex", flexDirection: "column", flex: 1 }}>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.2em", marginBottom: "20px" }}>{plan.name}</p>
+        {/* Plan name: the one caps voice, 11/500/0.08em ink-3. */}
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "16px" }}>{plan.name}</p>
 
+        {/* Card prices sit at 28px, the scale's top step: the page's single
+            lead figure is the hero card's, and four 44px figures were four
+            competing leads. */}
         <div style={{ marginBottom: "8px" }}>
           {price === null ? (
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("common.custom")}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("common.custom")}</span>
           ) : price === 0 ? (
             // Copper only when the stage is what makes it free -- a plan that
             // is free at every stage is not a discount and must not read as one.
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", color: rising ? "var(--cr-copper)" : "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: rising ? "var(--cr-copper)" : "var(--cr-ink)", lineHeight: 1, letterSpacing: "-0.04em" }}>{t("pricing.free")}</span>
           ) : (
             <div style={{ display: "flex", alignItems: "flex-end", gap: "4px" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "44px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1, letterSpacing: "-0.04em", color: hi ? "var(--cr-copper)" : "var(--cr-ink)" }}>
                 {formatMoney(price, PLAN_CURRENCY)}
               </span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "6px" }}>{t("pricing.perMonth")}{annual && yearly ? ` · ${t("pricing.billedYearly", { amount: formatMoney(yearly.total, PLAN_CURRENCY) })}` : ""}</span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>{t("pricing.perMonth")}{annual && yearly ? ` · ${t("pricing.billedYearly", { amount: formatMoney(yearly.total, PLAN_CURRENCY) })}` : ""}</span>
             </div>
           )}
         </div>
@@ -277,12 +288,14 @@ function PlanCard({
 
         <div style={{ height: "1px", background: "var(--cr-rule)", margin: "16px 0 24px" }} />
 
-        <ul style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1, marginBottom: "24px" }}>
+        {/* Feature rows are inventory, not accent: the included-marker dots
+            speak ink so the card's one copper moment stays the price/badge. */}
+        <ul style={{ display: "flex", flexDirection: "column", gap: "8px", flex: 1, marginBottom: "24px" }}>
           {features.map((f) => (
-            <li key={f.text} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <li key={f.text} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               {f.on ? (
-                <span style={{ width: 16, height: 16, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-copper)" }} />
+                <span style={{ width: 16, height: 16, borderRadius: "50%", border: "1px solid var(--cr-rule-dark)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--cr-ink-3)" }} />
                 </span>
               ) : (
                 <span style={{ width: 16, height: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -294,25 +307,28 @@ function PlanCard({
           ))}
         </ul>
 
+        {/* One filled primary per card row: the featured card only. During
+            the founding stage every card used to fill copper, which is four
+            primaries and therefore none; siblings hold the quiet outline. */}
         <button onClick={handleClick}
-          className={hi || isFounding ? "btn-copper-shimmer" : ""}
+          className={hi ? "btn-copper-shimmer" : ""}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: "100%", height: "42px", borderRadius: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
             textDecoration: "none", transition: "opacity 150ms", border: "none", cursor: "pointer",
-            background: hi || isFounding ? "var(--cr-copper)" : "transparent",
-            color: hi || isFounding ? "var(--cr-band-ink)" : "var(--cr-ink-3)",
-            borderColor: hi || isFounding ? "transparent" : "var(--cr-rule-dark)",
-            borderWidth: hi || isFounding ? 0 : "1px",
+            background: hi ? "var(--cr-copper)" : "transparent",
+            color: hi ? "var(--cr-on-accent)" : "var(--cr-ink-3)",
+            borderColor: hi ? "transparent" : "var(--cr-rule-dark)",
+            borderWidth: hi ? 0 : "1px",
             borderStyle: "solid",
           }}
           onMouseEnter={e => {
-            if (hi || isFounding) e.currentTarget.style.opacity = "0.88";
+            if (hi) e.currentTarget.style.opacity = "0.88";
             else { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }
           }}
           onMouseLeave={e => {
-            if (hi || isFounding) e.currentTarget.style.opacity = "1";
+            if (hi) e.currentTarget.style.opacity = "1";
             else { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }
           }}>
           {ctaLabel}
@@ -338,7 +354,9 @@ function StageBanner({ pricing }: { pricing: StagePricing }) {
     <section style={{ background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule)", marginTop: "64px", padding: "12px 0" }}>
       <div className="max-w-[1200px] mx-auto px-6 md:px-10"
         style={{ display: "flex", alignItems: "center", gap: "12px 16px", flexWrap: "wrap" }}>
-        <span className="ruled-label" style={{ color: "var(--cr-copper)" }}>
+        {/* The ruled-label class carries the caps voice and the copper bar;
+            the label itself stays ink -- the bar is the accent. */}
+        <span className="ruled-label">
           {t(pricing.isFounding ? "stage.founding" : "stage.early")}
         </span>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)" }}>
@@ -347,16 +365,16 @@ function StageBanner({ pricing }: { pricing: StagePricing }) {
             : t("pricing.stageBannerEarly")}
         </p>
         {pricing.isFounding && (
-          <span style={{ display: "inline-flex", alignItems: "baseline", gap: "6px" }}>
+          <span style={{ display: "inline-flex", alignItems: "baseline", gap: "8px" }}>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)", fontVariantNumeric: "tabular-nums" }}>
               {pricing.memberCount}/{pricing.target}
             </span>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.12em" }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
               {t("pricing.stageMembersLabel")}
             </span>
           </span>
         )}
-        <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px" }}>✦</span>
+        <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "11px" }}>✦</span>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
           {t("pricing.stageFeeNote")}
         </p>
@@ -369,14 +387,15 @@ function StageBanner({ pricing }: { pricing: StagePricing }) {
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "20px 0" }}>
+    <div style={{ borderBottom: "1px solid var(--cr-rule)", padding: "16px 0" }}>
       <button onClick={() => setOpen(!open)}
         style={{
           width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: "none", border: "none", cursor: "pointer", textAlign: "left", gap: "20px",
+          background: "none", border: "none", cursor: "pointer", textAlign: "left", gap: "16px",
         }}>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: open ? "var(--cr-ink)" : "var(--cr-ink-3)", transition: "color 120ms" }}>{q}</span>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-copper)", fontSize: "14px", flexShrink: 0, transition: "transform 200ms", transform: open ? "rotate(180deg)" : "none", display: "inline-block" }}>▾</span>
+        {/* Disclosure chevron is furniture, not accent: ink. */}
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink-4)", fontSize: "13px", flexShrink: 0, transition: "transform 200ms", transform: open ? "rotate(180deg)" : "none", display: "inline-block" }}>▾</span>
       </button>
       {open && (
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7, marginTop: "12px" }}>{a}</p>
@@ -474,19 +493,19 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
           <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             <div className="pricing-hero-grid">
               <div>
+                {/* Eyebrow speaks in the ruled-label voice itself; the copper
+                    bar is the accent, the words stay ink. */}
                 <div className="ruled-label" style={{ marginBottom: "24px" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    {isFounding ? t("pricing.launchPricingLabel") : t("pricing.transparentPricingLabel")}
-                  </span>
+                  {isFounding ? t("pricing.launchPricingLabel") : t("pricing.transparentPricingLabel")}
                 </div>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(48px,7vw,88px)", lineHeight: 0.9, letterSpacing: "-0.03em", marginBottom: "20px" }}>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(48px,7vw,88px)", lineHeight: 0.9, letterSpacing: "-0.03em", marginBottom: "16px" }}>
                   {isFounding ? (
                     <>{t("pricing.launchHeadlineLine1")}<br />{t("pricing.launchHeadlineLine2", { target })}<br /><span style={{ color: "var(--cr-copper)" }}>{t("pricing.launchHeadlineLine3")}</span></>
                   ) : (
                     <>{t("pricing.headlineLine1")}<br />{t("pricing.headlineLine2")}<br /><span style={{ color: "var(--cr-copper)" }}>{t("pricing.headlineLine3")}</span></>
                   )}
                 </h1>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", maxWidth: "360px", lineHeight: 1.7 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "360px", lineHeight: 1.7 }}>
                   {isFounding ? (
                     <>
                       {t("pricing.launchSub", { memberCount, target }).split("{bold}")[0]}
@@ -504,17 +523,20 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
               </div>
 
               <div style={{ paddingBottom: "8px" }}>
-                <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "32px 40px", textAlign: "center" }}>
+                {/* The hero launch card: the page's single lead figure lives
+                    here (the spots counter while founding, the 2% after).
+                    6px: card radius. */}
+                <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "32px", textAlign: "center" }}>
                   {isFounding ? (
                     <>
                       <Sparkles style={{ width: 40, height: 40, color: "var(--cr-copper)", margin: "0 auto 8px" }} />
                       <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--cr-copper)", lineHeight: 1, marginBottom: "8px", fontSize: "40px", letterSpacing: "-0.05em" }}>{Math.max(target - memberCount, 0)}</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>{t("pricing.spotsLeftFree")}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("pricing.spotsLeftFree")}</p>
                     </>
                   ) : (
                     <>
                       <p className="copper-foil" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, lineHeight: 1, marginBottom: "8px", fontSize: "72px", letterSpacing: "-0.05em" }}>2%</p>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.15em" }}>{t("pricing.successFeeLabel")}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("pricing.successFeeLabel")}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("pricing.afterClosingUpfront")}</p>
                     </>
                   )}
@@ -532,33 +554,29 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
         <section id="founders" style={{ padding: "64px 0", scrollMarginTop: "60px" }}>
           <span id="investors" aria-hidden />
           <div className="max-w-[1200px] mx-auto px-6 md:px-10">
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "20px", marginBottom: "48px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", marginBottom: "48px", flexWrap: "wrap" }}>
 
-              {/* Tab switcher */}
-              <div style={{ display: "flex", borderBottom: "2px solid var(--cr-rule)", gap: "0" }}>
-                {([["startup", Building2, t("pricing.founders")], ["investor", TrendingUp, t("pricing.investors")]] as const).map(([tab, Icon, label]) => (
-                  <button key={tab} onClick={() => setActiveTab(tab)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "7px",
-                      padding: "12px 20px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-                      fontSize: "13px", border: "none",
-                      borderBottom: `2px solid ${activeTab === tab ? "var(--cr-copper)" : "transparent"}`,
-                      marginBottom: "-2px", background: "transparent",
-                      color: activeTab === tab ? "var(--cr-copper)" : "var(--cr-ink-4)",
-                      cursor: "pointer", transition: "color 120ms, border-color 120ms",
-                    }}>
-                    <Icon style={{ width: 13, height: 13 }} /> {label}
-                  </button>
-                ))}
-              </div>
+              {/* The house disclosure device replaces the bespoke switcher:
+                  same two audiences, one platform-wide tab voice. */}
+              <TabStrip
+                tabs={[
+                  { key: "startup", label: t("pricing.founders") },
+                  { key: "investor", label: t("pricing.investors") },
+                ] as const}
+                active={activeTab}
+                onSelect={setActiveTab}
+                idBase="pricing-plans"
+                label={t("pricing.founders") + " / " + t("pricing.investors")}
+              />
 
               {/* Annual toggle -- hidden while the stage charges nothing */}
               {bestAnnualDiscount > 0 && (
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: !annual ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t("pricing.monthly")}</span>
+                  {/* 999px: the switch track is a true pill, already round. */}
                   <button onClick={() => setAnnual((a) => !a)}
                     style={{
-                      position: "relative", width: "44px", height: "24px", borderRadius: "12px",
+                      position: "relative", width: "44px", height: "24px", borderRadius: "999px",
                       border: "none", cursor: "pointer", transition: "background 200ms",
                       background: annual ? "var(--cr-copper)" : "var(--cr-rule-dark)",
                     }}>
@@ -570,7 +588,9 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
                   </button>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: annual ? "var(--cr-ink)" : "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "6px" }}>
                     {t("pricing.annual")}
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "10px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 6px" }}>
+                    {/* Savings chip: a money fact, so it keeps its voice but
+                        joins the scale floor (11px) and control radius (4px). */}
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "11px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "2px 8px" }}>
                       {t("pricing.saveUpTo", { percent: bestAnnualDiscount })}
                     </span>
                   </span>
@@ -580,9 +600,9 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
 
             {/* 2% success fee callout */}
             <div style={{
-              display: "flex", alignItems: "center", gap: "20px",
+              display: "flex", alignItems: "center", gap: "16px",
               background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)",
-              borderRadius: "4px", padding: "16px 20px", marginBottom: "24px",
+              borderRadius: "6px", padding: "16px", marginBottom: "24px", // 6px: panel radius
             }}>
               <div style={{
                 flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
@@ -619,26 +639,29 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
               </div>
             </div>
 
-            {activeTab === "startup" && (
-              <>
-                <div className="grid-plans-3" style={{ maxWidth: "900px", marginBottom: "24px" }}>
-                  {FOUNDER_PLANS_LIST.map((p) => (
-                    <PlanCard key={p.id} plan={p} money={pricing.founder[p.id]} features={founderFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
-                  ))}
-                </div>
-                <PlanComparison side="founder" isLaunch={isFounding} />
-              </>
-            )}
-            {activeTab === "investor" && (
-              <>
-                <div className="grid-plans-4" style={{ marginBottom: "24px" }}>
-                  {INVESTOR_PLANS_LIST.map((p) => (
-                    <PlanCard key={p.id} plan={p} money={pricing.investor[p.id]} features={investorFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
-                  ))}
-                </div>
-                <PlanComparison side="investor" isLaunch={isFounding} />
-              </>
-            )}
+            {/* TabPanel carries the ids the strip's aria-controls promises,
+                plus the shared crossfade between audiences. */}
+            <TabPanel idBase="pricing-plans" active={activeTab}>
+              {activeTab === "startup" ? (
+                <>
+                  <div className="grid-plans-3" style={{ maxWidth: "900px", marginBottom: "24px" }}>
+                    {FOUNDER_PLANS_LIST.map((p) => (
+                      <PlanCard key={p.id} plan={p} money={pricing.founder[p.id]} features={founderFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={false} userType="founder" isCurrent={currentTabForViewer === "startup" && currentPlanId === p.id} />
+                    ))}
+                  </div>
+                  <PlanComparison side="founder" isLaunch={isFounding} />
+                </>
+              ) : (
+                <>
+                  <div className="grid-plans-4" style={{ marginBottom: "24px" }}>
+                    {INVESTOR_PLANS_LIST.map((p) => (
+                      <PlanCard key={p.id} plan={p} money={pricing.investor[p.id]} features={investorFeatureRows(p, t)} annual={annual} isFounding={isFounding} isInstitution={p.id === "institution"} userType="investor" isCurrent={currentTabForViewer === "investor" && currentPlanId === p.id} />
+                    ))}
+                  </div>
+                  <PlanComparison side="investor" isLaunch={isFounding} />
+                </>
+              )}
+            </TabPanel>
 
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <Info style={{ width: 13, height: 13, color: "var(--cr-ink-4)", flexShrink: 0 }} />
@@ -655,8 +678,9 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
         <section style={{ padding: "64px 0", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)" }}>
           <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             <div style={{ marginBottom: "48px" }}>
+              {/* Eyebrow in the ruled-label voice; the bar carries the accent. */}
               <div className="ruled-label" style={{ marginBottom: "16px" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("pricing.modelEyebrow")}</span>
+                {t("pricing.modelEyebrow")}
               </div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4vw,52px)", lineHeight: 0.93, letterSpacing: "-0.03em", maxWidth: "480px" }}>
                 {t("pricing.winHeadline")}
@@ -726,23 +750,29 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
             </div>
 
             {/* Interactive 2% calculator (Phase 1, mechanism D): the same
-                comparison as the columns above, but on the reader's own number. */}
-            <div className="grid-plans-3" style={{ marginBottom: "40px", alignItems: "start" }}>
+                comparison as the columns above, but on the reader's own number.
+                Lifted from the band's tint to paper with a 2px ink overline,
+                so the model band stays the page's one slab and the calculator
+                reads as a worksheet laid on it. */}
+            <div className="grid-plans-3" style={{ marginBottom: "32px", alignItems: "start" }}>
               <div style={{ gridColumn: "1 / -1", maxWidth: "560px" }}>
-                <FeeCalculator variant="raise" currency="EUR" defaultAmount={500_000} titleKey="feeCalc.titleCompare" />
+                <FeeCalculator
+                  variant="raise" currency="EUR" defaultAmount={500_000} titleKey="feeCalc.titleCompare"
+                  style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderTop: "2px solid var(--cr-ink)" }}
+                />
               </div>
             </div>
 
             <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
               <Link href="/auth/signup"
                 className="btn-copper-shimmer"
-                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none" }}
                 onMouseEnter={e => (e.currentTarget.style.opacity = "0.88")}
                 onMouseLeave={e => (e.currentTarget.style.opacity = "1")}>
                 {t("hero.ctaPrimary")} <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
               <Link href="/auth/signup"
-                style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 28px", height: "44px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: "8px", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "0 24px", height: "44px", borderRadius: "4px", textDecoration: "none", background: "var(--cr-paper)" }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }}>
                 {t("pricing.browseAsInvestor")}
@@ -756,7 +786,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
           <div className="max-w-[1200px] mx-auto px-6 md:px-10">
             {/* flexWrap: three fixed-width flex children overflowed a 375px
                 screen by 23px and put a sideways scroll on the whole page. */}
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", transition: "border-color 150ms" }}
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px", display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", transition: "border-color 150ms" }}
               onMouseEnter={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper-br)")}
               onMouseLeave={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}>
               <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -778,7 +808,7 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
           <div className="max-w-[800px] mx-auto px-6 md:px-10">
             <div style={{ marginBottom: "48px" }}>
               <div className="ruled-label" style={{ marginBottom: "16px" }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>FAQ</span>
+                FAQ
               </div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(26px,3.5vw,42px)", color: "var(--cr-ink)", letterSpacing: "-0.03em" }}>
                 {t("pricing.commonQuestions")}
@@ -793,18 +823,20 @@ export function PricingClient({ pricing }: { pricing: StagePricing }) {
         {/* Final CTA */}
         <section style={{ padding: "64px 0", borderTop: "1px solid var(--cr-rule)", background: "var(--cr-paper-2)" }}>
           <div className="max-w-[1200px] mx-auto px-6 md:px-10">
-            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
+            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", overflow: "hidden", position: "relative" }}>
               <div style={{ height: "3px", background: "var(--cr-copper)" }} />
               <div style={{ padding: "64px 24px", textAlign: "center" }}>
+                {/* The launch story is told ONCE, by the hero card with the
+                    spots counter. This close keeps a single launch sentence
+                    (the sub below, while founding) and drops the repeated
+                    "limited spots" eyebrow. */}
                 <div className="ruled-label" style={{ justifyContent: "center", marginBottom: "24px" }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                    {isFounding ? t("pricing.limitedLaunchSpots") : t("pricing.earlyAccess")}
-                  </span>
+                  {t("pricing.earlyAccess")}
                 </div>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4.5vw,60px)", lineHeight: 0.93, letterSpacing: "-0.03em", marginBottom: "20px", maxWidth: "560px", margin: "0 auto 20px" }}>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, color: "var(--cr-ink)", fontSize: "clamp(32px,4.5vw,60px)", lineHeight: 0.93, letterSpacing: "-0.03em", maxWidth: "560px", margin: "0 auto 16px" }}>
                   {t("pricing.ctaHeadline")}
                 </h2>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", marginBottom: "40px", maxWidth: "360px", margin: "0 auto 40px", lineHeight: 1.7 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", maxWidth: "360px", margin: "0 auto 32px", lineHeight: 1.7 }}>
                   {isFounding
                     ? t("pricing.finalCtaLaunchSub", { target })
                     : t("pricing.finalCtaSub")}

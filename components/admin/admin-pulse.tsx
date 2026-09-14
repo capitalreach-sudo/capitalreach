@@ -44,27 +44,31 @@ export type HealthListing = {
   milestones?: Array<unknown> | null;
 };
 
+// Dense admin card: padding snaps 20 -> 16.
 const card: React.CSSProperties = {
   background: "var(--cr-paper-2)",
   border: "1px solid var(--cr-rule-dark)",
   borderRadius: "4px",
-  padding: "20px",
+  padding: "16px",
 };
 
 function Delta({ now, prev }: { now: number; prev: number }) {
   const { t } = useTranslation();
+  // Accent budget: growth percentages in metric cards read in ink -- the
+  // trend icon carries direction; green/red stay reserved for money movement
+  // (the fee figures on the admin console keep theirs).
   // No prior activity and none now is flat, not infinite growth -- the naive
   // percentage would render "+Infinity%" on a quiet week.
   if (prev === 0 && now === 0) {
     return (
-      <span style={{ display: "inline-flex", alignItems: "center", gap: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
         <Minus style={{ width: 11, height: 11 }} /> {t("pulse.flat")}
       </span>
     );
   }
   if (prev === 0) {
     return (
-      <span style={{ display: "inline-flex", alignItems: "center", gap: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-up)" }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)" }}>
         <TrendingUp style={{ width: 11, height: 11 }} /> {t("pulse.newActivity")}
       </span>
     );
@@ -73,7 +77,7 @@ function Delta({ now, prev }: { now: number; prev: number }) {
   const up = pct > 0, flat = pct === 0;
   const Icon = flat ? Minus : up ? TrendingUp : TrendingDown;
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: flat ? "var(--cr-ink-4)" : up ? "var(--cr-up)" : "var(--cr-down)" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: flat ? "var(--cr-ink-4)" : "var(--cr-ink-3)" }}>
       <Icon style={{ width: 11, height: 11 }} /> {pct > 0 ? "+" : ""}{pct}% {t("pulse.vsLastWeek")}
     </span>
   );
@@ -112,12 +116,12 @@ function ActivityFeed({ actions }: { actions: AdminAction[] }) {
 
   return (
     <div>
-      <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "10px" }}>
+      <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "8px" }}>
         {t("pulse.activityTitle")}
       </h2>
-      <div style={{ ...card, padding: "6px 0" }}>
+      <div style={{ ...card, padding: "8px 0" }}>
         {actions.map((a) => (
-          <div key={a.id} style={{ display: "flex", alignItems: "baseline", gap: "10px", padding: "9px 18px", flexWrap: "wrap" }}>
+          <div key={a.id} style={{ display: "flex", alignItems: "baseline", gap: "12px", padding: "8px 16px", flexWrap: "wrap" }}>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textTransform: "capitalize" }}>
               {verb(a.action)}
             </span>
@@ -129,11 +133,11 @@ function ActivityFeed({ actions }: { actions: AdminAction[] }) {
                 “{a.note}”
               </span>
             )}
-            <span style={{ marginInlineStart: "auto", display: "flex", gap: "10px", alignItems: "baseline" }}>
+            <span style={{ marginInlineStart: "auto", display: "flex", gap: "12px", alignItems: "baseline" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                 {a.admin?.full_name || a.admin?.email || t("pulse.unknownAdmin")}
               </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {t("pulse.daysAgo", { count: daysSince(a.created_at) })}
               </span>
             </span>
@@ -156,19 +160,19 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
   const needsWork = health.filter((h) => h.percent < 70);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px", marginBottom: "28px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "24px" }}>
       {/* ── This week ─────────────────────────────────────────────── */}
       <div>
-        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "10px" }}>
+        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "8px" }}>
           {t("pulse.title")}
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "12px" }}>
           {metrics.map((m) => (
             <div key={m.key} style={card}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 {t(m.labelKey)}
               </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "30px", color: "var(--cr-ink)", lineHeight: 1.1, margin: "6px 0 4px" }}>
+              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: "var(--cr-ink)", lineHeight: 1.1, margin: "8px 0 4px" }}>
                 {m.now}
               </p>
               <Delta now={m.now} prev={m.prev} />
@@ -179,10 +183,10 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
 
       {/* ── Listing health ────────────────────────────────────────── */}
       <div>
-        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+        <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
           {t("pulse.healthTitle")}
           {needsWork.length > 0 && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: "3px", padding: "2px 7px", fontSize: "10px", fontWeight: 600 }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontWeight: 600 }}>
               <AlertTriangle style={{ width: 10, height: 10 }} /> {t("pulse.needWork", { count: needsWork.length })}
             </span>
           )}
@@ -190,7 +194,7 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
 
         <div style={{ ...card, padding: 0, overflowX: "auto" }}>
           {health.length === 0 ? (
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", padding: "20px" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", padding: "16px" }}>
               {t("pulse.noListings")}
             </p>
           ) : (
@@ -198,7 +202,7 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
               <thead>
                 <tr style={{ borderBottom: "1px solid var(--cr-rule)" }}>
                   {["pulse.colListing", "pulse.colComplete", "pulse.colNext", "pulse.colUpdated", "pulse.colViews"].map((k) => (
-                    <th key={k} style={{ textAlign: "start", padding: "10px 14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    <th key={k} style={{ textAlign: "start", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                       {t(k)}
                     </th>
                   ))}
@@ -207,7 +211,7 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
               <tbody>
                 {health.map(({ l, percent, next, stale }) => (
                   <tr key={l.id} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                    <td style={{ padding: "10px 14px" }}>
+                    <td style={{ padding: "8px 12px" }}>
                       <Link href={`/startups/${l.slug}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
                         {l.name}
                       </Link>
@@ -215,12 +219,12 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
                           dashboard at all -- their own dashboard path is /admin. */}
                       <Link
                         href={`/admin/view/startup/${l.id}`}
-                        style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px", marginTop: "2px" }}
+                        style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "2px", marginTop: "4px" }}
                       >
                         {t("viewAs.open")}
                       </Link>
                     </td>
-                    <td style={{ padding: "10px 14px", minWidth: "120px" }}>
+                    <td style={{ padding: "8px 12px", minWidth: "120px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                         <div style={{ flex: 1, height: "3px", background: "var(--cr-paper-4)", borderRadius: "2px", minWidth: "50px" }}>
                           <div style={{ height: "3px", borderRadius: "2px", width: `${percent}%`, background: percent < 50 ? "var(--cr-down)" : percent < 70 ? "var(--cr-copper)" : "var(--cr-up)" }} />
@@ -228,13 +232,13 @@ export function AdminPulse({ metrics, listings, actions }: { metrics: PulseMetri
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)" }}>{percent}%</span>
                       </div>
                     </td>
-                    <td style={{ padding: "10px 14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                    <td style={{ padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
                       {next ? t(next.labelKey) : "—"}
                     </td>
-                    <td style={{ padding: "10px 14px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: stale > 30 ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>
+                    <td style={{ padding: "8px 12px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: stale > 30 ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>
                       {t("pulse.daysAgo", { count: stale })}
                     </td>
-                    <td style={{ padding: "10px 14px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                    <td style={{ padding: "8px 12px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>
                       {l.pageviews ?? 0}
                     </td>
                   </tr>

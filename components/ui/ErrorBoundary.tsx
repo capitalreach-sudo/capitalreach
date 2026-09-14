@@ -53,13 +53,13 @@ function SectionFallback({ labelKey, onRetry }: { labelKey?: string; onRetry: ()
       style={{
         display: "flex", flexDirection: "column", alignItems: "center",
         justifyContent: "center", textAlign: "center",
-        padding: "40px 24px", minHeight: "180px",
+        padding: "48px 24px", minHeight: "180px",
         background: "var(--cr-paper-2)",
         border: "1px solid var(--cr-rule-dark)",
-        borderRadius: "4px",
+        borderRadius: "6px", // 6px: panel radius
       }}
     >
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "22px", color: "var(--cr-paper-4)", marginBottom: "10px", lineHeight: 1 }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "22px", color: "var(--cr-paper-4)", marginBottom: "8px", lineHeight: 1 }}>
         ◆
       </div>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>

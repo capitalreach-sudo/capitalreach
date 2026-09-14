@@ -57,18 +57,18 @@ export function SystemHealth({ events, knownSources }: { events: SystemEvent[]; 
   }
 
   return (
-    <div style={{ marginBottom: "28px" }}>
-      <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "10px", display: "flex", alignItems: "center", gap: "8px" }}>
+    <div style={{ marginBottom: "24px" }}>
+      <h2 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
         {t("health.title")}
         {errors.length > 0 && (
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.3)", color: "var(--cr-down)", borderRadius: "3px", padding: "2px 7px", fontSize: "10px", fontWeight: 600 }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.3)", color: "var(--cr-down)", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontWeight: 600 }}>
             <AlertCircle style={{ width: 10, height: 10 }} /> {t("health.errorCount", { count: errors.length })}
           </span>
         )}
       </h2>
 
       {/* Heartbeats: one row per background job. */}
-      <div style={{ ...card, padding: "12px 18px", display: "flex", flexWrap: "wrap", gap: "10px 28px", marginBottom: errors.length ? "10px" : 0 }}>
+      <div style={{ ...card, padding: "12px 16px", display: "flex", flexWrap: "wrap", gap: "12px 24px", marginBottom: errors.length ? "8px" : 0 }}>
         {sources.length === 0 && (
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
             {t("health.noSources")}
@@ -80,7 +80,7 @@ export function SystemHealth({ events, knownSources }: { events: SystemEvent[]; 
           // least one run -- copper, not red: it may be config, not code.
           const stale = ok ? daysSince(ok) > 2 : true;
           return (
-            <span key={src} style={{ display: "inline-flex", alignItems: "center", gap: "7px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)" }}>
+            <span key={src} style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)" }}>
               <CheckCircle2
                 style={{ width: 12, height: 12, color: stale ? "var(--cr-copper)" : "var(--cr-up)" }}
                 aria-hidden
@@ -96,22 +96,22 @@ export function SystemHealth({ events, knownSources }: { events: SystemEvent[]; 
 
       {/* Errors, newest first, dismiss = acknowledged. */}
       {errors.length > 0 && (
-        <div style={{ ...card, borderColor: "rgba(180,50,50,0.3)", padding: "6px 0" }}>
+        <div style={{ ...card, borderColor: "rgba(180,50,50,0.3)", padding: "8px 0" }}>
           {errors.map((e) => (
-            <div key={e.id} style={{ display: "flex", alignItems: "baseline", gap: "10px", padding: "8px 18px" }}>
+            <div key={e.id} style={{ display: "flex", alignItems: "baseline", gap: "12px", padding: "8px 16px" }}>
               <AlertCircle style={{ width: 12, height: 12, color: "var(--cr-down)", flexShrink: 0, alignSelf: "center" }} aria-hidden />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {e.source}
               </span>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", minWidth: 0, flex: 1 }}>
                 {e.message}
                 {e.detail != null && (
-                  <span style={{ color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px" }}>
+                  <span style={{ color: "var(--cr-ink-4)", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px" }}>
                     {" "}{JSON.stringify(e.detail).slice(0, 120)}
                   </span>
                 )}
               </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {t("pulse.daysAgo", { count: daysSince(e.created_at) })}
               </span>
               <button

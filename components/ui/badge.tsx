@@ -3,8 +3,8 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 /*
- * The register's one chip shape: Label type (11px, 500, uppercase, tracked),
- * 3px radius, hairline border, tinted paper fill. Variant names are API --
+ * The register's one chip shape: Label type (11px, 500, uppercase, 0.08em),
+ * 4px radius, hairline border, tinted paper fill. Variant names are API --
  * call sites depend on them -- but every color is a token:
  *   default / success / purple -> copper (accent + success/quality states;
  *     green is reserved for money direction, which no variant here means)
@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
  *   blue -> --cr-neutral        warning / secondary / outline -> ink on paper
  */
 const badgeVariants = cva(
-  "inline-flex items-center whitespace-nowrap rounded-[3px] border px-2 py-[3px] font-sans text-[11px] font-medium uppercase tracking-[0.06em] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center whitespace-nowrap rounded-[4px] border px-2 py-[3px] font-sans text-[11px] font-medium uppercase tracking-[0.08em] transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
   {
     variants: {
       variant: {

@@ -24,14 +24,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 // House prose register for the legal pages: quiet rule-separated sections,
-// Label-style section openers, body in DM Sans light.
+// Label-style section openers, body in DM Sans light. 15px: legal prose is
+// reading text; the subhead keeps the size and speaks through weight.
 const BODY: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px",
   color: "var(--cr-ink-3)", lineHeight: 1.7,
 };
 
 const SUBHEAD: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px",
   color: "var(--cr-ink)",
 };
 

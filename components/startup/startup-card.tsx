@@ -1,17 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Bookmark, Lock } from "lucide-react";
+import { Bookmark, GitCompareArrows, Lock } from "lucide-react";
 import { DemoBadge } from "@/components/shared/demo-badge";
-import { formatCurrency, daysSince, STAGE_LABELS } from "@/lib/utils";
+import { STAGE_LABELS } from "@/lib/utils";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { roundCloseState } from "@/lib/round-close";
-import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
+import { safeFormatCurrencyAmount } from "@/lib/validators";
 import { getInvestorPlan } from "@/lib/plans";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ScoreBadge } from "@/components/ui/score-badge";
 
 
 // ── Props ─────────────────────────────────────────────────────────────────────
@@ -21,6 +20,10 @@ import { ScoreBadge } from "@/components/ui/score-badge";
  * (related startups, search) must select all of these -- a full Startup
  * satisfies it too. Fields missing from a query fail the build now instead of
  * silently blanking parts of the card.
+ *
+ * The card no longer DRAWS every field here (the diet moved growth, runway and
+ * the revenue pair to the detail page), but the projection stays whole so no
+ * caller's select list has to churn with the card's layout.
  */
 export type StartupCardData = Pick<Startup,
   "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
@@ -31,19 +34,44 @@ interface StartupCardProps {
   investorTier?: SubscriptionTier | null;
   isSaved?:    boolean;
   onSave?:     (startupId: string) => void;
+  /** Optional compare toggle -- surfaces with a compare tray pass it; the
+   *  card's contract is otherwise unchanged. */
+  onCompare?:  (startupId: string) => void;
+  isComparing?: boolean;
 }
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
-export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupCardProps) {
+/**
+ * The specimen card, after the diet. It answers exactly what a browse decision
+ * needs: who (name, tagline), what drawer it sits in (sector-stage meta line),
+ * the ask (raising figure -- the card's ONE accent), and the score. Everything
+ * else -- growth, runway, revenue, the serial number -- belongs to the detail
+ * page. Action icons reveal on hover/focus-within; a coarse pointer has no
+ * hover, so there they are always visible.
+ */
+export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare, isComparing }: StartupCardProps) {
   const { t } = useTranslation();
   const canSeeFinancials = getInvestorPlan(investorTier ?? null).features.viewFinancials;
-  const isNew            = daysSince(startup.created_at) <= 5;
   const closing          = roundCloseState(startup.round_close_date);
   const score            = startup.vaultrise_score ?? null;
-  // The catalogue number: stable per company, derived from the id. A card
-  // is a specimen in a drawer, and specimens are numbered.
-  const specimen         = "CR\u2013" + String(parseInt(startup.id.replace(/-/g, "").slice(0, 6), 16) % 10000).padStart(4, "0");
+  // The score is a paid signal on some plans: free investors are shown that
+  // it exists, not what it is.
+  const scoreLocked      = !investorTier || investorTier === "free";
+  const hasActions       = Boolean(onSave || onCompare);
+
+  // One meta line instead of a chip row: drawer (sector), shelf (stage), and
+  // -- when the round is not simply open -- its state or deadline. Time and
+  // status ride the same quiet line; the raise figure below keeps the accent.
+  const metaBits: string[] = [
+    startup.industry,
+    STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " "),
+  ];
+  if (startup.round_state === "oversubscribed" || startup.round_state === "closed") {
+    metaBits.push(t(`startupDetail.round_${startup.round_state}`));
+  } else if (closing) {
+    metaBits.push(closing.kind === "closingSoon" ? t("startup.closingSoon") : t("startup.closesIn", { count: closing.days }));
+  }
 
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();
@@ -51,6 +79,21 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
     onSave?.(startup.id);
     notify[isSaved ? "info" : "success"](isSaved ? t("toast.unsaved") : t("toast.saved"));
   }
+
+  function handleCompare(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    onCompare?.(startup.id);
+  }
+
+  const iconButton: React.CSSProperties = {
+    background: "none",
+    border:     "none",
+    cursor:     "pointer",
+    padding:    "4px",
+    display:    "flex",
+    alignItems: "center",
+  };
 
   return (
     // The card used to BE the link, with the upgrade hint nested inside it --
@@ -62,7 +105,19 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
     // wrapping it. The whole surface is still clickable and still a real
     // anchor -- middle-click and "open in new tab" keep working -- but it
     // contains nothing, so nothing can nest inside it.
-    <div style={{ position: "relative" }}>
+    <div className="cr-startup-card" style={{ position: "relative" }}>
+      {/* Hover reveal cannot live in inline styles: it needs :hover,
+          :focus-within and a hover-capability media query. An icon whose state
+          is ON (saved, comparing) stays visible -- hiding it would hide the
+          state, not just the control. */}
+      <style>{`
+        .cr-startup-card .cr-card-act { opacity: 0; transition: opacity 120ms ease; }
+        .cr-startup-card:hover .cr-card-act,
+        .cr-startup-card:focus-within .cr-card-act,
+        .cr-startup-card .cr-card-act.cr-on { opacity: 1; }
+        @media (hover: none) { .cr-startup-card .cr-card-act { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .cr-startup-card .cr-card-act { transition: none; } }
+      `}</style>
       <Link
         href={`/startups/${startup.slug}`}
         aria-label={startup.name}
@@ -75,8 +130,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           flexDirection: "column",
           background:   "var(--cr-paper-2)",
           border:       "1px solid var(--cr-rule-dark)",
-          borderRadius: "4px",
-          padding:      "20px",
+          // 6px: the card/panel radius; 4px stays with controls.
+          borderRadius: "6px",
+          padding:      "16px",
           transition:   "background 120ms ease, border-color 120ms ease",
           cursor:       "pointer",
         }}
@@ -89,193 +145,91 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
           (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)";
         }}
       >
-        <span aria-hidden style={{ position: "absolute", bottom: "10px", right: "14px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "8.5px", letterSpacing: "0.14em", color: "var(--cr-ink-4)", opacity: 0.65 }}>
-          {specimen}
-        </span>
-
-        {/* Bookmark */}
-        {onSave && (
-          <button
-            onClick={handleSave}
-            style={{
-              position:   "absolute",
-              top:        "16px",
-              right:      "16px",
-              // Above the stretched card link, or the overlay swallows the click.
-              zIndex:     2,
-              background: "none",
-              border:     "none",
-              cursor:     "pointer",
-              padding:    "2px",
-              display:    "flex",
-              alignItems: "center",
-            }}
-            aria-label={isSaved ? t("startup.removeWatchlist") : t("startup.saveWatchlist")}
-          >
-            <Bookmark style={{
-              width:  16,
-              height: 16,
-              color:  isSaved ? "var(--cr-copper)" : "var(--cr-ink-4)",
-              fill:   isSaved ? "var(--cr-copper)" : "transparent",
-            }} />
-          </button>
+        {/* Action rail: save and compare, above the stretched card link (or
+            the overlay swallows the click). Revealed by the stylesheet above. */}
+        {hasActions && (
+          <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 2, display: "flex", gap: "4px" }}>
+            {onCompare && (
+              <button
+                onClick={handleCompare}
+                className={`cr-card-act${isComparing ? " cr-on" : ""}`}
+                style={iconButton}
+                aria-pressed={!!isComparing}
+                aria-label={t("startups.compare")}
+                title={t("startups.compare")}
+              >
+                <GitCompareArrows style={{ width: 16, height: 16, color: isComparing ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
+              </button>
+            )}
+            {onSave && (
+              <button
+                onClick={handleSave}
+                className={`cr-card-act${isSaved ? " cr-on" : ""}`}
+                style={iconButton}
+                aria-pressed={!!isSaved}
+                aria-label={isSaved ? t("startup.removeWatchlist") : t("startup.saveWatchlist")}
+              >
+                <Bookmark style={{
+                  width:  16,
+                  height: 16,
+                  color:  isSaved ? "var(--cr-copper)" : "var(--cr-ink-4)",
+                  fill:   isSaved ? "var(--cr-copper)" : "transparent",
+                }} />
+              </button>
+            )}
+          </div>
         )}
 
-        {/* Row 1 — Logo + name + score */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px", paddingRight: onSave ? "24px" : 0 }}>
+        {/* Row 1 — Logo + name + tagline. The name wins truncation: the badge
+            cannot shrink, the name ellipsizes. */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px", paddingRight: hasActions ? (onSave && onCompare ? "52px" : "28px") : 0 }}>
           <EntityLogo name={startup.name} logoUrl={startup.logo_url} logoColor={startup.logo_color} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ display: "flex", alignItems: "center", gap: "5px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <p style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", whiteSpace: "nowrap" }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{startup.name}</span>
               {startup.is_demo && <DemoBadge />}
-              {(startup.round_state === "oversubscribed" || startup.round_state === "closed") && (
-                <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontStyle: "normal", fontWeight: 600, fontSize: "9px", letterSpacing: "0.06em", textTransform: "uppercase", padding: "2px 6px", borderRadius: "3px",
-                  background: startup.round_state === "oversubscribed" ? "var(--cr-copper-bg)" : "var(--cr-paper-3)", color: startup.round_state === "oversubscribed" ? "var(--cr-copper)" : "var(--cr-ink-4)", border: `1px solid ${startup.round_state === "oversubscribed" ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}` }}>
-                  {t(`startupDetail.round_${startup.round_state}`)}
-                </span>
-              )}
             </p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {startup.tagline}
             </p>
           </div>
-          {/* The score is a paid signal on some plans: free investors are
-              shown that it exists, not what it is. */}
-          <ScoreBadge score={score} locked={!investorTier || investorTier === "free"} />
         </div>
 
-        {/* Row 2 — Badges */}
-        <div style={{ display: "flex", gap: "6px", marginBottom: "14px", flexWrap: "wrap" }}>
-          <span style={{
-            background:    "transparent",
-            border:        "1px solid var(--cr-rule-dark)",
-            color:         "var(--cr-ink-3)",
-            fontFamily:    "'DM Sans', sans-serif",
-            fontWeight:    500,
-            fontSize:      "10px",
-            borderRadius:  "3px",
-            padding:       "2px 8px",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}>
-            {startup.industry}
-          </span>
-          <span style={{
-            background:    "transparent",
-            border:        "1px solid var(--cr-rule)",
-            color:         "var(--cr-ink-4)",
-            fontFamily:    "'DM Sans', sans-serif",
-            fontWeight:    400,
-            fontSize:      "10px",
-            borderRadius:  "3px",
-            padding:       "2px 8px",
-            textTransform: "uppercase",
-            letterSpacing: "0.04em",
-          }}>
-            {STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " ")}
-          </span>
-          {isNew && (
-            <span style={{
-              background:    "transparent",
-              border:        "1px solid var(--cr-copper-br)",
-              color:         "var(--cr-copper)",
-              fontFamily:    "'DM Sans', sans-serif",
-              fontWeight:    500,
-              fontSize:      "10px",
-              borderRadius:  "3px",
-              padding:       "2px 8px",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}>
-              {t("startup.new")}
-            </span>
-          )}
-          {/* Copper when urgent (≤14d), otherwise quiet — see lib/round-close
-              for why a passed date says "closing soon" instead of a negative
-              count and why >60d shows nothing. */}
-          {closing && (
-            <span style={{
-              background:    closing.kind === "days" && !closing.urgent ? "transparent" : "var(--cr-copper-bg)",
-              border:        "1px solid var(--cr-copper-br)",
-              color:         "var(--cr-copper)",
-              fontFamily:    "'DM Sans', sans-serif",
-              fontWeight:    closing.kind === "closingSoon" || closing.urgent ? 600 : 500,
-              fontSize:      "10px",
-              borderRadius:  "3px",
-              padding:       "2px 8px",
-              textTransform: "uppercase",
-              letterSpacing: "0.05em",
-            }}>
-              {closing.kind === "closingSoon"
-                ? t("startup.closingSoon")
-                : t("startup.closesIn", { count: closing.days })}
-            </span>
-          )}
-        </div>
+        {/* Sector-stage meta line. The one caps voice: 11px/500/0.08em ink-3. */}
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "12px" }}>
+          {metaBits.join(" · ")}
+        </p>
 
-        {/* Row 3 — Metrics */}
-        {/* Rules, not boxes. Three bordered tiles inside a bordered card is a
-            card inside a card, and the house forbids it: inside a card,
-            structure is hairlines. Same strip the browse result card uses, so
-            a specimen reads the same in the drawer and in the grid. */}
-        <div style={{ display: "flex", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: "14px" }}>
-          {[
-            { key: "mrr",    label: t("startupDetail.mrr"),    value: startup.mrr         ? safeFormatMRR(startup.mrr)                                              : null, gated: true  },
-            { key: "arr",    label: t("startupDetail.arr"),    value: startup.arr         ? safeFormatMRR(startup.arr)                                              : null, gated: true  },
-            { key: "growth", label: t("startupDetail.growth"), value: startup.growth_rate != null ? `${startup.growth_rate >= 0 ? "+" : ""}${startup.growth_rate}%`        : null, gated: false },
-          ].map(({ key, label, value, gated }, i) => (
-            <div key={key} style={{ flex: 1, minWidth: 0, padding: "8px 12px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>
-                {label}
-              </div>
-              {gated && !canSeeFinancials ? (
-                <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <div className="skeleton" style={{ height: 13, width: 36, borderRadius: "2px" }} />
-                  <Lock style={{ width: 10, height: 10, color: "var(--cr-ink-4)" }} />
-                </div>
-              ) : value ? (
-                <div style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontWeight: 600,
-                  fontSize:   "13px",
-                  color:      startup.growth_rate != null && key === "growth"
-                    ? startup.growth_rate >= 0 ? "var(--cr-up)" : "var(--cr-down)"
-                    : "var(--cr-ink)",
-                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                }}>
-                  {value}
-                </div>
-              ) : (
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>—</div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* Row 4 — Raise strip */}
-        <div style={{
-          display:       "flex",
-          alignItems:    "center",
-          justifyContent: "space-between",
-          paddingTop:    "12px",
-          borderTop:     "1px solid var(--cr-rule)",
-        }}>
-          <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>
+        {/* Raise strip + score. One hairline above; the raising figure is the
+            card's single accent, so the score sits in ink beside it. */}
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
               {t("startupDetail.raising")}
             </div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {safeFormatCurrencyAmount(startup.funding_target)}
             </div>
           </div>
-          {startup.runway_months != null && (
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-              {t("startup.runwayMonths", { n: startup.runway_months })}
-            </div>
-          )}
+          {/* Ink rather than ui/score-badge's copper: the accent budget is one
+              per card and the raise figure holds it. Same keys, same lock. */}
+          {scoreLocked ? (
+            <span title={t("startup.scoreLocked")} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
+              <Lock style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", maxWidth: "96px", textAlign: "right", lineHeight: 1.25 }}>{t("startup.scoreLabel")}</span>
+            </span>
+          ) : score != null ? (
+            <span title={t("startup.scoreTitle", { score })} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
+                {score}
+                <span style={{ fontSize: "0.6em", color: "var(--cr-ink-4)", fontWeight: 500 }}>/100</span>
+              </span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", maxWidth: "96px", textAlign: "right", lineHeight: 1.25 }}>{t("startup.scoreLabel")}</span>
+            </span>
+          ) : null}
         </div>
 
-        {/* Upgrade hint */}
+        {/* Upgrade hint: a link, so it keeps the link color. */}
         {!canSeeFinancials && investorTier !== undefined && (
           <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
             <Link
@@ -285,13 +239,13 @@ export function StartupCard({ startup, investorTier, isSaved, onSave }: StartupC
                 display:        "flex",
                 alignItems:     "center",
                 justifyContent: "center",
-                gap:            "5px",
+                gap:            "4px",
                 fontFamily:     "'DM Sans', sans-serif",
                 fontWeight:     400,
                 fontSize:       "11px",
                 color:          "var(--cr-copper)",
                 textDecoration: "none",
-                // Same reason as the bookmark: sit above the card-wide link.
+                // Same reason as the action rail: sit above the card-wide link.
                 position:       "relative",
                 zIndex:         2,
               }}

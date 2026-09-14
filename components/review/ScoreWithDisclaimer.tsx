@@ -89,10 +89,12 @@ export function scoreDimensionsFromListing(listing: {
 const UI = "'DM Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
 
+// Figures on the type scale (15/22/28); every caps label speaks the one
+// 11px caps voice -- the old 8.5-9.5px labels were below the contrast floor.
 const SIZES = {
-  sm: { figure: "17px", caption: "11px", label: "8.5px" },
-  md: { figure: "24px", caption: "11.5px", label: "9px" },
-  lg: { figure: "34px", caption: "12.5px", label: "9.5px" },
+  sm: { figure: "15px", caption: "11px", label: "11px" },
+  md: { figure: "22px", caption: "12px", label: "11px" },
+  lg: { figure: "28px", caption: "12px", label: "11px" },
 } as const;
 
 /**
@@ -153,8 +155,8 @@ export function ScoreWithDisclaimer({
   const dims = SIZES[size];
 
   const labelStyle: React.CSSProperties = {
-    fontFamily: UI, fontWeight: 500, fontSize: dims.label, letterSpacing: "0.1em",
-    textTransform: "uppercase", color: "var(--cr-ink-4)",
+    fontFamily: UI, fontWeight: 500, fontSize: dims.label, letterSpacing: "0.08em",
+    textTransform: "uppercase", color: "var(--cr-ink-3)",
   };
 
   return (

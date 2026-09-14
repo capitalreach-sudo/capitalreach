@@ -27,10 +27,11 @@ export default async function OnboardingIndex() {
           <span className="ruled-label">CapitalReach</span>
         </Link>
 
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+        {/* 6px: card radius. */}
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
           <div style={{ borderBottom: "1px solid var(--cr-rule)", marginBottom: "24px", paddingBottom: "16px" }}>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("auth.joiningAs")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)" }}>{t("auth.joinTitle")}</h1>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("auth.joinTitle")}</h1>
           </div>
 
           {/* Rule-separated rows with mono rails -- the ledger, not icon cards.
@@ -46,10 +47,10 @@ export default async function OnboardingIndex() {
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span style={{ flex: 1, minWidth: 0 }}>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", display: "block", marginBottom: "4px" }}>{label}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", display: "block", marginBottom: "4px" }}>{label}</span>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", display: "block" }}>{desc}</span>
                 </span>
-                <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "14px", flexShrink: 0 }}>→</span>
+                <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "13px", flexShrink: 0 }}>→</span>
               </Link>
             ))}
           </div>

@@ -129,12 +129,12 @@ export function GlobalSearch() {
           />
 
           {q.trim().length === 1 && (
-            <p style={{ padding: "14px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+            <p style={{ padding: "16px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
               {t("search.keepTyping")}
             </p>
           )}
           {results && !hasHits && q.trim().length >= 2 && (
-            <p style={{ padding: "14px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+            <p style={{ padding: "16px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
               {t("search.noResults")}
             </p>
           )}
@@ -143,7 +143,7 @@ export function GlobalSearch() {
             <div style={{ maxHeight: "320px", overflowY: "auto", paddingBottom: "4px" }}>
               {results!.startups.length > 0 && (
                 <>
-                  <p style={{ padding: "8px 12px 3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <p style={{ padding: "8px 12px 4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {t("search.startups")}
                   </p>
                   {results!.startups.map((s, idx) => (
@@ -162,7 +162,7 @@ export function GlobalSearch() {
               )}
               {results!.investors.length > 0 && (
                 <>
-                  <p style={{ padding: "8px 12px 3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <p style={{ padding: "8px 12px 4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {t("search.investors")}
                   </p>
                   {results!.investors.map((i, idx) => {

@@ -113,10 +113,10 @@ export function SiteAssistant() {
         <button onClick={() => setOpen(true)} aria-label={t("assistant.open")}
           style={{
             position: "fixed", right: "18px", bottom: "84px", zIndex: 45,
-            display: "inline-flex", alignItems: "center", gap: "7px",
+            display: "inline-flex", alignItems: "center", gap: "8px",
             background: "var(--cr-ink)", color: "var(--cr-paper)",
-            border: "none", borderRadius: "999px", padding: "10px 16px",
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12.5px",
+            border: "none", borderRadius: "999px", padding: "8px 16px",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px",
             cursor: "pointer", boxShadow: "0 6px 20px rgba(0,0,0,0.18)",
           }}>
           <Sparkles style={{ width: 14, height: 14 }} />
@@ -131,10 +131,10 @@ export function SiteAssistant() {
             width: "min(380px, calc(100vw - 36px))", maxHeight: "min(560px, calc(100vh - 140px))",
             display: "flex", flexDirection: "column",
             background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
-            borderRadius: "8px", boxShadow: "0 12px 40px rgba(0,0,0,0.20)", overflow: "hidden",
+            borderRadius: "6px", boxShadow: "0 12px 40px rgba(0,0,0,0.20)", overflow: "hidden",
           }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "11px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
-            <span style={{ display: "inline-flex", alignItems: "center", gap: 7, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
               <Sparkles style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
               {t("assistant.title")}
             </span>
@@ -144,26 +144,26 @@ export function SiteAssistant() {
             </button>
           </div>
 
-          <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "12px 14px", minHeight: 120 }}>
+          <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "12px 16px", minHeight: 120 }}>
             {locked ? (
               <div>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.55 }}>
                   {locked.message}
                 </p>
                 <a href={locked.href}
-                  style={{ display: "inline-block", marginTop: 10, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12.5px", color: "var(--cr-copper)" }}>
+                  style={{ display: "inline-block", marginTop: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)" }}>
                   {locked.href === "/pricing" ? t("assistant.seePlans") : t("nav.signIn")} →
                 </a>
               </div>
             ) : turns.length === 0 ? (
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
                   {t("assistant.intro")}
                 </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
                   {[t("assistant.suggest1"), t("assistant.suggest2"), t("assistant.suggest3")].map(q => (
                     <button key={q} onClick={() => setDraft(q)}
-                      style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "999px", padding: "5px 10px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11.5px", color: "var(--cr-ink-3)" }}>
+                      style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "999px", padding: "4px 12px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
                       {q}
                     </button>
                   ))}
@@ -172,7 +172,7 @@ export function SiteAssistant() {
             ) : (
               turns.map((turn, i) => (
                 <div key={i} style={{ marginBottom: 12 }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)", marginBottom: 3 }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", marginBottom: 4 }}>
                     {turn.role === "user" ? t("assistant.you") : t("assistant.title")}
                   </p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>
@@ -183,23 +183,23 @@ export function SiteAssistant() {
             )}
           </div>
 
-          <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "10px 12px" }}>
-            <div style={{ display: "flex", gap: 7, alignItems: "flex-end" }}>
+          <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "12px" }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "flex-end" }}>
               <textarea
                 value={draft}
                 onChange={e => setDraft(e.target.value.slice(0, 1000))}
                 onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void ask(); } }}
                 rows={1}
                 placeholder={t("assistant.placeholder")}
-                style={{ flex: 1, resize: "none", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", padding: "8px 10px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", outline: "none", maxHeight: 90 }}
+                style={{ flex: 1, resize: "none", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", outline: "none", maxHeight: 90 }}
               />
               <button onClick={ask} disabled={busy || !draft.trim()} aria-label={t("assistant.send")}
-                style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", border: "none", borderRadius: "6px", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: busy || !draft.trim() ? "not-allowed" : "pointer", opacity: busy || !draft.trim() ? 0.4 : 1, flexShrink: 0 }}>
+                style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", border: "none", borderRadius: "4px", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", cursor: busy || !draft.trim() ? "not-allowed" : "pointer", opacity: busy || !draft.trim() ? 0.4 : 1, flexShrink: 0 }}>
                 <ArrowUp style={{ width: 15, height: 15 }} />
               </button>
             </div>
             {/* Said once, permanently, under the box people type into. */}
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: 7, lineHeight: 1.45 }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 8, lineHeight: 1.45 }}>
               {t("assistant.disclaimer")}
             </p>
           </div>

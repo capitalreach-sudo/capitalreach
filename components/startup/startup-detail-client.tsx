@@ -6,7 +6,7 @@ import { countryLabel } from "@/lib/country-label";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { StartupCard } from "./startup-card";
-import { Globe, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, Bookmark, X, Handshake, CalendarClock, BadgeCheck, MoreHorizontal } from "lucide-react";
+import { Globe, Eye, FileText, MessageSquare, Brain, Lock, ExternalLink, ChevronLeft, ChevronDown, Bookmark, X, Handshake, CalendarClock, BadgeCheck, MoreHorizontal } from "lucide-react";
 import {
   formatCurrency, formatNumber, formatDate, formatPercent,
   STAGE_LABELS, getInitials,
@@ -45,6 +45,7 @@ import { postMoney, preMoney, impliedDilutionPct, ownershipForCheque, impliedPos
 import { TractionChart, type MetricPoint } from "@/components/startup/traction-chart";
 import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
+import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -103,7 +104,7 @@ type Tab = typeof TABS[number];
  * legible before a single label has been read.
  */
 const QUIET_ACTION: CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   minHeight: "36px", paddingInline: "16px",
   background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
@@ -115,15 +116,17 @@ const QUIET_ACTION: CSSProperties = {
 const MENU_ITEM: CSSProperties = {
   display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
   width: "100%", textAlign: "start",
-  background: "none", border: "none", borderRadius: "3px", cursor: "pointer",
+  background: "none", border: "none", borderRadius: "4px", cursor: "pointer",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
-  color: "var(--cr-ink-2)", padding: "8px 10px", textDecoration: "none",
+  color: "var(--cr-ink-2)", padding: "8px 12px", textDecoration: "none",
 };
 
 const MENU_LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px",
-  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em",
-  padding: "8px 10px 4px",
+  // The one caps voice: 11px/500/0.08em ink-3. Smaller, dimmer caps are the
+  // contrast failure the platform just outlawed.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em",
+  padding: "8px 12px 4px",
 };
 
 const MENU_RULE: CSSProperties = { display: "block", height: "1px", background: "var(--cr-rule)", margin: "4px 0" };
@@ -146,7 +149,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div>
       <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{title}</h3>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.75, maxWidth: "65ch" }}>{children}</p>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.75, maxWidth: "65ch" }}>{children}</p>
     </div>
   );
 }
@@ -154,36 +157,32 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 // ── Metric cell ───────────────────────────────────────────────────────────────
 
 /**
- * One column of the header's metrics strip. The cell carries only its right
- * and bottom hairlines; the strip container supplies the top and left, so the
- * four cells close into a single ruled block at any column count the
- * breakpoint chooses -- 2 up on a phone, 4 across on a desk. A tinted,
- * rounded, bordered tile per number would be four boxes inside the page's
- * own frame, which the house reads as card-in-card.
+ * One column of the page's stat strips: the stat idiom. A caps label over its
+ * figure, left-aligned, no boxed cells -- inside a section, space and
+ * alignment do the fencing; the only rule is the single hairline the strip
+ * container draws above itself. Interior hairlines between sibling figures
+ * were borders doing no work alignment wasn't already doing.
  */
 function MetricCell({ label, value, copper, termKey, note }: { label: string; value: string | null; copper?: boolean; termKey?: string; note?: string }) {
-  // Right-aligned throughout: a strip of cells reads as a ledger, and ledger
-  // figures sit on the column's right edge. The label speaks in the same
-  // 10px voice as every other metric label on the profile pages.
   return (
-    <div style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0, textAlign: "right" }}>
-      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>
+    <div style={{ minWidth: 0 }}>
+      {/* The one caps voice: 11px/500/0.08em ink-3. */}
+      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
         {label}
         {termKey && <InfoTip termKey={termKey} />}
       </div>
-      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: "20px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <div style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: "18px", color: copper ? "var(--cr-copper)" : value ? "var(--cr-ink)" : "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         {value ?? "—"}
       </div>
-      {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
+      {note && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{note}</div>}
     </div>
   );
 }
 
-/** The closed-strip container MetricCell is written for: it supplies the top
- *  and left hairlines the cells do not carry, so any grid of cells closes
- *  into one ruled block instead of floating half-bordered tiles. */
+/** The strip container MetricCell is written for: the single hairline above
+ *  the strip is the only rule it draws -- cells carry none of their own. */
 const METRIC_STRIP: CSSProperties = {
-  borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)",
+  borderTop: "1px solid var(--cr-rule)", paddingTop: "16px", gap: "16px 24px",
 };
 
 // ── Main ──────────────────────────────────────────────────────────────────────
@@ -238,19 +237,19 @@ function SharePickerPanel({ startupId, onBack, onDone }: { startupId: string; on
   }
 
   return (
-    <div style={{ width: "100%", padding: "6px", boxSizing: "border-box" }}>
+    <div style={{ width: "100%", padding: "8px", boxSizing: "border-box" }}>
       <button onClick={onBack}
         style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", padding: "2px 0 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-4)" }}>
         <ChevronLeft style={{ width: 13, height: 13 }} /> {t("common.back")}
       </button>
       <input autoFocus value={q} onChange={e => setQ(e.target.value)} placeholder={t("startupDetail.shareSearchPh")}
-        style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none" }} />
+        style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none" }} />
       <textarea value={shareNote} onChange={e => setShareNote(e.target.value.slice(0, 2000))} rows={2} placeholder={t("startupDetail.shareNotePh")}
-        style={{ width: "100%", boxSizing: "border-box", marginTop: "6px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "7px 10px", outline: "none", resize: "vertical" }} />
+        style={{ width: "100%", boxSizing: "border-box", marginTop: "8px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
       <div style={{ marginTop: hits.length ? "8px" : 0, display: "flex", flexDirection: "column" }}>
         {hits.map(h => (
           <button key={h.slug} disabled={busy} onClick={() => share(h)}
-            style={{ textAlign: "start", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", padding: "7px 6px", borderRadius: "3px" }}
+            style={{ textAlign: "start", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", padding: "8px", borderRadius: "4px" }}
             {...menuHover}>
             {h.name}
           </button>
@@ -329,7 +328,7 @@ function InlineWatchNote({ startupId }: { startupId: string }) {
       ) : (
         <div style={{ display: "flex", gap: "8px", alignItems: "flex-start", maxWidth: "480px" }}>
           <textarea value={note} onChange={e => setNote(e.target.value)} rows={2} maxLength={1000} placeholder={t("startupDetail.notePh")}
-            style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
+            style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
           <button disabled={busy}
             onClick={async () => {
               setBusy(true);
@@ -353,12 +352,12 @@ function DocRequestRow({ startupId }: { startupId: string }) {
   const [docType, setDocType] = useState("pitch_deck");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
-  if (sent) return <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)", marginTop: "14px" }}>{t("startupDetail.reqSent")}</p>;
+  if (sent) return <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-up)", marginTop: "16px" }}>{t("startupDetail.reqSent")}</p>;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "16px" }}>
       <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)" }}>{t("startupDetail.requestDoc")}:</span>
       <select value={docType} onChange={e => setDocType(e.target.value)}
-        style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink)", padding: "7px 10px", outline: "none" }}>
+        style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none" }}>
         <option value="pitch_deck">Pitch deck</option>
         <option value="financial_model">Financial model</option>
         <option value="cap_table">Cap table</option>
@@ -372,7 +371,7 @@ function DocRequestRow({ startupId }: { startupId: string }) {
           if (res.ok) { setSent(true); notify.success(t("startupDetail.reqSent")); }
           else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
-        style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "7px 12px", cursor: "pointer" }}>
+        style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 12px", cursor: "pointer" }}>
         {busy ? "…" : t("startupDetail.askSend")}
       </button>
     </div>
@@ -428,38 +427,38 @@ function ScorecardPanel({ startupId }: { startupId: string }) {
   if (!loaded) return null;
   return (
     <div style={{ marginTop: "8px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
         <h3 className="ruled-label">{t("scorecard.title")}</h3>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {total != null && (
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "16px", color: "var(--cr-copper)" }}>{total}<span style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>/100</span></span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>{total}<span style={{ fontSize: "11px", color: "var(--cr-ink-4)" }}>/100</span></span>
           )}
-          <button onClick={() => setOpen(o => !o)} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "5px 10px", cursor: "pointer" }}>
+          <button onClick={() => setOpen(o => !o)} style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 12px", cursor: "pointer" }}>
             {open ? t("common.close") : t("scorecard.score")}
           </button>
         </div>
       </div>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("scorecard.privateHint")}</p>
       {open && (
-        <div style={{ marginTop: "10px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 16px" }}>
+        <div style={{ marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px" }}>
           {SCORECARD_CRITERIA.map((k) => (
-            <div key={k} style={{ display: "grid", gridTemplateColumns: "1fr auto auto", alignItems: "center", gap: "10px", padding: "7px 0", borderBottom: "1px solid var(--cr-rule)" }}>
+            <div key={k} style={{ display: "grid", gridTemplateColumns: "1fr auto auto", alignItems: "center", gap: "8px", padding: "8px 0px", borderBottom: "1px solid var(--cr-rule)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t(CRITERION_LABEL_KEY[k])}</span>
               <div style={{ display: "inline-flex", gap: "4px" }} role="group" aria-label={t(CRITERION_LABEL_KEY[k])}>
                 {[1, 2, 3, 4, 5].map((n) => (
                   <button key={n} onClick={() => setScore(k, n)} aria-pressed={(scores[k] ?? 0) >= n} aria-label={`${t(CRITERION_LABEL_KEY[k])} ${n}`}
-                    style={{ width: 16, height: 16, borderRadius: "3px", padding: 0, cursor: "pointer", border: `1px solid ${(scores[k] ?? 0) >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: (scores[k] ?? 0) >= n ? "var(--cr-copper)" : "transparent" }} />
+                    style={{ width: 16, height: 16, borderRadius: "4px", padding: 0, cursor: "pointer", border: `1px solid ${(scores[k] ?? 0) >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: (scores[k] ?? 0) >= n ? "var(--cr-copper)" : "transparent" }} />
                 ))}
               </div>
               <select value={weights[k] ?? 1} onChange={(e) => setWeight(k, Number(e.target.value))} aria-label={t("scorecard.weight")} title={t("scorecard.weight")}
-                style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", padding: "2px 4px", cursor: "pointer" }}>
+                style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)", padding: "2px 4px", cursor: "pointer" }}>
                 {[0, 1, 2, 3].map((w) => <option key={w} value={w}>×{w}</option>)}
               </select>
             </div>
           ))}
           <textarea value={note} onChange={(e) => { setNote(e.target.value.slice(0, 2000)); persist(scores, weights, e.target.value.slice(0, 2000)); }}
             rows={2} placeholder={t("scorecard.notePh")}
-            style={{ width: "100%", boxSizing: "border-box", marginTop: "10px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 10px", outline: "none", resize: "vertical" }} />
+            style={{ width: "100%", boxSizing: "border-box", marginTop: "8px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
         </div>
       )}
     </div>
@@ -476,7 +475,7 @@ function QAAskBox({ startupId }: { startupId: string }) {
   return (
     <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
       <textarea value={q} onChange={e => setQ(e.target.value)} rows={2} maxLength={1000} placeholder={t("startupDetail.questionPh")}
-        style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+        style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px 12px", outline: "none", resize: "vertical" }} />
       <button disabled={busy || q.trim().length < 10}
         onClick={async () => {
           setBusy(true);
@@ -485,7 +484,7 @@ function QAAskBox({ startupId }: { startupId: string }) {
           if (res.ok) { setSent(true); notify.success(t("startupDetail.questionSent")); }
           else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
-        style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: q.trim().length < 10 ? 0.5 : 1, whiteSpace: "nowrap" }}>
+        style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 16px", cursor: "pointer", opacity: q.trim().length < 10 ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.askSend")}
       </button>
     </div>
@@ -504,7 +503,7 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
     <div>
     <div style={{ display: "flex", gap: "8px", alignItems: "flex-start" }}>
       <textarea value={a} onChange={e => setA(e.target.value)} rows={2} maxLength={3000} placeholder={t("startupDetail.answerPh")}
-        style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+        style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px 12px", outline: "none", resize: "vertical" }} />
       <button disabled={busy || !a.trim()}
         onClick={async () => {
           setBusy(true);
@@ -513,13 +512,13 @@ function QAAnswerBox({ questionId }: { questionId: string }) {
           if (res.ok) { setDone(true); notify.success(t("startupDetail.answered")); }
           else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
-        style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "9px 14px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
+        style={{ border: "none", background: "var(--cr-copper)", color: "var(--cr-on-accent)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "8px 16px", cursor: "pointer", opacity: !a.trim() ? 0.5 : 1, whiteSpace: "nowrap" }}>
         {busy ? "…" : t("startupDetail.answerSend")}
       </button>
     </div>
     {/* B20: private answers — the asker and you only. Public is the default,
         because answered questions are the listing's living FAQ. */}
-    <label style={{ display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "6px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+    <label style={{ display: "inline-flex", alignItems: "center", gap: "8px", marginTop: "8px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>
       <input type="checkbox" checked={priv} onChange={e => setPriv(e.target.checked)} style={{ accentColor: "var(--cr-copper)" }} />
       {t("startupDetail.answerPrivately")}
     </label>
@@ -569,6 +568,9 @@ export function StartupDetailClient({
   // Every figure on this page is quoted in the round's own currency: a €68k
   // round shown in USD reads as a different round than the one being raised.
   const roundCurrency = (startup as { currency?: string | null }).currency ?? DEFAULT_CURRENCY;
+  // The score's five-line "Provided" checklist collapses to one summary line;
+  // this discloses the full breakdown for whoever wants the itemization.
+  const [dimsOpen, setDimsOpen]                 = useState(false);
   const [aiReport, setAiReport]                 = useState<string | null>(null);
   const [generatingReport, setGeneratingReport] = useState(false);
   const [ndaModalOpen, setNdaModalOpen]         = useState(false);
@@ -720,8 +722,8 @@ export function StartupDetailClient({
           view -- the server stripped document URLs and zeroed the tier, so
           this is the truth, not a costume. */}
       {previewing && (
-        <div role="status" style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap", padding: "10px 20px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px" }}>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: "7px" }}>
+        <div role="status" style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", flexWrap: "wrap", padding: "12px 24px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
             <Eye style={{ width: 14, height: 14, color: "var(--cr-copper-l)" }} />
             {t("preview.banner")}
           </span>
@@ -753,7 +755,7 @@ export function StartupDetailClient({
 
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
             {/* Top row: logo + info + actions */}
-            <div style={{ display: "flex", alignItems: "flex-start", gap: "20px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "24px", flexWrap: "wrap" }}>
 
               {/* Logo */}
               <EntityLogo
@@ -765,7 +767,7 @@ export function StartupDetailClient({
 
               {/* Name + tagline */}
               <div style={{ flex: 1, minWidth: "200px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
                   {/* The one loudest element on the page. Everything else in
                       the hero sits at least a full step below it. */}
                   <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 4.5vw, 42px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", lineHeight: 1.1 }}>
@@ -807,17 +809,20 @@ export function StartupDetailClient({
                     );
                   })()}
                   {(startup as { is_demo?: boolean }).is_demo && <DemoBadge />}
+                  {/* Ink, not copper: a tier marker is decoration, and the
+                      accent budget on this page is spent on the offer and the
+                      raise figure. Caps speak in the one 11px voice. */}
                   {startup.subscription_tier === "growth" && (
-                    <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                    <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                       Featured
                     </span>
                   )}
                   {roundState !== "open" && (
                     <span style={{
-                      fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.06em",
-                      background: roundState === "oversubscribed" ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-                      border: `1px solid ${roundState === "oversubscribed" ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`,
-                      color: roundState === "oversubscribed" ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                      fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.08em",
+                      background: "var(--cr-paper-3)",
+                      border: "1px solid var(--cr-rule-dark)",
+                      color: "var(--cr-ink-3)",
                     }}>
                       {t(`startupDetail.round_${roundState}`)}
                     </span>
@@ -838,12 +843,14 @@ export function StartupDetailClient({
                     <Link
                       href="/deals"
                       style={{
-                        display: "inline-flex", alignItems: "center", gap: "5px",
+                        display: "inline-flex", alignItems: "center", gap: "4px",
                         background: viewerDeal.status === "closed" ? "var(--cr-up-bg, var(--cr-copper-bg))" : "var(--cr-copper-bg)",
                         border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)",
-                        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px",
-                        borderRadius: "3px", padding: "3px 9px",
-                        textTransform: "uppercase", letterSpacing: "0.05em", textDecoration: "none",
+                        // A link keeps the link color; the caps still speak in
+                        // the one 11px voice.
+                        fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+                        borderRadius: "4px", padding: "3px 8px",
+                        textTransform: "uppercase", letterSpacing: "0.08em", textDecoration: "none",
                       }}
                     >
                       <Handshake style={{ width: 11, height: 11 }} />
@@ -855,10 +862,11 @@ export function StartupDetailClient({
                         : t("deals.colPassed")}
                     </Link>
                   )}
-                  <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                  {/* Sector and stage in ink: attributes, not highlights. */}
+                  <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {startup.industry}
                   </span>
-                  <span style={{ background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+                  <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " ")}
                   </span>
                   {/* Same model as the browse card (lib/round-close), so the
@@ -867,7 +875,10 @@ export function StartupDetailClient({
                     const closing = roundCloseState(startup.round_close_date);
                     if (!closing) return null;
                     return (
-                      <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "3px 9px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      // The deadline keeps copper TEXT (it is actionable
+                      // urgency about the round), but drops the tinted fill:
+                      // the accent moment on this page is the offer.
+                      <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                         {closing.kind === "closingSoon" ? t("startup.closingSoon") : t("startup.closesIn", { count: closing.days })}
                       </span>
                     );
@@ -894,11 +905,8 @@ export function StartupDetailClient({
                     seats it as its own block: the caption cannot detach from
                     the figure, and the figure cannot read as one more chip. */}
                 <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
-                  <ScoreWithDisclaimer
-                    score={score}
-                    scoredAt={startup.scored_at}
-                    updatedAt={startup.updated_at}
-                    dimensions={canFinancials ? scoreDimensionsFromListing({
+                  {(() => {
+                    const dimStates = canFinancials ? scoreDimensionsFromListing({
                       problem: startup.problem,
                       solution: startup.solution,
                       market: startup.market,
@@ -907,26 +915,50 @@ export function StartupDetailClient({
                       arr: startup.arr,
                       user_count: startup.user_count,
                       founderCount: startup.founders?.length ?? null,
-                    }) : undefined}
-                  />
+                    }) : undefined;
+                    // Five "Provided" rows collapse to one line with a
+                    // disclosure: the count answers the common question, the
+                    // toggle keeps the itemization one tap away.
+                    const provided = dimStates ? Object.values(dimStates).filter(v => v === true).length : 0;
+                    const dimTotal = dimStates ? Object.keys(dimStates).length : 0;
+                    const summaryRaw = t("listingScore.providedSummary", { n: provided, total: dimTotal });
+                    const summary = summaryRaw === "listingScore.providedSummary" ? `${provided} of ${dimTotal} provided` : summaryRaw;
+                    return (
+                      <>
+                        <ScoreWithDisclaimer
+                          score={score}
+                          scoredAt={startup.scored_at}
+                          updatedAt={startup.updated_at}
+                          dimensions={dimsOpen ? dimStates : undefined}
+                        />
+                        {dimStates && (
+                          <button onClick={() => setDimsOpen(o => !o)} aria-expanded={dimsOpen}
+                            style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", padding: 0, marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                            {summary}
+                            <ChevronDown style={{ width: 12, height: 12, transform: dimsOpen ? "rotate(180deg)" : "none", transition: "transform 120ms ease" }} />
+                          </button>
+                        )}
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 
               {/* New profile fields: looking_for, social_proof, languages */}
               {(startup.looking_for?.length || startup.social_proof?.length || startup.languages?.length) && (
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "4px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "4px" }}>
                   {(startup.looking_for as string[] | null)?.map((item: string) => (
-                    <span key={item} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
+                    <span key={item} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px" }}>
                       {item}
                     </span>
                   ))}
                   {(startup.social_proof as Array<{ type: string; value: string }> | null)?.map((sp, i) => (
-                    <span key={i} style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
+                    <span key={i} style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px" }}>
                       {sp.value}
                     </span>
                   ))}
                   {(startup.deck_language && startup.deck_language !== "English") && (
-                    <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", borderRadius: "3px", padding: "3px 8px" }}>
+                    <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", borderRadius: "4px", padding: "3px 8px" }}>
                       Deck: {startup.deck_language}
                     </span>
                   )}
@@ -1094,7 +1126,7 @@ export function StartupDetailClient({
                 // border doing no work inside the page's own frame.
                 <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
                   <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: pct !== null ? "8px" : 0 }}>
-                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: "var(--cr-copper)" }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
                       {momentum.committedAmount > 0 ? formatMoney(momentum.committedAmount, momentum.currency, { compact: true }) : "—"}
                       {target && <span style={{ color: "var(--cr-ink-4)", fontWeight: 400 }}> / {formatMoney(target, momentum.currency, { compact: true })}</span>}
                     </span>
@@ -1105,7 +1137,7 @@ export function StartupDetailClient({
                     </span>
                   </div>
                   {pct !== null && (
-                    <div style={{ height: "5px", background: "var(--cr-paper-4)", borderRadius: "3px", overflow: "hidden" }}>
+                    <div style={{ height: "5px", background: "var(--cr-paper-4)", borderRadius: "4px", overflow: "hidden" }}>
                       <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-copper)" }} />
                     </div>
                   )}
@@ -1113,8 +1145,9 @@ export function StartupDetailClient({
               );
             })()}
 
-            {/* Key metrics strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4" style={{ borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)" }}>
+            {/* Key metrics strip: the stat idiom -- one hairline above, then
+                caps labels over left-aligned figures, no boxed cells. */}
+            <div className="grid grid-cols-2 md:grid-cols-4" style={METRIC_STRIP}>
               <MetricCell label={t("startupDetail.raising")}  value={safeFormatCurrencyAmount(startup.funding_target)} copper />
               <MetricCell label={t("startupDetail.equity")}   value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
               <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : t("startupDetail.minCheckNone")} />
@@ -1132,14 +1165,13 @@ export function StartupDetailClient({
               if (startup.company_type) facts.push({ label: t("startupDetail.companyType"), value: startup.company_type });
               if (startup.previous_funding) facts.push({ label: t("startupDetail.previousFunding"), value: formatCurrency(startup.previous_funding, true) });
               if (facts.length === 0) return null;
-              // The same closed ruled strip as the figures above it, not a
-              // loose wrap of label/value pairs: facts and figures read as
-              // two rows of one ledger, right-aligned on the same edge.
+              // The same stat idiom as the figures above it: one hairline,
+              // caps label over value, left-aligned, no boxed cells.
               return (
-                <div className="grid grid-cols-2 md:grid-cols-3" style={{ marginTop: "16px", borderTop: "1px solid var(--cr-rule)", borderLeft: "1px solid var(--cr-rule)" }}>
+                <div className="grid grid-cols-2 md:grid-cols-3" style={{ marginTop: "16px", ...METRIC_STRIP }}>
                   {facts.map((f) => (
-                    <div key={f.label} style={{ borderRight: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "12px 16px", minWidth: 0, textAlign: "right" }}>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "6px" }}>{f.label}</div>
+                    <div key={f.label} style={{ minWidth: 0 }}>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{f.label}</div>
                       <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)" }}>{f.value}</div>
                     </div>
                   ))}
@@ -1155,32 +1187,32 @@ export function StartupDetailClient({
 
         {/* AI report CTA */}
         {canAi && !aiReport && (
-          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px 20px", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+          <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "16px 24px", marginBottom: "24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
               <Brain style={{ width: 20, height: 20, color: "var(--cr-copper)", flexShrink: 0 }} />
               <div>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("startupDetail.aiDiligenceTitle")}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("startupDetail.aiDiligenceTitle")}</p>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("ai.diligence.generate")}</p>
               </div>
             </div>
             <button onClick={generateAiReport} disabled={generatingReport}
-              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "8px 20px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
+              style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: "pointer", whiteSpace: "nowrap", opacity: generatingReport ? 0.6 : 1 }}>
               {generatingReport ? t("startupDetail.generating") : t("startupDetail.generateReport")}
             </button>
             {/* C29: your own questions, answered in their own section. The
                 report reads the data-room files you are entitled to open. */}
             <textarea value={ddQuestions} onChange={(e) => setDdQuestions(e.target.value.slice(0, 1500))} rows={2}
               placeholder={t("startupDetail.ddQuestionsPh")}
-              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "9px 12px", outline: "none", resize: "vertical" }} />
+              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", resize: "vertical" }} />
           </div>
         )}
 
         {aiReport && (
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "24px", marginBottom: "24px" }}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "24px", marginBottom: "24px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
               <Brain style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("startupDetail.aiDiligenceTitle")}</h3>
-              <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 7px", textTransform: "uppercase", letterSpacing: "0.05em" }}>Claude</span>
+              <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>Claude</span>
             </div>
             <AiReportDisclaimer />
             {/* What the model could actually read. A report that silently
@@ -1193,30 +1225,23 @@ export function StartupDetailClient({
                 {ddSources.skipped.length > 0 && ` · ${t("startupDetail.ddSkipped", { docs: ddSources.skipped.join(", ") })}`}
               </p>
             )}
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{aiReport}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{aiReport}</p>
           </div>
         )}
 
-        {/* ── Custom tab bar ── */}
-        {/* Five tabs at 13px do not fit 375px; without its own scroll the
-            strip widened the PAGE, and the whole listing scrolled sideways.
-            The strip scrolls; the page does not — same fix as every other
-            tab bar on the site. */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "32px", display: "flex", gap: "0", overflowX: "auto", whiteSpace: "nowrap" }}>
-          {TABS.map((tab) => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              style={{
-                background: "transparent", border: "none", cursor: "pointer",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === tab ? 600 : 300,
-                fontSize: "13px", color: activeTab === tab ? "var(--cr-ink)" : "var(--cr-ink-4)",
-                padding: "10px 18px 9px", textTransform: "capitalize",
-                borderBottom: activeTab === tab ? "2px solid var(--cr-copper)" : "2px solid transparent",
-                transition: "color 100ms ease, border-color 100ms ease",
-              }}>
-              {TAB_LABELS[tab]}
-            </button>
-          ))}
-        </div>
+        {/* ── Tab bar ── */}
+        {/* The house TabStrip: caps labels on one hairline, roving focus,
+            wrapping instead of scrolling on a phone. */}
+        <TabStrip
+          tabs={TABS.map((tab) => ({ key: tab, label: TAB_LABELS[tab] }))}
+          active={activeTab}
+          onSelect={setActiveTab}
+          idBase="startup-detail"
+          label={startup.name}
+          style={{ marginBottom: "32px" }}
+        />
+
+        <TabPanel idBase="startup-detail" active={activeTab}>
 
         {/* ── Tab: Overview ── */}
         {activeTab === "overview" && (
@@ -1254,7 +1279,7 @@ export function StartupDetailClient({
                 <div>
                   {startup.competitors_json.filter((c) => c?.name).map((c, i) => (
                     <div key={i} style={{ padding: i > 0 ? "12px 0" : "0 0 12px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
-                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: c.differentiator ? "4px" : 0 }}>{c.name}</div>
+                      <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: c.differentiator ? "4px" : 0 }}>{c.name}</div>
                       {c.differentiator && <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "65ch" }}>{c.differentiator}</div>}
                     </div>
                   ))}
@@ -1272,14 +1297,14 @@ export function StartupDetailClient({
                     .map((m, idx, arr) => (
                       <div key={m.id} style={{ display: "flex", gap: "16px" }}>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "1px", background: "var(--cr-copper)", transform: "rotate(45deg)", marginTop: "5px", flexShrink: 0 }} />
+                          <div style={{ width: 8, height: 8, borderRadius: "1px", background: "var(--cr-ink-3)", transform: "rotate(45deg)", marginTop: "4px", flexShrink: 0 }} />
                           {idx < arr.length - 1 && (
                             <div style={{ width: 1, flex: 1, background: "var(--cr-rule-dark)", margin: "4px 0" }} />
                           )}
                         </div>
-                        <div style={{ paddingBottom: "20px" }}>
+                        <div style={{ paddingBottom: "16px" }}>
                           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>{formatDate(m.date)}</p>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>{m.description}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>{m.description}</p>
                         </div>
                       </div>
                     ))}
@@ -1313,13 +1338,13 @@ export function StartupDetailClient({
               <div>
                 <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.productDemo")}</div>
                 {canFinancials ? (
-                  <div style={{ aspectRatio: "16/9", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
+                  <div style={{ aspectRatio: "16/9", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
                     <TrackedVideo startupId={startup.id} url={startup.demo_video_url} />
                   </div>
                 ) : (
-                  <div style={{ aspectRatio: "16/9", borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px dashed var(--cr-paper-4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>
+                  <div style={{ aspectRatio: "16/9", borderRadius: "6px", background: "var(--cr-paper-3)", border: "1px dashed var(--cr-paper-4)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "12px" }}>
                     <Lock style={{ width: 24, height: 24, color: "var(--cr-ink-4)" }} />
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("startupDetail.upgradeWatchDemo")}</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>{t("startupDetail.upgradeWatchDemo")}</p>
                     <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewPlans")} →</Link>
                   </div>
                 )}
@@ -1334,9 +1359,9 @@ export function StartupDetailClient({
                 <div>
                   {updates.map((u, i) => (
                     <div key={u.id} style={{ padding: i > 0 ? "16px 0" : "0 0 16px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
-                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "10px", marginBottom: "6px" }}>
-                        <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{u.title}</h4>
-                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "8px", marginBottom: "8px" }}>
+                        <h4 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{u.title}</h4>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                           {new Date(u.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                         </span>
                       </div>
@@ -1370,7 +1395,7 @@ export function StartupDetailClient({
                       {q.answer ? (
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           <span style={{ color: "var(--cr-up)", fontWeight: 700 }}>A&nbsp;</span>{q.answer}
-                          {q.is_private && <span style={{ marginLeft: 8, fontSize: "10px", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("startupDetail.privateAnswer")}</span>}
+                          {q.is_private && <span style={{ marginLeft: 8, fontSize: "11px", fontWeight: 500, color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "1px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("startupDetail.privateAnswer")}</span>}
                         </p>
                       ) : isOwner ? (
                         <QAAnswerBox questionId={q.id} />
@@ -1386,14 +1411,14 @@ export function StartupDetailClient({
 
             {/* C33: co-investors who chose to be visible. Investor-only. */}
             {investorId && coInvestors.length > 0 && (
-              <div style={{ marginTop: "8px", padding: "12px 14px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "6px" }}>
+              <div style={{ marginTop: "8px", padding: "12px 16px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "8px" }}>
                   {t("coInvestors.title", { count: coInvestors.length })}
                 </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                   {coInvestors.map((c) => (
                     <Link key={c.slug} href={`/investors/${c.slug}`}
-                      style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "4px 10px", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-2)" }}>
+                      style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "4px 12px", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-2)" }}>
                       {c.name || t("deals.investorFallback")}
                     </Link>
                   ))}
@@ -1484,9 +1509,9 @@ export function StartupDetailClient({
           >
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
               {startup.founders.slice(0, 2).map((f) => (
-                <div key={f.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-                  <div style={{ width: 44, height: 44, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", marginBottom: "14px" }} />
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>Founder name</p>
+                <div key={f.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px" }}>
+                  <div style={{ width: 44, height: 44, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", marginBottom: "16px" }} />
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>Founder name</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>Role</p>
                 </div>
               ))}
@@ -1495,7 +1520,7 @@ export function StartupDetailClient({
         )}
 
         {activeTab === "team" && canTeam && !identityRevealed && startup.founders && startup.founders.length > 0 && (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", marginBottom: "14px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", marginBottom: "16px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px" }}>
             <Lock style={{ width: 14, height: 14, color: "var(--cr-copper)", flexShrink: 0 }} />
             {/* A sentence, not a third entry point. The offer lives in one
                 place on this page, and a second copy of it here could not
@@ -1509,14 +1534,14 @@ export function StartupDetailClient({
           startup.founders && startup.founders.length > 0 ? (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
               {startup.founders.map((f) => (
-                <div key={f.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "14px" }}>
+                <div key={f.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
                     <div style={{ width: 44, height: 44, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, overflow: "hidden" }}>
                       {f.photo_url ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={f.photo_url} alt={f.name} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       ) : (
-                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "var(--cr-copper)" }}>{getInitials(f.name)}</span>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>{getInitials(f.name)}</span>
                       )}
                     </div>
                     <div>
@@ -1525,9 +1550,9 @@ export function StartupDetailClient({
                     </div>
                   </div>
                   {f.bio && (
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "14px" }}>{f.bio}</p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "16px" }}>{f.bio}</p>
                   )}
-                  <div style={{ display: "flex", gap: "14px" }}>
+                  <div style={{ display: "flex", gap: "16px" }}>
                     {f.linkedin_url && (
                       <a href={f.linkedin_url} target="_blank" rel="noopener noreferrer"
                         style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>LinkedIn</a>
@@ -1542,7 +1567,7 @@ export function StartupDetailClient({
               ))}
             </div>
           ) : (
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noTeamInfo")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noTeamInfo")}</p>
           )
         )}
 
@@ -1596,17 +1621,17 @@ export function StartupDetailClient({
                 the teaser is for viewers with nothing openable at all. */}
             {!investorId && startup.documents && startup.documents.length > 0
               && !startup.documents.some((d) => !d.locked) && (
-              <div style={{ position: "relative", borderRadius: "4px", overflow: "hidden", border: "1px solid var(--cr-rule-dark)", marginBottom: "16px", minHeight: "120px" }}>
+              <div style={{ position: "relative", borderRadius: "6px", overflow: "hidden", border: "1px solid var(--cr-rule-dark)", marginBottom: "16px", minHeight: "120px" }}>
                 <div style={{ position: "absolute", inset: 0, filter: "blur(4px)", background: "var(--cr-paper-3)", display: "flex", alignItems: "center", padding: "24px" }}>
                   <div style={{ width: "100%" }}>
                     {[75, 55, 40].map((w, i) => (
-                      <div key={i} className="skeleton" style={{ height: 12, width: `${w}%`, borderRadius: "2px", marginBottom: "10px" }} />
+                      <div key={i} className="skeleton" style={{ height: 12, width: `${w}%`, borderRadius: "2px", marginBottom: "8px" }} />
                     ))}
                   </div>
                 </div>
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, color-mix(in srgb, var(--cr-paper) 95%, transparent) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "20px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("startupDetail.signUpPitchDeck")}</p>
-                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "9px 22px", borderRadius: "4px", textDecoration: "none" }}>
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, color-mix(in srgb, var(--cr-paper) 95%, transparent) 40%, transparent)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", paddingBottom: "16px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("startupDetail.signUpPitchDeck")}</p>
+                  <Link href="/auth/signup" style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "8px 24px", borderRadius: "4px", textDecoration: "none" }}>
                     {t("startupDetail.createFreeAccount")} →
                   </Link>
                 </div>
@@ -1614,18 +1639,18 @@ export function StartupDetailClient({
             )}
 
             {startup.documents && startup.documents.length > 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                 {startup.documents.map((doc) => {
                   const requiresNda     = doc.requires_nda && startup.require_nda && !ndaSigned;
 
                   return (
-                    <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "14px 18px" }}>
+                    <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "12px 16px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                        <div style={{ width: 36, height: 36, borderRadius: "3px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <div style={{ width: 36, height: 36, borderRadius: "4px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                           <FileText style={{ width: 16, height: 16, color: "var(--cr-copper)" }} />
                         </div>
                         <div>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{doc.label}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{doc.label}</p>
                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>{doc.type.replace(/_/g, " ")}</p>
                         </div>
                       </div>
@@ -1635,23 +1660,23 @@ export function StartupDetailClient({
                           fall through to the sign-in hint below. */}
                       {requiresNda && investorId ? (
                         <button onClick={() => setNdaModalOpen(true)}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "7px 14px", cursor: "pointer" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: "4px", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer" }}>
                           <Lock style={{ width: 11, height: 11 }} />
                           {t("startupDetail.signNdaAccess")}
                         </button>
                       ) : !doc.file_url ? (
-                        <span style={{ display: "inline-flex", alignItems: "center", gap: "5px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "7px 4px" }}>
+                        <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 4px" }}>
                           <Lock style={{ width: 11, height: 11 }} /> {t("startupDetail.signInToView")}
                         </span>
                       ) : (
                         (doc.is_pdf ?? /\.pdf(\?|$)/i.test(doc.file_url)) ? (
                           <button onClick={() => { trackDoc(doc.id); setViewerDoc({ url: doc.file_url, label: doc.label }); }}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "7px 14px", cursor: "pointer" }}>
+                            style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: "pointer" }}>
                             <Eye style={{ width: 11, height: 11 }} /> {t("common.view")}
                           </button>
                         ) : (
                         <a href={doc.file_url} target="_blank" rel="noopener noreferrer" onClick={() => trackDoc(doc.id)}
-                          style={{ display: "inline-flex", alignItems: "center", gap: "5px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "7px 14px", textDecoration: "none" }}>
+                          style={{ display: "inline-flex", alignItems: "center", gap: "4px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "8px 16px", textDecoration: "none" }}>
                           <ExternalLink style={{ width: 11, height: 11 }} /> {t("common.view")}
                         </a>
                         )
@@ -1661,32 +1686,10 @@ export function StartupDetailClient({
                 })}
               </div>
             ) : (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noDocumentsUploaded")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noDocumentsUploaded")}</p>
             )}
             {investorId && !viewerSuspended && <DocRequestRow startupId={startup.id} />}
           </>
-        )}
-
-        {viewerDoc && (
-          <div role="dialog" aria-modal="true" aria-label={viewerDoc.label} style={{ position: "fixed", inset: 0, zIndex: 80 }}>
-            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setViewerDoc(null)} />
-            <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", width: "min(94vw, 900px)", height: "92vh", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 16px", borderBottom: "1px solid var(--cr-rule-dark)", flexShrink: 0 }}>
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{viewerDoc.label}</span>
-                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-                  <a href={viewerDoc.url} target="_blank" rel="noopener noreferrer"
-                    style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
-                    {t("startupDetail.openNewTab")}
-                  </a>
-                  <button onClick={() => setViewerDoc(null)} aria-label={t("nav.closeMenu")}
-                    style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex" }}>
-                    <X style={{ width: 16, height: 16 }} />
-                  </button>
-                </div>
-              </div>
-              <iframe src={viewerDoc.url} title={viewerDoc.label} style={{ flex: 1, border: "none", width: "100%" }} />
-            </div>
-          </div>
         )}
 
         {/* ── Tab: Traction ── */}
@@ -1717,11 +1720,38 @@ export function StartupDetailClient({
           )
         )}
 
+        </TabPanel>
+
+        {/* The PDF viewer sits outside the tab panel: the panel remounts on
+            every tab swap, and an open reader should survive a stray tap on
+            another tab. */}
+        {viewerDoc && (
+          <div role="dialog" aria-modal="true" aria-label={viewerDoc.label} style={{ position: "fixed", inset: 0, zIndex: 80 }}>
+            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setViewerDoc(null)} />
+            <div style={{ position: "absolute", top: "4vh", left: "50%", transform: "translateX(-50%)", width: "min(94vw, 900px)", height: "92vh", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule-dark)", flexShrink: 0 }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{viewerDoc.label}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <a href={viewerDoc.url} target="_blank" rel="noopener noreferrer"
+                    style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                    {t("startupDetail.openNewTab")}
+                  </a>
+                  <button onClick={() => setViewerDoc(null)} aria-label={t("nav.closeMenu")}
+                    style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex" }}>
+                    <X style={{ width: 16, height: 16 }} />
+                  </button>
+                </div>
+              </div>
+              <iframe src={viewerDoc.url} title={viewerDoc.label} style={{ flex: 1, border: "none", width: "100%" }} />
+            </div>
+          </div>
+        )}
+
         {/* ── Related startups ── */}
         {relatedStartups.length > 0 && (
           <section style={{ marginTop: "64px", paddingTop: "32px", borderTop: "1px solid var(--cr-rule)" }}>
-            <div className="ruled-label" style={{ marginBottom: "20px" }}>{t("startupDetail.similarStartups")}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "14px" }}>
+            <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("startupDetail.similarStartups")}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "16px" }}>
               {relatedStartups.map((s) => (
                 <StartupCard key={s.id} startup={s} investorTier={relatedTier} />
               ))}
@@ -1768,8 +1798,8 @@ export function StartupDetailClient({
           aria-pressed={isSaved}
           style={{
             flex: 1, minWidth: 0,
-            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
-            height: "44px", paddingInline: "14px",
+            display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
+            height: "44px", paddingInline: "16px",
             border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
             color: isSaved ? "var(--cr-copper)" : "var(--cr-ink-3)", cursor: "pointer",
@@ -1784,10 +1814,10 @@ export function StartupDetailClient({
         {viewerDeal && (
           <Link href={`/deals?deal=${viewerDeal.id}`}
             style={{
-              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+              flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
               height: "44px", minWidth: 0, textDecoration: "none",
               background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)", borderRadius: "4px",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-on-accent)",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)",
             }}
           >
             <Handshake style={{ width: 15, height: 15, flexShrink: 0 }} />
@@ -1804,8 +1834,8 @@ export function StartupDetailClient({
         <div role="dialog" aria-modal="true" onClick={() => setBookingOpen(false)}
           style={{ position: "fixed", inset: 0, zIndex: 90, background: "var(--cr-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 8, width: "min(920px, 96vw)", height: "min(700px, 90vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderBottom: "1px solid var(--cr-rule)" }}>
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, width: "min(920px, 96vw)", height: "min(700px, 90vh)", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)" }}>{t("startupDetail.bookCall")}</span>
               <span style={{ display: "inline-flex", gap: 12, alignItems: "center" }}>
                 <a href={startup.booking_url} target="_blank" rel="noopener noreferrer"

@@ -29,8 +29,9 @@ export async function ListingLocked({ startup }: {
   const t = await getTranslator(getLocale());
 
   const LABEL: React.CSSProperties = {
-    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-    textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+    // The one caps voice: 11px/500/0.08em ink-3.
+    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+    textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
   };
   const VALUE: React.CSSProperties = {
     fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px",
@@ -57,7 +58,7 @@ export async function ListingLocked({ startup }: {
         </h1>
         {startup.tagline && (
           <p style={{
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px",
             color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "56ch", marginBottom: "32px",
           }}>
             {startup.tagline}
@@ -89,7 +90,7 @@ export async function ListingLocked({ startup }: {
             {t("locked.title")}
           </p>
           <p style={{
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14.5px",
+            fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px",
             color: "var(--cr-ink-3)", lineHeight: 1.7, maxWidth: "58ch", marginBottom: "32px",
           }}>
             {t("locked.body")}
@@ -97,9 +98,9 @@ export async function ListingLocked({ startup }: {
           <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", alignItems: "center" }}>
             <Link href="/pricing" className="btn-copper-shimmer" style={{
               display: "inline-flex", alignItems: "center", justifyContent: "center",
-              minHeight: "40px", padding: "0 28px", borderRadius: "999px",
+              minHeight: "40px", padding: "0px 24px", borderRadius: "999px",
               background: "var(--cr-copper)", color: "var(--cr-on-accent)",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
               textDecoration: "none",
             }}>
               {t("locked.cta")}

@@ -99,7 +99,7 @@ export function Footer() {
             <p style={{
               fontFamily: "'DM Sans', sans-serif",
               fontWeight: 300,
-              fontSize:   "14px",
+              fontSize:   "15px",
               color:      "var(--cr-ink-3)",
               lineHeight: 1.6,
               marginTop:  "12px",
@@ -131,7 +131,7 @@ export function Footer() {
                       style={{
                         fontFamily:     "'DM Sans', sans-serif",
                         fontWeight:     300,
-                        fontSize:       "14px",
+                        fontSize:       "13px",
                         color:          "var(--cr-ink-3)",
                         textDecoration: "none",
                         display:        "block",

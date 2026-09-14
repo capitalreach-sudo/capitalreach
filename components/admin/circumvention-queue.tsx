@@ -120,9 +120,10 @@ const UI = "'DM Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
 const SERIF = "var(--font-serif)";
 
+// Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
 const label: React.CSSProperties = {
-  fontFamily: UI, fontWeight: 500, fontSize: "10px", letterSpacing: "0.07em",
-  textTransform: "uppercase", color: "var(--cr-ink-4)",
+  fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em",
+  textTransform: "uppercase", color: "var(--cr-ink-3)",
 };
 
 const figure: React.CSSProperties = {
@@ -140,10 +141,11 @@ const body: React.CSSProperties = {
   color: "var(--cr-ink-3)",
 };
 
+// Caps-label spec on chips; live/settled colors are semantic and stay.
 const chipBase: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "5px", borderRadius: "3px",
-  padding: "2px 7px", fontFamily: UI, fontWeight: 500, fontSize: "10px",
-  letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
+  display: "inline-flex", alignItems: "center", gap: "4px", borderRadius: "4px",
+  padding: "2px 8px", fontFamily: UI, fontWeight: 500, fontSize: "11px",
+  letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap",
 };
 
 /** Copper is the live state, verdigris the matured one. A tail that has run
@@ -160,7 +162,7 @@ const settledChip: React.CSSProperties = {
 const primaryBtn: React.CSSProperties = {
   fontFamily: UI, fontWeight: 600, fontSize: "13px", color: "var(--cr-paper)",
   background: "var(--cr-copper)", border: "1px solid var(--cr-copper)",
-  borderRadius: "999px", padding: "8px 18px", cursor: "pointer", minHeight: "40px",
+  borderRadius: "999px", padding: "8px 16px", cursor: "pointer", minHeight: "40px",
 };
 
 const textBtn: React.CSSProperties = {
@@ -293,7 +295,7 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
         {list.length > 0 && (
           <div
             className="hidden md:grid md:grid-cols-[minmax(0,2.6fr)_80px_120px_110px_24px]"
-            style={{ gap: "12px", padding: "10px 16px", background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule-dark)" }}
+            style={{ gap: "12px", padding: "8px 16px", background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule-dark)" }}
           >
             <span style={label}>{t("caseFile.colParties")}</span>
             <span style={label}>{t("caseFile.colEvidence")}</span>
@@ -303,12 +305,12 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
           </div>
         )}
 
-        {cases === null && <p style={{ ...label, padding: "18px 16px", margin: 0 }}>{t("common.loading")}</p>}
+        {cases === null && <p style={{ ...label, padding: "16px", margin: 0 }}>{t("common.loading")}</p>}
 
         {cases !== null && list.length === 0 && (
           <div style={{ padding: "48px 16px", textAlign: "center" }}>
-            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "14px" }}>✦</span>
-            <p style={{ ...body, fontSize: "14px", color: "var(--cr-ink-3)", margin: "10px auto 14px", maxWidth: "46ch" }}>
+            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "15px" }}>✦</span>
+            <p style={{ ...body, fontSize: "13px", color: "var(--cr-ink-3)", margin: "12px auto 16px", maxWidth: "46ch" }}>
               {denied ? t("caseFile.operatorOnly") : failed ? t("caseFile.loadFailed") : t("caseFile.empty")}
             </p>
             {!denied && (
@@ -327,13 +329,13 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                 aria-expanded={open}
                 className="w-full grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,2.6fr)_80px_120px_110px_24px] md:items-center"
                 style={{
-                  gap: "12px", padding: "14px 16px", textAlign: "start",
+                  gap: "12px", padding: "12px 16px", textAlign: "start",
                   background: open ? "var(--cr-paper-3)" : "transparent",
                   border: "none", cursor: "pointer",
                 }}
               >
                 <span style={{ minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: UI, fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ display: "block", fontFamily: UI, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {c.startup.name || t("caseFile.unnamed")}
                   </span>
                   <span style={{ display: "block", fontFamily: UI, fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -345,7 +347,7 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                   {/* `display` stays in the class, not the inline style: an
                       inline display beats md:hidden and the row would then
                       show its mobile summary on the desktop grid too. */}
-                  <span className="md:hidden flex" style={{ alignItems: "center", gap: "10px", marginTop: "8px" }}>
+                  <span className="md:hidden flex" style={{ alignItems: "center", gap: "8px", marginTop: "8px" }}>
                     <span style={{ ...figure, fontSize: "12px" }}>{c.evidence}</span>
                     <span style={intro?.live ? liveChip : settledChip}>
                       {intro?.live ? t("caseFile.inTail") : t("caseFile.tailEnded")}
@@ -372,7 +374,7 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                   {/* ── The parties ─────────────────────────────────────── */}
                   <div>
                     <Ruled>{t("caseFile.partiesTitle")}</Ruled>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 20px", alignItems: "baseline" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 16px", alignItems: "baseline" }}>
                       {c.startup.slug ? (
                         <a href={`/startups/${c.startup.slug}`} target="_blank" rel="noopener noreferrer" style={linkStyle}>
                           {c.startup.name || t("caseFile.unnamed")} →
@@ -489,21 +491,21 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                     ) : (
                       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                         {c.declarations.map((d) => (
-                          <div key={d.id} style={{ borderInlineStart: "2px solid var(--cr-copper-br)", paddingInlineStart: "14px" }}>
+                          <div key={d.id} style={{ borderInlineStart: "2px solid var(--cr-copper-br)", paddingInlineStart: "12px" }}>
                             {/* Quoted, attributed and dated. A declaration is
                                 what a person said about their own round; the
                                 bench reads it in their words or not at all. */}
-                            <p style={{ fontFamily: SERIF, fontWeight: 400, fontSize: "16px", lineHeight: 1.5, color: "var(--cr-ink)", margin: 0 }}>
+                            <p style={{ fontFamily: SERIF, fontWeight: 400, fontSize: "15px", lineHeight: 1.5, color: "var(--cr-ink)", margin: 0 }}>
                               {t("caseFile.declarationQuote", { outcome: term("outcomeName", d.outcome) })}
                             </p>
-                            <p style={{ ...dateFigure, margin: "6px 0 0" }}>
+                            <p style={{ ...dateFigure, margin: "8px 0 0" }}>
                               {t("caseFile.declarationBy", {
                                 name: d.declaredByName || t("caseFile.declarationAnon"),
                                 date: formatDate(d.declaredAt),
                                 version: d.attestationVersion,
                               })}
                             </p>
-                            <div style={{ marginTop: "10px", borderTop: "1px solid var(--cr-rule)" }}>
+                            <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
                               <Fact label={t("caseFile.declarationAmountLabel")}>
                                 {d.amountRaised !== null ? (
                                   <span style={figure}>{formatMoney(d.amountRaised, d.currency)}</span>
@@ -579,9 +581,9 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "420px" }}>
                             <thead>
                               <tr style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                                <th style={{ ...label, textAlign: "start", padding: "6px 12px 6px 0" }}>{t("caseFile.colDate")}</th>
-                                <th style={{ ...label, textAlign: "start", padding: "6px 12px 6px 0" }}>{t("caseFile.colItem")}</th>
-                                <th style={{ ...label, textAlign: "start", padding: "6px 0" }}>{t("caseFile.colLabel")}</th>
+                                <th style={{ ...label, textAlign: "start", padding: "8px 12px 8px 0" }}>{t("caseFile.colDate")}</th>
+                                <th style={{ ...label, textAlign: "start", padding: "8px 12px 8px 0" }}>{t("caseFile.colItem")}</th>
+                                <th style={{ ...label, textAlign: "start", padding: "8px 0" }}>{t("caseFile.colLabel")}</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -617,8 +619,8 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                     ) : (
                       <div style={{ borderTop: "1px solid var(--cr-rule)" }}>
                         {c.signals.map((s) => (
-                          <div key={s.id} style={{ padding: "10px 0", borderBottom: "1px solid var(--cr-rule)" }}>
-                            <div style={{ display: "flex", alignItems: "baseline", gap: "10px", flexWrap: "wrap" }}>
+                          <div key={s.id} style={{ padding: "12px 0", borderBottom: "1px solid var(--cr-rule)" }}>
+                            <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
                               <span style={{ fontFamily: UI, fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>
                                 {term("signalName", s.signal)}
                               </span>
@@ -655,7 +657,7 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                     <Ruled>{t("caseFile.reviewTitle")}</Ruled>
                     <p style={{ ...body, fontSize: "12px", margin: 0, maxWidth: "62ch" }}>{t("caseFile.reviewExplainer")}</p>
                     <div>
-                      <label htmlFor={`case-note-${c.key}`} style={{ ...label, display: "block", marginBottom: "6px" }}>
+                      <label htmlFor={`case-note-${c.key}`} style={{ ...label, display: "block", marginBottom: "8px" }}>
                         {t("caseFile.noteLabel")}
                       </label>
                       <textarea
@@ -669,7 +671,7 @@ export default function CircumventionQueue({ myLevel }: { myLevel?: string } = {
                           width: "100%", fontFamily: UI, fontWeight: 300, fontSize: "13px",
                           color: "var(--cr-ink)", background: "var(--cr-paper-2)",
                           border: "1px solid var(--cr-rule-dark)", borderRadius: "4px",
-                          padding: "10px 12px", resize: "vertical",
+                          padding: "12px", resize: "vertical",
                         }}
                       />
                     </div>

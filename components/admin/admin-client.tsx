@@ -49,7 +49,8 @@ type StageInfo = {
 
 /** An inactive tab's type, without a tab's chrome: these sit outside the pill
  *  because following one leaves the page. */
-const BENCH_LINK = "whitespace-nowrap px-3 py-1.5 text-sm font-medium text-cr-i3 hover:text-cr-copper transition-colors";
+// Dense admin type: 14 -> 13; 6px pad snaps to 8.
+const BENCH_LINK = "whitespace-nowrap px-3 py-2 text-[13px] font-medium text-cr-i3 hover:text-cr-copper transition-colors";
 
 export function AdminClient({ pendingStartups, allStartups, allInvestors, allDeals, stats, revenue, feeMonths = [], adminLevel }: Props) {
   // The price ladder: founding (everyone free) -> early -> standard.
@@ -159,20 +160,20 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
   return (
     <main className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="flex items-center gap-3 mb-8">
-        <div className="w-10 h-10 bg-cr-copper rounded-xl flex items-center justify-center">
+        <div className="w-10 h-10 bg-cr-copper rounded-[6px] flex items-center justify-center">
           <AlertCircle className="h-5 w-5 text-cr-paper" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-cr-ink">{t("admin.panelTitle")}</h1>
-          <p className="text-cr-i3 text-sm">{t("admin.panelSub")}</p>
+          <h1 className="text-[22px] font-bold text-cr-ink">{t("admin.panelTitle")}</h1>
+          <p className="text-cr-i3 text-[13px]">{t("admin.panelSub")}</p>
         </div>
       </div>
 
       {stageInfo !== null && (
-        <div className="bg-cr-paper border rounded-2xl p-4 mb-6">
+        <div className="bg-cr-paper border rounded-[6px] p-4 mb-6">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <p className="text-sm font-medium text-cr-ink">{t("admin.stageTitle")}</p>
+              <p className="text-[13px] font-medium text-cr-ink">{t("admin.stageTitle")}</p>
               <p className="text-xs text-cr-i3 mt-0.5">
                 {stageInfo.stage === "founding"
                   ? t("admin.launchOnSub", { memberCount: stageInfo.memberCount, target: stageInfo.target })
@@ -200,7 +201,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                       : "text-cr-i3 hover:text-cr-copper"
                     }`}
                   >
-                    {live && <span aria-hidden className="mr-1.5">✦</span>}
+                    {live && <span aria-hidden className="mr-2">✦</span>}
                     {t(`stage.${s}`)}
                   </button>
                 );
@@ -212,15 +213,15 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               can move -- the cohort size is a review-capacity number, not a law. */}
           {stageInfo.isFounding && (
             <div className="mt-3 pt-3 border-t border-cr-p4 flex items-center gap-2 flex-wrap">
-              <span className="text-[10px] uppercase tracking-wider text-cr-i4">{t("admin.foundingCohort")}</span>
-              <span className="font-mono text-sm font-semibold text-cr-ink tabular-nums">{stageInfo.memberCount}</span>
+              <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3">{t("admin.foundingCohort")}</span>
+              <span className="font-mono text-[13px] font-semibold text-cr-ink tabular-nums">{stageInfo.memberCount}</span>
               <span className="text-cr-i4 text-xs">/</span>
               {editingTarget ? (
                 <>
                   <input
                     type="number" min={1} max={10000} value={targetDraft}
                     onChange={e => setTargetDraft(e.target.value)}
-                    className="w-20 font-mono text-sm border rounded-[4px] px-2 py-1 bg-cr-paper text-cr-ink"
+                    className="w-20 font-mono text-[13px] border rounded-[4px] px-2 py-1 bg-cr-paper text-cr-ink"
                   />
                   <button
                     type="button"
@@ -236,7 +237,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 </>
               ) : (
                 <>
-                  <span className="font-mono text-sm font-semibold text-cr-ink tabular-nums">{stageInfo.target}</span>
+                  <span className="font-mono text-[13px] font-semibold text-cr-ink tabular-nums">{stageInfo.target}</span>
                   <button
                     type="button"
                     onClick={() => { setTargetDraft(String(stageInfo.target)); setEditingTarget(true); }}
@@ -282,7 +283,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       {/* E45: the business model, on the operator's own page at last. */}
       {revenue && (
         <Card className="mb-8">
-          <CardContent className="p-5">
+          <CardContent className="p-4">
             <div className="flex items-baseline justify-between gap-3 flex-wrap mb-4">
               <h2 className="ruled-label">{t("revenue.title")}</h2>
               <span className="text-[11px] text-cr-i4">
@@ -299,8 +300,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 { k: "revenue.feesReversed", v: revenue.feesReversed, cls: revenue.feesReversed > 0 ? "text-cr-down" : "text-cr-i3" },
               ].map(({ k, v, cls }) => (
                 <div key={k}>
-                  <p className={`font-mono text-xl font-bold ${cls}`}>{formatCurrency(v)}</p>
-                  <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-1">{t(k)}</p>
+                  <p className={`font-mono text-lg font-bold ${cls}`}>{formatCurrency(v)}</p>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3 mt-1">{t(k)}</p>
                 </div>
               ))}
             </div>
@@ -308,7 +309,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               <p className="text-[11px] text-cr-down mt-3">{t("revenue.unbillableNote")}</p>
             )}
             {revenue.byTier.length > 0 && (
-              <div className="flex flex-wrap gap-x-5 gap-y-1 mt-4 pt-3 border-t border-cr-p4">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 mt-4 pt-3 border-t border-cr-p4">
                 {revenue.byTier.map((row) => (
                   <span key={row.tier} className="text-[11px] text-cr-i3">
                     <span className="font-semibold text-cr-ink capitalize">{row.tier.replace(/_/g, " ")}</span>
@@ -325,8 +326,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 history would be a reconstruction, and charting a guess on the
                 page an operator bills from is how guesses become facts. */}
             {feeMonths.length > 0 && feeMonths.some(m => m.billed > 0 || m.collected > 0) && (
-              <div className="mt-5 pt-4 border-t border-cr-p4">
-                <p className="text-[10px] uppercase tracking-wider text-cr-i4 mb-2">{t("revenue.feeFlow")}</p>
+              <div className="mt-4 pt-4 border-t border-cr-p4">
+                <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3 mb-2">{t("revenue.feeFlow")}</p>
                 <LineChart
                   height={150}
                   labels={feeMonths.map(m => m.month.slice(5))}
@@ -356,7 +357,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 <p className="text-xs text-cr-i3">{s.label}</p>
                 <s.icon className={`h-4 w-4 ${s.color}`} />
               </div>
-              <p className="font-mono text-2xl font-bold text-cr-ink">{s.value}</p>
+              <p className="font-mono text-[22px] font-bold text-cr-ink">{s.value}</p>
             </CardContent>
           </Card>
         ))}
@@ -368,7 +369,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             <TabsTrigger value="pending">
               {t("admin.tabPending")}
               {pendingStartups.length > 0 && (
-                <span className="ml-1.5 bg-cr-copper/15 text-cr-copper font-mono text-xs px-1.5 py-0.5 rounded-full">
+                <span className="ml-2 bg-cr-copper/15 text-cr-copper font-mono text-xs px-2 py-0.5 rounded-full">
                   {pendingStartups.length}
                 </span>
               )}
@@ -411,7 +412,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             <div className="space-y-4">
               {pendingStartups.map(s => (
                 <Card key={s.id}>
-                  <CardContent className="p-5">
+                  <CardContent className="p-4">
                     <div className="flex items-start justify-between gap-4 mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
@@ -419,7 +420,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                           <Badge variant="outline" className="text-xs">{s.stage}</Badge>
                           <Badge variant="outline" className="text-xs">{s.industry}</Badge>
                         </div>
-                        <p className="text-sm text-cr-i3">{s.tagline}</p>
+                        <p className="text-[13px] text-cr-i3">{s.tagline}</p>
                         <p className="text-xs text-cr-i4 mt-1">
                           {t("admin.byLabel")} {s.owner?.full_name || s.owner?.email} · <span className="font-mono">{formatDate(s.created_at)}</span>
                           {/* The long way to the same decision: the checklist
@@ -440,7 +441,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                       <div className="flex gap-2 flex-shrink-0">
                         <Button
                           size="sm"
-                          className="bg-cr-copper hover:bg-cr-cu-d text-cr-paper gap-1.5"
+                          className="bg-cr-copper hover:bg-cr-cu-d text-cr-paper gap-2"
                           onClick={() => approveStartup(s.id)}
                           disabled={processingId === s.id}
                         >
@@ -449,7 +450,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                         <Button
                           size="sm"
                           variant="destructive"
-                          className="gap-1.5"
+                          className="gap-2"
                           onClick={() => rejectStartup(s.id)}
                           disabled={processingId === s.id}
                         >
@@ -460,7 +461,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                     <div className="border-t pt-3">
                       <p className="text-xs text-cr-i3 mb-1">{t("admin.rejectionReasonLabel")}</p>
                       <Textarea
-                        className="text-sm h-16"
+                        className="text-[13px] h-16"
                         placeholder={t("admin.rejectionPlaceholder")}
                         value={rejectionReason[s.id] || ""}
                         onChange={e => setRejectionReason(prev => ({ ...prev, [s.id]: e.target.value }))}
@@ -483,10 +484,10 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             {(rows) => (
           <div className="space-y-2">
             {(rows as unknown as typeof allStartups).map(s => (
-              <div key={s.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
+              <div key={s.id} className="flex items-center justify-between bg-cr-paper border rounded-[6px] px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div>
-                    <p className="font-medium text-cr-ink text-sm">{s.name}</p>
+                    <p className="font-medium text-cr-ink text-[13px]">{s.name}</p>
                     <p className="text-xs text-cr-i4">
                       {s.owner?.email} · {s.industry} · {s.stage}
                       {" · "}
@@ -546,9 +547,9 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             {(rows) => (
           <div className="space-y-2">
             {(rows as unknown as typeof allInvestors).map(inv => (
-              <div key={inv.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
+              <div key={inv.id} className="flex items-center justify-between bg-cr-paper border rounded-[6px] px-4 py-3">
                 <div>
-                  <p className="font-medium text-cr-ink text-sm">{inv.owner?.email}</p>
+                  <p className="font-medium text-cr-ink text-[13px]">{inv.owner?.email}</p>
                   <p className="text-xs text-cr-i4">{inv.type} · {inv.industries?.join(", ") || t("admin.noPreferences")}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -585,9 +586,9 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             {(rows) => (
           <div className="space-y-2">
             {(rows as unknown as typeof allDeals).map(deal => (
-              <div key={deal.id} className="flex items-center justify-between bg-cr-paper border rounded-xl px-4 py-3">
+              <div key={deal.id} className="flex items-center justify-between bg-cr-paper border rounded-[6px] px-4 py-3">
                 <div>
-                  <p className="font-medium text-cr-ink text-sm">
+                  <p className="font-medium text-cr-ink text-[13px]">
                     {deal.startup?.name} ↔ {deal.investor?.slug}
                   </p>
                   <p className="text-xs text-cr-i4">
@@ -713,10 +714,10 @@ function ReportQueue({ myLevel }: { myLevel?: string }) {
       ) : (
         <div className="space-y-2">
           {reports.map(r => (
-            <div key={r.id} className="bg-cr-paper border rounded-xl px-4 py-3">
+            <div key={r.id} className="bg-cr-paper border rounded-[6px] px-4 py-3">
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
-                  <p className="font-medium text-cr-ink text-sm">
+                  <p className="font-medium text-cr-ink text-[13px]">
                     {r.targetHref ? (
                       <Link href={r.targetHref} className="underline underline-offset-2">{r.targetName ?? r.target_type}</Link>
                     ) : (r.targetName ?? r.target_type)}
@@ -732,11 +733,11 @@ function ReportQueue({ myLevel }: { myLevel?: string }) {
                       className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("report.dismiss")}</button>
                   </div>
                 ) : (
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-cr-i4">{t(`report.filter.${r.status}`)}</span>
+                  <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3">{t(`report.filter.${r.status}`)}</span>
                 )}
               </div>
-              {r.detail && <p className="text-[12px] text-cr-i3 mt-1.5 break-words">“{r.detail}”</p>}
-              {r.resolution && <p className="text-[11px] text-cr-i4 mt-1.5">{t("report.resolutionLabel")}: {r.resolution}</p>}
+              {r.detail && <p className="text-[12px] text-cr-i3 mt-2 break-words">“{r.detail}”</p>}
+              {r.resolution && <p className="text-[11px] text-cr-i4 mt-2">{t("report.resolutionLabel")}: {r.resolution}</p>}
             </div>
           ))}
         </div>
@@ -803,10 +804,10 @@ function ComplaintQueue() {
       ) : (
         <div className="space-y-2">
           {rows.map(r => (
-            <div key={r.id} className="bg-cr-paper border rounded-xl px-4 py-3">
+            <div key={r.id} className="bg-cr-paper border rounded-[6px] px-4 py-3">
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
-                  <p className="font-medium text-cr-ink text-sm">
+                  <p className="font-medium text-cr-ink text-[13px]">
                     {r.subject}
                     <span className="text-cr-i4 font-normal"> · {t(`complaints.cat.${r.category}`)}</span>
                   </p>
@@ -826,11 +827,11 @@ function ComplaintQueue() {
                       className="text-xs font-semibold text-cr-i4 disabled:opacity-50">{t("complaints.dismissAct")}</button>
                   </div>
                 ) : (
-                  <span className="text-[10px] font-semibold uppercase tracking-wider text-cr-i4">{t(`complaints.status.${r.status}`)}</span>
+                  <span className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3">{t(`complaints.status.${r.status}`)}</span>
                 )}
               </div>
-              <p className="text-[12px] text-cr-i3 mt-1.5 break-words whitespace-pre-wrap">{r.body}</p>
-              {r.resolution_note && <p className="text-[11px] text-cr-i4 mt-1.5">{t("complaints.resolution")}: {r.resolution_note}</p>}
+              <p className="text-[12px] text-cr-i3 mt-2 break-words whitespace-pre-wrap">{r.body}</p>
+              {r.resolution_note && <p className="text-[11px] text-cr-i4 mt-2">{t("complaints.resolution")}: {r.resolution_note}</p>}
             </div>
           ))}
         </div>
@@ -887,9 +888,9 @@ function AdminList({ entity, initial, statuses, children }: {
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <input value={q} onChange={e => setQ(e.target.value)} placeholder={t("adminList.searchPh")}
-          className="text-sm border rounded-lg px-3 py-1.5 bg-cr-paper text-cr-ink min-w-[180px]" />
+          className="text-[13px] border rounded-[4px] px-3 py-2 bg-cr-paper text-cr-ink min-w-[180px]" />
         <select value={status} onChange={e => setStatus(e.target.value)}
-          className="text-sm border rounded-lg px-2 py-1.5 bg-cr-paper text-cr-ink">
+          className="text-[13px] border rounded-[4px] px-2 py-2 bg-cr-paper text-cr-ink">
           <option value="">{t("dashboard.filterAll")}</option>
           {statuses.map(s => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
         </select>
@@ -903,7 +904,7 @@ function AdminList({ entity, initial, statuses, children }: {
       </div>
 
       {rows.length === 0 && !loading ? (
-        <p className="text-sm text-cr-i4 text-center py-10">{t("adminList.noMatches")}</p>
+        <p className="text-[13px] text-cr-i4 text-center py-8">{t("adminList.noMatches")}</p>
       ) : children(rows)}
 
       {pages > 1 && (
@@ -990,8 +991,8 @@ function FeeLedger({ myLevel }: { myLevel?: string }) {
   }
 
   if (loadFailed) return (
-    <div className="py-10 text-center">
-      <p className="text-sm text-cr-down font-medium">{t("feePortal.loadFailed")}</p>
+    <div className="py-8 text-center">
+      <p className="text-[13px] text-cr-down font-medium">{t("feePortal.loadFailed")}</p>
       <p className="text-xs text-cr-i4 mt-1">{t("feePortal.loadFailedNote")}</p>
       <button onClick={() => void load()} className="mt-3 text-xs font-semibold text-cr-copper">{t("fees.retry")}</button>
     </div>
@@ -1007,7 +1008,8 @@ function FeeLedger({ myLevel }: { myLevel?: string }) {
           {(["outstanding", "unbillable", "disputed", "reversed"] as const).map(k => {
             const parts = totals[k] ?? [];
             return (
-              <div key={k} className="border border-cr-p4 rounded-xl px-4 py-3">
+              /* Metric cells stand on space, not boxes: interior fencing removed. */
+              <div key={k} className="py-3">
                 {/* Per currency, each in its own symbol. The old single figure
                     summed EUR+USD+JPY and printed the result as dollars. */}
                 {parts.length === 0
@@ -1015,7 +1017,7 @@ function FeeLedger({ myLevel }: { myLevel?: string }) {
                   : parts.map(ppp => (
                       <p key={ppp.currency} className="font-mono text-lg font-bold text-cr-ink leading-tight">{formatMoney(ppp.amount, ppp.currency)}</p>
                     ))}
-                <p className="text-[10px] uppercase tracking-wider text-cr-i4 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
+                <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3 mt-0.5">{t(`revenue.fees${k.charAt(0).toUpperCase()}${k.slice(1)}`)}</p>
               </div>
             );
           })}
@@ -1039,10 +1041,10 @@ function FeeLedger({ myLevel }: { myLevel?: string }) {
       ) : (
         <div className="space-y-2">
           {shown.map(row => (
-            <div key={row.id} className="bg-cr-paper border rounded-xl px-4 py-3">
+            <div key={row.id} className="bg-cr-paper border rounded-[6px] px-4 py-3">
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
-                  <p className="font-medium text-cr-ink text-sm truncate">{row.startupName ?? t("admin.amountTBD")}</p>
+                  <p className="font-medium text-cr-ink text-[13px] truncate">{row.startupName ?? t("admin.amountTBD")}</p>
                   <p className="text-xs text-cr-i4">
                     <span className="font-mono">{formatMoney(row.feeMajor, row.currency ?? "USD")}</span>
                     {row.closed_at && <>{" · "}{t("fees.closed")} <span className="font-mono">{formatDate(row.closed_at)}</span></>}
@@ -1050,7 +1052,7 @@ function FeeLedger({ myLevel }: { myLevel?: string }) {
                   </p>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded-full border ${STATE_STYLE[row.state]}`}>
+                  <span className={`text-[11px] font-medium uppercase tracking-[0.08em] px-2 py-1 rounded-full border ${STATE_STYLE[row.state]}`}>
                     {t(`fees.state.${row.state}`)}
                   </span>
                   {row.state === "disputed" && (
@@ -1072,13 +1074,13 @@ function FeeLedger({ myLevel }: { myLevel?: string }) {
                 </div>
               </div>
               {row.fee_billing_error && (
-                <p className="text-[11px] text-cr-down mt-1.5 break-words">{row.fee_billing_error}</p>
+                <p className="text-[11px] text-cr-down mt-2 break-words">{row.fee_billing_error}</p>
               )}
               {row.state === "disputed" && row.fee_dispute_reason && (
-                <p className="text-[11px] text-cr-copper mt-1.5 break-words">“{row.fee_dispute_reason}”</p>
+                <p className="text-[11px] text-cr-copper mt-2 break-words">“{row.fee_dispute_reason}”</p>
               )}
               {row.state === "waived" && row.fee_waive_reason && (
-                <p className="text-[11px] text-cr-i4 mt-1.5">{t("fees.waivedFor")}: {row.fee_waive_reason}</p>
+                <p className="text-[11px] text-cr-i4 mt-2">{t("fees.waivedFor")}: {row.fee_waive_reason}</p>
               )}
             </div>
           ))}

@@ -21,7 +21,8 @@ export function LedgerLoader({ label }: { label?: string }) {
           animation: "ledgerTick 1.2s steps(24) infinite",
         }} />
       </div>
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--cr-ink-4)" }}>
+      {/* The one caps voice: 11px/500/0.08em on ink-3. */}
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)" }}>
         {label ?? t("common.loading")}
       </span>
     </div>

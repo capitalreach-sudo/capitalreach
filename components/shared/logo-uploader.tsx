@@ -94,7 +94,7 @@ export function LogoUploader({ entityType, name, logoUrl, logoColor, onChanged }
       <EntityLogo name={name} logoUrl={logoUrl} logoColor={logoColor} size={56} radius={6} />
       <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
         <button type="button" onClick={() => inputRef.current?.click()} disabled={busy}
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "7px 12px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 12, color: "var(--cr-ink-2)" }}>
+          style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "8px 12px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 12, color: "var(--cr-ink-2)" }}>
           {busy ? <Loader2 style={{ width: 13, height: 13 }} className="animate-spin" /> : <ImagePlus style={{ width: 13, height: 13 }} />}
           {logoUrl ? t("logo.replace") : t("logo.upload")}
         </button>
@@ -104,7 +104,7 @@ export function LogoUploader({ entityType, name, logoUrl, logoColor, onChanged }
             <Trash2 style={{ width: 14, height: 14 }} />
           </button>
         )}
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: "var(--cr-ink-4)" }}>{t("logo.hint")}</span>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "var(--cr-ink-4)" }}>{t("logo.hint")}</span>
       </div>
       <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" hidden
         onChange={e => { const f = e.target.files?.[0]; if (f) void upload(f); e.target.value = ""; }} />

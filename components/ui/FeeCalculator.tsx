@@ -27,6 +27,10 @@ interface Props {
   amount?: number | null;
   onChange?: (amount: number | null) => void;
   className?: string;
+  /** Surface override, merged over the card's own paint. /pricing lifts the
+   *  calculator to paper with a 2px ink overline so it sits ON the model
+   *  band rather than dissolving into it. */
+  style?: React.CSSProperties;
 }
 
 /**
@@ -34,7 +38,7 @@ interface Props {
  * cheap option: next to a 6% broker and five-figure legal costs, 2% at close
  * reads as small. Pure client math; no network.
  */
-export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", variant = "raise", amount: controlled, onChange, className, titleKey }: Props) {
+export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", variant = "raise", amount: controlled, onChange, className, titleKey, style }: Props) {
   const { t } = useTranslation();
   const [internal, setInternal] = useState<string>(defaultAmount ? String(defaultAmount) : "");
   const isControlled = controlled !== undefined && onChange !== undefined;
@@ -63,10 +67,12 @@ export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", varia
 
   const mono: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums" };
   const rowStyle: React.CSSProperties = { display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "8px 0", borderBottom: "1px solid var(--cr-rule)" };
-  const labelStyle: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12.5px", color: "var(--cr-ink-3)" };
+  const labelStyle: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" };
 
   return (
-    <div className={className} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: variant === "compact" ? "14px 16px" : "20px 22px" }}>
+    // 6px: card radius. The style prop is merged last so a page can re-ground
+    // the card (see /pricing) without this component growing page knowledge.
+    <div className={className} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: variant === "compact" ? "12px 16px" : "24px", ...style }}>
       {variant !== "compact" && (
         <div className="ruled-label" style={{ marginBottom: "12px" }}>
           {t(titleKey ?? (variant === "check" ? "feeCalc.titleCheck" : "feeCalc.title"))}
@@ -74,7 +80,8 @@ export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", varia
       )}
 
       <label style={{ display: "block" }}>
-        <span style={{ ...labelStyle, display: "block", marginBottom: "6px", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 500 }}>
+        {/* Caps label: the one platform voice, 11/500/0.08em ink-3. */}
+        <span style={{ ...labelStyle, display: "block", marginBottom: "8px", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 500 }}>
           {variant === "check" ? t("feeCalc.inputCheck") : t("feeCalc.inputRaise")}
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "0 12px" }}>
@@ -85,7 +92,7 @@ export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", varia
             onChange={(e) => setAmount(e.target.value)}
             placeholder="500,000"
             aria-label={variant === "check" ? t("feeCalc.inputCheck") : t("feeCalc.inputRaise")}
-            style={{ ...mono, flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none", height: "42px", fontSize: "16px", color: "var(--cr-ink)" }}
+            style={{ ...mono, flex: 1, minWidth: 0, background: "transparent", border: "none", outline: "none", height: "42px", fontSize: "15px", color: "var(--cr-ink)" }}
           />
         </div>
       </label>
@@ -95,22 +102,22 @@ export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", varia
           <>
             <div style={rowStyle}>
               <span style={labelStyle}>{t("feeCalc.yourPortion", { fee: SUCCESS_FEE_PERCENT })}</span>
-              <span style={{ ...mono, fontWeight: 600, fontSize: "16px", color: "var(--cr-copper)" }}>{fmt(fee)}</span>
+              <span style={{ ...mono, fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>{fmt(fee)}</span>
             </div>
             <div style={{ ...rowStyle, borderBottom: "none" }}>
               <span style={labelStyle}>{t("feeCalc.investorPays")}</span>
-              <span style={{ ...mono, fontWeight: 600, fontSize: "14px", color: "var(--cr-up)" }}>{formatMoney(0, cur)}</span>
+              <span style={{ ...mono, fontWeight: 600, fontSize: "13px", color: "var(--cr-up)" }}>{formatMoney(0, cur)}</span>
             </div>
           </>
         ) : (
           <>
             <div style={rowStyle}>
               <span style={labelStyle}>{t("feeCalc.rowCapitalReach", { fee: SUCCESS_FEE_PERCENT })}</span>
-              <span style={{ ...mono, fontWeight: 600, fontSize: "16px", color: "var(--cr-copper)" }}>{fmt(fee)}</span>
+              <span style={{ ...mono, fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>{fmt(fee)}</span>
             </div>
             <div style={rowStyle}>
               <span style={labelStyle}>{t("feeCalc.rowBroker", { fee: BROKER_PERCENT })}</span>
-              <span style={{ ...mono, fontWeight: 500, fontSize: "14px", color: "var(--cr-ink-4)", textDecoration: "line-through" }}>{fmt(broker)}</span>
+              <span style={{ ...mono, fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)", textDecoration: "line-through" }}>{fmt(broker)}</span>
             </div>
             <div style={{ ...rowStyle, borderBottom: "none" }}>
               <span style={{ ...labelStyle, fontWeight: 500, color: "var(--cr-ink-2)" }}>{t("feeCalc.rowSave")}</span>
@@ -121,7 +128,7 @@ export function FeeCalculator({ defaultAmount = 500_000, currency = "EUR", varia
       </div>
 
       {variant === "raise" && (
-        <p style={{ ...labelStyle, fontSize: "11px", marginTop: "10px", lineHeight: 1.5 }}>
+        <p style={{ ...labelStyle, fontSize: "11px", marginTop: "12px", lineHeight: 1.5 }}>
           {t("feeCalc.footnote")}
         </p>
       )}

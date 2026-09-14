@@ -31,10 +31,10 @@ export function TractionChart({ points }: { points: MetricPoint[] }) {
 
   return (
     <div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" }}>
         {useMrr ? t("traction.mrrTitle") : t("traction.usersTitle")}
       </p>
-      <div style={{ display: "flex", alignItems: "flex-end", gap: "6px" }}>
+      <div style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}>
         {points.map((p) => {
           const v = value(p);
           // Pixel heights, not percentages: a percentage height resolves
@@ -46,15 +46,15 @@ export function TractionChart({ points }: { points: MetricPoint[] }) {
           const h = v > 0 ? Math.max((v / max) * 72, 4) : 2;
           const monthLabel = p.month.slice(2, 7).replace("-", "/");
           return (
-            <div key={p.month} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: "5px", minWidth: 0 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-3)", whiteSpace: "nowrap" }}>
+            <div key={p.month} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-end", gap: "4px", minWidth: 0 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", whiteSpace: "nowrap" }}>
                 {v > 0 ? fmt(v) : "—"}
               </span>
               <div
                 title={`${monthLabel}: ${v > 0 ? fmt(v) : "—"}`}
                 style={{ width: "100%", maxWidth: "42px", height: `${h}px`, background: v > 0 ? "var(--cr-copper)" : "var(--cr-paper-4)", borderRadius: "2px 2px 0 0", opacity: v > 0 ? 0.9 : 1 }}
               />
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {monthLabel}
               </span>
             </div>

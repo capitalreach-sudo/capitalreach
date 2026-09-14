@@ -169,7 +169,7 @@ export function FeeSlider() {
         >
           {/* Input: the figure is the readout of the handle, not a heading. */}
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <span style={{ ...LABEL, fontSize: "10px", color: "var(--cr-band-ink-dim)" }}>{t("feeCalc.inputRaise")}</span>
+            <span style={{ ...LABEL, color: "var(--cr-band-ink-dim)" }}>{t("feeCalc.inputRaise")}</span>
             <span
               style={{
                 ...MONO,
@@ -248,7 +248,7 @@ export function FeeSlider() {
                   style={{
                     ...MONO,
                     fontWeight: 500,
-                    fontSize: "10px",
+                    fontSize: "11px",
                     letterSpacing: "0.04em",
                     whiteSpace: "nowrap",
                     color: idx === i ? "var(--cr-band-ink)" : "var(--cr-band-ink-dim)",

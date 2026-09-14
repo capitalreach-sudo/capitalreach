@@ -37,8 +37,9 @@ import { NON_CIRCUMVENTION_MONTHS, SUCCESS_FEE_PERCENT } from "@/lib/circumventi
 // ── House register (docs/DESIGN-SPEC.md) ────────────────────────────────────
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const DATA: CSSProperties = {
@@ -59,15 +60,15 @@ const TITLE: CSSProperties = {
 const RULE: CSSProperties = { borderTop: "1px solid var(--cr-rule)" };
 
 const BADGE: CSSProperties = {
-  ...LABEL, fontSize: "9px", borderRadius: "3px", padding: "3px 6px",
+  ...LABEL, borderRadius: "4px", padding: "3px 8px",
   border: "1px solid var(--cr-rule-dark)", whiteSpace: "nowrap", flexShrink: 0,
 };
 
 const FIELD: CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
-  fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)",
+  fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)",
   background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px", padding: "10px 12px", width: "100%", minWidth: 0,
+  borderRadius: "4px", padding: "12px 12px", width: "100%", minWidth: 0,
 };
 
 /** Card internals stay on the scale at both ends: 16 on a 375px screen, 24 on
@@ -297,7 +298,7 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
 
         <section style={{
           background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "4px", boxShadow: "var(--cr-card-shadow)", padding: PAD,
+          borderRadius: "6px", boxShadow: "var(--cr-card-shadow)", padding: PAD,
         }}>
           <Fact label={t("closureDecl.recordOutcome")}>
             <span style={{ ...BODY, fontSize: "13px", color: "var(--cr-ink-2)" }}>{outcomeLabel(latest.outcome)}</span>
@@ -316,7 +317,7 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
           )}
           {latest.amountRaised !== null && (
             <Fact label={t("closureDecl.recordAmount")}>
-              <span style={{ ...DATA, fontWeight: 700, fontSize: "14px", color: "var(--cr-ink)" }}>
+              <span style={{ ...DATA, fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
                 {formatMoney(latest.amountRaised, latest.currency)}
               </span>
             </Fact>
@@ -402,19 +403,19 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
       }}>
         <div>
           <div style={LABEL}>{t("closureDecl.factTerm")}</div>
-          <div style={{ ...DATA, fontSize: "14px", fontWeight: 700, color: "var(--cr-ink)", marginTop: "4px" }}>
+          <div style={{ ...DATA, fontSize: "15px", fontWeight: 700, color: "var(--cr-ink)", marginTop: "4px" }}>
             {t("closureDecl.factMonths", { months })}
           </div>
         </div>
         <div>
           <div style={LABEL}>{t("closureDecl.factFee")}</div>
-          <div style={{ ...DATA, fontSize: "14px", fontWeight: 700, color: "var(--cr-copper)", marginTop: "4px" }}>
+          <div style={{ ...DATA, fontSize: "15px", fontWeight: 700, color: "var(--cr-copper)", marginTop: "4px" }}>
             {SUCCESS_FEE_PERCENT}%
           </div>
         </div>
         <div>
           <div style={LABEL}>{t("closureDecl.factDated")}</div>
-          <div style={{ ...DATA, fontSize: "14px", fontWeight: 700, color: "var(--cr-ink)", marginTop: "4px" }}>
+          <div style={{ ...DATA, fontSize: "15px", fontWeight: 700, color: "var(--cr-ink)", marginTop: "4px" }}>
             {day(new Date().toISOString())}
           </div>
         </div>
@@ -507,7 +508,7 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
 
                   {/* What we actually did for this pair: when we put them
                       together, through what, and how much they were given. */}
-                  <span style={{ display: "flex", flexWrap: "wrap", gap: "4px 16px", marginTop: "6px" }}>
+                  <span style={{ display: "flex", flexWrap: "wrap", gap: "4px 16px", marginTop: "8px" }}>
                     <span style={LABEL}>
                       {t("discLog.firstContact")}{" "}
                       <span style={{ ...DATA, fontSize: "11px" }}>{day(inv.firstContactAt)}</span>
@@ -626,7 +627,7 @@ export function ClosureDeclaration({ onFiled }: { onFiled?: () => void }) {
               onChange={(e) => setAttested(e.target.checked)}
               style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "var(--cr-copper)", flexShrink: 0 }}
             />
-            <span style={{ ...TITLE, fontSize: "14px" }}>{t("closureDecl.attestCheckbox")}</span>
+            <span style={TITLE}>{t("closureDecl.attestCheckbox")}</span>
           </label>
 
           {/* One primary action, and nothing beside it. There is no "not now":

@@ -23,7 +23,8 @@ export function AdminFunnel({ steps }: { steps: FunnelStep[] }) {
   }
 
   return (
-    <section className="border border-cr-p4 rounded-xl p-5 mb-6">
+    // Card radius on the 6px step; dense admin padding snaps 20 -> 16.
+    <section className="border border-cr-p4 rounded-[6px] p-4 mb-6">
       <div className="flex items-baseline justify-between gap-3 flex-wrap mb-4">
         <h2 className="ruled-label">{t("funnel.title")}</h2>
         {worst && worst.fromPrev != null && (
@@ -50,7 +51,7 @@ export function AdminFunnel({ steps }: { steps: FunnelStep[] }) {
           </div>
         ))}
       </div>
-      <p className="text-[10px] text-cr-i4 mt-3">{t("funnel.legend")}</p>
+      <p className="text-[11px] text-cr-i4 mt-3">{t("funnel.legend")}</p>
     </section>
   );
 }

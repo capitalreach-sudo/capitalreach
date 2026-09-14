@@ -37,16 +37,17 @@ export function EmptyState({
         alignItems: "center",
         justifyContent: "center",
         textAlign: "center",
-        gap: "10px",
+        gap: "8px",
         padding: "48px 24px",
         border: "1px dashed var(--cr-rule-dark)",
-        borderRadius: "8px",
+        borderRadius: "6px", // 6px: panel radius
         background: "var(--cr-paper-2)",
       }}
     >
       {/* The drawer tag: empty lists are museum drawers, and drawers are
-          labelled even when nothing is filed in them. */}
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.2em", textTransform: "uppercase", color: "var(--cr-ink-4)" }}>
+          labelled even when nothing is filed in them. The one caps voice:
+          11px/500/0.08em on ink-3. */}
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)" }}>
         {t("common.emptyDrawer")}
       </span>
       {Icon && (
@@ -70,7 +71,7 @@ export function EmptyState({
         style={{
           fontFamily: "var(--font-serif)",
           fontWeight: 700,
-          fontSize: "17px",
+          fontSize: "18px",
           color: "var(--cr-ink)",
         }}
       >

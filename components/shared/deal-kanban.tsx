@@ -159,9 +159,9 @@ function dealNames(deal: Deal, t: (key: string) => string): { investorName: stri
 
 function colBadgeStyle(status: DealStatus, count: number): React.CSSProperties {
   const base: React.CSSProperties = {
-    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-    borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase",
-    letterSpacing: "0.06em", display: "inline-block",
+    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+    borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase",
+    letterSpacing: "0.08em", display: "inline-block",
   };
   if (status === "closed") return { ...base, background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)" };
   if (status === "passed") return { ...base, background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", color: "var(--cr-down)" };
@@ -367,7 +367,7 @@ function CounterpartPicker({ search, placeholder, note, autoFocus = false }: {
             {r.sub && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{r.sub}</p>}
             {(() => {
               const n = note(r);
-              return n ? <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", marginTop: "2px" }}>{n}</p> : null;
+              return n ? <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginTop: "2px" }}>{n}</p> : null;
             })()}
           </button>
         ))}
@@ -506,12 +506,12 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
               on approval it enters Talking; from there it moves one stage at
               a time. The path is stated so nobody looks for the dropdown. */}
           <div style={{ flex: 1, display: "flex", alignItems: "flex-end" }}>
-            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 10, color: "var(--cr-ink-4)", lineHeight: 1.6, margin: 0 }}>
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)", lineHeight: 1.6, margin: 0 }}>
               {t("deals.colProposal")} → {t("deals.colIntro")} → {t("deals.colNegotiation")} → {t("deals.colTermSheet")} → {t("deals.colClosed")}
             </p>
           </div>
           <div style={{ flex: 1 }}>
-            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", marginBottom: "4px" }}>
+            <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", marginBottom: "4px" }}>
               {t("deals.followUpOptional")}
             </label>
             <input type="date" value={followUp} onChange={e => setFollowUp(e.target.value)}
@@ -530,7 +530,7 @@ function NewDealModal({ viewAs, ownProfile, onClose, onCreated }: {
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", marginBottom: "8px" }}>
           {t("deals.consentNotice")}
         </p>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
           {t("deals.circumventionNotice")}
         </p>
 
@@ -729,7 +729,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <button onClick={toggle}
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           <FileText style={{ width: 11, height: 11 }} />
           {t("deals.contracts")}{loaded && contracts.length > 0 ? ` (${contracts.length})` : ""}
         </span>
@@ -749,11 +749,11 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
             <div key={c.id} style={{ borderTop: "1px solid var(--cr-rule)", padding: "8px 0" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.title}</p>
-                <span style={{ ...statusStyle[c.status], fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.04em", flexShrink: 0 }}>
+                <span style={{ ...statusStyle[c.status], fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "3px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.08em", flexShrink: 0 }}>
                   {t(`deals.contractStatus${c.status.charAt(0).toUpperCase()}${c.status.slice(1)}`)}
                 </span>
               </div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
                 {t(CONTRACT_TYPE_KEY[c.contract_type])}
                 {c.amount != null && ` · ${formatMoney(c.amount, c.currency, { compact: true })}`}
                 {c.equity_percent != null && ` · ${c.equity_percent}%`}
@@ -762,7 +762,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                   signature, so without this line the viewer's own signature
                   produced no visible result at all. */}
               {c.status !== "signed" && c.status !== "void" && c.signatures?.mine && (
-                <p style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-up)", marginTop: "4px" }}>
+                <p style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-up)", marginTop: "4px" }}>
                   <CheckCircle2 style={{ width: 10, height: 10, flexShrink: 0 }} />
                   {tOr(t, "deals.contractYouSigned", "You signed - awaiting the other side")}
                 </p>
@@ -777,7 +777,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               {c.contract_type === "nda" && (
                 <div style={{ marginTop: "8px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: ndaStatus === "signed" ? "var(--cr-up)" : "var(--cr-ink-4)" }}>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: ndaStatus === "signed" ? "var(--cr-up)" : "var(--cr-ink-4)" }}>
                       {ndaStatusLabel[ndaStatus || "none"]}
                     </span>
                     {/* Only offered where an envelope can actually go out:
@@ -785,7 +785,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                         and a button whose every click fails is a trap. */}
                     {ndaStatus !== "signed" && docusignConfigured && (
                       <button onClick={sendNda} disabled={ndaSending}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline", opacity: ndaSending ? 0.6 : 1 }}>
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", opacity: ndaSending ? 0.6 : 1 }}>
                         {ndaSending ? t("deals.sending") : ndaStatus === "pending" ? t("deals.ndaResend") : t("deals.ndaSendForSignature")}
                       </button>
                     )}
@@ -793,7 +793,7 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                   {/* The path that works on this deployment instead: the
                       clickwrap NDA on the listing itself. */}
                   {ndaStatus !== "signed" && !docusignConfigured && (
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "4px", lineHeight: 1.5 }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", lineHeight: 1.5 }}>
                       {tOr(t, "deals.ndaClickwrapHint", "E-signature is not connected on this deployment. The investor can accept the NDA directly on the startup's listing, which opens the data room immediately.")}
                     </p>
                   )}
@@ -808,12 +808,12 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
                   {NEXT_CONTRACT_STATUSES[c.status].filter(next => !(next === "signed" && c.signatures?.mine)).map(next => (
                     next === "signed" ? (
                       <button key={next} onClick={() => { setSigning(c); setSignerName(""); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline" }}>
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
                         {t("deals.signContract")}
                       </button>
                     ) : (
                       <button key={next} onClick={() => updateStatus(c.id, next)} disabled={updatingId === c.id}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: next === "void" ? "var(--cr-down)" : "var(--cr-copper)", textDecoration: "underline", opacity: updatingId === c.id ? 0.6 : 1 }}>
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: next === "void" ? "var(--cr-down)" : "var(--cr-copper)", textDecoration: "underline", opacity: updatingId === c.id ? 0.6 : 1 }}>
                         {t(STATUS_ACTION_KEY[next])}
                       </button>
                     )
@@ -880,12 +880,12 @@ function ContractsSection({ dealId, dealAmount, dealCurrency, equityOffered, sta
               {signing.terms && (
                 <pre style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-2)", lineHeight: 1.6, whiteSpace: "pre-wrap", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px", margin: "0 0 16px", maxHeight: "180px", overflowY: "auto" }}>{signing.terms}</pre>
               )}
-              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "8px" }}>{t("deals.signNameLabel")}</label>
+              <label style={{ display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>{t("deals.signNameLabel")}</label>
               <input value={signerName} onChange={e => setSignerName(e.target.value)} autoFocus
                 placeholder={t("deals.signNamePlaceholder")}
-                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "16px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box" }} />
+                style={{ width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "var(--font-serif)", fontStyle: "italic", fontSize: "15px", color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box" }} />
             </div>
-            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", padding: "16px 24px 18px", borderTop: "1px solid var(--cr-rule)" }}>
+            <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", padding: "16px 24px", borderTop: "1px solid var(--cr-rule)" }}>
               <button onClick={() => setSigning(null)} style={{ height: "40px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>{t("common.cancel")}</button>
               <button onClick={signContract} disabled={signBusy || signerName.trim().length < 2}
                 style={{ height: "40px", padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer", opacity: signBusy || signerName.trim().length < 2 ? 0.5 : 1 }}>
@@ -977,7 +977,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <button onClick={toggle}
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           <FileText style={{ width: 11, height: 11 }} />
           {t("deals.resources")}
         </span>
@@ -990,7 +990,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
 
           {!loading && loaded && data && (
             <>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>{t("deals.documents")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("deals.documents")}</p>
               {data.documents.length === 0 && (
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noDocuments")}</p>
               )}
@@ -1001,7 +1001,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
                     {doc.label}
                   </span>
                   {doc.locked ? (
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{t("deals.requiresNda")}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t("deals.requiresNda")}</span>
                   ) : (
                     <a href={doc.file_url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
                       {t("deals.viewDocument")}
@@ -1013,13 +1013,13 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
               {/* Shared deal room — both sides upload here (append-only). */}
               <div style={{ marginTop: "12px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>{t("deals.sharedRoom")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", margin: 0 }}>{t("deals.sharedRoom")}</p>
                   {(viewAs === "startup" || viewAs === "investor") && (
                     <>
                       <input ref={dealDocInput} type="file" style={{ display: "none" }}
                         onChange={e => { const f = e.target.files?.[0]; if (f) uploadDealDoc(f); }} />
                       <button onClick={() => dealDocInput.current?.click()} disabled={uploadingDoc}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textDecoration: "underline", opacity: uploadingDoc ? 0.6 : 1 }}>
+                        style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline", opacity: uploadingDoc ? 0.6 : 1 }}>
                         {uploadingDoc ? t("common.saving") : t("deals.uploadDoc")}
                       </button>
                     </>
@@ -1033,7 +1033,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
                     <span style={{ minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", display: "flex", alignItems: "center", gap: "8px", overflow: "hidden" }}>
                       <FileText style={{ width: 11, height: 11, flexShrink: 0 }} />
                       <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.file_name}</span>
-                      <span style={{ flexShrink: 0, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.04em" }}>· {d.uploader_side === "startup" ? t("deals.fromFounder") : t("deals.fromInvestor")}</span>
+                      <span style={{ flexShrink: 0, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>· {d.uploader_side === "startup" ? t("deals.fromFounder") : t("deals.fromInvestor")}</span>
                     </span>
                     <a href={`/api/deals/documents/download?id=${d.id}`} target="_blank" rel="noopener noreferrer"
                       style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}>
@@ -1045,7 +1045,7 @@ function ResourcesSection({ dealId, startupId, viewAs }: { dealId: string; start
 
               {(viewAs === "investor" || data.reports.length > 0) && (
                 <div style={{ marginTop: "12px", paddingTop: "8px", borderTop: "1px solid var(--cr-rule)" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>{t("deals.dueDiligenceReports")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("deals.dueDiligenceReports")}</p>
                   {data.reports.length === 0 && (
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.noReports")}</p>
                   )}
@@ -1123,11 +1123,11 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
       <span style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: at ? "var(--cr-up)" : "var(--cr-ink-3)" }}>
         {at ? <CheckCircle2 style={{ width: 12, height: 12 }} /> : <Circle style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />}
         {label}
-        {at && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{formatDate(at)}</span>}
+        {at && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{formatDate(at)}</span>}
       </span>
       {!at && canAct && (
         <button onClick={() => confirm(step)} disabled={busy}
-          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "3px 8px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
+          style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "4px 8px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
           {t("funding.confirm")}
         </button>
       )}
@@ -1148,7 +1148,7 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
 
   return (
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "4px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: fundedAt ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
         {fundedAt ? t("funding.fundedTitle") : t("funding.title")}
       </p>
       {/* Money confirmations are a POST-CLOSE act. This block now also
@@ -1166,7 +1166,7 @@ function FundingBlock({ deal, viewAs }: { deal: Deal; viewAs: "startup" | "inves
           </p>
         </>
       )}
-      {d.funding_reference && <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("funding.ref")}: {d.funding_reference}</p>}
+      {d.funding_reference && <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 4 }}>{t("funding.ref")}: {d.funding_reference}</p>}
       {!sentAt && !recvAt && (viewAs === "startup" || viewAs === "investor") && (
         <TrancheEditor deal={deal} onSaved={setTranches} />
       )}
@@ -1244,7 +1244,7 @@ function TrancheEditor({ deal, onSaved }: { deal: Deal; onSaved: (t: Tranche[]) 
           style={{ background: "transparent", border: "none", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", cursor: "pointer", padding: 0, opacity: rows.length >= 12 ? 0.4 : 1 }}>
           {t("tranches.addRow")}
         </button>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: mismatch ? "var(--cr-down)" : "var(--cr-ink-4)" }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: mismatch ? "var(--cr-down)" : "var(--cr-ink-4)" }}>
           {formatMoney(total, deal.currency, { compact: true })}
           {target != null && ` / ${formatMoney(target, deal.currency, { compact: true })}`}
         </span>
@@ -1303,10 +1303,10 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
   return (
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap", marginBottom: 8 }}>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: allIn ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: allIn ? "var(--cr-up)" : "var(--cr-ink)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {allIn ? t("tranches.fundedTitle") : t("tranches.title")}
         </p>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>
           {t("tranches.receivedOf", { received: formatMoney(received, deal.currency, { compact: true }), total: formatMoney(total, deal.currency, { compact: true }) })}
         </span>
       </div>
@@ -1321,13 +1321,13 @@ function TrancheBlock({ deal, viewAs, initial, onChange, isExternalInv }: {
             <span style={{ display: "inline-flex", gap: 4 }}>
               {!r.funds_sent_at && canSend && (
                 <button onClick={() => confirm(r, "sent")} disabled={busy === r.id}
-                  style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "2px 8px", cursor: "pointer" }}>
+                  style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "2px 8px", cursor: "pointer" }}>
                   {t("funding.sent")}
                 </button>
               )}
               {!r.funds_received_at && canReceive && (
                 <button onClick={() => confirm(r, "received")} disabled={busy === r.id}
-                  style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "2px 8px", cursor: "pointer" }}>
+                  style={{ background: "transparent", border: "1px solid var(--cr-up)", color: "var(--cr-up)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", padding: "2px 8px", cursor: "pointer" }}>
                   {t("funding.received")}
                 </button>
               )}
@@ -1558,7 +1558,7 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
 
   return (
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "8px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
         {t("deals.checklist")}{items && items.length > 0 ? ` · ${doneCount}/${items.length}` : ""}
       </p>
       {items !== null && items.length === 0 && STAGE_CHECKLIST_KEYS[stage] && (
@@ -1577,8 +1577,8 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
               <button onClick={() => setExpanded(x => x === i.id ? null : i.id)}
                 style={{ flex: 1, textAlign: "left", background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: i.done ? "var(--cr-ink-4)" : "var(--cr-ink-2)", textDecoration: i.done ? "line-through" : "none" }}>
                 {i.label}
-                {i.owner_side && <span style={{ marginLeft: 8, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--cr-ink-4)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
-                {i.due_date && <span style={{ marginLeft: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: overdue ? "var(--cr-down)" : "var(--cr-ink-4)" }}>{i.due_date}</span>}
+                {i.owner_side && <span style={{ marginLeft: 8, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>{i.owner_side === "startup" ? t("checklist.ownerStartup") : t("checklist.ownerInvestor")}</span>}
+                {i.due_date && <span style={{ marginLeft: 8, fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: overdue ? "var(--cr-down)" : "var(--cr-ink-4)" }}>{i.due_date}</span>}
               </button>
               <button onClick={() => remove(i.id)} aria-label={`remove ${i.label}`}
                 style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "12px", lineHeight: 1, padding: 0 }}>×</button>
@@ -1592,7 +1592,7 @@ function ChecklistSection({ dealId, stage, viewAs, onOpenCount }: { dealId: stri
                   <option value="startup">{t("checklist.ownerStartup")}</option>
                 </select>
                 <input type="date" value={i.due_date ?? ""} onChange={e => patchItem(i.id, { dueDate: e.target.value || null })} aria-label={t("checklist.due")}
-                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-3)", padding: "2px 4px" }} />
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)", padding: "2px 4px" }} />
                 <input defaultValue={i.evidence ?? ""} placeholder={t("checklist.evidencePh")} maxLength={500}
                   onBlur={e => { if ((e.target.value || null) !== (i.evidence ?? null)) patchItem(i.id, { evidence: e.target.value }); }}
                   style={{ flex: 1, minWidth: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "3px 8px", outline: "none" }} />
@@ -1678,7 +1678,7 @@ function ActivitySection({ dealId }: { dealId: string }) {
     <div style={{ marginTop: "12px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
       <button onClick={toggle}
         style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", background: "none", border: "none", cursor: "pointer", padding: "0" }}>
-        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span style={{ display: "flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {t("deals.activity")}{loaded && activity.length > 0 ? ` (${activity.length})` : ""}
         </span>
         <ChevronDown style={{ width: 13, height: 13, color: "var(--cr-ink-4)", transform: open ? "rotate(180deg)" : "none", transition: "transform 150ms var(--ease-out)" }} />
@@ -1759,7 +1759,7 @@ function ActivitySection({ dealId }: { dealId: string }) {
                         {t(ACTIVITY_ICON_KEY[a.type])}
                         {a.actor?.full_name ? ` · ${a.actor.full_name}` : ""}
                       </span>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", flexShrink: 0 }}>
                         {formatDate(a.created_at)}
                       </span>
                     </div>
@@ -1970,7 +1970,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
     }}
     >
       {deal.status === "closed" && (
-        <span style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
           <WaxSeal size={24} />
           <span className="cr-stamp" aria-hidden>{t("deals.colClosed")}</span>
         </span>
@@ -1993,7 +1993,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         ))}
       </div>
       <p style={{
-        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+        fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
         color: masked ? "var(--cr-ink-4)" : "var(--cr-ink)",
         overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
         display: "flex", alignItems: "center", gap: "4px",
@@ -2006,7 +2006,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         ) : name}
         {/* B18: say plainly that this one is not on the platform. */}
         {isExternal && (
-          <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", letterSpacing: "0.05em", textTransform: "uppercase", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 4px" }}>
+          <span style={{ flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "1px 4px" }}>
             {t("external.badge")}
           </span>
         )}
@@ -2019,23 +2019,23 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {shownAmount != null && !editingAmount && (
         <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginTop: "4px", display: "flex", alignItems: "baseline", gap: "4px" }}>
           {formatMoney(shownAmount, deal.currency, { compact: true })}
-          <span style={{ fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
+          <span style={{ fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
           {(deal.status === "intro" || deal.status === "due_diligence" || deal.status === "term_sheet") && (
             <button onClick={(e) => { e.stopPropagation(); setAmountDraft(String(shownAmount ?? "")); setEditingAmount(true); }}
               aria-label={t("deals.editAmountAria")} title={t("deals.editAmountAria")}
-              style={{ background: "none", border: "none", padding: "0 2px", cursor: "pointer", color: "var(--cr-ink-4)", fontSize: "10px", lineHeight: 1 }}>
+              style={{ background: "none", border: "none", padding: "0 2px", cursor: "pointer", color: "var(--cr-ink-4)", fontSize: "11px", lineHeight: 1 }}>
               ✎
             </button>
           )}
         </p>
       )}
       {editingAmount && (
-        <p style={{ marginTop: "4px", display: "flex", alignItems: "center", gap: "6px" }} onClick={(e) => e.stopPropagation()}>
+        <p style={{ marginTop: "4px", display: "flex", alignItems: "center", gap: "8px" }} onClick={(e) => e.stopPropagation()}>
           <input type="number" value={amountDraft} min={1} autoFocus
             onChange={(e) => setAmountDraft(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") void saveAmount(); if (e.key === "Escape") setEditingAmount(false); }}
-            style={{ width: "110px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", padding: "3px 6px", outline: "none" }} />
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
+            style={{ width: "110px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{getCurrency(deal.currency).code}</span>
           <button onClick={() => void saveAmount()}
             style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)" }}>{t("common.save")}</button>
         </p>
@@ -2061,7 +2061,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           const critical = days > sla * 2;
           return (
             <span style={{
-              fontFamily: "'DM Sans', sans-serif", fontWeight: over ? 600 : 500, fontSize: "10px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: over ? 600 : 500, fontSize: "11px",
               color: critical ? "var(--cr-down)" : over ? "var(--cr-copper)" : "var(--cr-ink-3)",
               background: critical ? "var(--cr-down-bg)" : over ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
               border: critical ? "1px solid var(--cr-down-bg)" : over ? "1px solid var(--cr-copper-br)" : "none",
@@ -2073,7 +2073,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         })()}
 
         {isActive && daysSince(deal.updated_at) > 21 && (
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "3px", padding: "1px 8px" }}>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-down)", background: "var(--cr-down-bg)", border: "1px solid var(--cr-down-bg)", borderRadius: "3px", padding: "1px 8px" }}>
             {t("deals.staleBadge", { n: daysSince(deal.updated_at) })}
           </span>
         )}
@@ -2123,7 +2123,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {/* Outcome dates. closed_at / passed_at are written now, so a concluded
           deal can say when rather than just that. */}
       {(deal.closed_at || deal.passed_at) && (
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "8px" }}>
           {deal.closed_at
             ? t("deals.closedOn", { date: formatDate(deal.closed_at) })
             : t("deals.passedOn", { date: formatDate(deal.passed_at as string) })}
@@ -2189,13 +2189,13 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
         const serverCt = ((deal as unknown as { commitment_type?: string | null }).commitment_type ?? null) as CommitmentType | null;
         const ct = commitDraft === undefined ? serverCt : commitDraft;
         const chipStyle = (active: boolean): React.CSSProperties => ({
-          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", cursor: "pointer",
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 8px", borderRadius: "3px", cursor: "pointer",
           background: active ? "var(--cr-copper-bg)" : "var(--cr-paper-2)", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
           border: `1px solid ${active ? "var(--cr-copper-br)" : "var(--cr-rule-dark)"}`,
         });
         return (
           <div style={{ marginTop: "8px" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{t("deals.commitmentLabel")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("deals.commitmentLabel")}</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: "4px" }}>
               <InfoTip termKey="glossary.softCircle" />
               {(["interest", "soft_circle", "verbal", "committed"] as CommitmentType[]).map((c) => (
@@ -2292,7 +2292,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", marginBottom: "2px" }}>
             {t("deals.closeProposedAt", { amount: formatMoney(Number(deal.close_proposed_amount ?? 0), deal.close_proposed_currency || deal.currency || DEFAULT_CURRENCY) })}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.closeProposedHint")}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>{t("deals.closeProposedHint")}</p>
           <button onClick={() => setShowCloseForm(true)}
             style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px", background: "var(--cr-up)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "8px 0", cursor: "pointer" }}>
             <CheckCircle2 style={{ width: 12, height: 12 }} /> {t("deals.reviewClose")}
@@ -2344,10 +2344,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
               </p>
             </div>
           )}
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px" }}>
             {t("deals.feeNotice")}
           </p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", marginBottom: "12px", lineHeight: 1.5 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "12px", lineHeight: 1.5 }}>
             {t("deals.moneyWorks")}
           </p>
           <div style={{ display: "flex", gap: "8px" }}>
@@ -2375,7 +2375,7 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
       {(deal.status === "closed" || deal.status === "term_sheet") && <FundingBlock deal={deal} viewAs={viewAs} />}
 
       {deal.success_fee_invoiced && (
-        <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "2px 8px" }}>
+        <span style={{ display: "inline-block", marginTop: "8px", background: "var(--cr-up-bg)", border: "1px solid var(--cr-up-bg)", color: "var(--cr-up)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "3px", padding: "2px 8px" }}>
           {t("deals.invoiceSent")}
         </span>
       )}
@@ -2685,7 +2685,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
               {/* With nothing in the pipeline, browsing counterparts is the
                   way forward, so it carries the accent; New Deal stays, quiet. */}
               <Link href={browseHref}
-                style={{ display: "inline-flex", alignItems: "center", height: "40px", background: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "0 20px", textDecoration: "none" }}>
+                style={{ display: "inline-flex", alignItems: "center", height: "40px", background: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "0 16px", textDecoration: "none" }}>
                 {browseLabel}
               </Link>
               <button onClick={() => setShowNewDeal(true)}
@@ -2735,7 +2735,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: "16px" }}>
             {metrics.map((m, i) => (
               <div key={m.key} title={m.hint} style={{ padding: i === 0 ? "12px 24px 12px 0" : "12px 24px", borderLeft: i === 0 ? "none" : "1px solid var(--cr-rule)" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{m.label}{m.tip && <InfoTip termKey={m.tip} />}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{m.label}{m.tip && <InfoTip termKey={m.tip} />}</p>
                 <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: m.caption ? "var(--cr-ink-4)" : m.accent ? "var(--cr-copper)" : "var(--cr-ink)", marginTop: "4px" }}>
                   {m.value}
                   {m.caption && <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", letterSpacing: 0, marginLeft: "8px" }}>{m.caption}</span>}
@@ -2913,7 +2913,7 @@ export function DealKanban({ deals, onStatusChange, onDealClose, viewAs, revealI
                   { label: t("deals.sortFollowUp"), tip: tipKey(t, FOLLOW_UP_TIP.key, FOLLOW_UP_TIP.fallback) },
                   { label: t("deals.csvUpdated") },
                 ]).map(({ label, tip }) => (
-                  <th key={label} style={{ textAlign: "left", padding: "8px 12px", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}{tip && <InfoTip termKey={tip} />}</th>
+                  <th key={label} style={{ textAlign: "left", padding: "8px 12px", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}{tip && <InfoTip termKey={tip} />}</th>
                 ))}
               </tr>
             </thead>

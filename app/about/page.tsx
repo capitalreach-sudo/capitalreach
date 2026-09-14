@@ -39,7 +39,7 @@ export default async function AboutPage() {
       {/* Hero -- eyebrow ruled label, serif italic display, one quiet sub. */}
       <section style={{ background: "var(--cr-paper)" }}>
         <div className="max-w-[880px] mx-auto px-6 md:px-10 py-16 md:py-24">
-          <div className="ruled-label" style={{ marginBottom: "28px" }}>
+          <div className="ruled-label" style={{ marginBottom: "24px" }}>
             {t("about.metaTitle")}
           </div>
           <h1
@@ -91,10 +91,10 @@ export default async function AboutPage() {
               >
                 {t("about.missionTitle")}
               </h2>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", lineHeight: 1.7, maxWidth: "62ch" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", lineHeight: 1.7, maxWidth: "62ch" }}>
                 {t("about.missionP1")}
               </p>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-band-ink-dim)", lineHeight: 1.7, maxWidth: "62ch", marginTop: "16px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", lineHeight: 1.7, maxWidth: "62ch", marginTop: "16px" }}>
                 {t("about.missionP2")}
               </p>
             </div>
@@ -107,9 +107,9 @@ export default async function AboutPage() {
               ].map(stat => (
                 <div
                   key={stat.label}
-                  style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", padding: "20px 0", borderBottom: "1px solid var(--cr-copper-br)" }}
+                  style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", padding: "16px 0", borderBottom: "1px solid var(--cr-copper-br)" }}
                 >
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-band-ink-dim)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {stat.label}
                   </span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-copper)", lineHeight: 1 }}>
@@ -158,7 +158,7 @@ export default async function AboutPage() {
                   <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "6px" }}>
                     {title}
                   </h3>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13.5px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "58ch" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "58ch" }}>
                     {desc}
                   </p>
                 </div>

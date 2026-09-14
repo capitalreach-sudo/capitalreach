@@ -32,8 +32,9 @@ import { CURRENCIES, DEFAULT_CURRENCY, formatMoney, type CurrencyCode } from "@/
 // ── House register (docs/DESIGN-SPEC.md) ────────────────────────────────────
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const DATA: CSSProperties = {
@@ -48,9 +49,9 @@ const BODY: CSSProperties = {
 
 const FIELD: CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
-  fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)",
+  fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)",
   background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px", padding: "10px 12px", width: "100%", minWidth: 0,
+  borderRadius: "4px", padding: "12px 12px", width: "100%", minWidth: 0,
   minHeight: "40px",
 };
 

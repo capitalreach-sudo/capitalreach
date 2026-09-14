@@ -12,10 +12,11 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { brand } from "@/lib/brand";
 
-// House Label type for the rule-separated contact rows.
+// House Label type for the rule-separated contact rows -- the one caps
+// voice: 11px/500/0.08em on ink-3.
 const ROW_LABEL: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
+  color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em",
   marginBottom: "4px",
 };
 
@@ -104,7 +105,7 @@ export default function ContactPage() {
             >
               {t("contact.title")}
             </h1>
-            <p style={{ ...ROW_BODY, fontSize: "14px", marginTop: "12px" }}>
+            <p style={{ ...ROW_BODY, fontSize: "15px", marginTop: "12px" }}>
               {t("contact.subtitle")}
             </p>
 
@@ -133,7 +134,7 @@ export default function ContactPage() {
 
               {isInstitutional && (
                 <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "4px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px", display: "flex", alignItems: "center", gap: "8px" }}>
                     <span aria-hidden style={{ color: "var(--cr-copper)" }}>✦</span>
                     {t("contact.enterpriseTitle")}
                   </p>
@@ -164,7 +165,7 @@ export default function ContactPage() {
                 >
                   {t("contact.messageSentTitle")}
                 </h2>
-                <p style={{ ...ROW_BODY, fontSize: "14px" }}>
+                <p style={{ ...ROW_BODY, fontSize: "15px" }}>
                   {t("contact.messageSentDesc", { name: name.split(" ")[0] }).split("{email}")[0]}
                   <strong className="text-cr-i2" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px" }}>{email}</strong>
                   {t("contact.messageSentDesc", { name: name.split(" ")[0] }).split("{email}")[1]}
@@ -200,7 +201,7 @@ export default function ContactPage() {
                         key={s.value}
                         type="button"
                         onClick={() => setSubject(s.value)}
-                        className={`min-h-[40px] px-3 rounded-[3px] border text-[11px] font-medium uppercase tracking-[0.06em] transition-colors ${
+                        className={`min-h-[40px] px-3 rounded-[4px] border text-[11px] font-medium uppercase tracking-[0.08em] transition-colors ${
                           subject === s.value
                             ? "bg-[var(--cr-copper-bg)] border-[var(--cr-copper-br)] text-cr-copper"
                             : "border-cr-p4 text-cr-i3 hover:border-cr-i4 hover:text-cr-i2"

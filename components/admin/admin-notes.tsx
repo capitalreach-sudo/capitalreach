@@ -50,10 +50,11 @@ export function AdminNotes({ targetType, targetId }: {
   }
 
   return (
-    <section className="border border-cr-p4 rounded-xl p-4 mt-4">
+    // Card radius on the 6px step.
+    <section className="border border-cr-p4 rounded-[6px] p-4 mt-4">
       <div className="flex items-center gap-2 mb-3">
         <StickyNote className="h-4 w-4 text-cr-copper" />
-        <h3 className="text-sm font-semibold text-cr-ink">{t("adminNotes.title")}</h3>
+        <h3 className="text-[13px] font-semibold text-cr-ink">{t("adminNotes.title")}</h3>
         <span className="text-[11px] text-cr-i4">{t("adminNotes.privateHint")}</span>
       </div>
 
@@ -61,7 +62,7 @@ export function AdminNotes({ targetType, targetId }: {
         <input value={draft} onChange={e => setDraft(e.target.value.slice(0, 2000))}
           onKeyDown={e => { if (e.key === "Enter") void add(); }}
           placeholder={t("adminNotes.placeholder")}
-          className="flex-1 text-sm border rounded-lg px-3 py-1.5 bg-cr-paper text-cr-ink" />
+          className="flex-1 text-[13px] border rounded-[4px] px-3 py-2 bg-cr-paper text-cr-ink" />
         <button onClick={add} disabled={busy || !draft.trim()}
           className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("adminNotes.add")}</button>
       </div>
@@ -75,7 +76,7 @@ export function AdminNotes({ targetType, targetId }: {
           {notes.map(n => (
             <li key={n.id} className="flex items-start justify-between gap-3 border-t border-cr-p4 pt-2">
               <div className="min-w-0">
-                <p className="text-sm text-cr-ink break-words">{n.body}</p>
+                <p className="text-[13px] text-cr-ink break-words">{n.body}</p>
                 <p className="text-[11px] text-cr-i4 mt-0.5">
                   {n.authorName ?? t("adminNotes.unknownAuthor")} · <span className="font-mono">{new Date(n.created_at).toLocaleString()}</span>
                 </p>

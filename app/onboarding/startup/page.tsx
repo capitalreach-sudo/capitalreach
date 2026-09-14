@@ -15,12 +15,13 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Shared style tokens ────────────────────────────────────────
+// 4px: control radius. 15px: what the founder types is reading text.
 const iStyle: React.CSSProperties = {
   width: "100%", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
-  background: "var(--cr-paper-2)", padding: "10px 12px",
+  background: "var(--cr-paper-2)", padding: "8px 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "14px", color: "var(--cr-ink)", outline: "none",
+  fontSize: "15px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
 };
 // Numbers are data: numeric and date inputs render in mono like every
@@ -30,14 +31,15 @@ const iMono: React.CSSProperties = {
 };
 const taStyle: React.CSSProperties = { ...iStyle, resize: "none" };
 const selStyle: React.CSSProperties = { ...iStyle, cursor: "pointer" };
+// The one caps-label voice: 11px/500/0.08em on ink-3.
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
-  letterSpacing: "0.08em", display: "block", marginBottom: "6px",
+  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
+  letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
 const hintSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "6px", marginTop: "2px",
+  fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px", marginTop: "2px",
 };
 // Mono adornment ($ / %) inside inputs -- currency and percent are data.
 const adornSt: React.CSSProperties = {
@@ -48,19 +50,20 @@ const adornSt: React.CSSProperties = {
 // House buttons: one copper pill per view; secondary is a hairline outline
 // pill; back is a quiet text link. Light-on-copper comes from --cr-band-ink,
 // which is light in every register, so no hex ever enters the component.
+// 4px: a rectangular button is never a pill.
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   background: "var(--cr-copper)", color: "var(--cr-on-accent)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
   fontSize: "13px", height: "42px", padding: "0 24px",
-  borderRadius: "999px", border: "none", cursor: "pointer", flexShrink: 0,
+  borderRadius: "4px", border: "none", cursor: "pointer", flexShrink: 0,
 };
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   border: "1px solid var(--cr-paper-4)", color: "var(--cr-ink)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "13px", height: "42px", padding: "0 20px",
-  borderRadius: "999px", background: "transparent", cursor: "pointer", flexShrink: 0,
+  fontSize: "13px", height: "42px", padding: "0 16px",
+  borderRadius: "4px", background: "transparent", cursor: "pointer", flexShrink: 0,
 };
 const quietBtn: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: "6px",
@@ -72,7 +75,8 @@ const quietBtn: React.CSSProperties = {
 // Plans render as one ruled ledger, not stacked cards; inside it, structure
 // is hairline rules.
 const optionList: React.CSSProperties = {
-  border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden",
+  // 6px: the ruled list is a panel.
+  border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", overflow: "hidden",
 };
 
 function onFocusCopper(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
@@ -562,7 +566,7 @@ export default function StartupOnboardingPage() {
             <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <TrendingUp style={{ width: 14, height: 14, color: "var(--cr-on-accent)" }} />
             </div>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>CapitalReach</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)" }}>CapitalReach</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
             <div className="w-16 sm:w-40" style={{ height: "3px", background: "var(--cr-rule)", borderRadius: "2px", overflow: "hidden" }}>
@@ -589,8 +593,8 @@ export default function StartupOnboardingPage() {
                       onClick={() => s.id < step && setStep(s.id)}
                       disabled={s.id > step}
                       style={{
-                        width: "100%", textAlign: "left", display: "flex", alignItems: "center", gap: "10px",
-                        padding: "10px 12px", borderRadius: "4px", border: "none",
+                        width: "100%", textAlign: "left", display: "flex", alignItems: "center", gap: "8px",
+                        padding: "8px 12px", borderRadius: "4px", border: "none",
                         background: active ? "var(--cr-copper-bg)" : "transparent",
                         boxShadow: active ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
                         cursor: done ? "pointer" : active ? "default" : "not-allowed",
@@ -628,7 +632,7 @@ export default function StartupOnboardingPage() {
               ))}
             </div>
 
-            <div className="p-4 sm:p-8" style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow)" }}>
+            <div className="p-4 sm:p-8" style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "6px", boxShadow: "var(--cr-card-shadow)" }}>
 
               {/* ─── STEP 1: Company ────────────────────────────────── */}
               {step === 1 && (
@@ -775,7 +779,7 @@ export default function StartupOnboardingPage() {
                       // nested in the card. The mono index is the rail.
                       <div key={i} style={{ borderTop: i === 0 ? "none" : "1px solid var(--cr-rule)", paddingTop: i === 0 ? 0 : "24px" }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                             <span style={{ width: 28, height: 28, borderRadius: "999px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "inline-flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", flexShrink: 0 }}>
                               {String(i + 1).padStart(2, "0")}
                             </span>
@@ -1005,7 +1009,7 @@ export default function StartupOnboardingPage() {
                         <span style={{ ...adornSt, left: "12px" }}>$</span>
                         <input type="number" value={fundingTarget} onChange={e => setFundingTarget(e.target.value)}
                           placeholder="2000000" onFocus={onFocusCopper} onBlur={onBlurRule}
-                          style={{ ...iMono, paddingLeft: "26px", fontWeight: 600, fontSize: "16px" }} />
+                          style={{ ...iMono, paddingLeft: "26px", fontWeight: 600, fontSize: "15px" }} />
                       </div>
                     </div>
                     <div>
@@ -1042,7 +1046,7 @@ export default function StartupOnboardingPage() {
 
                   {/* The fee note is a copper moment -- green stays reserved
                       for money direction. */}
-                  <div style={{ marginTop: "24px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px" }}>
+                  <div style={{ marginTop: "24px", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "16px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.55 }}>
                       <strong style={{ fontWeight: 600, color: "var(--cr-copper)" }}>{t("onboarding.su.feeTitle")}</strong> {t("onboarding.su.feeBody")}
                     </p>
@@ -1056,7 +1060,7 @@ export default function StartupOnboardingPage() {
                   <StepHead n={6} label={t(STEPS[5].labelKey)} title={t("onboarding.su.h6")} sub={t("onboarding.su.h6Sub")} />
 
                   <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                    <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 24px", display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-paper-2)" }}>
+                    <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px 24px", display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-paper-2)" }}>
                       <Upload style={{ width: 22, height: 22, color: "var(--cr-copper)", flexShrink: 0 }} />
                       <div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "2px" }}>{t("onboarding.su.uploadTitle")}</p>
@@ -1083,7 +1087,7 @@ export default function StartupOnboardingPage() {
                 <div>
                   <StepHead n={7} label={t(STEPS[6].labelKey)} title={t("onboarding.su.h7")} sub={t("onboarding.su.h7Sub")} />
 
-                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px", marginBottom: "24px" }}>
+                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "16px", marginBottom: "24px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.su.unlocksTitle")}</p>
                     <div className="form-row-2" style={{ gap: "6px" }}>
                       {[
@@ -1092,7 +1096,7 @@ export default function StartupOnboardingPage() {
                         ["Growth", t("onboarding.su.unlockGrowth")],
                       ].map(([tier, desc]) => (
                         <div key={tier} style={{ display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
-                          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
+                          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "11px", flexShrink: 0 }}>✦</span>
                           <span><strong>{tier}:</strong> {desc}</span>
                         </div>
                       ))}
@@ -1129,11 +1133,11 @@ export default function StartupOnboardingPage() {
                       }}>
                         <div className="flex flex-wrap items-start justify-between" style={{ gap: "12px", marginBottom: "12px" }}>
                           <div style={{ minWidth: 0 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)" }}>{plan.name}</span>
-                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: plan.highlight ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{plan.price}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{plan.name}</span>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: plan.highlight ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{plan.price}</span>
                               {plan.highlight && (
-                                <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
+                                <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "3px 8px", borderRadius: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("onboarding.su.mostPopular")}</span>
                               )}
                             </div>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{plan.desc}</p>

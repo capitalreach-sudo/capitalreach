@@ -27,7 +27,7 @@ export function MessagesIcon() {
     >
       <MessageSquare className="h-4 w-4" />
       {unread > 0 && (
-        <span style={{ position: "absolute", top: "-5px", right: "-6px", minWidth: "15px", height: "15px", padding: "0 3px", borderRadius: "8px", background: "var(--cr-copper)", color: "#fff", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+        <span style={{ position: "absolute", top: "-5px", right: "-6px", minWidth: "16px", height: "16px", padding: "0 4px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
           {unread > 9 ? "9+" : unread}
         </span>
       )}

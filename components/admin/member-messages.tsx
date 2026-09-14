@@ -62,9 +62,10 @@ const WITHHOLD_MARK = "[contact details withheld until a deal is open]";
 const UI = "'DM Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
 
+// Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
 const label: React.CSSProperties = {
-  fontFamily: UI, fontWeight: 500, fontSize: "10px", letterSpacing: "0.07em",
-  textTransform: "uppercase", color: "var(--cr-ink-4)",
+  fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em",
+  textTransform: "uppercase", color: "var(--cr-ink-3)",
 };
 
 const dateFigure: React.CSSProperties = {
@@ -78,7 +79,7 @@ const prose: React.CSSProperties = {
 };
 
 const bodyText: React.CSSProperties = {
-  fontFamily: UI, fontWeight: 300, fontSize: "14px", lineHeight: 1.65,
+  fontFamily: UI, fontWeight: 300, fontSize: "15px", lineHeight: 1.65,
   color: "var(--cr-ink)", margin: 0,
   whiteSpace: "pre-wrap", overflowWrap: "anywhere",
 };
@@ -90,10 +91,11 @@ const textBtn: React.CSSProperties = {
   fontFamily: UI, fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)",
 };
 
+// Caps-label spec on the chip; copper marks withheld evidence -- semantic.
 const chip: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", borderRadius: "3px",
-  padding: "2px 7px", fontFamily: UI, fontWeight: 500, fontSize: "10px",
-  letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
+  display: "inline-flex", alignItems: "center", borderRadius: "4px",
+  padding: "2px 8px", fontFamily: UI, fontWeight: 500, fontSize: "11px",
+  letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap",
   color: "var(--cr-copper)", background: "var(--cr-copper-bg)",
   border: "1px solid var(--cr-copper-br)",
 };
@@ -452,7 +454,7 @@ export function MemberMessages({ memberType, memberId, memberName }: {
                     const spans = m.bodyOriginal ? alignWithheld(m.body, m.bodyOriginal) : null;
                     return (
                       <li key={m.id} style={{ padding: "16px 0", borderBottom: "1px solid var(--cr-rule)" }}>
-                        <div style={{ display: "flex", alignItems: "baseline", gap: "10px", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
                           <span style={{ fontFamily: UI, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                             {m.senderName || (m.fromMember ? t("memberMessages.fromMember") : t("memberMessages.fromCounterparty"))}
                           </span>
@@ -473,7 +475,7 @@ export function MemberMessages({ memberType, memberId, memberName }: {
                         <div style={{
                           marginTop: "8px", paddingInlineStart: "12px",
                           borderInlineStart: `2px solid ${m.fromMember ? "var(--cr-copper)" : "var(--cr-paper-4)"}`,
-                          display: "flex", flexDirection: "column", gap: "10px",
+                          display: "flex", flexDirection: "column", gap: "12px",
                         }}>
                           {m.bodyOriginal && (
                             <p style={{ ...label, margin: 0 }}>{t("memberMessages.deliveredLabel")}</p>
@@ -546,7 +548,7 @@ export function MemberMessages({ memberType, memberId, memberName }: {
                   </span>
                   <button type="button" onClick={() => openId && void openThread(openId, more.loaded)}
                     style={{
-                      minHeight: "40px", padding: "0 20px", borderRadius: "999px",
+                      minHeight: "40px", padding: "0 16px", borderRadius: "999px",
                       background: "transparent", border: "1px solid var(--cr-rule-dark)",
                       color: "var(--cr-ink)", cursor: "pointer",
                       fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",

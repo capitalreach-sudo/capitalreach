@@ -113,7 +113,8 @@ export function Sparkline({ points, values, format, width = 64, height = 20 }: {
           left: `${(xOf(heldPt!.i) / width) * 100}%`,
           transform: `translateX(${heldPt!.i > points.length / 2 ? "-90%" : "-10%"})`,
           background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
-          borderRadius: 3, padding: "2px 6px", pointerEvents: "none", zIndex: 2,
+          // 4px: control-scale radius; 10px is chart-annotation size (exempt).
+          borderRadius: 4, padding: "2px 6px", pointerEvents: "none", zIndex: 2,
           fontFamily: "'JetBrains Mono', monospace", fontSize: 10,
           fontVariantNumeric: "tabular-nums", color: "var(--cr-ink)", whiteSpace: "nowrap",
         }}>

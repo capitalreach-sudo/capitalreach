@@ -46,8 +46,9 @@ import { notify } from "@/components/ui/toast-notify";
  */
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const PRIMARY: CSSProperties = {
@@ -61,7 +62,7 @@ const PRIMARY: CSSProperties = {
 const QUIET: CSSProperties = {
   display: "inline-flex", alignItems: "center", justifyContent: "center",
   background: "transparent", border: "1px solid var(--cr-paper-4)",
-  borderRadius: "999px", padding: "0 20px", minHeight: "40px", cursor: "pointer",
+  borderRadius: "999px", padding: "0px 16px", minHeight: "40px", cursor: "pointer",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
   color: "var(--cr-ink)", textDecoration: "none",
 };
@@ -227,7 +228,7 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
     );
   } else if (pending && pending.fromSide === "startup") {
     control = (
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px" }}>
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "8px" }}>
         <Link href="/deals" style={{ ...QUIET, borderColor: "var(--cr-copper-br)", color: "var(--cr-copper)" }}>
           {t("offerButton.countered")}
         </Link>
@@ -236,7 +237,7 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
     );
   } else if (pending) {
     control = (
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px" }}>
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "8px" }}>
         <Link href="/deals" style={QUIET}>{t("offerButton.sent")}</Link>
         {caption(t("offerButton.waiting"))}
       </span>
@@ -251,7 +252,7 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
     // reached this way, so the link lands on the signature itself.
     const href = state.dealId ? `/deals?deal=${state.dealId}` : "/deals";
     control = (
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px", maxWidth: "320px" }}>
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "8px", maxWidth: "320px" }}>
         <Link href={href} style={{ ...QUIET, borderColor: "var(--cr-copper-br)", color: "var(--cr-copper)" }}>
           {t("offerButton.seal")} →
         </Link>
@@ -264,7 +265,7 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
     // standing where the offer button was supposed to be, which is the one
     // reading of this state that must not be available.
     control = (
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px", maxWidth: "320px" }}>
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "8px", maxWidth: "320px" }}>
         <Link href="/dashboard/investor/settings#accreditation"
           style={{ ...QUIET, borderColor: "var(--cr-copper-br)", color: "var(--cr-copper)" }}>
           {t("offerButton.certify")} →
@@ -276,7 +277,7 @@ export function OfferButton({ startupId, companyName, ask, acked = true, onNeeds
     control = (
       // Capped: the caption is a sentence, and an uncapped column stretches
       // the row it shares with every other action on the listing.
-      <span style={{ display: "inline-flex", flexDirection: "column", gap: "6px", maxWidth: "320px" }}>
+      <span style={{ display: "inline-flex", flexDirection: "column", gap: "8px", maxWidth: "320px" }}>
         <button type="button" onClick={startOffer} style={PRIMARY} className="btn-copper-shimmer">
           {t("offerButton.make")}
         </button>

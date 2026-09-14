@@ -74,24 +74,24 @@ export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investo
   const used = (invites ?? []).filter(i => i.accepted_at);
 
   return (
-    <section className="border border-cr-p4 rounded-xl p-5">
+    <section className="border border-cr-p4 rounded-md p-4">
       <div className="flex items-center gap-2 mb-1">
         <UserPlus className="h-4 w-4 text-cr-copper" />
         <h2 className="font-bold text-cr-ink">{t("invite.title")}</h2>
       </div>
-      <p className="text-sm text-cr-i4 mb-4">{t("invite.intro")}</p>
+      <p className="text-[13px] text-cr-i4 mb-4">{t("invite.intro")}</p>
 
       <div className="flex flex-wrap gap-2 mb-4">
         <select value={role} onChange={e => setRole(e.target.value as "startup" | "investor")}
-          className="text-sm border rounded-lg px-2 py-1.5 bg-cr-paper text-cr-ink">
+          className="text-[13px] border rounded px-2 py-1.5 bg-cr-paper text-cr-ink">
           <option value="investor">{t("invite.roleInvestor")}</option>
           <option value="startup">{t("invite.roleFounder")}</option>
         </select>
         <input value={note} onChange={e => setNote(e.target.value.slice(0, 120))}
           placeholder={t("invite.notePh")}
-          className="flex-1 min-w-[160px] text-sm border rounded-lg px-3 py-1.5 bg-cr-paper text-cr-ink" />
+          className="flex-1 min-w-[160px] text-[13px] border rounded px-3 py-1.5 bg-cr-paper text-cr-ink" />
         <button onClick={create} disabled={busy}
-          className="text-xs font-semibold rounded-lg px-3 py-1.5 disabled:opacity-50" style={{ background: "var(--cr-band-bg)", color: "var(--cr-band-ink)" }}>
+          className="text-xs font-semibold rounded px-3 py-1.5 disabled:opacity-50" style={{ background: "var(--cr-band-bg)", color: "var(--cr-band-ink)" }}>
           {t("invite.create")}
         </button>
       </div>

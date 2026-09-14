@@ -79,8 +79,9 @@ export function FundraiseChecklist({
   const measurable = steps.filter((s) => s.key !== "preview").length;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+    // Card internals sit on the 24px step of the spacing scale.
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
         <ListChecks style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
         <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
           {t("fundraise.title")}
@@ -99,8 +100,8 @@ export function FundraiseChecklist({
             key={s.key}
             href={s.href}
             style={{
-              display: "flex", alignItems: "baseline", gap: "10px",
-              padding: "8px 2px", textDecoration: "none",
+              display: "flex", alignItems: "baseline", gap: "8px",
+              padding: "8px 4px", textDecoration: "none",
               borderBottom: "1px solid var(--cr-rule)",
             }}
           >
@@ -120,7 +121,7 @@ export function FundraiseChecklist({
               {t(`fundraise.step_${s.key}`)}
             </span>
             {s.detail && (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)" }}>{s.detail}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.detail}</span>
             )}
             {s.done !== true && (
               <span style={{ marginInlineStart: "auto", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", whiteSpace: "nowrap" }}>

@@ -15,6 +15,7 @@ import { InfoTip } from "@/components/shared/info-tip";
 import { ShareLinks } from "@/components/startup/share-links";
 import type { BenchmarkResult } from "@/lib/benchmarks";
 import { CapTableCard } from "@/components/dashboard/cap-table-card";
+import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { notify } from "@/components/ui/toast-notify";
@@ -81,7 +82,9 @@ function StatusBadge({ status }: { status: string }) {
   };
   const s = styles[status] || styles.draft;
   return (
-    <span style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+    // Caps-label spec (11/500/0.08em); the chip keeps its semantic status
+    // color -- state color is meaning, not decoration.
+    <span style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
       {labelKeys[status] ? t(labelKeys[status]) : status.replace(/_/g, " ")}
     </span>
   );
@@ -216,9 +219,10 @@ function MatchRadar() {
       {types.length > 1 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "16px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}>
           {types.map(([type, n]) => (
-            <span key={type} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "4px 8px" }}>
+            <span key={type} style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", padding: "4px 8px" }}>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-ink-2)" }}>{n}</span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{type.replace(/_/g, " ")}</span>
+              {/* Caps-label spec: 11/500/0.08em ink-3. */}
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{type.replace(/_/g, " ")}</span>
             </span>
           ))}
         </div>
@@ -260,13 +264,14 @@ function EngagementPanel() {
       <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>
         {t("engagement.title")}
       </h3>
-      {/* An instrument strip in miniature: each figure stands on its own
-          hairline tick, no grid of boxed tiles. */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(152px, 1fr))", rowGap: "24px" }}>
+      {/* Space and alignment separate the cells -- interior hairline ticks
+          between sibling metric cells are dropped; the grid gap carries the
+          structure. Caps-label spec on the labels: 11/500/0.08em ink-3. */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(152px, 1fr))", rowGap: "24px", columnGap: "16px" }}>
         {rows.map(([label, value]) => (
-          <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "0 16px" }}>
+          <div key={label}>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "22px", color: "var(--cr-ink-2)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{value}</div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginTop: "8px" }}>{label}</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>{label}</div>
           </div>
         ))}
       </div>
@@ -307,7 +312,7 @@ function SaversPanel() {
               are what the plan buys. */}
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
             {Array.from({ length: Math.min(data.count, 3) }).map((_, i) => (
-              <div key={i} style={{ height: "12px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+              <div key={i} style={{ height: "12px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "4px" }} />
             ))}
           </div>
           <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "16px", minHeight: "40px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
@@ -325,7 +330,7 @@ function SaversPanel() {
                   <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {s.firm}</span>
                 )}
               </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {t("dashboard.savedOn", { date: formatDate(s.savedAt) })}
               </span>
             </Link>
@@ -372,7 +377,7 @@ function ViewersPanel() {
         <>
           <div style={{ display: "flex", flexDirection: "column", gap: "8px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
             {Array.from({ length: Math.min(data.count, 3) }).map((_, i) => (
-              <div key={i} style={{ height: "12px", width: `${60 + i * 10}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+              <div key={i} style={{ height: "12px", width: `${60 + i * 10}%`, background: "var(--cr-paper-4)", borderRadius: "4px" }} />
             ))}
           </div>
           <Link href="/pricing" style={{ display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "16px", minHeight: "40px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
@@ -390,7 +395,7 @@ function ViewersPanel() {
                   <span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}> · {v.firm}</span>
                 )}
               </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {t("dashboard.viewedOn", { date: formatDate(v.lastViewedAt) })}
               </span>
             </Link>
@@ -408,6 +413,9 @@ function ViewersPanel() {
  * ruler.
  */
 function ViewsSparkline({ series, width = 96, height = 20 }: { series: number[]; width?: number; height?: number }) {
+  // A sparkline needs 8+ points to be a shape rather than a squiggle; below
+  // that render nothing -- no placeholder. Also guards Math.max on [].
+  if (series.length < 8) return null;
   const max = Math.max(...series);
   if (max === 0) return null;
   // marginTop auto pins the shape to the strip's baseline, so every cell's
@@ -667,7 +675,7 @@ function RaiseFunnel({ views, saves, deals, termSheets, closed }: { views: numbe
                 <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${(v / max) * 100}%`, width: `${(v / max) * 100}%`, height: "100%", background: i === steps.length - 1 ? "var(--cr-up)" : "var(--cr-copper)", opacity: i === steps.length - 1 ? 1 : 0.75 }} />
               </div>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", textAlign: "right" }}>{v.toLocaleString()}</span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "right" }}>{conv !== null ? `${conv}%` : ""}</span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "right" }}>{conv !== null ? `${conv}%` : ""}</span>
             </div>
           );
         })}
@@ -738,7 +746,7 @@ function QuestionQueue() {
               {answered.map((q) => (
                 <div key={q.id} style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", padding: "12px 0", borderTop: "1px solid var(--cr-rule)" }}>
                   <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{q.question}</span> · {q.answer}
-                  {q.is_private && <span style={{ marginLeft: 8, fontSize: "10px", color: "var(--cr-ink-4)" }}>({t("startupDetail.privateAnswer")})</span>}
+                  {q.is_private && <span style={{ marginLeft: 8, fontSize: "11px", color: "var(--cr-ink-4)" }}>({t("startupDetail.privateAnswer")})</span>}
                 </div>
               ))}
             </div>
@@ -778,7 +786,8 @@ function NdaRoster() {
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "16px" }}>{t("dashboard.rosterHint")}</p>
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead><tr>{[t("dashboard.rosterType"), t("dashboard.rosterParty"), t("dashboard.rosterWhen"), t("dashboard.rosterMethod"), "IP"].map((h) => <th key={h} style={{ ...cell, padding: "0 16px 8px 0", fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", textAlign: "left" }}>{h}</th>)}</tr></thead>
+          {/* Caps-label spec: 11/500/0.08em ink-3 (th default bold overridden). */}
+          <thead><tr>{[t("dashboard.rosterType"), t("dashboard.rosterParty"), t("dashboard.rosterWhen"), t("dashboard.rosterMethod"), "IP"].map((h) => <th key={h} style={{ ...cell, padding: "0 16px 8px 0", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", textAlign: "left" }}>{h}</th>)}</tr></thead>
           <tbody>
             {data.nda.map((r) => (
               <tr key={r.id}>
@@ -867,7 +876,7 @@ function TargetsPanel() {
                 <div style={{ display: "flex", gap: 8 }}>
                   <input value={noteDraft} onChange={(e) => setNoteDraft(e.target.value)} maxLength={1000} placeholder={t("dashboard.tgNotePh")} autoFocus
                     onKeyDown={async (e) => { if (e.key === "Enter") { if (await patchTarget(tg, { note: noteDraft })) setEditingNote(null); } if (e.key === "Escape") setEditingNote(null); }}
-                    style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+                    style={{ flex: 1, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
                   <button onClick={async () => { if (await patchTarget(tg, { note: noteDraft })) setEditingNote(null); }} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)" }}>{t("common.save")}</button>
                 </div>
               ) : (
@@ -878,7 +887,7 @@ function TargetsPanel() {
               )}
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <input type="date" value={tg.nextContactAt ?? ""} onChange={(e) => patchTarget(tg, { nextContactAt: e.target.value || null })} title={t("dashboard.tgNextContact")}
-                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: tg.nextContactAt && new Date(tg.nextContactAt) < new Date() ? "var(--cr-down)" : "var(--cr-ink-3)", padding: "4px 8px", outline: "none" }} />
+                  style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: tg.nextContactAt && new Date(tg.nextContactAt) < new Date() ? "var(--cr-down)" : "var(--cr-ink-3)", padding: "4px 8px", outline: "none" }} />
                 <button onClick={() => removeTarget(tg)} title={t("common.delete")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: 0 }}><X style={{ width: 12, height: 12 }} /></button>
               </div>
             </div>
@@ -896,7 +905,9 @@ function TargetsPanel() {
                 }
               }}
               title={t("dashboard.tsCycle")}
-              style={{ background: "transparent", border: `1px solid ${STATUS_STYLE[tg.status]?.color ?? "var(--cr-rule-dark)"}`, color: STATUS_STYLE[tg.status]?.color ?? "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", cursor: "pointer", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>
+              // Caps-label spec (11/500/0.08em); the pipeline-state color is
+              // semantic and stays.
+              style={{ background: "transparent", border: `1px solid ${STATUS_STYLE[tg.status]?.color ?? "var(--cr-rule-dark)"}`, color: STATUS_STYLE[tg.status]?.color ?? "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", cursor: "pointer", whiteSpace: "nowrap", textTransform: "uppercase", letterSpacing: "0.08em", flexShrink: 0 }}>
               {t(STATUS_STYLE[tg.status]?.label ?? "dashboard.tsToContact")}
             </button>
           </div>
@@ -979,7 +990,7 @@ function UpdateComposer() {
       {open && (
         <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginTop: "16px" }}>
           <input value={title} onChange={e => setTitle(e.target.value)} maxLength={150} placeholder={t("dashboard.updTitle")}
-            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", padding: "12px", outline: "none" }} />
+            style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", padding: "12px", outline: "none" }} />
           <button onClick={draftWithAi} disabled={drafting}
             style={{ alignSelf: "flex-start", display: "inline-flex", alignItems: "center", gap: 4, background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, minHeight: "40px", padding: "0 12px", cursor: drafting ? "wait" : "pointer" }}>
             ✦ {drafting ? t("common.loading") : t("dashboard.updDraftAi")}
@@ -988,7 +999,8 @@ function UpdateComposer() {
             style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", padding: "12px", outline: "none", resize: "vertical" }} />
           {/* Audience: savers, deal investors (closed included), or both. */}
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginRight: 4 }}>{t("dashboard.audienceLabel")}</span>
+            {/* Caps-label spec: 11/500/0.08em ink-3. */}
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginRight: 4 }}>{t("dashboard.audienceLabel")}</span>
             {(["all", "watchers", "deals"] as const).map((a) => (
               <button key={a} type="button" onClick={() => setAudience(a)} aria-pressed={audience === a}
                 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", minHeight: "40px", padding: "0 16px", borderRadius: "999px", cursor: "pointer", background: audience === a ? "var(--cr-copper)" : "transparent", color: audience === a ? "var(--cr-band-ink)" : "var(--cr-ink-3)", border: `1px solid ${audience === a ? "var(--cr-copper)" : "var(--cr-paper-4)"}` }}>
@@ -1032,11 +1044,12 @@ function UpdateComposer() {
                   <>
                     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{u.title}</p>
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{formatDate(u.created_at)}{u.updated_at ? ` · ${t("dashboard.updEditedTag")}` : ""}</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{formatDate(u.created_at)}{u.updated_at ? ` · ${t("dashboard.updEditedTag")}` : ""}</span>
                     </div>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: 4, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>{u.body}</p>
                     <div style={{ display: "flex", gap: 12, marginTop: 8, alignItems: "center" }}>
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t(AUD_KEY[u.audience] ?? "dashboard.audWatchers")}</span>
+                      {/* Caps-label spec: 11/500/0.08em ink-3. */}
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t(AUD_KEY[u.audience] ?? "dashboard.audWatchers")}</span>
                       <button onClick={() => setEditing({ id: u.id, title: u.title, body: u.body })} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", padding: 0 }}>{t("common.edit")}</button>
                       <button onClick={() => remove(u.id)} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", padding: 0 }}>{t("common.delete")}</button>
                     </div>
@@ -1267,7 +1280,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
             <div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.profileUnderReview")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.profileUnderReview")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.reviewNote")}</p>
             </div>
           </div>
@@ -1276,9 +1289,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0, marginTop: 4 }} />
             <div style={{ flex: 1 }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusRejectedTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-down)" }}>{t("dashboard.statusRejectedTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", marginTop: "4px", lineHeight: 1.5 }}>“{rejectionReason}”</p>
-              <div style={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
                 <Link href="/dashboard/startup/edit" style={{ display: "inline-flex", alignItems: "center", minHeight: "40px", marginTop: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.editAndResubmit")} →</Link>
                 {/* The queue re-entry itself. The edit link alone was a
                     dead end: saving never changed status, so a rejected
@@ -1292,7 +1305,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-copper)", flexShrink: 0 }} />
             <div style={{ flex: 1, minWidth: 200 }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.statusDraftTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.statusDraftTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusDraftBody")}</p>
             </div>
             <SubmitForReviewButton primary label={t("dashboard.submitForReview")} sending={t("dashboard.submitting")} />
@@ -1319,7 +1332,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "4px", lineHeight: 1.5 }}>{t("attest.dashBody")}</p>
           </div>
           {attestedAt ? (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-up)" }}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-up)" }}>
               <CheckCircle2 style={{ width: 14, height: 14 }} /> {formatDate(attestedAt)}
             </span>
           ) : (
@@ -1353,7 +1366,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           <div style={{ background: "var(--cr-down-bg)", border: "1px solid color-mix(in srgb, var(--cr-down) 25%, transparent)", borderRadius: "4px", padding: "16px", marginBottom: "32px", display: "flex", alignItems: "center", gap: "12px" }}>
             <AlertCircle style={{ width: 16, height: 16, color: "var(--cr-down)", flexShrink: 0 }} />
             <div>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>{t("dashboard.statusSuspendedTitle")}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-down)" }}>{t("dashboard.statusSuspendedTitle")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.statusSuspendedBody")}</p>
             </div>
           </div>
@@ -1366,7 +1379,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             figure, sparkline, link and tooltip that was here is still here. */}
         <div style={{ borderTop: "1px solid var(--cr-rule-dark)", borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "64px" }}>
           <div style={{ padding: "32px 24px" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
+            {/* Caps-label spec: 11/500/0.08em ink-3. */}
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
               {t("dashboard.profileViews")}
               {/* The headline says what it counts: visits, not visitors. A
                   founder reading 40 as forty interested investors is being
@@ -1396,7 +1410,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   role={open ? "link" : undefined} tabIndex={open ? 0 : undefined}
                   onKeyDown={open ? (e) => { if (e.key === "Enter") open(); } : undefined}
                   style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", cursor: open ? "pointer" : "default", display: "flex", flexDirection: "column" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
+                  {/* Caps-label spec: 11/500/0.08em ink-3. */}
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>
                     {label}
                     {/* The founder is being shown a number about their own
                         company that a model produced. They deserve to know what
@@ -1421,16 +1436,19 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
         {/* Tab bar. The cap table and the F10 benchmark band used to sit
             between the strip and this bar, so arrival meant three sections
-            before the first tab -- both now live under "raise progress". */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "32px", display: "flex", overflowX: "auto" }}>
-          {TABS.filter(tab => tab.value !== "ai" || canGrowth).map(({ value, label }) => (
-            <button key={value} aria-pressed={activeTab === value} onClick={() => setActiveTab(value)}
-              style={{ background: "transparent", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === value ? 600 : 300, fontSize: "13px", color: activeTab === value ? "var(--cr-ink)" : "var(--cr-ink-4)", minHeight: "40px", padding: "0 16px", whiteSpace: "nowrap", borderBottom: activeTab === value ? "2px solid var(--cr-copper)" : "2px solid transparent", transition: "color 100ms, border-color 100ms" }}>
-              {label}
-            </button>
-          ))}
-        </div>
+            before the first tab -- both now live under "raise progress".
+            The strip is the house TabStrip rather than a hand-rolled row:
+            one caps voice, roving focus, and the shared panel crossfade. */}
+        <TabStrip
+          tabs={TABS.filter(tab => tab.value !== "ai" || canGrowth).map(({ value, label }) => ({ key: value, label }))}
+          active={activeTab}
+          onSelect={setActiveTab}
+          idBase="startup-dash"
+          label={t("dashboard.startupDashboard")}
+          style={{ marginBottom: "32px" }}
+        />
 
+        <TabPanel idBase="startup-dash" active={activeTab}>
         {/* ── Overview: the state of the listing itself ── */}
         {activeTab === "overview" && (
           <div style={stack24}>
@@ -1481,7 +1499,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     /* A left rule, not a box-in-box: the copper bar is the
                        ruled-label motif carrying emphasis inside the card. */
                     <div style={{ borderLeft: "2px solid var(--cr-copper)", paddingLeft: "12px", marginBottom: "24px" }}>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
+                      {/* Caps-label spec (11/500/0.08em ink-3); the copper
+                          left rule alone carries the emphasis. */}
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
                         {t("completeness.nextBest")}
                       </p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.4 }}>
@@ -1517,11 +1537,13 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
 
             {/* Right col */}
             <div style={stack24}>
-              {/* Quick actions -- rules divide the grid, not boxes-in-boxes,
-                  and the labels stand without a row of repeated icons. */}
+              {/* Quick actions -- space separates the tiles now: the interior
+                  hairline grid is gone, alignment and the 48px row height do
+                  the structural work, and the labels stand without a row of
+                  repeated icons. */}
               <div style={panel}>
                 <h3 className="ruled-label" data-cr-visible="1" style={{ marginBottom: "16px" }}>{t("dashboard.quickActions")}</h3>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1px", background: "var(--cr-rule)" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", columnGap: "24px" }}>
                   {[
                     /* Offers first, and across both columns. It is the only
                        screen where an incoming offer is answered, and an
@@ -1538,7 +1560,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     { href: `/startups/${startup.slug}`, label: t("dashboard.publicView"), ext: true },
                   ].map(({ href, label, ext, wide }) => (
                     <Link key={label} href={href} {...(ext ? { target: "_blank" } : {})}
-                      style={{ display: "flex", alignItems: "center", minHeight: "48px", background: "var(--cr-paper-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: wide ? 500 : 400, fontSize: "12px", color: wide ? "var(--cr-ink)" : "var(--cr-ink-3)", padding: "0 12px", textDecoration: "none", ...(wide ? { gridColumn: "1 / -1" } : null) }}
+                      style={{ display: "flex", alignItems: "center", minHeight: "48px", fontFamily: "'DM Sans', sans-serif", fontWeight: wide ? 500 : 400, fontSize: "12px", color: wide ? "var(--cr-ink)" : "var(--cr-ink-3)", textDecoration: "none", ...(wide ? { gridColumn: "1 / -1" } : null) }}
                       onMouseEnter={e => ((e.currentTarget as HTMLElement).style.color = "var(--cr-ink)")}
                       onMouseLeave={e => ((e.currentTarget as HTMLElement).style.color = wide ? "var(--cr-ink)" : "var(--cr-ink-3)")}>
                       {label}
@@ -1551,7 +1573,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                   visibility unlock below. */}
               <div style={{ ...panel, padding: "16px 24px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
                 <div>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", textTransform: "capitalize" }}>{t("dashboard.tier", { tier })}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                     {tier === "free" ? t("dashboard.upgradeTierNote") : t("dashboard.activeSubscription")}
                   </p>
@@ -1580,7 +1602,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                           <span data-tip={t(row.tipKey)} tabIndex={0} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>{t(row.labelKey)}</span>
                         </div>
                         {!unlocked && "tier" in row && (
-                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px" }}>
+                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px" }}>
                             {row.tier}+
                           </span>
                         )}
@@ -1717,11 +1739,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     <div key={doc.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", padding: "16px 0", borderBottom: i < startup.documents!.length - 1 ? "1px solid var(--cr-rule)" : "none" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", minWidth: 0 }}>
                         <div>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)" }}>{doc.label}</p>
+                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{doc.label}</p>
                           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize", marginTop: "4px" }}>{doc.type.replace(/_/g, " ")}</p>
                         </div>
                         {doc.requires_nda && (
-                          <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                          <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                             {t("dashboard.ndaRequired")}
                           </span>
                         )}
@@ -1776,8 +1798,9 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 {/* The one loud thing on this view -- nothing else here is
                     bigger than 13px, so the score can hold 40. */}
                 <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "24px" }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{aiFeedback.overall_score}</span>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-4)" }}>/100</span>
+                  {/* 28, not 40: the 48px strip headline above the tabs is this page's one lead figure. */}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{aiFeedback.overall_score}</span>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)" }}>/100</span>
                 </div>
                 {/* Blocks split by rules, not boxes inside the card. */}
                 <div style={{ display: "flex", flexDirection: "column", marginBottom: "24px" }}>
@@ -1788,7 +1811,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     { key: "missing_information",     label: t("dashboard.fbMissing")     },
                   ].map(({ key, label }) => (
                     <div key={key} style={{ borderTop: "1px solid var(--cr-rule)", padding: "24px 0" }}>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>{label}</p>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px" }}>{label}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7, whiteSpace: "pre-wrap", maxWidth: "70ch" }}>{aiFeedback[key]}</p>
                     </div>
                   ))}
@@ -1821,6 +1844,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
             </p>
           </div>
         )}
+        </TabPanel>
 
         {/* F: a founder's best introduction is the investor who passed on
             them politely. Hidden when an admin is viewing as this founder --

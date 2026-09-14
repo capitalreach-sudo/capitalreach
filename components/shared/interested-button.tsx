@@ -17,7 +17,7 @@ import { notify } from "@/components/ui/toast-notify";
  */
 
 const BOX: CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: 6,
+  display: "inline-flex", alignItems: "center", gap: 8,
   borderRadius: 4, padding: "8px 16px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 13,
 };

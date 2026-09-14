@@ -58,8 +58,8 @@ export function ActivityPulse() {
         <div style={{ maxWidth: "560px" }}>
           {events.slice(0, 5).map((e, i) => (
             <div key={`${e.kind}-${e.at}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", padding: "8px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
-              <span style={{ display: "inline-flex", alignItems: "baseline", gap: "10px", minWidth: 0 }}>
-                <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
+              <span style={{ display: "inline-flex", alignItems: "baseline", gap: "8px", minWidth: 0 }}>
+                <span aria-hidden style={{ color: "var(--cr-ink-4)", fontSize: "11px", flexShrink: 0 }}>✦</span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {/* The name is withheld from viewers who may not see the
                       market, so a listing event needs a wording that does not
@@ -69,7 +69,7 @@ export function ActivityPulse() {
                     : t(KIND_KEY[e.kind], e.name ? { name: e.name } : undefined)}
                 </span>
               </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
                 {rel(e.at)}
               </span>
             </div>

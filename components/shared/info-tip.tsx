@@ -138,7 +138,7 @@ export function InfoTip({ termKey, label }: {
             width: `${Math.min(288, typeof window !== "undefined" ? window.innerWidth - 16 : 288)}px`,
             background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
             borderRadius: "4px", boxShadow: "0 6px 20px rgba(0,0,0,0.12)",
-            padding: "10px 12px",
+            padding: "12px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px",
             lineHeight: 1.5, color: "var(--cr-ink-2)", textTransform: "none",
             letterSpacing: "normal", textAlign: "left", whiteSpace: "normal",

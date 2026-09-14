@@ -140,7 +140,7 @@ export function TranslatedContent({
           display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap",
           background: active ? "var(--cr-copper-bg)" : "transparent",
           border: active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
-          borderRadius: "4px", padding: "7px 11px", marginBottom: "14px",
+          borderRadius: "4px", padding: "8px 12px", marginBottom: "16px",
         }}>
           {busy
             ? <Loader2 style={{ width: 13, height: 13, color: "var(--cr-ink-4)" }} className="animate-spin" />

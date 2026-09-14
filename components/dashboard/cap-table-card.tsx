@@ -31,9 +31,10 @@ export function CapTableCard() {
   if (!data || data.rows.length === 0) return null;
 
   return (
-    <section className="border border-cr-p4 rounded-xl p-5 mb-6" style={{ background: "var(--cr-paper-2)" }}>
+    // Card radius sits on the 6px card step; padding snaps 20 -> 24.
+    <section className="border border-cr-p4 rounded-[6px] p-6 mb-6" style={{ background: "var(--cr-paper-2)" }}>
       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-        <h2 className="font-semibold text-cr-ink inline-flex items-center gap-2 text-sm">
+        <h2 className="font-semibold text-cr-ink inline-flex items-center gap-2 text-[13px]">
           <PieChart className="h-4 w-4 text-cr-copper" /> {t("capTable.title")}
         </h2>
         {data.totalPct > 0 && (
@@ -46,8 +47,9 @@ export function CapTableCard() {
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
           <thead>
             <tr>
+              {/* Caps-label spec: 11/500/0.08em on ink-3 -- sub-11 ink-4 caps are illegal. */}
               {["investor", "amount", "ownership", "valuation", "date"].map(h => (
-                <th key={h} style={{ textAlign: "start", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", padding: "6px 12px 6px 0", borderBottom: "1px solid var(--cr-rule-dark)" }}>
+                <th key={h} style={{ textAlign: "start", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule-dark)" }}>
                   {t(`capTable.${h}`)}
                 </th>
               ))}
@@ -66,7 +68,7 @@ export function CapTableCard() {
           </tbody>
         </table>
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", marginTop: 10, lineHeight: 1.5 }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", marginTop: 12, lineHeight: 1.5 }}>
         {t("capTable.note")}
       </p>
     </section>

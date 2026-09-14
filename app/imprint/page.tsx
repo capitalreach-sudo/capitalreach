@@ -27,7 +27,8 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
   if (!value) return null;
   return (
     <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "16px 0" }}>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
+      {/* The one caps voice: 11/500/0.08em on ink-3. */}
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
         {label}
       </p>
       <p
@@ -35,7 +36,7 @@ function Row({ label, value, mono }: { label: string; value: string; mono?: bool
         style={
           mono
             ? { fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.7 }
-            : { fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", lineHeight: 1.7 }
+            : { fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", color: "var(--cr-ink)", lineHeight: 1.7 }
         }
       >
         {value}
@@ -70,7 +71,7 @@ export default async function ImprintPage() {
           >
             {t("imprint.title")}
           </h1>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", color: "var(--cr-ink-3)", lineHeight: 1.7 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.7 }}>
             {t("imprint.subtitle")}
           </p>
         </header>
@@ -90,8 +91,8 @@ export default async function ImprintPage() {
         ) : (
           /* Empty state: one diamond, one sentence -- no box. */
           <div className="text-center" style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "64px 24px" }}>
-            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "16px", display: "block", marginBottom: "12px" }}>✦</span>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("imprint.pendingTitle")}</p>
+            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "15px", display: "block", marginBottom: "12px" }}>✦</span>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("imprint.pendingTitle")}</p>
             <p className="max-w-md mx-auto" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.7 }}>
               {t("imprint.pendingBody")}
             </p>

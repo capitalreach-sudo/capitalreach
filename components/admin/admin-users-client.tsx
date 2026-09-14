@@ -28,10 +28,11 @@ type Tab = typeof TABS[number];
 const CONFIRM_PHRASE = "SUSPEND ALL";
 
 function statusStyle(status: string): React.CSSProperties {
+  // Caps-label spec (11/500/0.08em); the chip keeps its semantic status color.
   const base: React.CSSProperties = {
-    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-    borderRadius: "3px", padding: "3px 8px", textTransform: "uppercase",
-    letterSpacing: "0.05em", whiteSpace: "nowrap",
+    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+    borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase",
+    letterSpacing: "0.08em", whiteSpace: "nowrap",
   };
   if (status === "suspended") return { ...base, background: "var(--cr-down-bg)", color: "var(--cr-down)", border: "1px solid rgba(180,50,50,0.2)" };
   if (status === "banned")    return { ...base, background: "var(--cr-paper-3)", color: "var(--cr-ink)", border: "1px solid var(--cr-rule-dark)" };
@@ -41,7 +42,7 @@ function statusStyle(status: string): React.CSSProperties {
 
 const cellStyle: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px",
-  color: "var(--cr-ink-3)", padding: "12px 10px", borderBottom: "1px solid var(--cr-rule)",
+  color: "var(--cr-ink-3)", padding: "12px", borderBottom: "1px solid var(--cr-rule)",
   verticalAlign: "middle",
 };
 
@@ -210,15 +211,15 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
   return (
     <div>
       {/* Filters */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginBottom: "20px" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", marginBottom: "16px" }}>
         {TABS.map(tb => (
           <button key={tb} onClick={() => setTab(tb)}
             style={{
               background: tab === tb ? "var(--cr-ink)" : "var(--cr-paper-2)",
               border: `1px solid ${tab === tb ? "var(--cr-ink)" : "var(--cr-rule-dark)"}`,
-              borderRadius: "14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+              borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
               fontSize: "12px", color: tab === tb ? "var(--cr-paper)" : "var(--cr-ink-3)",
-              padding: "6px 13px", cursor: "pointer",
+              padding: "8px 12px", cursor: "pointer",
             }}>
             {TAB_LABEL[tb]} ({counts[tb]})
           </button>
@@ -229,7 +230,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
           style={{
             background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
             borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px",
-            color: "var(--cr-ink)", padding: "8px 10px", outline: "none", width: "220px",
+            color: "var(--cr-ink)", padding: "8px 12px", outline: "none", width: "220px",
           }} />
       </div>
 
@@ -241,8 +242,8 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
               {[t("adminUsers.colUser"), t("adminUsers.colRole"), t("adminUsers.colPlan"), t("adminUsers.colJoined"), t("adminUsers.colStatus"), t("adminUsers.colActions"), t("adminNotes.title")].map(h => (
                 <th key={h} style={{
                   textAlign: "left", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-                  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
-                  letterSpacing: "0.06em", padding: "10px", borderBottom: "1px solid var(--cr-rule-dark)",
+                  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
+                  letterSpacing: "0.08em", padding: "8px 12px", borderBottom: "1px solid var(--cr-rule-dark)",
                 }}>{h}</th>
               ))}
             </tr>
@@ -271,13 +272,13 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
                     {u.role === "admin" && (
                       myLevel === "owner" && !self ? (
                         <select value={u.admin_level ?? "support"} onChange={e => changeLevel(u, e.target.value)}
-                          style={{ marginLeft: 6, fontSize: "11px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: 3, padding: "1px 3px" }}>
+                          style={{ marginLeft: 8, fontSize: "11px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "1px 4px" }}>
                           <option value="support">support</option>
                           <option value="operator">operator</option>
                           <option value="owner">owner</option>
                         </select>
                       ) : (
-                        <span style={{ marginLeft: 6, fontSize: "10px", color: "var(--cr-ink-4)" }}>{u.admin_level ?? "support"}</span>
+                        <span style={{ marginLeft: 8, fontSize: "11px", color: "var(--cr-ink-4)" }}>{u.admin_level ?? "support"}</span>
                       )
                     )}
                   </td>
@@ -300,7 +301,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
                       {u.account_status || "active"}
                     </span>
                     {u.suspended_reason && (
-                      <div style={{ fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "3px", maxWidth: "180px" }}>
+                      <div style={{ fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", maxWidth: "180px" }}>
                         {u.suspended_reason}
                       </div>
                     )}
@@ -354,20 +355,20 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
       {/* Danger zone */}
       <div style={{
         background: "var(--cr-down-bg)", border: "1px solid rgba(180,50,50,0.15)",
-        borderRadius: "8px", padding: "24px", marginTop: "48px",
+        borderRadius: "6px", padding: "24px", marginTop: "48px",
       }}>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-down)" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-down)" }}>
           {t("adminUsers.dangerZone")}
         </p>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "6px", lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "8px", lineHeight: 1.6 }}>
           {t("adminUsers.dangerDesc")}
         </p>
-        <div style={{ display: "flex", gap: "10px", marginTop: "16px", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "12px", marginTop: "16px", flexWrap: "wrap" }}>
           <button onClick={() => setBulkStep(1)} disabled={busy === "bulk"}
             style={{
               background: "var(--cr-down)", border: "none", borderRadius: "4px",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-              color: "#fff", padding: "10px 20px", cursor: "pointer",
+              color: "#fff", padding: "12px 24px", cursor: "pointer",
             }}>
             {t("adminUsers.suspendAll")}
           </button>
@@ -375,7 +376,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
             style={{
               background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
-              color: "var(--cr-ink-3)", padding: "10px 20px", cursor: "pointer",
+              color: "var(--cr-ink-3)", padding: "12px 24px", cursor: "pointer",
             }}>
             {busy === "bulk" ? t("adminUsers.working") : t("adminUsers.unsuspendAll")}
           </button>
@@ -391,7 +392,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
           <select
             value={tierChoice}
             onChange={e => setTierChoice(e.target.value)}
-            style={{ width: "100%", height: "38px", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "0 10px", marginBottom: "16px", background: "var(--cr-paper-3)", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}
+            style={{ width: "100%", height: "38px", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "0 12px", marginBottom: "16px", background: "var(--cr-paper-3)", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)" }}
           >
             {(tierTarget.role === "startup"
               ? ["free", "starter", "growth"]
@@ -418,7 +419,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
           <select value={duration} onChange={e => setDuration(e.target.value)} style={inputStyle}>
             {DURATIONS.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
           </select>
-          <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
             <button onClick={suspend} disabled={!reason.trim() || busy === target.id}
               style={{
                 flex: 1, height: "38px", background: "var(--cr-down)", border: "none", borderRadius: "4px",
@@ -443,7 +444,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
           <label style={{ ...labelStyle, marginTop: "12px" }}>{t("adminUsers.bulkReasonLabel")}</label>
           <input type="text" value={bulkReason} onChange={e => setBulkReason(e.target.value)}
             placeholder={t("adminUsers.bulkReasonPlaceholder")} style={inputStyle} />
-          <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
             <button onClick={() => setBulkStep(2)} disabled={bulkPhrase !== CONFIRM_PHRASE}
               style={{
                 flex: 1, height: "38px", background: "var(--cr-down)", border: "none", borderRadius: "4px",
@@ -464,7 +465,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
           <p style={modalTextStyle}>
             {t("adminUsers.bulkStep2")}
           </p>
-          <div style={{ display: "flex", gap: "8px", marginTop: "20px" }}>
+          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
             <button onClick={() => bulk("suspend")} disabled={busy === "bulk"}
               style={{
                 flex: 1, height: "38px", background: "var(--cr-down)", border: "none", borderRadius: "4px",
@@ -497,15 +498,15 @@ function Modal({ title, children, onClose }: { title: string; children: React.Re
     <div role="dialog" aria-modal="true" onClick={onClose}
       style={{
         position: "fixed", inset: 0, background: "rgba(26,22,18,0.4)", zIndex: 200,
-        display: "flex", alignItems: "center", justifyContent: "center", padding: "20px",
+        display: "flex", alignItems: "center", justifyContent: "center", padding: "16px",
       }}>
       <div onClick={e => e.stopPropagation()}
         style={{
           background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "8px", width: "100%", maxWidth: "460px", padding: "28px",
+          borderRadius: "6px", width: "100%", maxWidth: "460px", padding: "24px",
         }}>
         <p style={{
-          fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px",
+          fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px",
           color: "var(--cr-ink)", marginBottom: "16px",
         }}>{title}</p>
         {children}
@@ -514,19 +515,20 @@ function Modal({ title, children, onClose }: { title: string; children: React.Re
   );
 }
 
+// Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
 const labelStyle: React.CSSProperties = {
-  display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px",
+  display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px",
 };
 
 const inputStyle: React.CSSProperties = {
   width: "100%", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
   borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px",
-  color: "var(--cr-ink)", padding: "9px 11px", outline: "none", boxSizing: "border-box",
+  color: "var(--cr-ink)", padding: "8px 12px", outline: "none", boxSizing: "border-box",
 };
 
 const ghostBtn: React.CSSProperties = {
-  height: "38px", padding: "0 18px", background: "transparent",
+  height: "38px", padding: "0 16px", background: "transparent",
   border: "1px solid var(--cr-rule-dark)", borderRadius: "4px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px",
   color: "var(--cr-ink-3)", cursor: "pointer",

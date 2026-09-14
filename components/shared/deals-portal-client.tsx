@@ -155,7 +155,7 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
                 background: "none", border: "none", cursor: "pointer",
                 borderBottom: scope === v ? "2px solid var(--cr-copper)" : "2px solid transparent",
                 marginBottom: -1, padding: "8px 16px", minHeight: 40,
-                fontFamily: "'DM Sans', sans-serif", fontWeight: scope === v ? 700 : 400, fontSize: 14,
+                fontFamily: "'DM Sans', sans-serif", fontWeight: scope === v ? 700 : 400, fontSize: 13,
                 color: scope === v ? "var(--cr-ink)" : "var(--cr-ink-4)",
                 display: "inline-flex", alignItems: "center", gap: 8,
               }}>

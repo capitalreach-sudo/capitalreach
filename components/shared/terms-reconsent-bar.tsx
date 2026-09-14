@@ -42,15 +42,15 @@ export function TermsReconsentBar() {
 
   return (
     <div role="region" aria-label={t("terms.reconsentTitle")}
-      style={{ background: "var(--cr-copper-bg)", borderBottom: "1px solid var(--cr-copper-br)", padding: "10px 24px" }}>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "center", gap: "14px", flexWrap: "wrap" }}>
+      style={{ background: "var(--cr-copper-bg)", borderBottom: "1px solid var(--cr-copper-br)", padding: "12px 24px" }}>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <p style={{ flex: 1, minWidth: "260px", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-2)", margin: 0, lineHeight: 1.5 }}>
           <strong style={{ color: "var(--cr-ink)" }}>{t("terms.reconsentTitle")}</strong>{" "}
           {t("terms.reconsentBody")}{" "}
           <Link href="/terms" style={{ color: "var(--cr-copper)" }}>{t("terms.reconsentRead")}</Link>
         </p>
         <button onClick={accept} disabled={busy}
-          style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 16px", cursor: "pointer", opacity: busy ? 0.6 : 1, whiteSpace: "nowrap" }}>
+          style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: "pointer", opacity: busy ? 0.6 : 1, whiteSpace: "nowrap" }}>
           {busy ? t("common.saving") : t("terms.reconsentAccept")}
         </button>
       </div>

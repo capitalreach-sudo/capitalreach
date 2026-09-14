@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Sparkline } from "@/components/ui/sparkline";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
@@ -23,7 +22,6 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { EntityLogo } from "@/components/shared/entity-logo";
-import { ScoreBadge } from "@/components/ui/score-badge";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -233,7 +231,7 @@ function SavedSearches({ filters, onApply, isDefault }: {
   return (
     <div style={{ background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule)" }}>
       <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)" }}>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>
           {t("startups.savedSearches")}
         </span>
 
@@ -310,7 +308,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
         style={{
           display: "inline-flex", alignItems: "center", gap: "8px",
           fontFamily: "'DM Sans', sans-serif", fontWeight: count > 0 ? 500 : 400, fontSize: "13px",
-          padding: "8px 12px", borderRadius: "3px",
+          padding: "8px 12px", borderRadius: "4px",
           border: count > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
           background: count > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
           color: count > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -353,14 +351,14 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
               zIndex: 96,
               background: "var(--cr-paper-2)",
               borderTop: "1px solid var(--cr-rule-dark)",
-              borderRadius: "12px 12px 0 0",
+              borderRadius: "6px 6px 0 0",
               boxShadow: "var(--cr-card-shadow-hover)",
               maxHeight: "70vh",
               display: "flex", flexDirection: "column",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: RHYTHM.inner, borderBottom: "1px solid var(--cr-rule)" }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
                 {label}
                 {/* Repeated in the sheet header because the 12px trigger
                     beside the chip is a poor tap target; here there is room. */}
@@ -394,7 +392,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
  */
 function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-2)", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "4px 8px 4px 12px" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-2)", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 8px 4px 12px" }}>
       {label}
       <button onClick={onRemove} aria-label={`remove ${label}`} data-tap-exempt=""
         style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
@@ -417,7 +415,7 @@ function FilterChip({ active, onClick, children, disabled, title }: { active: bo
         fontWeight:    active ? 500 : 400,
         fontSize:      "13px",
         padding:       "8px 16px",
-        borderRadius:  "3px",
+        borderRadius:  "4px",
         border:        active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
         background:    active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
         color:         disabled ? "var(--cr-ink-4)" : active ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -440,23 +438,25 @@ function FilterChip({ active, onClick, children, disabled, title }: { active: bo
  */
 function SkeletonCard() {
   return (
-    <div aria-hidden style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: RHYTHM.block, opacity: 0.55 }}>
+    <div aria-hidden style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", padding: RHYTHM.block, opacity: 0.55 }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: RHYTHM.inner }}>
         <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink-4)" }}>—</p>
+          <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink-4)" }}>—</p>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>—</p>
         </div>
       </div>
       <div style={{ display: "flex", gap: RHYTHM.pair, marginBottom: RHYTHM.inner, flexWrap: "wrap" }}>
         {[0, 1].map((i) => (
-          <span key={i} style={{ border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px" }}>—</span>
+          <span key={i} style={{ border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px" }}>—</span>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: RHYTHM.inner }}>
+      {/* No boxed cells and no interior fences: space and alignment do the
+          fencing, exactly as on the loaded card below. */}
+      <div style={{ display: "flex", gap: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: RHYTHM.inner }}>
         {[0, 1, 2].map((i) => (
-          <div key={i} style={{ padding: "8px 12px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>—</div>
+          <div key={i} style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>—</div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-4)" }}>—</div>
           </div>
         ))}
@@ -497,7 +497,7 @@ function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: 
 
 // ── Search result card ────────────────────────────────────────────────────────
 
-function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -512,20 +512,16 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
         style={{
           position: "relative", display: "flex", flexDirection: "column",
           background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "4px", padding: RHYTHM.block,
+          borderRadius: "6px", padding: RHYTHM.block,
           boxShadow: "var(--cr-card-shadow), var(--cr-card-edge)",
           transition: "background 120ms var(--ease-out)", cursor: "pointer",
         }}
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)"; }}
         onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)"; }}
       >
-        {/* The catalogue number: stable per company, derived from the id.
-            A card is a specimen in a drawer, and specimens are numbered. */}
-        {/* Right edge aligned to the card's own 24 gutter, so it sits in the
-            same column as the runway line above it instead of 8px adrift. */}
-        <span aria-hidden style={{ position: "absolute", bottom: "12px", right: "24px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "9px", letterSpacing: "0.14em", color: "var(--cr-ink-4)", opacity: 0.65 }}>
-          {"CR–" + String(parseInt(s.id.replace(/-/g, "").slice(0, 6), 16) % 10000).padStart(4, "0")}
-        </span>
+        {/* The serial number is gone with the card diet: a catalogue number
+            answers no browse decision, and its 9px type sat below the platform
+            floor. The specimen keeps its number on the detail page. */}
         {/* Save / hide / compare, stacked in ONE rail rather than three loose
             absolute offsets (14 / 38 / 60). One anchor, one 4px beat, and
             8px touch padding on each -- all three controls stay, they simply
@@ -564,7 +560,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
         <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: RHYTHM.inner, paddingRight: "32px" }}>
           <EntityLogo name={s.name} logoUrl={(s as { logo_url?: string | null }).logo_url} logoColor={(s as { logo_color?: string | null }).logo_color} size={40} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 8 }}>
+            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 8 }}>
               <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</span>
               {(s as { is_demo?: boolean }).is_demo && <DemoBadge />}
             </p>
@@ -572,7 +568,18 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
               {s.tagline}
             </p>
           </div>
-          <ScoreBadge score={score} size="md" />
+          {/* Ink, not ui/score-badge's copper: the raise figure below is
+              this card's one accent, and the badge's sub-11px caps label sat
+              below the platform floor. */}
+          {score != null && (
+            <span title={t("startup.scoreTitle", { score })} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
+                {score}
+                <span style={{ fontSize: "0.6em", color: "var(--cr-ink-4)", fontWeight: 500 }}>/100</span>
+              </span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", maxWidth: "96px", textAlign: "right", lineHeight: 1.25 }}>{t("startup.scoreLabel")}</span>
+            </span>
+          )}
         </div>
 
         {/* Badges. This row used to carry three copper things at once -- a
@@ -584,36 +591,34 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
             new and trending step down to the neutral badge family and carry
             their meaning in the word and the glyph instead of in colour.
 
-            Match joined them: ScoreBadge renders the readiness figure in
-            copper and the raise below is copper too, which is the house card's
-            established pair (components/startup/startup-card.tsx does the
-            same). A third copper thing on the same card is the count the brief
-            asks us to cut, so match keeps its weight and its figure and gives
-            up the hue. */}
+            Match joined them: the raise below is the card's one accent
+            (components/startup/startup-card.tsx spends its budget the same
+            way), so match keeps its weight and its figure and gives up the
+            hue. */}
         <div style={{ display: "flex", gap: RHYTHM.pair, marginBottom: RHYTHM.inner, flexWrap: "wrap", alignItems: "center", paddingRight: "32px" }}>
           {viewed && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
               <Eye style={{ width: 12, height: 12 }} /> {t("startups.viewed")}
             </span>
           )}
           {match !== undefined && match >= 40 && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", letterSpacing: "0.03em" }}>
+            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", letterSpacing: "0.03em" }}>
               {t("filters.matchPct", { pct: match })}
             </span>
           )}
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             {s.industry}
           </span>
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.04em" }}>
+          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
             {STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ")}
           </span>
           {isNew && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
               {t("startup.new")}
             </span>
           )}
           {(s as { trending?: boolean }).trending && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
               ▲ {t("startups.trending")}
             </span>
           )}
@@ -626,29 +631,26 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
             absent ones are simply absent, and a card with no metrics at all
             skips the strip and lets the raise row below carry it. */}
         {(() => {
-          const metrics: Array<{ label: string; val: string; color?: string; withSpark?: boolean }> = [];
-          if (s.mrr) metrics.push({ label: t("startupDetail.mrr"), val: safeFormatMRR(s.mrr) ?? "", withSpark: true });
+          const metrics: Array<{ label: string; val: string; color?: string }> = [];
+          if (s.mrr) metrics.push({ label: t("startupDetail.mrr"), val: safeFormatMRR(s.mrr) ?? "" });
           if (s.arr) metrics.push({ label: t("startupDetail.arr"), val: safeFormatMRR(s.arr) ?? "" });
+          // Ink, not up/down colour: a growth percentage on a browse card is
+          // decoration, and the accent budget is spent on the raise below.
           if (s.growth_rate) metrics.push({
             label: t("startupDetail.growth"),
             val: `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%`,
-            color: s.growth_rate > 0 ? "var(--cr-up)" : "var(--cr-down)",
           });
           if (!metrics.length) return null;
           return (
-            // Rules, not a box: a bordered tinted panel inside a bordered card
-            // is a card inside a card, which the house forbids and which is
-            // what made these three numbers shout. Same figures, same order,
-            // carried on two hairlines instead.
-            <div style={{ display: "flex", alignItems: "stretch", borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", marginBottom: RHYTHM.inner }}>
-              {metrics.map((m, i) => (
-                <div key={m.label} style={{ flex: 1, minWidth: 0, padding: "8px 12px", borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{m.label}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: m.color ?? "var(--cr-ink)", display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{m.val}</span>
-                    {/* Fixed pixel box: a %-height sparkline in this flex row
-                        would collapse to nothing. */}
-                    {m.withSpark && spark && <Sparkline points={spark} width={40} height={16} />}
+            // The stat idiom: one hairline above, caps label over figure,
+            // left-aligned, and no interior fences -- space and alignment do
+            // what the cell borders used to.
+            <div style={{ display: "flex", gap: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: RHYTHM.inner }}>
+              {metrics.map((m) => (
+                <div key={m.label} style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{m.label}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: m.color ?? "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {m.val}
                   </div>
                 </div>
               ))}
@@ -659,7 +661,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
         {/* Raise strip: the one loud thing on the card, and the only copper. */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
           <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{t("listings.raising")}</div>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("listings.raising")}</div>
             <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
               {safeFormatCurrencyAmount(s.funding_target)}
             </div>
@@ -1247,7 +1249,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                   <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
                     {sortOptions.map((o) => (
                       <button key={o.value} onClick={() => { patch({ sort: o.value }); setSortOpen(false); }}
-                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px" }}
+                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px" }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                       >
@@ -1324,7 +1326,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             />
             {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
               <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
                   {t("startups.recentSearches")}
                 </p>
                 {recent.slice(0, 5).map((term) => (
@@ -1387,7 +1389,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             style={{
               display: "inline-flex", alignItems: "center", gap: "8px", flexShrink: 0,
               fontFamily: "'DM Sans', sans-serif", fontWeight: advancedCount > 0 ? 500 : 400, fontSize: "13px",
-              padding: "8px 12px", borderRadius: "3px",
+              padding: "8px 12px", borderRadius: "4px",
               border: advancedCount > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
               background: advancedCount > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
               color: advancedCount > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -1657,7 +1659,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {/* C35: how long the next "not for me" lasts. */}
             <select value={snoozeChoice ?? ""} onChange={(e) => setSnoozeChoice(e.target.value ? Number(e.target.value) : null)}
               aria-label={t("startups.snoozeLabel")} title={t("startups.snoozeLabel")}
-              style={{ background: "transparent", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "4px 8px", cursor: "pointer" }}>
+              style={{ background: "transparent", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "4px 8px", cursor: "pointer" }}>
               <option value="">{t("startups.snoozeForever")}</option>
               <option value="30">{t("startups.snooze30")}</option>
               <option value="90">{t("startups.snooze90")}</option>
@@ -1685,8 +1687,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : loadError ? (
-          <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
+          <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "6px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
             <button onClick={() => window.location.reload()}
               style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
               {t("errorPage.retry")}
@@ -1714,7 +1716,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           <div style={{ marginTop: RHYTHM.section, display: "flex", justifyContent: "center" }}>
             <button disabled={loadingMore}
               onClick={() => { if (hasMore) setPage((p) => p + 1); else void loadMoreRows(); }}
-              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "12px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1 }}>
+              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", padding: "12px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1 }}>
               {loadingMore
                 ? t("common.loading")
                 : t("startups.loadMore", { count: hasMore ? Math.min(PAGE_SIZE, filtered.length - visible.length) : Math.min(1000, serverTotal - allStartups.length) })}
@@ -1778,7 +1780,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         return (
           <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
             <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: RHYTHM.block }}>
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: RHYTHM.block }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: RHYTHM.block }}>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1819,7 +1821,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                   <tbody>
                     {METRICS.map(m => (
                       <tr key={m.label}>
-                        <td style={{ padding: "12px 12px 12px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
+                        <td style={{ padding: "12px 12px 12px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
                         {rows.map(s => {
                           const isText = m.label === t("scorecard.yourNote");
                           return (
@@ -1838,7 +1840,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
 
       {/* ── Mobile filter bottom sheet ── */}
       {sidebarOpen && (() => {
-        const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" };
+        const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" };
         const ROW: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: RHYTHM.pair };
         const countries = Array.from(new Set(allStartups.map(x => x.country).filter((c): c is string => !!c))).sort();
         const bmodels = Array.from(new Set(allStartups.map(x => x.business_model).filter((m): m is string => !!m))).sort();
@@ -1846,7 +1848,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         <div role="dialog" aria-modal="true" aria-label={t("filters.title")} style={{ position: "fixed", inset: 0, zIndex: 50 }}>
           <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setSidebarOpen(false)} />
           {/* Full-height bottom sheet: header pinned, sections scroll, footer pinned. */}
-          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "12px 12px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
+          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "6px 6px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
             <div style={{ padding: "12px 24px", borderBottom: "1px solid var(--cr-rule)", flexShrink: 0 }}>
               <div style={{ width: 32, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 12px" }} />
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1965,11 +1967,11 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
 
             <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 24px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "12px" }}>
               <button onClick={resetFilters}
-                style={{ flex: 1, height: "48px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+                style={{ flex: 1, height: "48px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                 {t("filters.reset")}
               </button>
               <button onClick={() => setSidebarOpen(false)}
-                style={{ flex: 1.4, height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
+                style={{ flex: 1.4, height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
                 {t("filters.applyCount", { count: filtered.length })}
               </button>
             </div>

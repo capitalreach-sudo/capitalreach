@@ -52,7 +52,7 @@ export function StickyActionBar({
         // is mounted (globals.css), so the subtraction cancels the inset to
         // zero there; signed out the variable is 0px and the bar, now on the
         // viewport floor, takes the whole inset itself.
-        padding: "10px 14px calc(10px + max(0px, env(safe-area-inset-bottom, 0px) - var(--cr-tabbar-h, 0px)))",
+        padding: "12px 16px calc(12px + max(0px, env(safe-area-inset-bottom, 0px) - var(--cr-tabbar-h, 0px)))",
         background: "var(--cr-paper-2)",
         borderTop: "1px solid var(--cr-rule-dark)",
         boxShadow: "0 -6px 20px rgba(26,22,18,0.06)",

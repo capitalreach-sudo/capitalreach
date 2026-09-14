@@ -53,7 +53,7 @@ export function WaitlistButton({ startupId, roundState }: { startupId: string; r
   return (
     <button onClick={toggle} disabled={busy}
       style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
+        display: "inline-flex", alignItems: "center", gap: 8,
         background: joined ? "var(--cr-up-bg)" : "var(--cr-paper-2)",
         border: `1px solid ${joined ? "rgba(45,106,79,0.3)" : "var(--cr-rule-dark)"}`,
         borderRadius: 4, padding: "8px 16px", cursor: "pointer",

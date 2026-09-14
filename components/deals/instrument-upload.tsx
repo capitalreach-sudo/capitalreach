@@ -25,8 +25,9 @@ import { formatMoney } from "@/lib/currency";
 const MAX_BYTES = 10 * 1024 * 1024;
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const BODY: CSSProperties = {
@@ -40,11 +41,11 @@ const MONO: CSSProperties = {
 };
 
 const FIGURE: CSSProperties = {
-  fontFamily: "'JetBrains Mono', monospace", fontSize: "17px", fontWeight: 500,
-  color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums", marginTop: "6px",
+  fontFamily: "'JetBrains Mono', monospace", fontSize: "15px", fontWeight: 500,
+  color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums", marginTop: "8px",
 };
 
-const ACTION: CSSProperties = { fontSize: "13px", padding: "9px 18px", minHeight: "40px" };
+const ACTION: CSSProperties = { fontSize: "13px", padding: "8px 16px", minHeight: "40px" };
 
 interface Panel {
   party: "startup" | "investor" | null;

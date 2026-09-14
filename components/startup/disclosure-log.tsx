@@ -23,8 +23,9 @@ import { TRUST_LADDER, effectiveTrustLevel, type TrustLevel } from "@/lib/trust"
 // ── House register ──────────────────────────────────────────────────────────
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const DATA: CSSProperties = {
@@ -40,13 +41,14 @@ const BODY: CSSProperties = {
 const CARD: CSSProperties = {
   background: "var(--cr-paper)",
   border: "1px solid var(--cr-rule-dark)",
-  borderRadius: "4px",
+  // 6px: the card/panel radius.
+  borderRadius: "6px",
 };
 
 const RULE: CSSProperties = { borderTop: "1px solid var(--cr-rule)" };
 
 const BADGE: CSSProperties = {
-  ...LABEL, fontSize: "9px", borderRadius: "3px", padding: "3px 6px",
+  ...LABEL, borderRadius: "4px", padding: "3px 8px",
   border: "1px solid var(--cr-rule-dark)", whiteSpace: "nowrap", flexShrink: 0,
 };
 
@@ -187,7 +189,7 @@ export function DisclosureLog({ startupId }: { startupId?: string }) {
         <p style={{ ...DATA, color: "var(--cr-ink-4)" }}>{t("discLog.loading")}</p>
       ) : data.counterparties.length === 0 ? (
         <div style={{ ...CARD, padding: "48px 24px", textAlign: "center" }}>
-          <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "14px", lineHeight: 1, marginBottom: "12px" }}>✦</span>
+          <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "13px", lineHeight: 1, marginBottom: "12px" }}>✦</span>
           <p style={{ ...BODY, marginBottom: "12px" }}>{t("discLog.empty")}</p>
           <Link
             href="/dashboard/startup/documents"
@@ -308,7 +310,7 @@ export function DisclosureLog({ startupId }: { startupId?: string }) {
                 {/* When these two parties first met, and how. The basis of any
                     non-circumvention question, kept separate from the NDA
                     because they are different promises. */}
-                <div style={{ marginTop: "20px" }}>
+                <div style={{ marginTop: "24px" }}>
                   <div style={{ ...LABEL, marginBottom: "4px" }}>{t("discLog.introTitle")}</div>
                   {c.introduction ? (
                     <>
@@ -334,10 +336,10 @@ export function DisclosureLog({ startupId }: { startupId?: string }) {
                 </div>
 
                 {/* What they actually received. */}
-                <div style={{ marginTop: "20px" }}>
+                <div style={{ marginTop: "24px" }}>
                   <div style={{ ...LABEL, marginBottom: "4px", display: "flex", alignItems: "baseline", gap: "8px" }}>
                     <span>{t("discLog.disclosures")}</span>
-                    <span style={{ ...DATA, fontSize: "10px", color: "var(--cr-copper)" }}>
+                    <span style={{ ...DATA, fontSize: "11px", color: "var(--cr-ink-3)" }}>
                       {String(opened.length).padStart(2, "0")}
                     </span>
                   </div>
@@ -358,7 +360,7 @@ export function DisclosureLog({ startupId }: { startupId?: string }) {
                             }}>
                               {d.itemLabel || itemLabel(d.itemType)}
                             </span>
-                            <span style={{ ...LABEL, display: "block", fontSize: "9px", marginTop: "2px" }}>
+                            <span style={{ ...LABEL, display: "block", marginTop: "2px" }}>
                               {itemLabel(d.itemType)}
                               {d.ip !== "—" && <>{" · "}{t("discLog.ip")} {d.ip}</>}
                             </span>

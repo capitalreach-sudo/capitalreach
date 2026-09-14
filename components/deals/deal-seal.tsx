@@ -22,12 +22,14 @@ import { WaxSeal } from "@/components/ui/WaxSeal";
  */
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px/500/0.08em ink-3.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const BODY: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
+  // Reading text sits on the 15 step.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px",
   color: "var(--cr-ink-3)", lineHeight: 1.7,
 };
 
@@ -142,7 +144,7 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
         <p style={{ ...BODY, margin: 0 }}>{t("seal.loadFailed")}</p>
         <button type="button" onClick={() => void load()} style={{
           marginTop: "16px", background: "none", border: "1px solid var(--cr-paper-4)",
-          borderRadius: "999px", minHeight: "40px", padding: "0 20px", cursor: "pointer",
+          borderRadius: "999px", minHeight: "40px", padding: "0px 16px", cursor: "pointer",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)",
         }}>{t("data.retry")}</button>
       </div>
@@ -306,9 +308,9 @@ export function DealSeal({ dealId, onSealed }: { dealId: string; onSealed?: () =
           <button type="button" onClick={sign} disabled={busy || !agreed || name.trim().length < 2}
             style={{
               marginTop: "24px", background: "var(--cr-copper)", border: "1px solid var(--cr-copper-d)",
-              borderRadius: "999px", padding: "0 28px", minHeight: "44px",
+              borderRadius: "999px", padding: "0px 24px", minHeight: "44px",
               cursor: busy ? "wait" : "pointer",
-              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+              fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
               color: "var(--cr-on-accent)",
               opacity: busy || !agreed || name.trim().length < 2 ? 0.6 : 1,
             }}>

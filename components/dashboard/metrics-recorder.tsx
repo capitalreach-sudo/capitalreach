@@ -52,25 +52,27 @@ export function MetricsRecorder() {
     fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: "var(--cr-ink)",
     padding: "8px 10px", outline: "none",
   };
+  // Caps-label spec: 11/500/0.08em on ink-3 -- sub-11 ink-4 caps are illegal.
   const lab: React.CSSProperties = {
-    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-    color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
+    fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+    color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em",
     display: "block", marginBottom: "4px",
   };
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+    // Card internals sit on the 24px step of the spacing scale.
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginTop: "16px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
         <TrendingUp style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
         <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
           {t("traction.title")}
         </h3>
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, marginBottom: "14px" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, marginBottom: "16px" }}>
         {t("traction.sub")}
       </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "10px", marginBottom: "12px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))", gap: "12px", marginBottom: "12px" }}>
         <div>
           <label style={lab} htmlFor="mr-month">{t("traction.month")}</label>
           <input id="mr-month" type="month" value={month} onChange={(e) => setMonth(e.target.value)} style={input} />
@@ -98,7 +100,7 @@ export function MetricsRecorder() {
       </div>
 
       <button onClick={save} disabled={busy}
-        style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "9px 18px", cursor: "pointer", opacity: busy ? 0.6 : 1, marginBottom: points.length >= 2 ? "18px" : 0 }}>
+        style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", padding: "8px 16px", cursor: "pointer", opacity: busy ? 0.6 : 1, marginBottom: points.length >= 2 ? "16px" : 0 }}>
         {busy ? t("common.saving") : t("traction.record")}
       </button>
 

@@ -24,7 +24,7 @@ export function SuspendedActions() {
       onClick={handleSignOut}
       disabled={signingOut}
       style={{
-        marginTop: "28px",
+        marginTop: "24px",
         background: "transparent",
         border: "1px solid var(--cr-rule-dark)",
         borderRadius: "4px",
@@ -32,7 +32,7 @@ export function SuspendedActions() {
         fontWeight: 500,
         fontSize: "13px",
         color: "var(--cr-ink-3)",
-        padding: "9px 20px",
+        padding: "8px 24px",
         cursor: signingOut ? "default" : "pointer",
         opacity: signingOut ? 0.6 : 1,
       }}

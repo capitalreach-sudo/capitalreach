@@ -12,11 +12,11 @@ export function DemoBadge() {
   return (
     <span title={t("demo.tooltip")} style={{
       display: "inline-flex", alignItems: "center",
-      fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 9,
+      fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11,
       textTransform: "uppercase", letterSpacing: "0.08em",
-      color: "var(--cr-ink-4)", background: "var(--cr-paper-3)",
-      border: "1px dashed var(--cr-rule-dark)", borderRadius: 3,
-      padding: "2px 6px", flexShrink: 0,
+      color: "var(--cr-ink-3)", background: "var(--cr-paper-3)",
+      border: "1px dashed var(--cr-rule-dark)", borderRadius: 4,
+      padding: "2px 8px", flexShrink: 0,
     }}>
       {t("demo.badge")}
     </span>

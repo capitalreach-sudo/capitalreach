@@ -37,7 +37,7 @@ export function TargetButton({ investorId, initiallyTargeted }: { investorId: st
     <button
       onClick={toggle}
       disabled={busy}
-      className={`inline-flex items-center gap-1.5 rounded px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider border transition-colors cursor-pointer ${
+      className={`inline-flex items-center gap-1.5 rounded px-2.5 py-0.5 text-[11px] font-medium uppercase tracking-[0.08em] border transition-colors cursor-pointer ${
         targeted
           ? "bg-cr-copper/10 border-cr-copper/40 text-cr-copper"
           : "bg-transparent border-cr-rule-dark text-cr-i3 hover:border-cr-copper/40 hover:text-cr-copper"

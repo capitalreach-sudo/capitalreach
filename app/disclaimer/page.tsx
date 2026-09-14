@@ -20,9 +20,9 @@ export async function generateMetadata() {
 }
 
 // House prose register for the legal pages: quiet rule-separated sections,
-// Label-style section openers, body in DM Sans light.
+// Label-style section openers, body in DM Sans light. 15px: reading text.
 const BODY: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px",
   color: "var(--cr-ink-3)", lineHeight: 1.7,
 };
 

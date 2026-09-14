@@ -10,24 +10,28 @@ import { Eye, EyeOff } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authErrorMessage } from "@/lib/auth-errors";
 
+// 4px: control radius. 15px: what the visitor types is reading text.
 const iStyle: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "3px",
+  width: "100%", height: "44px", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
   background: "var(--cr-paper-3)", padding: "0 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "14px", color: "var(--cr-ink)", outline: "none",
+  fontSize: "15px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
 };
+// The one caps-label voice: 11px/500/0.08em on ink-3 (10px ink-4 was below
+// the contrast floor).
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
+  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
   letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
+// 4px: a rectangular button is never a pill.
 const primaryBtn: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "999px",
+  width: "100%", height: "44px", borderRadius: "4px",
   background: "var(--cr-copper)", color: "var(--cr-on-accent)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
-  fontSize: "14px", border: "none", cursor: "pointer",
+  fontSize: "13px", border: "none", cursor: "pointer",
   transition: "opacity 120ms",
 };
 
@@ -160,10 +164,10 @@ function LoginForm() {
       </Link>
 
       {/* Card */}
-      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
         <div style={{ borderBottom: "1px solid var(--cr-rule)", marginBottom: "24px", paddingBottom: "16px" }}>
           <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("auth.signIn")}</div>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.welcomeBack")}</h1>
+          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.welcomeBack")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.signInSub")}</p>
         </div>
 
@@ -225,12 +229,13 @@ function LoginForm() {
             <div style={{ width: "100%", borderTop: "1px solid var(--cr-rule)" }} />
           </div>
           <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
-            <span style={{ background: "var(--cr-paper-2)", padding: "0 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("auth.or")}</span>
+            <span style={{ background: "var(--cr-paper-2)", padding: "0 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("auth.or")}</span>
           </div>
         </div>
 
+        {/* 4px: a rectangular button is never a pill. */}
         <button onClick={handleGoogleLogin}
-          style={{ width: "100%", height: "44px", border: "1px solid var(--cr-rule-dark)", background: "transparent", borderRadius: "999px", display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer", transition: "border-color 120ms" }}
+          style={{ width: "100%", height: "44px", border: "1px solid var(--cr-rule-dark)", background: "transparent", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer", transition: "border-color 120ms" }}
           onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"}
           onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"}>
           <svg style={{ height: 16, width: 16 }} viewBox="0 0 24 24" aria-hidden>
@@ -253,7 +258,7 @@ function LoginForm() {
       <div style={{ marginTop: "24px", display: "flex", alignItems: "center", justifyContent: "center", gap: "16px" }}>
         {[t("auth.trustSsl"), t("auth.trustSecurity"), t("auth.trustFee")].map((item, i, arr) => (
           <span key={item} style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{item}</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{item}</span>
             {i < arr.length - 1 && <span style={{ width: 1, height: 10, background: "var(--cr-rule-dark)" }} />}
           </span>
         ))}
@@ -269,8 +274,8 @@ export default function LoginPage() {
       <Suspense fallback={
         <div style={{ width: "100%", maxWidth: "400px" }}>
           {/* Quiet fallback: the card frame with a single diamond -- no gray-bar soup. */}
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px", minHeight: "320px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "14px" }}>✦</span>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px", minHeight: "320px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "13px" }}>✦</span>
           </div>
         </div>
       }>

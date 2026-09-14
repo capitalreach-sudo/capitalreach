@@ -50,17 +50,17 @@ export function WelcomeModal({ role }: { role: "startup" | "investor" }) {
           <X style={{ width: 16, height: 16 }} />
         </button>
         <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("welcome.eyebrow")}</div>
-        <h2 id="welcome-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>
+        <h2 id="welcome-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>
           {role === "startup" ? t("welcome.founderTitle") : t("welcome.investorTitle")}
         </h2>
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13.5px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "18px" }}>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "16px" }}>
           {role === "startup" ? t("welcome.founderBody") : t("welcome.investorBody")}
         </p>
-        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "8px", marginBottom: "20px" }}>
+        <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "8px", marginBottom: "16px" }}>
           {steps.map(([label, href], i) => (
             <li key={href}>
               <Link href={href} onClick={close}
-                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px 12px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", textDecoration: "none" }}>
+                style={{ display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", textDecoration: "none" }}>
                 <span style={{ width: 22, height: 22, borderRadius: "50%", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", fontWeight: 700, color: "var(--cr-copper)", flexShrink: 0 }}>{i + 1}</span>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)" }}>{label}</span>
                 <span style={{ marginLeft: "auto", color: "var(--cr-copper)", fontSize: "13px" }}>→</span>

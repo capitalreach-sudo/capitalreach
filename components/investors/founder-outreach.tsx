@@ -65,9 +65,9 @@ export function FounderOutreach({ investorId, investorName, hasDeal, canMessage 
     router.push(`/deals?deal=${j.deal.id}`);
   }
 
-  const btn: React.CSSProperties = { display: "inline-flex", alignItems: "center", gap: 6, height: 34, padding: "0 12px", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, cursor: "pointer" };
+  const btn: React.CSSProperties = { display: "inline-flex", alignItems: "center", gap: 8, height: 34, padding: "0 12px", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, cursor: "pointer" };
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
         {canMessage && (
           <button onClick={async () => {
@@ -85,7 +85,7 @@ export function FounderOutreach({ investorId, investorName, hasDeal, canMessage 
           </button>
         )}
         {canMessage && (
-          <button onClick={() => setOpen((o) => !o)} style={{ ...btn, background: "var(--cr-copper)", color: "#fff", border: "1px solid var(--cr-copper-d)" }}>
+          <button onClick={() => setOpen((o) => !o)} style={{ ...btn, background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "1px solid var(--cr-copper-d)" }}>
             <MessageSquare style={{ width: 13, height: 13 }} /> {t("outreach.message", { name: investorName })}
           </button>
         )}
@@ -99,12 +99,12 @@ export function FounderOutreach({ investorId, investorName, hasDeal, canMessage 
       {open && (
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: 12, maxWidth: 520 }}>
           <textarea value={body} onChange={(e) => setBody(e.target.value.slice(0, 2000))} rows={4} maxLength={2000} placeholder={t("outreach.placeholder", { name: investorName })} autoFocus
-            style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink)", padding: "10px 12px", outline: "none", resize: "vertical" }} />
+            style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink)", padding: "12px 12px", outline: "none", resize: "vertical" }} />
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 8, gap: 8 }}>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 10.5, color: "var(--cr-ink-4)" }}>{t("messages.legalNote")}</span>
-            <div style={{ display: "flex", gap: 6 }}>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)" }}>{t("messages.legalNote")}</span>
+            <div style={{ display: "flex", gap: 8 }}>
               <button onClick={() => setOpen(false)} style={{ ...btn, background: "transparent", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", fontWeight: 400 }}>{t("common.cancel")}</button>
-              <button onClick={send} disabled={!body.trim() || busy === "msg"} style={{ ...btn, background: "var(--cr-copper)", color: "#fff", border: "none", opacity: !body.trim() || busy === "msg" ? 0.5 : 1 }}>{busy === "msg" ? "…" : t("outreach.send")}</button>
+              <button onClick={send} disabled={!body.trim() || busy === "msg"} style={{ ...btn, background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "none", opacity: !body.trim() || busy === "msg" ? 0.5 : 1 }}>{busy === "msg" ? "…" : t("outreach.send")}</button>
             </div>
           </div>
         </div>

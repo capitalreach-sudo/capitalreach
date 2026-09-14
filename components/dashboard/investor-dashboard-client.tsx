@@ -20,6 +20,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { WatchlistChanges } from "@/components/investor/watchlist-changes";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
+import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 
 interface Props {
   profile:    Profile;
@@ -229,7 +230,7 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
         ] as const).map(([label, val, swatch]) => (
           <span key={label} style={{ display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair }}>
             <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: swatch, alignSelf: "center", flexShrink: 0 }} />
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>{label}</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</span>
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{val}</span>
           </span>
         ))}
@@ -237,20 +238,20 @@ function AllocationTracker({ investor, committed, deployed }: { investor: Invest
       {/* The target is the one editable thing here, so it sits below the read
           -only figures rather than competing with the panel's own label. */}
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginTop: RHYTHM.inner, paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
           {t("allocation.targetPh")}<InfoTip termKey="glossary.allocation" />
         </span>
         {editing ? (
           <div style={{ display: "flex", gap: RHYTHM.pair, alignItems: "center", flexWrap: "wrap" }}>
             <input value={draft} onChange={(e) => setDraft(e.target.value)} inputMode="decimal" placeholder={t("allocation.targetPh")} autoFocus
-              style={{ width: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 3, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+              style={{ width: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
             <input value={period} onChange={(e) => setPeriod(e.target.value.slice(0, 40))} placeholder={t("allocation.periodPh")}
-              style={{ width: 96, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 3, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+              style={{ width: 96, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
             <button onClick={save} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>{t("common.save")}</button>
           </div>
         ) : (
           <button onClick={() => { setDraft(String(target ?? "")); setEditing(true); }} disabled={readOnly}
-            style={{ background: "none", border: "none", padding: 0, cursor: readOnly ? "default" : "pointer", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 14, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
+            style={{ background: "none", border: "none", padding: 0, cursor: readOnly ? "default" : "pointer", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
             {formatMoney(summary.target ?? 0, cur, { compact: true })}{period ? ` · ${period}` : ""}
           </button>
         )}
@@ -297,7 +298,8 @@ function WhoViewedYou() {
       // strip keeps the one headline on this view.
       summary={
         <>
-          {series.length > 3 && (
+          {/* Sparklines render only with 8+ points; below that, nothing. */}
+          {series.length >= 8 && (
             <span aria-hidden style={{ display: "inline-flex", alignSelf: "center" }}>
               <Sparkline points={series.map((v) => v / seriesMax)} width={96} height={24} />
             </span>
@@ -312,7 +314,7 @@ function WhoViewedYou() {
         <>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
             {Array.from({ length: Math.min(data.views, 3) }).map((_, i) => (
-              <div key={i} style={{ height: "12px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "3px" }} />
+              <div key={i} style={{ height: "12px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "4px" }} />
             ))}
           </div>
           <Link href="/pricing" style={{ display: "inline-block", marginTop: RHYTHM.inner, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
@@ -358,7 +360,7 @@ function SharedWithYou() {
         {received.map((sh, i) => (
           <div key={sh.id} style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
-              <Link href={`/startups/${sh.startup?.slug ?? ""}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "14px", color: "var(--cr-ink)", textDecoration: "none" }}>
+              <Link href={`/startups/${sh.startup?.slug ?? ""}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
                 {sh.startup?.name ?? "—"}
               </Link>
               <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{formatDate(sh.created_at)}</span>
@@ -417,11 +419,11 @@ function WatchlistTriage({ startupId, status, priority, onChange }: { startupId:
     <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap", marginTop: "12px" }}>
       <select value={status} onChange={(e) => patch({ status: e.target.value as WlStatus })} disabled={readOnly}
         aria-label={t("watchlist.statusLabel")}
-        style={{ background: "var(--cr-paper-2)", border: `1px solid ${WL_COLOR[status]}`, color: WL_COLOR[status], borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em", cursor: readOnly ? "default" : "pointer", outline: "none" }}>
+        style={{ background: "var(--cr-paper-2)", border: `1px solid ${WL_COLOR[status]}`, color: WL_COLOR[status], borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em", cursor: readOnly ? "default" : "pointer", outline: "none" }}>
         {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
       </select>
       {/* Priority: three dots, click to set, click the current one to clear. */}
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
       <div style={{ display: "inline-flex", gap: "4px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
         {[1, 2, 3].map((n) => (
           <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
@@ -539,7 +541,7 @@ function RecentlyViewedStrip() {
       <div style={{ display: "flex", gap: RHYTHM.pair, flexWrap: "wrap" }}>
         {rows.map((r) => (
           <Link key={r.slug} href={`/startups/${r.slug}`}
-            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "8px 12px", textDecoration: "none" }}>
+            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", padding: "8px 12px", textDecoration: "none" }}>
             {r.name}
           </Link>
         ))}
@@ -606,7 +608,7 @@ function SavedSearchManager() {
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{summary(r.filters)}</p>
             </div>
             <button onClick={() => remove(r.id)} aria-label={`delete ${r.name}`}
-              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "14px", lineHeight: 1, flexShrink: 0 }}>×</button>
+              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "13px", lineHeight: 1, flexShrink: 0 }}>×</button>
           </div>
         ))}
       </div>
@@ -648,7 +650,8 @@ function NeedsAttention({ deals }: { deals: Deal[] }) {
 
   const item: React.CSSProperties = { display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair, textDecoration: "none", minHeight: "40px" };
   const figure: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", fontVariantNumeric: "tabular-nums" };
-  const label: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em" };
+  // Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
+  const label: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" };
   return (
     <div style={{ borderBottom: "1px solid var(--cr-rule)", paddingBottom: RHYTHM.inner, marginBottom: RHYTHM.block, display: "flex", alignItems: "baseline", gap: RHYTHM.block, flexWrap: "wrap" }}>
       <span className="ruled-label">{tf("dashboard.attnTitle", "Needs your attention")}</span>
@@ -863,7 +866,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "var(--radius)", padding: "24px", marginBottom: RHYTHM.block }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
                 <div>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{t("dashboard.thesisBannerTitle")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.thesisBannerTitle")}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "4px" }}>{t("dashboard.thesisBannerBody")}</p>
                 </div>
                 {/* Tertiary, not a second copper pill: the tinted banner
@@ -915,7 +918,8 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             ].map(({ label, val, go, headline, color, tip }) => {
               const cell = (
                 <div style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", height: "100%" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: RHYTHM.pair }}>
+                  {/* Caps-label spec: 11/500/0.08em ink-3. */}
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: RHYTHM.pair }}>
                     {label}
                     {tip && <InfoTip termKey={tip} />}
                     {go && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
@@ -943,23 +947,18 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             strip says how big the desk is, this row says what is on it. */}
         {!viewingAs && <ErrorBoundary labelKey="sections.needsAttention"><NeedsAttention deals={deals} /></ErrorBoundary>}
 
-        {/* Tab bar */}
-        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: RHYTHM.section, display: "flex", gap: 0, overflowX: "auto" }}>
-          {TABS.map(({ value, label }) => (
-            <button key={value} onClick={() => setActiveTab(value)}
-              style={{
-                background: "transparent", border: "none", cursor: "pointer",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: activeTab === value ? 600 : 300,
-                fontSize: "13px", color: activeTab === value ? "var(--cr-ink)" : "var(--cr-ink-4)",
-                padding: "12px 16px", whiteSpace: "nowrap",
-                borderBottom: activeTab === value ? "2px solid var(--cr-copper)" : "2px solid transparent",
-                transition: "color 100ms ease, border-color 100ms ease",
-              }}>
-              {label}
-            </button>
-          ))}
-        </div>
+        {/* Tab bar: the house TabStrip rather than a hand-rolled row -- one
+            caps voice, roving focus, and the shared panel crossfade. */}
+        <TabStrip
+          tabs={TABS.map(({ value, label }) => ({ key: value, label }))}
+          active={activeTab}
+          onSelect={setActiveTab}
+          idBase="investor-dash"
+          label={t("dashboard.investorDashboard")}
+          style={{ marginBottom: RHYTHM.section }}
+        />
 
+        <TabPanel idBase="investor-dash" active={activeTab}>
         {/* ── Watchlist ── */}
         {activeTab === "watchlist" && (
           <div>
@@ -1004,7 +1003,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                         background: active ? "var(--cr-copper-bg)" : "transparent", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
                         border: `1px solid ${active ? "var(--cr-copper-br)" : "var(--cr-paper-4)"}` }}>
                       {f === "all" ? t("dashboard.filterAll") : t(WL_KEY[f])}{" "}
-                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", fontVariantNumeric: "tabular-nums" }}>{n}</span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", fontVariantNumeric: "tabular-nums" }}>{n}</span>
                     </button>
                   );
                 })}
@@ -1069,7 +1068,8 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
               <div style={{ marginBottom: RHYTHM.section }}>
                 <div className="ruled-label" style={{ marginBottom: RHYTHM.pair }}>{t("dashboard.totalDeployed")}</div>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "40px", lineHeight: 1.05, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatMoney(total, cur)}</span>
+                  {/* 28, not 40: the strip above already holds this page's one lead figure. */}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1.05, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatMoney(total, cur)}</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>· {positions.length}</span>
                 </div>
               </div>
@@ -1083,13 +1083,13 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                     <div key={p.dealId} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px" }}>
                       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
                         <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
-                          <Link href={`/startups/${p.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                          <Link href={`/startups/${p.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
                             {p.name}
                           </Link>
                           {/* D41: a company that archived its listing is still
                               yours -- say so instead of letting it disappear. */}
                           {p.status !== "active" && (
-                            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--cr-ink-4)", border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "4px 8px" }}>
+                            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 8px" }}>
                               {t("portfolio.notListed")}
                             </span>
                           )}
@@ -1119,7 +1119,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                             // and as the browse card, so a metric cell reads
                             // the same way everywhere in the product.
                             <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "12px" }}>
-                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "4px" }}>{label}</div>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{label}</div>
                               <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", fontVariantNumeric: "tabular-nums", color: label === t("portfolio.markChange") && mu != null ? (mu >= 0 ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)" }}>{value}</div>
                             </div>
                           ))}
@@ -1129,7 +1129,8 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                       {/* Metric curve -- the reason a position is worth watching.
                           The kit sparkline draws itself in; fixed pixel box, no
                           %-height against a flex parent. */}
-                      {series.length > 3 && (
+                      {/* Sparklines render only with 8+ points; below that, nothing. */}
+                      {series.length >= 8 && (
                         <div style={{ marginTop: RHYTHM.inner }}>
                           <Sparkline points={series.map((v) => v / max)} width={144} height={24} />
                         </div>
@@ -1177,7 +1178,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                       <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
                         {report.startup?.name}
                       </span>
-                      <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                         {report.type.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -1261,7 +1262,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                           </span>
                         </div>
                         {!unlocked && "tier" in item && (
-                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", borderRadius: "3px", padding: "4px 8px", whiteSpace: "nowrap" }}>
+                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", whiteSpace: "nowrap" }}>
                             {item.tier}+
                           </span>
                         )}
@@ -1288,6 +1289,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
             </div>
           </div>
         )}
+        </TabPanel>
         {!viewingAs && (
           <div style={{ marginTop: RHYTHM.section }}>
             <InvitePanel defaultRole="startup" />

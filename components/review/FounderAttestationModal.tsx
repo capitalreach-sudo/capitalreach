@@ -203,7 +203,7 @@ export function FounderAttestationModal({
             <div className="ruled-label" style={{ marginBottom: "10px" }}>
               {tf("attest.eyebrow", "Your statement")}
             </div>
-            <h3 id="attest-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "21px", color: "var(--cr-ink)", lineHeight: 1.2 }}>
+            <h3 id="attest-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1.2 }}>
               {tf("attest.title", "Confirm your listing")}
             </h3>
           </div>
@@ -214,7 +214,7 @@ export function FounderAttestationModal({
         </div>
 
         <div style={{ padding: "18px 26px 0" }}>
-          <p style={{ fontFamily: UI, fontWeight: 400, fontSize: "13.5px", lineHeight: 1.6, color: "var(--cr-ink-2)", marginBottom: "14px" }}>
+          <p style={{ fontFamily: UI, fontWeight: 400, fontSize: "13px", lineHeight: 1.6, color: "var(--cr-ink-2)", marginBottom: "12px" }}>
             {tf(
               "attest.intro",
               "We do not audit your figures. Investors are told that plainly, and this statement is what stands behind them instead.",
@@ -235,7 +235,7 @@ export function FounderAttestationModal({
           {doc && (
             <>
               {doc.attestedAt && (
-                <p style={{ fontFamily: UI, fontWeight: 400, fontSize: "12.5px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
+                <p style={{ fontFamily: UI, fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", marginBottom: "12px" }}>
                   {tf("attest.already", "You have already signed this wording. Signing again records a new statement and replaces the old one.")}
                 </p>
               )}
@@ -260,7 +260,7 @@ export function FounderAttestationModal({
               </label>
 
               <div style={{ marginTop: "14px" }}>
-                <label htmlFor="attest-name" style={{ display: "block", fontFamily: UI, fontWeight: 500, fontSize: "10px", letterSpacing: "0.07em", textTransform: "uppercase", color: "var(--cr-ink-4)", marginBottom: "6px" }}>
+                <label htmlFor="attest-name" style={{ display: "block", fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", marginBottom: "8px" }}>
                   {tf("attest.nameLabel", "Type your full name")}
                 </label>
                 <input
@@ -270,7 +270,7 @@ export function FounderAttestationModal({
                   maxLength={120}
                   autoComplete="name"
                   placeholder={doc.profileName ?? tf("attest.namePlaceholder", "Your full name")}
-                  style={{ width: "100%", fontFamily: UI, fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "10px 12px" }}
+                  style={{ width: "100%", fontFamily: UI, fontWeight: 400, fontSize: "15px", color: "var(--cr-ink)", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 12px" }}
                 />
                 {nameLooksWrong && (
                   <p style={{ fontFamily: UI, fontWeight: 400, fontSize: "12px", lineHeight: 1.5, color: "var(--cr-copper)", margin: "8px 0 0" }}>
@@ -286,7 +286,7 @@ export function FounderAttestationModal({
           )}
 
           {error && (
-            <p role="alert" style={{ marginTop: "10px", fontFamily: UI, fontSize: "12.5px", color: "var(--cr-down)" }}>{error}</p>
+            <p role="alert" style={{ marginTop: "10px", fontFamily: UI, fontSize: "12px", color: "var(--cr-down)" }}>{error}</p>
           )}
         </div>
 
@@ -301,7 +301,7 @@ export function FounderAttestationModal({
               {busy ? tf("common.saving", "Saving...") : tf("attest.confirm", "Sign this statement")}
             </button>
           </div>
-          <p style={{ fontFamily: MONO, fontWeight: 300, fontSize: "10.5px", lineHeight: 1.6, color: "var(--cr-ink-4)", textAlign: "center" }}>
+          <p style={{ fontFamily: MONO, fontWeight: 300, fontSize: "11px", lineHeight: 1.6, color: "var(--cr-ink-4)", textAlign: "center" }}>
             {tf(
               "attest.footer",
               "Signing records the time, your network address, the version of this wording, and a hash of the exact text above.",

@@ -33,17 +33,19 @@ export function RoundCalculator({ postMoney, currency, minCheck, fundingTarget }
   const pct = (cheque / postMoney) * 100;
 
   return (
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "14px 16px", marginTop: 10 }}>
-      <p style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", marginBottom: 10 }}>
+    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "16px 16px", marginTop: 8 }}>
+      <p style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", marginBottom: 12 }}>
         <Calculator style={{ width: 12, height: 12, color: "var(--cr-copper)" }} />
         {t("calc.title")}
       </p>
 
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, flexWrap: "wrap", marginBottom: 8 }}>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 20, color: "var(--cr-ink)" }}>
+        {/* 18px: the stat-figure step of the type scale; both figures share
+            one role, so they share one size. */}
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, color: "var(--cr-ink)" }}>
           {formatMoney(cheque, currency, { compact: true })}
         </span>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 20, color: "var(--cr-copper)" }}>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 18, color: "var(--cr-copper)" }}>
           {pct < 0.01 ? "<0.01" : pct.toFixed(2)}%
         </span>
       </div>
@@ -59,7 +61,7 @@ export function RoundCalculator({ postMoney, currency, minCheck, fundingTarget }
         style={{ width: "100%", accentColor: "var(--cr-copper)" }}
       />
 
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10.5, color: "var(--cr-ink-4)", marginTop: 8, lineHeight: 1.5 }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "var(--cr-ink-4)", marginTop: 8, lineHeight: 1.5 }}>
         {t("calc.note", { post: formatMoney(postMoney, currency, { compact: true }) ?? "—" })}
       </p>
     </div>

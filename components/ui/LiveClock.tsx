@@ -30,10 +30,11 @@ export function LiveClock({ timezone, label, className = "" }: Props) {
 
   return (
     <span className={className} style={{ fontVariantNumeric: "tabular-nums" }}>
+      {/* The one caps voice: 11px/500/0.08em on ink-3. */}
       {label && (
         <span style={{
-          fontSize: "11px", textTransform: "uppercase",
-          letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+          fontSize: "11px", fontWeight: 500, textTransform: "uppercase",
+          letterSpacing: "0.08em", color: "var(--cr-ink-3)",
           marginRight: "8px", fontFamily: "'DM Sans', sans-serif",
         }}>
           {label}

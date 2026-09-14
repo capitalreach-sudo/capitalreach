@@ -20,21 +20,24 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
 const isSupabaseConfigured =
   Boolean(SUPABASE_URL) && !SUPABASE_URL.includes("placeholder") && SUPABASE_URL.startsWith("https://");
 
+// 4px: control radius. 15px: what the visitor types is reading text.
 const iStyle: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "3px",
+  width: "100%", height: "44px", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
   background: "var(--cr-paper-3)", padding: "0 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "14px", color: "var(--cr-ink)", outline: "none",
+  fontSize: "15px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
 };
+// The one caps-label voice: 11px/500/0.08em on ink-3.
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
+  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
   letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
+// 4px: a rectangular button is never a pill.
 const primaryBtn: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "999px",
+  width: "100%", height: "44px", borderRadius: "4px",
   background: "var(--cr-copper)", color: "var(--cr-on-accent)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
   fontSize: "13px", border: "none", cursor: "pointer",
@@ -305,7 +308,7 @@ function SignupForm() {
         <div style={{ width: "100%", borderTop: "1px solid var(--cr-rule)" }} />
       </div>
       <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
-        <span style={{ background: "var(--cr-paper-2)", padding: "0 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.1em" }}>{t("auth.or")}</span>
+        <span style={{ background: "var(--cr-paper-2)", padding: "0 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("auth.or")}</span>
       </div>
     </div>
   );
@@ -369,11 +372,11 @@ function SignupForm() {
     return pageWrap(
       <div style={{ width: "100%", maxWidth: "400px" }}>
         <Logo />
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px", textAlign: "center" }}>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px", textAlign: "center" }}>
           <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
             <Mail style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h1>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "24px" }}>
             {t("auth.verifyEmailSent")} <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)" }}>{email}</strong>.
           </p>
@@ -431,10 +434,10 @@ function SignupForm() {
     return pageWrap(
       <div style={{ width: "100%", maxWidth: "400px" }}>
         <Logo />
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
           {!isSupabaseConfigured && <SetupBanner />}
           <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
-            <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.joinTitle")}</h1>
+            <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.joinTitle")}</h1>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.joiningAs")}</p>
           </div>
 
@@ -458,7 +461,7 @@ function SignupForm() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span style={{ flex: 1, minWidth: 0 }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", display: "block", marginBottom: "4px" }}>{opt.label}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", display: "block", marginBottom: "4px" }}>{opt.label}</span>
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", display: "block" }}>{opt.desc}</span>
                   </span>
                   <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px", flexShrink: 0, opacity: active ? 1 : 0, transition: "opacity 120ms" }}>✦</span>
@@ -485,7 +488,7 @@ function SignupForm() {
   return pageWrap(
     <div style={{ width: "100%", maxWidth: "400px" }}>
       <Logo />
-      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+      <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
         {!isSupabaseConfigured && <SetupBanner />}
 
         {/* 40px hit area without moving the text off the left edge. */}
@@ -495,7 +498,7 @@ function SignupForm() {
         </button>
 
         <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.createAccount")}</h1>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.createAccount")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
             {t("auth.joiningAsRole")} <span style={{ color: "var(--cr-copper)", fontWeight: 500, textTransform: "capitalize" }}>{role}</span>
           </p>
@@ -613,7 +616,7 @@ export default function SignupPage() {
           <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "var(--cr-copper)" }} />
           <div style={{ width: "100%", maxWidth: "400px" }}>
             <Logo />
-            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", height: "420px" }} />
+            <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", height: "420px" }} />
           </div>
         </div>
       }

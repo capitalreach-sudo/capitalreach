@@ -71,7 +71,7 @@ export function GateBlur({
             display: "inline-flex", alignItems: "center", gap: "6px",
             background: "var(--cr-copper)", color: "var(--cr-on-accent)",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-            padding: "9px 20px", borderRadius: "4px", textDecoration: "none",
+            padding: "8px 16px", borderRadius: "4px", textDecoration: "none",
             // The element is a <button> on the contractual path, which brings
             // a default border and arrow cursor the <Link> path never had.
             border: "none", cursor: "pointer",

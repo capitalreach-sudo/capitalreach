@@ -134,10 +134,12 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
               <div style={{ width: "1px", height: "20px", background: "var(--cr-rule-dark)" }} />
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-                fontSize: "11px", color: "var(--cr-copper)", letterSpacing: "0.02em",
+                // Demoted from copper: the bar's one accent is the active
+                // link's underline, and a permanent badge is not an accent.
+                fontSize: "11px", color: "var(--cr-ink-3)", letterSpacing: "0.02em",
                 display: "flex", alignItems: "center", gap: "4px",
               }}>
-                <span style={{ fontSize: "9px" }}>✦</span>
+                <span aria-hidden>✦</span>
                 {t("navbar.feeBadge")}
               </span>
             </div>
@@ -154,7 +156,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                 style={{
                   fontFamily:     "'DM Sans', sans-serif",
                   fontWeight:     400,
-                  fontSize:       "14px",
+                  fontSize:       "13px",
                   color:          isActive(href) ? "var(--cr-ink)" : "var(--cr-ink-3)",
                   transition:     "color 150ms ease",
                   textDecoration: "none",
@@ -181,7 +183,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
               onClick={() => window.dispatchEvent(new KeyboardEvent("keydown", { key: "k", metaKey: true }))}
               aria-label={t("palette.openAria")}
               className="hidden xl:inline-flex"
-              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
+              style={{ alignItems: "center", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, padding: "4px 8px", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "var(--cr-ink-4)", letterSpacing: "0.04em" }}>
               ⌘K
             </button>
             <StyleToggle />
@@ -210,7 +212,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={profile.avatar_url} alt="" decoding="async" className="w-full h-full object-cover" />
                       ) : (
-                        <span style={{ fontSize: "10px", fontWeight: 600, color: "var(--cr-copper)" }}>
+                        <span style={{ fontSize: "11px", fontWeight: 600, color: "var(--cr-copper)" }}>
                           {getInitials(profile.full_name || profile.email)}
                         </span>
                       )}
@@ -282,7 +284,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                     textDecoration: "none",
                     fontFamily:  "'DM Sans', sans-serif",
                     fontWeight:  400,
-                    fontSize:    "14px",
+                    fontSize:    "13px",
                     color:       "var(--cr-ink-3)",
                     background:  "none",
                     border:      "none",
@@ -302,7 +304,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                     color:        "var(--cr-band-ink)",
                     fontFamily:   "'DM Sans', sans-serif",
                     fontWeight:   600,
-                    fontSize:     "14px",
+                    fontSize:     "13px",
                     padding:      "12px 24px",
                     borderRadius: "4px",
                     border:       "none",
@@ -368,7 +370,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                 <span style={{
                   fontFamily:    "'Playfair Display', Georgia, serif",
                   fontWeight:    700,
-                  fontSize:      "16px",
+                  fontSize:      "15px",
                   color:         "var(--cr-ink)",
                   letterSpacing: "-0.02em",
                 }}>
@@ -396,10 +398,10 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                   {getInitials(profile.full_name || profile.email)}
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {profile.full_name || profile.email}
                   </p>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {profile.role}
                   </p>
                 </div>
@@ -431,7 +433,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                 ] }] : []),
               ]).map(({ header, items }) => (
                 <div key={header} style={{ paddingBottom: "8px" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.1em", padding: "16px 24px 8px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "16px 24px 8px" }}>
                     {header}
                   </p>
                   {items.map(({ href, label, Icon }) => {
@@ -475,7 +477,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                 <Link href="/auth/signup" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
                     height: "44px", background: "var(--cr-copper)", color: "var(--cr-on-accent)",
-                    fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+                    fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
                     borderRadius: "4px", border: "none", cursor: "pointer", textDecoration: "none",
                   }}>
                     {t("nav.listStartup")}
@@ -483,7 +485,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                 <Link href="/auth/login" onClick={() => setMobileOpen(false)} className="w-full" style={{
                     display: "flex", alignItems: "center", justifyContent: "center",
                     height: "44px", background: "transparent", color: "var(--cr-ink-2)",
-                    fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
+                    fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
                     borderRadius: "4px", border: "1px solid var(--cr-paper-4)", cursor: "pointer", textDecoration: "none",
                   }}>
                     {t("nav.signIn")}
@@ -503,7 +505,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
                   className="w-full"
                   style={{
                     height: "44px", background: "transparent", color: "var(--cr-down)",
-                    fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px",
+                    fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
                     borderRadius: "4px", border: "1px solid color-mix(in srgb, var(--cr-down) 30%, transparent)", cursor: "pointer",
                   }}
                 >

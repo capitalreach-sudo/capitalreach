@@ -35,9 +35,10 @@ export const metadata: Metadata = {
   description: "Put named, dated evidence behind your company or your investor profile.",
 };
 
-const LABEL = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase" as const, letterSpacing: "0.08em", color: "var(--cr-ink-4)" };
+// The one caps voice: 11px/500/0.08em on ink-3. Body at 15px: reading text.
+const LABEL = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase" as const, letterSpacing: "0.08em", color: "var(--cr-ink-3)" };
 const DATA = { fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums" as const, fontWeight: 500, fontSize: "12px", letterSpacing: "0.02em" };
-const BODY = { fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.65, color: "var(--cr-ink-3)" };
+const BODY = { fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", lineHeight: 1.65, color: "var(--cr-ink-3)" };
 
 /** Statuses in which a case still belongs to the applicant, not to history. */
 const OPEN_STATUSES = ["draft", "submitted", "in_review", "needs_more"];
@@ -95,7 +96,7 @@ export default async function VerifyPage() {
   if (!subjectType) {
     return shell(
       <div style={{ maxWidth: "760px", margin: "0 auto", padding: "96px 24px 96px", textAlign: "center" }}>
-        <div aria-hidden style={{ color: "var(--cr-copper)", fontSize: "14px", marginBottom: "16px" }}>✦</div>
+        <div aria-hidden style={{ color: "var(--cr-copper)", fontSize: "13px", marginBottom: "16px" }}>✦</div>
         <p style={{ ...BODY, marginBottom: "24px" }}>{t("verify.noSubjectBody")}</p>
         <Link
           href={preferInvestor ? "/onboarding/investor" : "/onboarding/startup"}
@@ -226,7 +227,7 @@ export default async function VerifyPage() {
           </span>
           <span style={{
             fontFamily: "var(--font-serif), 'Playfair Display', Georgia, serif", fontWeight: 700,
-            fontSize: "20px", color: shownLevel > 0 ? "var(--verdigris)" : "var(--cr-ink-2)",
+            fontSize: "18px", color: shownLevel > 0 ? "var(--verdigris)" : "var(--cr-ink-2)",
           }}>
             {t(TRUST_LADDER[shownLevel].key)}
           </span>
@@ -253,7 +254,7 @@ export default async function VerifyPage() {
           <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("verify.lastDecision")}</div>
           <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: "48px" }}>
             <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                 {t(`verify.status.${decided.status}`)}
               </span>
               {day(decided.updated_at) && (
@@ -294,7 +295,9 @@ export default async function VerifyPage() {
             { label: t("verify.timeTitle"), body: fastLane ? t("verify.timeBodyPriority") : t("verify.timeBody") },
           ].map((col) => (
             <div key={col.label}>
-              <div style={{ ...LABEL, color: "var(--cr-copper)", marginBottom: "8px" }}>{col.label}</div>
+              {/* Band labels: the caps voice, in band ink -- the band itself
+                  is the emphasis, so the labels carry no accent. */}
+              <div style={{ ...LABEL, color: "var(--cr-band-ink)", marginBottom: "8px" }}>{col.label}</div>
               <p style={{ ...BODY, fontSize: "13px", color: "var(--cr-band-ink-dim)" }}>{col.body}</p>
             </div>
           ))}

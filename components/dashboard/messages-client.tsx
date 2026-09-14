@@ -50,7 +50,7 @@ function ZeroThreadsNotice({ tf }: { tf: (key: string, fallback: string) => stri
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px", textAlign: "center", padding: "24px" }}>
       <EmptyDiamond />
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
         {tf("messages.emptyGateTitle", "Conversations open once a deal is signed by both sides")}
       </p>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, maxWidth: "44ch" }}>
@@ -104,9 +104,10 @@ interface Props {
 
 // ── Shared element styles ─────────────────────────────────────────────────────
 
+// Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
 const labelStyle: React.CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px",
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "8px",
   display: "block",
 };
 
@@ -857,7 +858,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
             </p>
           </div>
           <button onClick={() => setShowNewModal(true)}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "12px 24px", cursor: "pointer" }}>
+            style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", padding: "12px 24px", cursor: "pointer" }}>
             <Plus style={{ width: 14, height: 14 }} /> {t("dashboard.newMessageBtn")}
           </button>
         </div>
@@ -869,7 +870,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
           <div role="status" style={{ display: "flex", alignItems: "flex-start", gap: "12px", padding: "16px", marginBottom: "16px", border: "1px solid var(--cr-rule-dark)", borderLeft: "2px solid var(--cr-copper)", borderRadius: "4px", background: "var(--cr-paper-2)" }}>
             <AlertCircle aria-hidden style={{ width: 15, height: 15, color: "var(--cr-copper)", flexShrink: 0, marginTop: "3px" }} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                 {t("messages.deepLinkMissingTitle")}
               </p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginTop: "6px", maxWidth: "62ch" }}>
@@ -913,12 +914,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               <div style={{ position: "relative" }}>
                 <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", width: 13, height: 13, color: "var(--cr-ink-4)" }} />
                 <input value={search} onChange={e => setSearch(e.target.value)} placeholder={t("dashboard.searchConversations")}
-                  style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "12px", paddingBottom: "12px", outline: "none", boxSizing: "border-box" }} />
+                  style={{ width: "100%", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "30px", paddingRight: "12px", paddingTop: "12px", paddingBottom: "12px", outline: "none", boxSizing: "border-box" }} />
               </div>
             </div>
 
             {/* Status filters */}
-            <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)", display: "flex", gap: "6px", flexWrap: "wrap" }}>
+            <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)", display: "flex", gap: "8px", flexWrap: "wrap" }}>
               {[
                 { v: "all", lk: "dashboard.filterAll" },
                 { v: "active", lk: "dashboard.filterActive" },
@@ -926,7 +927,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 { v: "archived", lk: "dashboard.filterArchived" },
               ].map(f => (
                 <button key={f.v} onClick={() => setStatusFilter(f.v)}
-                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === f.v ? 500 : 300, fontSize: "11px", padding: "8px 12px", borderRadius: "3px", border: statusFilter === f.v ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", background: statusFilter === f.v ? "var(--cr-copper-bg)" : "transparent", color: statusFilter === f.v ? "var(--cr-copper)" : "var(--cr-ink-4)", cursor: "pointer" }}>
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: statusFilter === f.v ? 500 : 300, fontSize: "11px", padding: "8px 12px", borderRadius: "4px", border: statusFilter === f.v ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)", background: statusFilter === f.v ? "var(--cr-copper-bg)" : "transparent", color: statusFilter === f.v ? "var(--cr-copper)" : "var(--cr-ink-4)", cursor: "pointer" }}>
                   {t(f.lk)}
                 </button>
               ))}
@@ -973,7 +974,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "4px" }}>
-                          <p style={{ display: "flex", alignItems: "center", gap: "6px", minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: unreadSet.has(thread.id) ? 700 : 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+                          <p style={{ display: "flex", alignItems: "center", gap: "4px", minWidth: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: unreadSet.has(thread.id) ? 700 : 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                             <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{getLabel(thread)}</span>
                             {importantIds.has(thread.id) && (
                               <Star aria-label={t("messages.importantAria")} style={{ width: 11, height: 11, color: "var(--cr-copper)", fill: "var(--cr-copper)", flexShrink: 0 }} />
@@ -982,11 +983,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                               <span aria-label={t("messages.unreadAria")} style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--cr-copper)", flexShrink: 0 }} />
                             )}
                           </p>
-                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{timeAgo(thread.updated_at, t)}</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{timeAgo(thread.updated_at, t)}</span>
                         </div>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px", textTransform: "capitalize" }}>{getSubLabel(thread)}</p>
                         {st !== "active" && (
-                          <span style={{ background: STATUS_KEYS[st]?.bg || "var(--cr-paper-3)", color: STATUS_KEYS[st]?.color || "var(--cr-ink-4)", border: `1px solid ${STATUS_KEYS[st]?.border || "var(--cr-rule)"}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.05em", display: "inline-block", marginTop: "4px" }}>
+                          <span style={{ background: STATUS_KEYS[st]?.bg || "var(--cr-paper-3)", color: STATUS_KEYS[st]?.color || "var(--cr-ink-4)", border: `1px solid ${STATUS_KEYS[st]?.border || "var(--cr-rule)"}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "1px 8px", textTransform: "uppercase", letterSpacing: "0.08em", display: "inline-block", marginTop: "4px" }}>
                             {STATUS_KEYS[st] ? t(STATUS_KEYS[st].labelKey) : ""}
                           </span>
                         )}
@@ -997,7 +998,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       conversation is held is a refused message. */}
                   {unsignedDealId && (
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", padding: "8px 16px 10px", background: "var(--cr-copper-bg)", borderLeft: isSelected ? "2px solid var(--cr-copper)" : "2px solid transparent" }}>
-                      <span style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "1px 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <span style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "1px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                         {t("gate.rowUnsigned")}
                       </span>
                       <Link href={`/deals?deal=${unsignedDealId}`}
@@ -1042,13 +1043,13 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", alignItems: "center", justifyContent: "center", width: 40, height: 40, flexShrink: 0 }}>
                     <ArrowLeft style={{ width: 16, height: 16 }} />
                   </button>
-                  <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)" }}>
+                  <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-paper-4)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)" }}>
                     {getInitials(getLabel(selectedThread))}
                   </div>
                   <div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{getLabel(selectedThread)}</p>
-                      <span style={{ background: selectedStatusInfo.bg, color: selectedStatusInfo.color, border: `1px solid ${selectedStatusInfo.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", borderRadius: "3px", padding: "2px 6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{getLabel(selectedThread)}</p>
+                      <span style={{ background: selectedStatusInfo.bg, color: selectedStatusInfo.color, border: `1px solid ${selectedStatusInfo.border}`, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "2px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                         {selectedStatusInfo.label}
                       </span>
                     </div>
@@ -1158,7 +1159,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     <div key={msg._clientId ?? msg.id}>
                       {showTime && (
                         <div style={{ display: "flex", justifyContent: "center", margin: "8px 0" }}>
-                          <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "3px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", padding: "3px 8px" }}>
+                          <span style={{ background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", padding: "4px 8px" }}>
                             {/* Locale-default hour cycle on purpose: 12h in en-US, 24h in de. */}
                             {new Date(msg.created_at).toLocaleString(displayLocale(), { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                           </span>
@@ -1187,7 +1188,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                           )}
                           {/* A file-only message stores the filename as its body; showing both would say it twice. */}
                           {(!msg.attachment_path || (msg.body && msg.body !== msg.attachment_name)) && (
-                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{msg.body}</p>
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", lineHeight: 1.6, whiteSpace: "pre-wrap" }}>{msg.body}</p>
                           )}
                           {!isOwn && msg.safety_flags?.scam?.length ? (
                             <div style={{
@@ -1196,7 +1197,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                               background: "color-mix(in srgb, var(--cr-down) 8%, transparent)",
                               borderRadius: "4px",
                             }}>
-                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-down)", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-down)", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                 {t("msgSafety.scamTitle")}
                               </p>
                               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", lineHeight: 1.6, color: "var(--cr-ink-2)" }}>
@@ -1209,14 +1210,14 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                             </div>
                           ) : null}
                           <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "4px", marginTop: "4px" }}>
-                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>
+                            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                               {new Date(msg.created_at).toLocaleTimeString(displayLocale(), { hour: "2-digit", minute: "2-digit" })}
                             </span>
                           </div>
                         </div>
                       </div>
                       {isOwn && msg.id === lastReadOwnId && (
-                        <p style={{ textAlign: "right", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                        <p style={{ textAlign: "right", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                           {t("messages.seen")}
                         </p>
                       )}
@@ -1288,7 +1289,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 return (
                   <div style={{ padding: "16px", borderTop: "1px solid var(--cr-copper-br)", background: "var(--cr-copper-bg)", flexShrink: 0 }}>
                     <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "8px" }}>
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", display: "flex", alignItems: "center", gap: "8px" }}>
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", display: "flex", alignItems: "center", gap: "8px" }}>
                         <span aria-hidden style={{ color: "var(--cr-copper)" }}>{"✦"}</span>
                         {t(titleKey)}
                       </p>
@@ -1304,7 +1305,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       {notice.sentence || (bodyKey ? t(bodyKey) : "")}
                     </p>
                     <Link href={href}
-                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 24px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
+                      style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: "40px", padding: "0 24px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px" }}>
                       {t(ctaKey)}
                     </Link>
                   </div>
@@ -1323,7 +1324,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   transform: promptSettled || reduceMotion ? "translateY(0)" : "translateY(8px)",
                   transition: "opacity 200ms var(--ease-out), transform 200ms var(--ease-out)",
                 }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "8px", display: "flex", alignItems: "center", gap: "8px" }}>
                     <span aria-hidden style={{ color: "var(--cr-copper)" }}>{"\u2726"}</span>
                     {t("dealReg.title")}
                   </p>
@@ -1337,7 +1338,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                     style={{
                       minHeight: "40px", padding: "0 24px", borderRadius: "999px", border: "none",
                       background: "var(--cr-copper)", color: "var(--cr-on-accent)", cursor: registering ? "wait" : "pointer",
-                      fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px",
+                      fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
                     }}
                   >
                     {registering ? t("verify.saving") : t("dealReg.cta")}
@@ -1388,12 +1389,12 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               </form>
               {/* Character budget only when it matters (>1500 of 2000). */}
               {newMessage.length > 1500 && (
-                <p aria-live="polite" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: newMessage.length >= 2000 ? "var(--cr-down)" : "var(--cr-ink-4)", textAlign: "right", padding: "4px 12px 0" }}>
+                <p aria-live="polite" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: newMessage.length >= 2000 ? "var(--cr-down)" : "var(--cr-ink-4)", textAlign: "right", padding: "4px 12px 0" }}>
                   {newMessage.length} / 2000
                 </p>
               )}
               {/* Messages are part of the deal record — say so where they are written. */}
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)", textAlign: "center", padding: "8px 12px" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center", padding: "8px 12px" }}>
                 {t("messages.legalNote")}
               </p>
             </div>
@@ -1406,7 +1407,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
               ) : (
                 <div style={{ textAlign: "center" }}>
                   <div style={{ marginBottom: "12px" }}><EmptyDiamond /></div>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "15px", color: "var(--cr-ink-3)" }}>{t("dashboard.selectConversation")}</p>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{t("dashboard.orStartNew")}</p>
                 </div>
               )}
@@ -1441,7 +1442,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   than a removed tab leaving people to wonder where their
                   counterparts went. */}
               {!selectedAccount && (
-                <div style={{ display: "flex", gap: "6px" }}>
+                <div style={{ display: "flex", gap: "8px" }}>
                   {(["investor", "startup"] as const).map(k => (
                     <button key={k}
                       onClick={() => { setTargetKind(k); setAccountSearch(""); setAccountResults([]); setSendNewError(""); }}
@@ -1466,7 +1467,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                   claimed at them. */}
               {profile.role !== "admin" && (
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, margin: 0 }}>
-                  <span aria-hidden style={{ color: "var(--cr-copper)", marginRight: "6px" }}>✦</span>
+                  <span aria-hidden style={{ color: "var(--cr-copper)", marginRight: "8px" }}>✦</span>
                   {profile.role === "investor"
                     ? (targetKind === "startup" ? t("gate.offerBody") : t("contactGate.peerClosed"))
                     : (targetKind === "investor" ? t("founderContact.dealRequired") : t("contactGate.peerClosed"))}
@@ -1479,11 +1480,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                 <div style={{ position: "relative" }}>
                   {selectedAccount ? (
                     <div style={{ display: "flex", alignItems: "center", gap: "12px", border: "1px solid var(--cr-copper)", borderRadius: "4px", padding: "12px", background: "var(--cr-copper-bg)" }}>
-                      <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
                         {getInitials(selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount"))}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                           {selectedAccount.entity_name || selectedAccount.full_name || t("dashboard.unnamedAccount")}
                         </p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "capitalize" }}>
@@ -1519,7 +1520,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                       ) : (
                         <>
                           {!accountSearch.trim() && (
-                            <p style={{ padding: "8px 12px 4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                            <p style={{ padding: "8px 12px 4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                               {t("dashboard.suggestedAccounts")}
                             </p>
                           )}
@@ -1528,11 +1529,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                               id. */}
                           {accountResults.map(a => (
                         <button key={a.entity_id} onClick={() => { setSelectedAccount(a); setAccountDropOpen(false); setAccountSearch(""); }}
-                          style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "3px", textAlign: "left" }}
+                          style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "8px 12px", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px", textAlign: "left" }}
                           onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                           onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                         >
-                          <div style={{ width: 32, height: 32, borderRadius: "3px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}>
                             {getInitials(a.entity_name || a.full_name || t("dashboard.unnamedAccount"))}
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
@@ -1544,7 +1545,7 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
                             </p>
                           </div>
                           {a.entity_name && (
-                            <div style={{ width: 20, height: 20, borderRadius: "3px", background: "var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <div style={{ width: 20, height: 20, borderRadius: "4px", background: "var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                               {a.role === "startup" ? <Building2 style={{ width: 11, height: 11, color: "var(--cr-ink-3)" }} /> : <Users style={{ width: 11, height: 11, color: "var(--cr-ink-3)" }} />}
                             </div>
                           )}
@@ -1579,11 +1580,11 @@ export function MessagesClient({ profile, threads: initialThreads, myStartupId, 
 
               <div style={{ display: "flex", gap: "12px" }}>
                 <button onClick={closeNewModal}
-                  style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink)", cursor: "pointer" }}>
+                  style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>
                   {t("dashboard.cancel")}
                 </button>
                 <button onClick={sendNewMessage} disabled={!selectedAccount || !newBody.trim() || sendingNew}
-                  style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
+                  style={{ flex: 1, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", opacity: !selectedAccount || !newBody.trim() || sendingNew ? 0.5 : 1 }}>
                   {sendingNew ? <><Loader2 className="animate-spin" style={{ width: 14, height: 14 }} /> {t("dashboard.sending2")}</> : <><Send style={{ width: 14, height: 14 }} /> {t("dashboard.sendMessageBtn")}</>}
                 </button>
               </div>

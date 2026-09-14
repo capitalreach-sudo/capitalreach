@@ -10,17 +10,19 @@ import { Lock, Eye, EyeOff, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authErrorMessage } from "@/lib/auth-errors";
 
+// 4px: control radius. 15px: what the visitor types is reading text.
 const iStyle: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "3px",
+  width: "100%", height: "44px", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
   background: "var(--cr-paper-3)", padding: "0 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "14px", color: "var(--cr-ink)", outline: "none",
+  fontSize: "15px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
 };
+// The one caps-label voice: 11px/500/0.08em on ink-3.
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
+  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
   letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
 
@@ -114,7 +116,8 @@ export default function UpdatePasswordPage() {
           <span className="ruled-label">CapitalReach</span>
         </Link>
 
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+        {/* 6px: card radius. */}
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
           {ready === false && !done ? (
             <div style={{ textAlign: "center", padding: "16px 0" }}>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15, color: "var(--cr-ink)", marginBottom: 8 }}>{t("auth.resetLinkDeadTitle")}</p>
@@ -135,7 +138,7 @@ export default function UpdatePasswordPage() {
           ) : (
             <>
               <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.updateTitle")}</h1>
+                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.updateTitle")}</h1>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.updateSub")}</p>
               </div>
 
@@ -183,11 +186,11 @@ export default function UpdatePasswordPage() {
                 {/* Rule-topped label line, not a box-in-a-box. */}
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
                   <Lock style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} />
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("auth.sslNote")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("auth.sslNote")}</p>
                 </div>
 
                 <button type="submit" disabled={loading || password !== confirm || password.length < 8}
-                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
+                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", border: "none", cursor: loading || password !== confirm || password.length < 8 ? "not-allowed" : "pointer", opacity: loading || password !== confirm || password.length < 8 ? 0.5 : 1, transition: "opacity 120ms", marginTop: "4px" }}>
                   {loading ? t("auth.updating") : t("auth.updatePassword")}
                 </button>
               </form>

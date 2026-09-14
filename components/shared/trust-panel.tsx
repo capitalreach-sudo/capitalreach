@@ -112,8 +112,10 @@ const LEGACY_KIND: Record<string, EvidenceKind> = {
 // ── House register primitives ───────────────────────────────────────────────
 
 const LABEL: CSSProperties = {
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px",
-  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+  // The one caps voice: 11px / 500 / 0.08em on ink-3 -- smaller or fainter
+  // caps fail the platform contrast floor.
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+  textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
 };
 
 const DATA: CSSProperties = {
@@ -224,7 +226,7 @@ export function TrustPanel({
                     }}>
                       {t(`trust.ev.${row.kind}`)}
                     </span>
-                    <span style={{ ...LABEL, display: "block", fontSize: "9px", marginTop: "2px" }}>
+                    <span style={{ ...LABEL, display: "block", marginTop: "2px" }}>
                       {t(`trust.method.${row.method ?? DEFAULT_METHOD[row.kind]}`)}
                     </span>
                   </span>

@@ -53,9 +53,10 @@ interface QueueCase {
 const UI = "'DM Sans', sans-serif";
 const MONO = "'JetBrains Mono', monospace";
 
+// Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
 const label: React.CSSProperties = {
-  fontFamily: UI, fontWeight: 500, fontSize: "10px", letterSpacing: "0.07em",
-  textTransform: "uppercase", color: "var(--cr-ink-4)",
+  fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em",
+  textTransform: "uppercase", color: "var(--cr-ink-3)",
 };
 
 const figure: React.CSSProperties = {
@@ -63,10 +64,11 @@ const figure: React.CSSProperties = {
   fontVariantNumeric: "tabular-nums", color: "var(--cr-ink)",
 };
 
+// Caps-label spec on chips too; the lane color itself is semantic and stays.
 const chipBase: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", gap: "5px", borderRadius: "3px",
-  padding: "2px 7px", fontFamily: UI, fontWeight: 500, fontSize: "10px",
-  letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
+  display: "inline-flex", alignItems: "center", gap: "4px", borderRadius: "4px",
+  padding: "2px 8px", fontFamily: UI, fontWeight: 500, fontSize: "11px",
+  letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap",
 };
 
 function laneChip(lane: ReviewLane): React.CSSProperties {
@@ -90,7 +92,7 @@ function evidenceColor(status: string): string {
 const primaryBtn: React.CSSProperties = {
   fontFamily: UI, fontWeight: 600, fontSize: "13px", color: "var(--cr-paper)",
   background: "var(--cr-copper)", border: "1px solid var(--cr-copper)",
-  borderRadius: "999px", padding: "8px 18px", cursor: "pointer", minHeight: "40px",
+  borderRadius: "999px", padding: "8px 16px", cursor: "pointer", minHeight: "40px",
 };
 
 const quietBtn: React.CSSProperties = {
@@ -240,7 +242,7 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
         <div
           className="hidden md:grid md:grid-cols-[minmax(0,2.4fr)_60px_60px_110px_100px_24px]"
           style={{
-            gap: "12px", padding: "10px 16px", background: "var(--cr-paper-2)",
+            gap: "12px", padding: "8px 16px", background: "var(--cr-paper-2)",
             borderBottom: "1px solid var(--cr-rule-dark)",
           }}
         >
@@ -253,12 +255,12 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
         </div>
 
         {cases === null && (
-          <p style={{ ...label, padding: "18px 16px", margin: 0 }}>{t("common.loading")}</p>
+          <p style={{ ...label, padding: "16px", margin: 0 }}>{t("common.loading")}</p>
         )}
 
         {cases !== null && list.length === 0 && (
-          <div style={{ padding: "40px 16px", textAlign: "center" }}>
-            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "14px" }}>✦</span>
+          <div style={{ padding: "32px 16px", textAlign: "center" }}>
+            <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "15px" }}>✦</span>
             <p style={{ fontFamily: UI, fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", margin: "8px 0 12px" }}>
               {failed ? t("reviewQueue.loadFailed") : t("reviewQueue.empty")}
             </p>
@@ -278,13 +280,13 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                 aria-expanded={open}
                 className="w-full grid grid-cols-[minmax(0,1fr)_auto] md:grid-cols-[minmax(0,2.4fr)_60px_60px_110px_100px_24px] md:items-center"
                 style={{
-                  gap: "12px", padding: "14px 16px", textAlign: "start",
+                  gap: "12px", padding: "12px 16px", textAlign: "start",
                   background: open ? "var(--cr-paper-3)" : "transparent",
                   border: "none", cursor: "pointer",
                 }}
               >
                 <span style={{ minWidth: 0 }}>
-                  <span style={{ display: "block", fontFamily: UI, fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  <span style={{ display: "block", fontFamily: UI, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {c.subjectName || t("reviewQueue.unnamed")}
                   </span>
                   <span style={{ display: "block", fontFamily: UI, fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -296,7 +298,7 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                   {/* `display` stays in the class, not the inline style: an
                       inline display beats md:hidden and the row would then
                       show its mobile summary on the desktop grid too. */}
-                  <span className="md:hidden flex" style={{ alignItems: "center", gap: "10px", marginTop: "8px" }}>
+                  <span className="md:hidden flex" style={{ alignItems: "center", gap: "8px", marginTop: "8px" }}>
                     <span style={{ ...figure, fontSize: "12px" }}>L{c.levelRequested}</span>
                     <span style={{ ...figure, fontSize: "12px", color: "var(--cr-ink-3)" }}>{c.riskScore}</span>
                     <span style={laneChip(c.lane)}>{t(`reviewQueue.lane.${c.lane}`)}</span>
@@ -316,8 +318,8 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
               </button>
 
               {open && (
-                <div style={{ padding: "14px 16px 20px", borderTop: "1px solid var(--cr-rule)", display: "flex", flexDirection: "column", gap: "18px" }}>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: "14px", flexWrap: "wrap" }}>
+                <div style={{ padding: "12px 16px 16px", borderTop: "1px solid var(--cr-rule)", display: "flex", flexDirection: "column", gap: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
                     {c.subjectSlug && (
                       <a
                         href={c.subjectType === "startup" ? `/startups/${c.subjectSlug}` : `/investors/${c.subjectSlug}`}
@@ -335,13 +337,13 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
 
                   {/* ── What the automated pass found ─────────────────── */}
                   <div>
-                    <p style={{ ...label, margin: "0 0 6px" }}>
+                    <p style={{ ...label, margin: "0 0 8px" }}>
                       {t("reviewQueue.flagsTitle")} · <span style={{ fontFamily: MONO, fontVariantNumeric: "tabular-nums" }}>{c.riskScore}</span>
                     </p>
                     {c.riskFlags.length === 0 ? (
                       <p style={{ fontFamily: UI, fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", margin: 0 }}>{t("reviewQueue.noFlags")}</p>
                     ) : (
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 14px" }}>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 12px" }}>
                         {c.riskFlags.map((f, i) => (
                           <span key={`${f.signal}-${i}`} style={{ fontFamily: MONO, fontSize: "11px", color: f.severity === "high" || f.severity === "medium" ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>
                             {/* Signals are a machine vocabulary that grows
@@ -357,7 +359,7 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
 
                   {/* ── The evidence itself ───────────────────────────── */}
                   <div>
-                    <p style={{ ...label, margin: "0 0 6px" }}>{t("reviewQueue.evidenceTitle")}</p>
+                    <p style={{ ...label, margin: "0 0 8px" }}>{t("reviewQueue.evidenceTitle")}</p>
                     {c.evidence.length === 0 ? (
                       <p style={{ fontFamily: UI, fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", margin: 0 }}>{t("reviewQueue.noEvidence")}</p>
                     ) : (
@@ -366,23 +368,23 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                           <thead>
                             <tr style={{ borderBottom: "1px solid var(--cr-rule)" }}>
                               {["reviewQueue.colKind", "reviewQueue.colMethod", "reviewQueue.colStatus", "reviewQueue.colDetail", "reviewQueue.colFile"].map((k) => (
-                                <th key={k} style={{ ...label, textAlign: "start", padding: "6px 10px 6px 0" }}>{t(k)}</th>
+                                <th key={k} style={{ ...label, textAlign: "start", padding: "8px 12px 8px 0" }}>{t(k)}</th>
                               ))}
                             </tr>
                           </thead>
                           <tbody>
                             {c.evidence.map((e) => (
                               <tr key={e.id} style={{ borderBottom: "1px solid var(--cr-rule)" }}>
-                                <td style={{ padding: "8px 10px 8px 0", fontFamily: UI, fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", textTransform: "capitalize" }}>
+                                <td style={{ padding: "8px 12px 8px 0", fontFamily: UI, fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)", textTransform: "capitalize" }}>
                                   {term("kind", e.kind)}
                                 </td>
-                                <td style={{ padding: "8px 10px 8px 0", fontFamily: UI, fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", textTransform: "capitalize" }}>
+                                <td style={{ padding: "8px 12px 8px 0", fontFamily: UI, fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", textTransform: "capitalize" }}>
                                   {term("method", e.method)}
                                 </td>
-                                <td style={{ padding: "8px 10px 8px 0", fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.05em", textTransform: "uppercase", color: evidenceColor(e.status) }}>
+                                <td style={{ padding: "8px 12px 8px 0", fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: evidenceColor(e.status) }}>
                                   {term("evStatus", e.status)}
                                 </td>
-                                <td style={{ padding: "8px 10px 8px 0", fontFamily: MONO, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                                <td style={{ padding: "8px 12px 8px 0", fontFamily: MONO, fontSize: "11px", color: "var(--cr-ink-4)" }}>
                                   {detailSummary(e.detail) || "—"}
                                 </td>
                                 <td style={{ padding: "8px 0", fontFamily: UI, fontSize: "12px" }}>
@@ -413,9 +415,9 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                   )}
 
                   {/* ── The decision ──────────────────────────────────── */}
-                  <div style={{ borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "14px", display: "flex", flexDirection: "column", gap: "12px" }}>
+                  <div style={{ borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
                     <div>
-                      <label htmlFor={`note-${c.id}`} style={{ ...label, display: "block", marginBottom: "6px" }}>
+                      <label htmlFor={`note-${c.id}`} style={{ ...label, display: "block", marginBottom: "8px" }}>
                         {t("reviewQueue.noteLabel")}
                       </label>
                       <textarea
@@ -429,7 +431,7 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                           width: "100%", fontFamily: UI, fontWeight: 300, fontSize: "13px",
                           color: "var(--cr-ink)", background: "var(--cr-paper-2)",
                           border: "1px solid var(--cr-rule-dark)", borderRadius: "4px",
-                          padding: "10px 12px", resize: "vertical",
+                          padding: "12px", resize: "vertical",
                         }}
                       />
                     </div>
@@ -444,7 +446,7 @@ export default function VerificationQueue({ myLevel }: { myLevel?: string }) {
                           style={{
                             fontFamily: MONO, fontSize: "12px", fontVariantNumeric: "tabular-nums",
                             color: "var(--cr-ink)", background: "var(--cr-paper-2)",
-                            border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "6px 8px",
+                            border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px",
                           }}
                         >
                           {Array.from({ length: c.levelRequested }, (_, i) => i + 1).map((l) => (

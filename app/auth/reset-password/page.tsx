@@ -8,17 +8,19 @@ import { Mail } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { authErrorMessage } from "@/lib/auth-errors";
 
+// 4px: control radius. 15px: what the visitor types is reading text.
 const iStyle: React.CSSProperties = {
-  width: "100%", height: "44px", borderRadius: "3px",
+  width: "100%", height: "44px", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
   background: "var(--cr-paper-3)", padding: "0 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "14px", color: "var(--cr-ink)", outline: "none",
+  fontSize: "15px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
 };
+// The one caps-label voice: 11px/500/0.08em on ink-3.
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
+  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
   letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
 
@@ -50,13 +52,14 @@ export default function ResetPasswordPage() {
           <span className="ruled-label">CapitalReach</span>
         </Link>
 
-        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "32px" }}>
+        {/* 6px: card radius. */}
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
           {sent ? (
             <div style={{ textAlign: "center" }}>
               <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
                 <Mail style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
-              <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h2>
+              <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.checkInbox")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "24px" }}>
                 {t("auth.resetSentTo")} <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink)" }}>{email}</strong>. {t("auth.resetSentAction")}
               </p>
@@ -68,7 +71,7 @@ export default function ResetPasswordPage() {
             <>
               <div style={{ borderBottom: "1px solid var(--cr-rule)", marginBottom: "24px", paddingBottom: "16px" }}>
                 <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("auth.resetPassword")}</div>
-                <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "24px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.resetTitle")}</h1>
+                <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.resetTitle")}</h1>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.resetSub")}</p>
               </div>
 
@@ -82,7 +85,8 @@ export default function ResetPasswordPage() {
                     style={iStyle} />
                 </div>
                 <button type="submit" disabled={loading} className="btn-copper-shimmer"
-                  style={{ width: "100%", height: "44px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, transition: "opacity 120ms" }}>
+                  // 4px: a rectangular button is never a pill.
+                  style={{ width: "100%", height: "44px", borderRadius: "4px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", border: "none", cursor: loading ? "not-allowed" : "pointer", opacity: loading ? 0.6 : 1, transition: "opacity 120ms" }}>
                   {loading ? t("auth.sending") : t("auth.sendReset")}
                 </button>
               </form>

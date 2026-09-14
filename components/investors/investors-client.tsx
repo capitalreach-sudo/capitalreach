@@ -44,7 +44,7 @@ function formatCheck(n: number) {
 /** One applied filter in the summary row -- same chip as the startups page. */
 function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "3px 6px 3px 10px" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-2)", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 8px 4px 12px" }}>
       {label}
       <button onClick={onRemove} aria-label={`remove ${label}`} data-tap-exempt=""
         style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
@@ -63,8 +63,8 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
         fontFamily:    "'DM Sans', sans-serif",
         fontWeight:    active ? 500 : 400,
         fontSize:      "13px",
-        padding:       "6px 14px",
-        borderRadius:  "3px",
+        padding:       "8px 16px",
+        borderRadius:  "4px",
         border:        active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
         background:    active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
         color:         active ? "var(--cr-copper)" : "var(--cr-ink-3)",
@@ -84,10 +84,10 @@ function Section({ title, count = 0, children, defaultOpen = true }: { title: st
     <div>
       <button onClick={() => setOpen(o => !o)} className="w-full flex items-center justify-between group"
         style={{ background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: "8px", minHeight: "28px" }}>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-4)", textAlign: "left" }}>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", textAlign: "left" }}>
           {title}
           {count > 0 && (
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", color: "var(--cr-copper)", letterSpacing: 0 }}> · {count}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", letterSpacing: 0 }}> · {count}</span>
           )}
         </span>
         {open ? <ChevronUp className="h-3.5 w-3.5 text-cr-i4" /> : <ChevronDown className="h-3.5 w-3.5 text-cr-i4" />}
@@ -398,7 +398,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
 
   const Sidebar = (
     <aside className="w-64 flex-shrink-0 space-y-4 sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto"
-      style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "16px" }}>
+      style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", padding: "16px" }}>
       <div className="flex items-center justify-between">
         <div className="ruled-label">
           {t("investors.filters")}
@@ -429,7 +429,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
           ] as const).map(([val, label]) => (
             <button key={val} onClick={() => setF(p => ({ ...p, sort: val }))}
               className={cn("w-full text-left transition-colors", f.sort === val ? "" : "hover:bg-cr-p3")}
-              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: f.sort === val ? 600 : 400, fontSize: "13px", padding: "8px 12px", borderRadius: "3px", border: "none", cursor: "pointer", background: f.sort === val ? "var(--cr-copper-bg)" : "transparent", color: f.sort === val ? "var(--cr-copper)" : "var(--cr-ink-3)" }}
+              style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: f.sort === val ? 600 : 400, fontSize: "13px", padding: "8px 12px", borderRadius: "4px", border: "none", cursor: "pointer", background: f.sort === val ? "var(--cr-copper-bg)" : "transparent", color: f.sort === val ? "var(--cr-copper)" : "var(--cr-ink-3)" }}
             >{label}</button>
           ))}
         </div>
@@ -519,7 +519,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               "flex items-center gap-2 cursor-pointer transition-colors",
               f.industries.includes(ind) ? "" : "hover:bg-cr-p3"
             )}
-              style={{ padding: "7px 8px", borderRadius: "3px", background: f.industries.includes(ind) ? "var(--cr-copper-bg)" : undefined }}>
+              style={{ padding: "8px", borderRadius: "4px", background: f.industries.includes(ind) ? "var(--cr-copper-bg)" : undefined }}>
               <Checkbox checked={f.industries.includes(ind)} onCheckedChange={() => toggle("industries", ind)} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{ind}</span>
             </label>
@@ -538,7 +538,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               "flex items-center gap-2 cursor-pointer transition-colors",
               f.geographies.includes(geo) ? "" : "hover:bg-cr-p3"
             )}
-              style={{ padding: "7px 8px", borderRadius: "3px", background: f.geographies.includes(geo) ? "var(--cr-copper-bg)" : undefined }}>
+              style={{ padding: "8px", borderRadius: "4px", background: f.geographies.includes(geo) ? "var(--cr-copper-bg)" : undefined }}>
               <Checkbox checked={f.geographies.includes(geo)} onCheckedChange={() => toggle("geographies", geo)} />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{geo}</span>
             </label>
@@ -560,7 +560,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               ? t("investors.registeredCountOne")
               : t("investors.registeredCount", { count: investors.length })}
         </div>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "10px" }}>
+        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: "8px" }}>
           {t("investors.directoryTitle")}
         </h1>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "56ch" }}>
@@ -603,12 +603,12 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               />
               {suggestOpen && f.query.trim().length < 2 && recent.length > 0 && (
                 <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
-                  style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
-                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "10px 12px 6px" }}>
+                  style={{ marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
                     {t("startups.recentSearches")}
                   </p>
                   {recent.slice(0, 5).map((term) => (
-                    <div key={term} className="flex items-center justify-between gap-2" style={{ padding: "7px 12px" }}>
+                    <div key={term} className="flex items-center justify-between gap-2" style={{ padding: "8px 12px" }}>
                       <button onMouseDown={(e) => { e.preventDefault(); setF(p => ({ ...p, query: term })); }}
                         className="flex items-center gap-2 flex-1 text-left"
                         style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", padding: 0 }}>
@@ -626,11 +626,11 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                   .slice(0, 6);
                 return hits.length > 0 ? (
                   <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
-                    style={{ marginTop: "6px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+                    style={{ marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
                     {hits.map((i, hi) => (
                       <Link key={i.id} href={`/investors/${i.slug}`}
                         className={cn("flex flex-col gap-0.5 hover:bg-cr-p3 no-underline", hi === suggestIdx && "bg-cr-p3")}
-                        style={{ padding: "9px 12px", borderBottom: "1px solid var(--cr-rule)" }}>
+                        style={{ padding: "8px 12px", borderBottom: "1px solid var(--cr-rule)" }}>
                         <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)" }}>{i.full_name}</span>
                         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{t((TYPE_META[i.type] ?? TYPE_META.angel).labelKey)}{i.firm ? ` · ${i.firm}` : ""}</span>
                       </Link>
@@ -660,20 +660,20 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
           {sidebarOpen && (
             <div role="dialog" aria-modal="true" aria-label={t("investors.filters")} className="lg:hidden" style={{ position: "fixed", inset: 0, zIndex: 50 }}>
               <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setSidebarOpen(false)} />
-              <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "10px 10px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
-                <div style={{ padding: "10px 20px 0", flexShrink: 0 }}>
+              <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "6px 6px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
+                <div style={{ padding: "12px 16px 0px", flexShrink: 0 }}>
                   <div style={{ width: 36, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 4px" }} />
                 </div>
                 <div className="investor-sheet-body" style={{ overflowY: "auto", flex: 1, padding: "8px 12px 8px" }}>
                   {Sidebar}
                 </div>
-                <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 20px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "10px" }}>
+                <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 24px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "8px" }}>
                   <button onClick={() => setF(DEFAULT)}
-                    style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+                    style={{ flex: 1, height: "44px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                     {t("filters.reset")}
                   </button>
                   <button onClick={() => setSidebarOpen(false)}
-                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
+                    style={{ flex: 1.4, height: "44px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
                     {t("filters.applyCount", { count: results.length })}
                   </button>
                 </div>
@@ -683,13 +683,13 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
 
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (
-            <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "10px 14px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+            <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
                 {compareIds.map(id => investors.find(i => i.id === id)?.full_name).filter(Boolean).join(" · ")}
               </span>
+              {/* Token, not text-white: on-accent ink is themed like all else. */}
               <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
-                className="text-white"
-                style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "7px 14px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
+                style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", padding: "8px 16px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
                 {t("investors.compare2")} (<span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{compareIds.length}</span>)
               </button>
               <button onClick={() => setCompareIds([])} aria-label={t("investors.clearCompareAria")}
@@ -712,9 +712,9 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               <div role="dialog" aria-modal="true" className="fixed inset-0 z-[70]">
                 <div className="absolute inset-0 bg-[color:var(--cr-scrim)]" onClick={() => setShowCompare(false)} />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto"
-                  style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px" }}>
-                  <div className="flex items-center justify-between" style={{ marginBottom: "18px" }}>
-                    <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "20px", color: "var(--cr-ink)" }}>{t("investors.compareInvestors")}</h2>
+                  style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
+                  <div className="flex items-center justify-between" style={{ marginBottom: "16px" }}>
+                    <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("investors.compareInvestors")}</h2>
                     <button onClick={() => setShowCompare(false)} aria-label={t("common.close")}
                       style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex", padding: 0 }}><X className="h-5 w-5" /></button>
                   </div>
@@ -738,9 +738,9 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                           const isNum = m.label === t("investors.checkSize");
                           return (
                             <tr key={m.label}>
-                              <td style={{ padding: "9px 12px 9px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
+                              <td style={{ padding: "8px 12px 8px 0px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
                               {rows.map(i => (
-                                <td key={i.id} style={{ padding: "9px 12px", fontFamily: isNum ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif", fontWeight: isNum ? 500 : 300, fontSize: "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)" }}>{m.get(i)}</td>
+                                <td key={i.id} style={{ padding: "8px 12px", fontFamily: isNum ? "'JetBrains Mono', monospace" : "'DM Sans', sans-serif", fontWeight: isNum ? 500 : 300, fontSize: "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)" }}>{m.get(i)}</td>
                               ))}
                             </tr>
                           );
@@ -784,7 +784,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               {f.leadOnly && <AppliedChip label={t("investors.leadOnly")} onRemove={() => setF(p => ({ ...p, leadOnly: false }))} />}
               {f.verifiedOnly && <AppliedChip label={t("investors.verifiedOnly")} onRemove={() => setF(p => ({ ...p, verifiedOnly: false }))} />}
               <button onClick={() => setF(p => ({ ...DEFAULT, query: p.query }))}
-                style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "4px 10px", cursor: "pointer", marginLeft: "4px" }}>
+                style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "4px 12px", cursor: "pointer", marginLeft: "4px" }}>
                 {t("investors.clearAllFilters")}
               </button>
             </div>
@@ -797,24 +797,24 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("investors.loadingInvestors")}</p>
             </div>
           ) : loadError ? (
-            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "4px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
+            <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "6px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
               <button onClick={() => window.location.reload()}
-                style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "9px 18px", minHeight: "40px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
+                style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 16px", minHeight: "40px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
                 {t("errorPage.retry")}
               </button>
             </div>
           ) : investors.length === 0 ? (
             /* No investors yet -- one diamond, one sentence, one quiet action. */
-            <div style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", background: "var(--cr-paper-2)", padding: "64px 24px", textAlign: "center" }}>
-              <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "16px", marginBottom: "16px" }}>✦</span>
+            <div style={{ border: "1px solid var(--cr-rule)", borderRadius: "6px", background: "var(--cr-paper-2)", padding: "64px 24px", textAlign: "center" }}>
+              <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "15px", marginBottom: "16px" }}>✦</span>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("investors.noInvestorsYet")}</p>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, maxWidth: "40ch", margin: "0 auto 24px" }}>
                 {t("investors.noInvestorsYetSub")}
               </p>
               <Link
                 href="/auth/signup?role=investor"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", minHeight: "40px", padding: "10px 24px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)", textDecoration: "none" }}
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "transparent", color: "var(--cr-ink)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "12px 24px", borderRadius: "999px", border: "1px solid var(--cr-paper-4)", textDecoration: "none" }}
               >
                 {t("investors.joinAsInvestor")} →
               </Link>
@@ -822,7 +822,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
           ) : (
             <>
               {/* Result count */}
-              <div className="flex items-center justify-between flex-wrap gap-2" style={{ marginBottom: "20px" }}>
+              <div className="flex items-center justify-between flex-wrap gap-2" style={{ marginBottom: "24px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                   {results.length === 1
                     ? t("investors.foundCountOne")
@@ -867,7 +867,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                   body={t("investors.noMatchSub")}
                   action={
                     <button onClick={() => setF(DEFAULT)}
-                      style={{ background: "transparent", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "8px 20px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", cursor: "pointer" }}>
+                      style={{ background: "transparent", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "8px 16px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", cursor: "pointer" }}>
                       {t("investors.clearAllFilters")}
                     </button>
                   }
@@ -879,7 +879,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
                       <div key={inv.id} className="cr-lift cr-spot cr-tilt group relative flex flex-col"
-                        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease" }}
+                        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px", transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease" }}
                         onMouseMove={e => {
                           const r = e.currentTarget.getBoundingClientRect();
                           const x = e.clientX - r.left, y = e.clientY - r.top;
@@ -895,7 +895,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                           e.currentTarget.style.borderColor = "var(--cr-rule-dark)";
                         }}>
                         {/* Top */}
-                        <div className="flex items-start justify-between" style={{ marginBottom: "14px" }}>
+                        <div className="flex items-start justify-between" style={{ marginBottom: "16px" }}>
                           {/* 12px padding gives each icon a 40px tap target. */}
                           <div className="absolute top-1 right-1 flex items-center">
                             {myRaise && (
@@ -924,22 +924,25 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                               {displayName[0].toUpperCase()}
                             </div>
                             <div>
-                              <p className="leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>
+                              <p className="leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>
                                 {displayName}
                                 {(inv as { is_demo?: boolean }).is_demo && <span className="ml-1.5 align-middle inline-flex"><DemoBadge /></span>}
                               </p>
                               {inv.firm && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{inv.firm}</p>}
-                              <div className="flex items-center flex-wrap gap-1.5" style={{ marginTop: "6px" }}>
-                                <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                              <div className="flex items-center flex-wrap gap-1.5" style={{ marginTop: "8px" }}>
+                                <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                   {t(meta.labelKey)}
                                 </span>
                                 {inv.lead_rounds && (
-                                  <span style={{ border: "1px solid var(--cr-copper-br)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-copper)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                                  <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                     {t("investors.leadsRounds")}
                                   </span>
                                 )}
+                                {/* Outlined copper, not a filled pill: the
+                                    card's one accent is the check-size figure,
+                                    and this chip matches its siblings' 4px. */}
                                 {myRaise && (inv.stages || []).includes(myRaise.stage) && (inv.industries || []).includes(myRaise.industry) && (
-                                  <span className="text-white" style={{ background: "var(--cr-copper)", borderRadius: "999px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                                  <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                     {t("investors.fitsYourRaise")}
                                   </span>
                                 )}
@@ -950,14 +953,14 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
 
                         {/* Bio */}
                         {inv.bio && (
-                          <p className="line-clamp-2 flex-1" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "14px" }}>{inv.bio}</p>
+                          <p className="line-clamp-2 flex-1" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "16px" }}>{inv.bio}</p>
                         )}
 
                         {/* Check size -- the card's number, on its own ruled strip. */}
                         {(inv.min_check || inv.max_check) && (
-                          <div style={{ borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)", padding: "8px 0", marginBottom: "12px" }}>
-                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "9px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "3px" }}>{t("investors.checkSize")}</p>
-                            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>
+                          <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "8px 0 0", marginBottom: "12px" }}>
+                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("investors.checkSize")}</p>
+                            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
                               {inv.min_check ? formatCheck(inv.min_check) : t("investors.any")} – {inv.max_check ? formatCheck(inv.max_check) : t("investors.any")}
                             </p>
                           </div>
@@ -967,7 +970,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                         {inv.stages && inv.stages.length > 0 && (
                           <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
                             {inv.stages.map(s => (
-                              <span key={s} style={{ border: "1px solid var(--cr-paper-4)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                              <span key={s} style={{ border: "1px solid var(--cr-paper-4)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                 {STAGE_LABELS[s] ?? s}
                               </span>
                             ))}
@@ -978,10 +981,10 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                         {inv.industries && inv.industries.length > 0 && (
                           <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
                             {inv.industries.slice(0, 3).map(ind => (
-                              <span key={ind} style={{ border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "10px", color: "var(--cr-ink-4)" }}>{ind}</span>
+                              <span key={ind} style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{ind}</span>
                             ))}
                             {inv.industries.length > 3 && (
-                              <span style={{ border: "1px solid var(--cr-rule)", borderRadius: "3px", padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)" }}>+{inv.industries.length - 3}</span>
+                              <span style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>+{inv.industries.length - 3}</span>
                             )}
                           </div>
                         )}
@@ -999,7 +1002,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                         <Link
                           href={`/investors/${inv.slug}`}
                           className="mt-auto w-full flex items-center gap-2"
-                          style={{ minHeight: "40px", paddingTop: "10px", borderTop: "1px solid var(--cr-rule)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}
+                          style={{ minHeight: "40px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}
                         >
                           {t("investors.viewProfile")} →
                         </Link>
@@ -1013,7 +1016,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
               {results.length > page * INV_PAGE_SIZE && (
                 <div className="mt-10 flex justify-center">
                   <button onClick={() => setPage(p => p + 1)}
-                    style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "14px", padding: "10px 32px", minHeight: "40px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: "pointer" }}>
+                    style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", padding: "12px 32px", minHeight: "40px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: "pointer" }}>
                     {t("startups.loadMore", { count: Math.min(INV_PAGE_SIZE, results.length - page * INV_PAGE_SIZE) })}
                   </button>
                 </div>
@@ -1024,14 +1027,14 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
           {/* Bottom CTA -- the page's one band moment, and its one primary. */}
           {!loading && (
             <div className="mt-16 flex flex-col md:flex-row md:items-center justify-between gap-6"
-              style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "32px" }}>
+              style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "32px" }}>
               <div>
-                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-band-ink)", letterSpacing: "-0.01em", marginBottom: "6px" }}>{t("investors.readyFunded")}</h2>
+                <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-band-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{t("investors.readyFunded")}</h2>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-band-ink-dim)", lineHeight: 1.6 }}>{t("investors.readyFundedSub")}</p>
               </div>
               <Link href="/auth/signup?role=startup"
                 className="whitespace-nowrap flex-shrink-0"
-                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "13px 28px", borderRadius: "999px", border: "none", textDecoration: "none" }}>
+                style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", padding: "12px 24px", borderRadius: "999px", border: "none", textDecoration: "none" }}>
                 {t("investors.listYourStartup")} →
               </Link>
             </div>

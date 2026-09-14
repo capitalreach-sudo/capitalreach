@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useReveal } from "@/hooks/useReveal";
 import { useTranslation } from "@/hooks/useTranslation";
-import { ScoreBadge } from "@/components/ui/score-badge";
+import { TabStrip } from "@/components/ui/tab-strip";
 import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { ScrollProgress } from "@/components/ui/ScrollProgress";
 import { ActivityPulse } from "@/components/homepage/activity-pulse";
@@ -32,9 +32,9 @@ function DiamondDot() {
 function StageBadge({ stage }: { stage: string }) {
   return (
     <span style={{
-      background: "var(--cr-paper-2)", border: "1px solid var(--cr-paper-4)", borderRadius: "3px",
+      background: "var(--cr-paper-2)", border: "1px solid var(--cr-paper-4)", borderRadius: "4px",
       padding: "4px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-      fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.06em",
+      fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em",
       whiteSpace: "nowrap",
     }}>
       {stage.replace(/_/g, " ")}
@@ -43,8 +43,9 @@ function StageBadge({ stage }: { stage: string }) {
 }
 
 const TH: React.CSSProperties = {
+  // The one caps voice: 11px/500/0.08em ink-3.
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
-  color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em",
+  color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em",
 };
 
 // ── Main Component ────────────────────────────────────────────
@@ -278,12 +279,12 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
             the whole panel goes: an empty LIVE ledger is also a claim. */}
         {liveTiles.length > 0 && (
         <aside className="hidden lg:block lg:col-span-5 animate-fade-up-2" aria-label={t("stats.capitalRaised")}>
-          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
+          <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", overflow: "hidden" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderBottom: "1px solid var(--cr-rule)" }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "10px", letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--cr-ink-4)" }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)" }}>
                 {t("nav.data")}
               </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "9px", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)" }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>
                 {/* Not green: green and red mean money direction on this
                     product, and a heartbeat is not a direction. Not accent
                     either: the CTA holds the hero's one accent moment. */}
@@ -295,7 +296,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               {liveTiles.map(([v, label]) => (
                 <div key={label} style={{ background: "var(--cr-paper-2)", padding: "16px" }}>
                   <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{v}</div>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>{label}</div>
+                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px" }}>{label}</div>
                 </div>
               ))}
             </div>
@@ -326,12 +327,13 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
               <div
                 key={label}
                 className="flex flex-col items-center justify-start text-center px-2 md:px-4"
-                style={{ borderLeft: i > 0 ? "1px solid var(--cr-rule)" : undefined }}
-              >
-                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "24px", color: i === 0 ? "var(--cr-copper)" : "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
+                >
+                <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: i === 0 ? "var(--cr-copper)" : "var(--cr-ink)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>
                   {value}
                 </div>
-                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px", lineHeight: 1.5 }}>
+                {/* The one caps voice: 11px/500/0.08em ink-3 -- ink-4 caps
+                    sit under the platform contrast floor. */}
+                <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginTop: "8px", lineHeight: 1.5 }}>
                   {label}
                 </div>
               </div>
@@ -351,28 +353,17 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-16 md:py-24">
           <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("howItWorks.sectionLabel")}</div>
 
-          <div role="tablist" aria-label={t("howItWorks.title")}
-            style={{ display: "inline-flex", gap: "4px", padding: "4px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "999px", marginBottom: "32px" }}>
-            {tracks.map((tr, i) => (
-              <button
-                key={tr.key}
-                role="tab"
-                id={`hiw-tab-${tr.key}`}
-                aria-selected={track === i}
-                aria-controls={`hiw-panel-${tr.key}`}
-                onClick={() => setTrack(i)}
-                style={{
-                  padding: "8px 16px", minHeight: "40px", borderRadius: "999px", cursor: "pointer",
-                  background: track === i ? "var(--cr-paper)" : "transparent",
-                  border: track === i ? "1px solid var(--cr-rule-dark)" : "1px solid transparent",
-                  color: track === i ? "var(--cr-ink)" : "var(--cr-ink-3)",
-                  fontFamily: "'DM Sans', sans-serif", fontWeight: track === i ? 600 : 400, fontSize: "13px",
-                }}
-              >
-                {tr.label}
-              </button>
-            ))}
-          </div>
+          {/* The house TabStrip replaces the bespoke pill toggle: same two
+              tracks, one disclosure idiom across the whole product. Panels
+              below keep their own ids, so idBase must stay "hiw". */}
+          <TabStrip
+            tabs={tracks.map((tr) => ({ key: tr.key, label: tr.label }))}
+            active={tracks[track].key}
+            onSelect={(k) => setTrack(tracks.findIndex((tr) => tr.key === k))}
+            idBase="hiw"
+            label={t("howItWorks.title")}
+            style={{ marginBottom: "32px" }}
+          />
 
           {tracks.map((tr, i) => (
             <div
@@ -386,10 +377,10 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                  UA's [hidden] rule loses to Tailwind's .grid, so the inactive
                  panel would otherwise stay on screen. Both panels stay in the
                  DOM so every step is still crawlable and searchable. */
-              style={{ display: track === i ? "grid" : "none", gap: "1px", background: "var(--cr-rule)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}
+              style={{ display: track === i ? "grid" : "none", gap: "24px", borderTop: "1px solid var(--cr-rule)", paddingTop: "24px" }}
             >
               {tr.steps.map((step, si) => (
-                <div key={step.title} style={{ background: "var(--cr-paper)", padding: "24px" }}>
+                <div key={step.title}>
                   {/* Numbered rail as a label, not a giant ghosted numeral:
                       the order is information, not decoration. */}
                   <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", letterSpacing: "0.12em", color: "var(--cr-copper)", marginBottom: "12px" }}>
@@ -432,7 +423,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
 
             {/* Tokens, not rgba literals; 4px corners like every other card;
                 no copper gradient bar on top -- the table is the content. */}
-            <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", background: "var(--cr-paper)", boxShadow: "var(--cr-card-shadow)" }}>
+            <div style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper)", boxShadow: "var(--cr-card-shadow)" }}>
               {/* Desktop header. No MRR column: revenue figures are gated to
                   the financials tier, and this table reaches every anonymous
                   visitor -- the number belongs behind the listing, not here. */}
@@ -493,7 +484,7 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                       }}>
                         {s.name.charAt(0)}
                       </div>
-                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
                     </div>
 
                     <div className="hidden md:block" style={{ minWidth: "140px", maxWidth: "140px", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
@@ -508,8 +499,11 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
                       {safeFormatCurrency(s.funding_target)}
                     </div>
 
-                    <div className="hidden md:flex justify-center" style={{ minWidth: "72px" }}>
-                      <ScoreBadge score={s.vaultrise_score} size="sm" />
+                    {/* Ink, not ui/score-badge's copper: the column header
+                        names the figure, and a copper badge per row was five
+                        accents in one table. */}
+                    <div className="hidden md:flex justify-center" style={{ minWidth: "72px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: s.vaultrise_score != null ? "var(--cr-ink)" : "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>
+                      {s.vaultrise_score != null ? s.vaultrise_score : "—"}
                     </div>
 
                     <div style={{ minWidth: "48px", textAlign: "right" }} className="hidden md:block">

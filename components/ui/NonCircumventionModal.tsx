@@ -77,10 +77,10 @@ export function NonCircumventionModal({ open, startupId, startupName, onConfirme
       style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.6)", padding: "16px" }}
     >
       <div className="animate-fade-up" style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "480px", boxShadow: "0 24px 64px rgba(26,22,18,0.25)" }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", padding: "24px 26px 0" }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", padding: "24px 24px 0" }}>
           <div>
             <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("circumvention.eyebrow")}</div>
-            <h3 id="ncm-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "21px", color: "var(--cr-ink)", lineHeight: 1.2 }}>
+            <h3 id="ncm-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1.2 }}>
               {t("circumvention.title", { name: startupName })}
             </h3>
           </div>
@@ -90,20 +90,20 @@ export function NonCircumventionModal({ open, startupId, startupName, onConfirme
           </button>
         </div>
 
-        <div style={{ padding: "18px 26px 0" }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13.5px", color: "var(--cr-ink-2)", marginBottom: "12px" }}>
+        <div style={{ padding: "16px 24px 0" }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", marginBottom: "12px" }}>
             {t("circumvention.intro")}
           </p>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "9px" }}>
+          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "8px" }}>
             {bullets.map((b, i) => (
               <li key={i} style={{ display: "flex", gap: "10px", alignItems: "flex-start", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", lineHeight: 1.55 }}>
-                <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "10px", marginTop: "5px", flexShrink: 0 }}>◆</span>
+                <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "11px", marginTop: "4px", flexShrink: 0 }}>◆</span>
                 <span>{b}</span>
               </li>
             ))}
           </ul>
 
-          <label style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "18px", padding: "12px 14px", background: "var(--cr-paper-3)", border: `1px solid ${agreed ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", cursor: "pointer" }}>
+          <label style={{ display: "flex", gap: "10px", alignItems: "flex-start", marginTop: "16px", padding: "12px", background: "var(--cr-paper-3)", border: `1px solid ${agreed ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, borderRadius: "4px", cursor: "pointer" }}>
             <input
               type="checkbox"
               checked={agreed}
@@ -112,27 +112,27 @@ export function NonCircumventionModal({ open, startupId, startupName, onConfirme
             />
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", lineHeight: 1.5 }}>
               {t("circumvention.checkbox")}
-              <span style={{ display: "block", fontWeight: 300, fontSize: "11.5px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{t("circumvention.checkboxHint")}</span>
+              <span style={{ display: "block", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{t("circumvention.checkboxHint")}</span>
             </span>
           </label>
 
           {error && (
-            <p role="alert" style={{ marginTop: "10px", fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-down)" }}>{error}</p>
+            <p role="alert" style={{ marginTop: "10px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-down)" }}>{error}</p>
           )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "18px 26px 22px" }}>
-          <div className="flex flex-col-reverse sm:flex-row" style={{ gap: "10px", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px 24px 24px" }}>
+          <div className="flex flex-col-reverse sm:flex-row" style={{ gap: "8px", justifyContent: "flex-end" }}>
             <button onClick={onCancel} disabled={busy}
-              style={{ height: "42px", padding: "0 18px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+              style={{ height: "42px", padding: "0 16px", background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
               {t("common.cancel")}
             </button>
             <button onClick={confirm} disabled={!agreed || busy} className={agreed ? "btn-copper-shimmer" : undefined}
-              style={{ height: "42px", padding: "0 22px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: !agreed || busy ? "default" : "pointer", opacity: !agreed || busy ? 0.5 : 1 }}>
+              style={{ height: "42px", padding: "0 24px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff", cursor: !agreed || busy ? "default" : "pointer", opacity: !agreed || busy ? 0.5 : 1 }}>
               {busy ? t("common.saving") : `${t("circumvention.confirm")} →`}
             </button>
           </div>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "10.5px", color: "var(--cr-ink-4)", textAlign: "center" }}>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", textAlign: "center" }}>
             {t("circumvention.footer", { time: now })}
           </p>
         </div>

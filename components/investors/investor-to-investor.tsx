@@ -49,7 +49,7 @@ export function InvestorToInvestor({ investorId }: { investorId: string }) {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
       <button onClick={async () => {
         if (busy) return;
@@ -62,22 +62,22 @@ export function InvestorToInvestor({ investorId }: { investorId: string }) {
         if (!res.ok) { refuse(res, j); return; }
         router.push(`/dashboard/messages?thread=${j.threadId}`);
       }}
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "var(--cr-paper-2)", border: "1px solid var(--cr-copper-br)", borderRadius: 4, padding: "8px 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>
         <ArrowRight style={{ width: 13, height: 13 }} /> {t("intro.make")}
       </button>
       <button onClick={() => setOpen(o => !o)}
-        style={{ display: "inline-flex", alignItems: "center", gap: 6, alignSelf: "flex-start", background: "var(--cr-copper)", color: "#fff", border: "1px solid var(--cr-copper-d)", borderRadius: 4, padding: "8px 14px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
+        style={{ display: "inline-flex", alignItems: "center", gap: 8, alignSelf: "flex-start", background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "1px solid var(--cr-copper-d)", borderRadius: 4, padding: "8px 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12 }}>
         <MessageSquare style={{ width: 13, height: 13 }} /> {t("i2i.message")}
       </button>
       </div>
       {refusal && <RefusalNotice refusal={refusal} />}
       {open && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 6, width: "min(340px, 90vw)" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, width: "min(340px, 90vw)" }}>
           <textarea value={body} onChange={e => setBody(e.target.value)} maxLength={2000} rows={3}
             placeholder={t("i2i.placeholder")}
-            style={{ width: "100%", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper)", color: "var(--cr-ink)", borderRadius: 4, padding: "8px 10px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, resize: "vertical" }} />
+            style={{ width: "100%", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper)", color: "var(--cr-ink)", borderRadius: 4, padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: 13, resize: "vertical" }} />
           <button onClick={send} disabled={busy || !body.trim()}
-            style={{ alignSelf: "flex-end", background: "var(--cr-copper)", color: "#fff", border: "none", borderRadius: 4, padding: "7px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, cursor: "pointer", opacity: busy || !body.trim() ? 0.6 : 1 }}>
+            style={{ alignSelf: "flex-end", background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "none", borderRadius: 4, padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, cursor: "pointer", opacity: busy || !body.trim() ? 0.6 : 1 }}>
             {busy ? t("common.saving") : t("f2f.send")}
           </button>
         </div>

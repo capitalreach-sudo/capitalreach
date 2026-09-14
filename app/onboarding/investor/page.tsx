@@ -14,12 +14,13 @@ import {
 import { useTranslation } from "@/hooks/useTranslation";
 
 // ── Shared style tokens ────────────────────────────────────────
+// 4px: control radius. 15px: what the member types is reading text.
 const iStyle: React.CSSProperties = {
   width: "100%", borderRadius: "4px",
   border: "1px solid var(--cr-rule-dark)",
-  background: "var(--cr-paper-2)", padding: "10px 12px",
+  background: "var(--cr-paper-2)", padding: "8px 12px",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "14px", color: "var(--cr-ink)", outline: "none",
+  fontSize: "15px", color: "var(--cr-ink)", outline: "none",
   boxSizing: "border-box", transition: "border-color 150ms",
 };
 // Numbers are data: numeric inputs render in mono like every other figure.
@@ -28,31 +29,33 @@ const iMono: React.CSSProperties = {
 };
 const taStyle: React.CSSProperties = { ...iStyle, resize: "none" };
 const selStyle: React.CSSProperties = { ...iStyle, cursor: "pointer" };
+// The one caps-label voice: 11px/500/0.08em on ink-3.
 const labelSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "10px", color: "var(--cr-ink-4)", textTransform: "uppercase",
-  letterSpacing: "0.08em", display: "block", marginBottom: "6px",
+  fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase",
+  letterSpacing: "0.08em", display: "block", marginBottom: "8px",
 };
 const hintSt: React.CSSProperties = {
   fontFamily: "'DM Sans', sans-serif", fontWeight: 300,
-  fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "6px", marginTop: "2px",
+  fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "8px", marginTop: "2px",
 };
 // House buttons: one copper pill per view; secondary is a hairline outline
 // pill; back is a quiet text link. Light-on-copper comes from --cr-band-ink,
 // which is light in every register, so no hex ever enters the component.
+// 4px: a rectangular button is never a pill.
 const primaryBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   background: "var(--cr-copper)", color: "var(--cr-on-accent)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
   fontSize: "13px", height: "42px", padding: "0 24px",
-  borderRadius: "999px", border: "none", cursor: "pointer", flexShrink: 0,
+  borderRadius: "4px", border: "none", cursor: "pointer", flexShrink: 0,
 };
 const outlineBtn: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
   border: "1px solid var(--cr-paper-4)", color: "var(--cr-ink)",
   fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-  fontSize: "13px", height: "42px", padding: "0 20px",
-  borderRadius: "999px", background: "transparent", cursor: "pointer", flexShrink: 0,
+  fontSize: "13px", height: "42px", padding: "0 16px",
+  borderRadius: "4px", background: "transparent", cursor: "pointer", flexShrink: 0,
 };
 const quietBtn: React.CSSProperties = {
   display: "inline-flex", alignItems: "center", gap: "6px",
@@ -71,8 +74,8 @@ const groupRule: React.CSSProperties = {
 // echoing the ruled-label, never a solid fill.
 function optionRow(selected: boolean, first: boolean): React.CSSProperties {
   return {
-    width: "100%", textAlign: "left", display: "flex", alignItems: "flex-start", gap: "14px",
-    padding: "14px 18px", minHeight: "44px", border: "none",
+    width: "100%", textAlign: "left", display: "flex", alignItems: "flex-start", gap: "12px",
+    padding: "12px 16px", minHeight: "44px", border: "none",
     borderTop: first ? "none" : "1px solid var(--cr-rule)",
     background: selected ? "var(--cr-copper-bg)" : "transparent",
     boxShadow: selected ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
@@ -80,7 +83,8 @@ function optionRow(selected: boolean, first: boolean): React.CSSProperties {
   };
 }
 const optionList: React.CSSProperties = {
-  border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden",
+  // 6px: the ruled list is a panel.
+  border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", overflow: "hidden",
 };
 
 function onFocusCopper(e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
@@ -447,7 +451,7 @@ export default function InvestorOnboardingPage() {
             <div style={{ width: 28, height: 28, background: "var(--cr-copper)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <TrendingUp style={{ width: 14, height: 14, color: "var(--cr-on-accent)" }} />
             </div>
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "14px", color: "var(--cr-copper)" }}>CapitalReach</span>
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "13px", color: "var(--cr-copper)" }}>CapitalReach</span>
             <span className="hidden sm:inline" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginLeft: "4px" }}>{t("onboarding.inv.forInvestors")}</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0 }}>
@@ -475,8 +479,8 @@ export default function InvestorOnboardingPage() {
                       onClick={() => done && setStep(s.id)}
                       disabled={!done && !active}
                       style={{
-                        width: "100%", textAlign: "left", display: "flex", alignItems: "center", gap: "10px",
-                        padding: "10px 12px", borderRadius: "4px", border: "none",
+                        width: "100%", textAlign: "left", display: "flex", alignItems: "center", gap: "8px",
+                        padding: "8px 12px", borderRadius: "4px", border: "none",
                         background: active ? "var(--cr-copper-bg)" : "transparent",
                         boxShadow: active ? "inset 2px 0 0 0 var(--cr-copper)" : "none",
                         cursor: done ? "pointer" : active ? "default" : "not-allowed",
@@ -513,7 +517,8 @@ export default function InvestorOnboardingPage() {
               ))}
             </div>
 
-            <div className="p-4 sm:p-8" style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow)" }}>
+            {/* 6px: card radius. */}
+            <div className="p-4 sm:p-8" style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: "6px", boxShadow: "var(--cr-card-shadow)" }}>
 
               {/* ─── STEP 1: Type ─────────────────────────────────────── */}
               {step === 1 && (
@@ -522,7 +527,7 @@ export default function InvestorOnboardingPage() {
                   <div style={optionList}>
                     {INVESTOR_TYPES.map((ty, i) => (
                       <button key={ty.value} onClick={() => setInvestorType(ty.value)}
-                        style={{ ...optionRow(investorType === ty.value, i === 0), padding: "16px 18px" }}>
+                        style={{ ...optionRow(investorType === ty.value, i === 0), padding: "16px" }}>
                         <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", paddingTop: "2px", flexShrink: 0 }}>
                           {String(i + 1).padStart(2, "0")}
                         </span>
@@ -549,8 +554,8 @@ export default function InvestorOnboardingPage() {
                         {INDUSTRIES.map(ind => (
                           <button key={ind} onClick={() => toggleIndustry(ind)}
                             style={{
-                              display: "flex", alignItems: "center", gap: "8px", padding: "11px 10px", minHeight: "40px",
-                              borderRadius: "3px", border: industries.includes(ind) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
+                              display: "flex", alignItems: "center", gap: "8px", padding: "8px 12px", minHeight: "40px",
+                              borderRadius: "4px", border: industries.includes(ind) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
                               background: industries.includes(ind) ? "var(--cr-copper-bg)" : "transparent",
                               cursor: "pointer", transition: "background-color 120ms ease, border-color 120ms ease",
                             }}>
@@ -568,7 +573,7 @@ export default function InvestorOnboardingPage() {
                         {STAGES.map(s => (
                           <button key={s.value} onClick={() => toggleStage(s.value)}
                             style={{
-                              padding: "10px 16px", minHeight: "40px", borderRadius: "3px",
+                              padding: "8px 16px", minHeight: "40px", borderRadius: "4px",
                               border: stages.includes(s.value) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule-dark)",
                               background: stages.includes(s.value) ? "var(--cr-copper-bg)" : "transparent",
                               fontFamily: "'DM Sans', sans-serif", fontWeight: stages.includes(s.value) ? 600 : 400,
@@ -810,7 +815,7 @@ export default function InvestorOnboardingPage() {
                 <div>
                   <StepHead n={5} label={t(STEPS[4].labelKey)} title={t("onboarding.inv.h5")} sub={t("onboarding.inv.h5Sub")} />
 
-                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "16px 18px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
+                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "16px", marginBottom: "24px", display: "flex", alignItems: "flex-start", gap: "12px" }}>
                     <ShieldCheck style={{ width: 18, height: 18, color: "var(--cr-copper)", flexShrink: 0, marginTop: "1px" }} />
                     <div>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", marginBottom: "4px" }}>{t("onboarding.inv.legalReq")}</p>
@@ -825,7 +830,7 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={accredited} onChange={e => setAccredited(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.accTitle")} <span style={{ fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "none" }}>· {t("onboarding.inv.accOptional")}</span></p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("onboarding.inv.accTitle")} <span style={{ fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", textTransform: "none" }}>· {t("onboarding.inv.accOptional")}</span></p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           {t("onboarding.inv.accBody")}
                         </p>
@@ -839,7 +844,7 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={accreditedDeclaration} onChange={e => setAccreditedDeclaration(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.riskTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("onboarding.inv.riskTitle")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           {t("onboarding.inv.riskBody")}
                         </p>
@@ -850,7 +855,7 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={ageConfirmed} onChange={e => setAgeConfirmed(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.ageTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("onboarding.inv.ageTitle")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           {t("onboarding.inv.ageBody")}
                         </p>
@@ -861,7 +866,7 @@ export default function InvestorOnboardingPage() {
                       <input type="checkbox" checked={riskAcknowledged} onChange={e => setRiskAcknowledged(e.target.checked)}
                         style={{ accentColor: "var(--cr-copper)", width: 16, height: 16, marginTop: "2px", flexShrink: 0, cursor: "pointer" }} />
                       <div>
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)", marginBottom: "6px" }}>{t("onboarding.inv.lossTitle")}</p>
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("onboarding.inv.lossTitle")}</p>
                         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
                           {t("onboarding.inv.lossBody")}
                         </p>
@@ -880,7 +885,7 @@ export default function InvestorOnboardingPage() {
                 <div>
                   <StepHead n={6} label={t(STEPS[5].labelKey)} title={t("onboarding.inv.h6")} sub={t("onboarding.inv.h6Sub")} />
 
-                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "14px 16px", marginBottom: "24px" }}>
+                  <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "6px", padding: "16px", marginBottom: "24px" }}>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)", marginBottom: "10px" }}>{t("onboarding.inv.unlocksTitle")}</p>
                     <div className="form-row-2" style={{ gap: "6px" }}>
                       {[
@@ -890,7 +895,7 @@ export default function InvestorOnboardingPage() {
                         ["Institutional", t("onboarding.inv.unlockInst")],
                       ].map(([tier, desc]) => (
                         <div key={tier} style={{ display: "flex", alignItems: "baseline", gap: "8px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
-                          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "9px", flexShrink: 0 }}>✦</span>
+                          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "11px", flexShrink: 0 }}>✦</span>
                           <span><strong>{tier}:</strong> {desc}</span>
                         </div>
                       ))}
@@ -933,11 +938,11 @@ export default function InvestorOnboardingPage() {
                       }}>
                         <div className="flex flex-wrap items-start justify-between" style={{ gap: "12px", marginBottom: "12px" }}>
                           <div style={{ minWidth: 0 }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-                              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "16px", color: "var(--cr-ink)" }}>{plan.name}</span>
-                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "14px", color: plan.highlight ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{plan.price}</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>{plan.name}</span>
+                              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: plan.highlight ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>{plan.price}</span>
                               {plan.highlight && (
-                                <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "10px", padding: "3px 8px", borderRadius: "3px", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t("onboarding.su.mostPopular")}</span>
+                                <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "3px 8px", borderRadius: "4px", textTransform: "uppercase", letterSpacing: "0.08em" }}>{t("onboarding.su.mostPopular")}</span>
                               )}
                             </div>
                             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{plan.desc}</p>

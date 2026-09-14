@@ -112,7 +112,7 @@ export function LanguageSwitcher({ currentLocale }: Props) {
         <span style={{
           fontSize: "11px", fontFamily: "'DM Sans', sans-serif",
           fontWeight: 500, textTransform: "uppercase",
-          letterSpacing: "0.06em", color: "var(--cr-ink-3)",
+          letterSpacing: "0.08em", color: "var(--cr-ink-3)",
         }}>
           {currentLocale}
         </span>
@@ -148,10 +148,11 @@ export function LanguageSwitcher({ currentLocale }: Props) {
             <div style={{
               padding: "8px 16px", borderBottom: "1px solid #E4DDD2",
             }}>
+              {/* The one caps voice: 11px/500/0.08em on ink-3. */}
               <span style={{
                 fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
-                fontSize: "10px", textTransform: "uppercase",
-                letterSpacing: "0.08em", color: "var(--cr-ink-4)",
+                fontSize: "11px", textTransform: "uppercase",
+                letterSpacing: "0.08em", color: "var(--cr-ink-3)",
               }}>
                 {t("locale.selectLanguage")}
               </span>
@@ -195,8 +196,8 @@ export function LanguageSwitcher({ currentLocale }: Props) {
                   {active && <Check style={{ width: 13, height: 13, color: "var(--cr-copper)", flexShrink: 0 }} />}
                   {meta.rtl && (
                     <span style={{
-                      fontFamily: "'DM Sans', sans-serif", fontSize: "8px",
-                      color: "var(--cr-ink-4)", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0,
+                      fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px",
+                      color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", flexShrink: 0,
                     }}>{t("locale.rtl")}</span>
                   )}
                 </button>

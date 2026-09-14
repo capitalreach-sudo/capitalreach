@@ -75,25 +75,25 @@ export function ShareLinks() {
   const live = links.filter(l => !l.revoked_at);
 
   return (
-    <section style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginTop: "24px" }}>
+    <section style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px", marginTop: "24px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
         <Link2 style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
         <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("share.title")}</h3>
       </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: 14, lineHeight: 1.5 }}>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: 16, lineHeight: 1.5 }}>
         {t("share.intro")}
       </p>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 14 }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginBottom: 16 }}>
         <input value={label} onChange={e => setLabel(e.target.value.slice(0, 120))}
           placeholder={t("share.labelPh")}
-          style={{ flex: "1 1 180px", minWidth: 150, background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "7px 10px", fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink)", outline: "none" }} />
-        <label style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+          style={{ flex: "1 1 180px", minWidth: 150, background: "var(--cr-paper)", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none" }} />
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
           <input type="checkbox" checked={withDocs} onChange={e => setWithDocs(e.target.checked)} />
           {t("share.includeDocs")}
         </label>
         <button onClick={create} disabled={busy}
-          style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", border: "none", borderRadius: 4, padding: "7px 14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
+          style={{ background: "var(--cr-ink)", color: "var(--cr-paper)", border: "none", borderRadius: 4, padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
           {t("share.create")}
         </button>
       </div>
@@ -106,7 +106,7 @@ export function ShareLinks() {
             <li key={l.id} style={{ display: "flex", alignItems: "center", gap: 8, borderTop: "1px solid var(--cr-rule)", paddingTop: 8 }}>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{l.url}</p>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 2, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 2, display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
                   {l.label && <span>{l.label}</span>}
                   <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
                     <Eye style={{ width: 10, height: 10 }} />

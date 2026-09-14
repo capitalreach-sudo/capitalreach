@@ -48,9 +48,10 @@ interface PublishedItem {
 
 const UI = "'DM Sans', sans-serif";
 
+// The one caps voice: 11px/500/0.08em on ink-3.
 const labelStyle: React.CSSProperties = {
-  fontFamily: UI, fontWeight: 500, fontSize: "10px", letterSpacing: "0.07em",
-  textTransform: "uppercase", color: "var(--cr-ink-4)",
+  fontFamily: UI, fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em",
+  textTransform: "uppercase", color: "var(--cr-ink-3)",
 };
 
 const bodyStyle: React.CSSProperties = {
@@ -58,10 +59,11 @@ const bodyStyle: React.CSSProperties = {
   color: "var(--cr-ink-3)", margin: 0,
 };
 
+// 4px: control-scale radius on the outcome chips; caps at the 11px floor.
 const chipBase: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", borderRadius: "3px",
-  padding: "2px 7px", fontFamily: UI, fontWeight: 500, fontSize: "10px",
-  letterSpacing: "0.05em", textTransform: "uppercase", whiteSpace: "nowrap",
+  display: "inline-flex", alignItems: "center", borderRadius: "4px",
+  padding: "2px 8px", fontFamily: UI, fontWeight: 500, fontSize: "11px",
+  letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap",
   border: "1px solid currentColor",
 };
 
@@ -267,7 +269,7 @@ export default async function WhatWeChecked({
                 return (
                   <li key={item.key} style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "12px" }}>
                     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
-                      <span style={{ fontFamily: UI, fontWeight: 600, fontSize: "13.5px", color: "var(--cr-ink)" }}>
+                      <span style={{ fontFamily: UI, fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
                         {tf(itemLabelKey(version ?? "", item.key), item.label)}
                       </span>
                       <span style={{ ...chipBase, color }}>{outcomeWord}</span>
@@ -275,7 +277,7 @@ export default async function WhatWeChecked({
                     {/* The method is always open. It is the part that says how
                         shallow the check is, and a check described only behind
                         a toggle is a check most readers will take on trust. */}
-                    <p style={{ ...bodyStyle, fontSize: "12.5px", marginTop: "6px" }}>
+                    <p style={{ ...bodyStyle, fontSize: "12px", marginTop: "8px" }}>
                       {tf(itemMethodKey(version ?? "", item.key), item.method)}
                     </p>
                   </li>
@@ -291,7 +293,7 @@ export default async function WhatWeChecked({
           module at all has seen this paragraph. Do not wrap it in <details>. */}
       <p
         style={{
-          fontFamily: UI, fontWeight: 400, fontSize: "12.5px", lineHeight: 1.6,
+          fontFamily: UI, fontWeight: 400, fontSize: "12px", lineHeight: 1.6,
           color: "var(--cr-ink-2)", margin: 0,
           borderTop: "1px solid var(--cr-rule-dark)", paddingTop: "14px",
         }}

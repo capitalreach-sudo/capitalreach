@@ -12,11 +12,12 @@ export function SpecimenDrawer({
 }: { tag: string; sentence?: string; ctaLabel?: string; ctaHref?: string; onCta?: () => void }) {
   return (
     <div style={{
-      border: "1px dashed var(--cr-paper-4)", borderRadius: "8px",
-      padding: "40px 24px", textAlign: "center",
-      display: "flex", flexDirection: "column", alignItems: "center", gap: "10px",
+      border: "1px dashed var(--cr-paper-4)", borderRadius: "6px", // 6px: panel radius
+      padding: "48px 24px", textAlign: "center",
+      display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
     }}>
-      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "10px", letterSpacing: "0.18em", textTransform: "uppercase", color: "var(--cr-ink-4)" }}>
+      {/* The one caps voice: 11px/500/0.08em on ink-3. */}
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)" }}>
         {tag}
       </span>
       {sentence && (

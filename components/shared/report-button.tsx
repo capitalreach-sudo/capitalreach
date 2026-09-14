@@ -74,16 +74,16 @@ export function ReportButton({ targetType, targetId, label }: {
 
       {open && (
         <div onClick={() => setOpen(false)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 60, padding: 16 }}>
+          style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 60, padding: 16 }}>
           <div onClick={e => e.stopPropagation()}
-            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 8, padding: 20, width: "100%", maxWidth: 420 }}>
+            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: 6, padding: 24, width: "100%", maxWidth: 420 }}>
             <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: 4 }}>{t("report.title")}</h3>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: anonNote ? 6 : 14 }}>{t("report.intro")}</p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: anonNote ? 8 : 16 }}>{t("report.intro")}</p>
             {anonNote && (
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: 14 }}>{anonNote}</p>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: 16 }}>{anonNote}</p>
             )}
 
-            <div style={{ display: "grid", gap: 6, marginBottom: 12 }}>
+            <div style={{ display: "grid", gap: 8, marginBottom: 12 }}>
               {REASONS.map(r => (
                 <label key={r} style={{ display: "flex", alignItems: "center", gap: 8, fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", cursor: "pointer" }}>
                   <input type="radio" name="report-reason" value={r} checked={reason === r} onChange={() => setReason(r)} />
@@ -94,15 +94,15 @@ export function ReportButton({ targetType, targetId, label }: {
 
             <textarea value={detail} onChange={e => setDetail(e.target.value.slice(0, 2000))} rows={3}
               placeholder={t("report.detailPh")}
-              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "7px 9px", outline: "none" }} />
+              style={{ width: "100%", boxSizing: "border-box", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", padding: "8px", outline: "none" }} />
 
-            <div style={{ display: "flex", gap: 8, marginTop: 14, justifyContent: "flex-end" }}>
+            <div style={{ display: "flex", gap: 8, marginTop: 16, justifyContent: "flex-end" }}>
               <button onClick={() => setOpen(false)}
-                style={{ background: "none", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "6px 14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
+                style={{ background: "none", border: "1px solid var(--cr-rule)", borderRadius: 4, padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
                 {t("common.cancel")}
               </button>
               <button onClick={submit} disabled={busy}
-                style={{ background: "var(--cr-ink)", border: "none", borderRadius: 4, padding: "6px 14px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-paper)", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
+                style={{ background: "var(--cr-ink)", border: "none", borderRadius: 4, padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-paper)", cursor: "pointer", opacity: busy ? 0.6 : 1 }}>
                 {t("report.submit")}
               </button>
             </div>

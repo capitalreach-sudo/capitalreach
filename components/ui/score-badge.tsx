@@ -24,10 +24,12 @@ export function ScoreBadge({ score, locked = false, size = "md" }: {
 }) {
   const { t } = useTranslation();
 
+  // Figures on the type scale (13/15/22); the caption joins the one caps
+  // voice at 11px -- the old 8-9px caps were below the contrast floor.
   const dims = {
-    sm: { figure: "13px", label: "8px", gap: 1 },
-    md: { figure: "17px", label: "8.5px", gap: 1 },
-    lg: { figure: "24px", label: "9px", gap: 2 },
+    sm: { figure: "13px", label: "11px", gap: 1 },
+    md: { figure: "15px", label: "11px", gap: 1 },
+    lg: { figure: "22px", label: "11px", gap: 2 },
   }[size];
 
   const wrap: React.CSSProperties = {
@@ -40,7 +42,7 @@ export function ScoreBadge({ score, locked = false, size = "md" }: {
   // the company name is truncated into.
   const label: React.CSSProperties = {
     fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: dims.label,
-    textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--cr-ink-4)",
+    textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)",
     maxWidth: "84px", textAlign: "right", lineHeight: 1.25,
   };
 
