@@ -101,11 +101,20 @@ export async function POST(req: NextRequest) {
       .from("investors")
       .select(`
         id, slug, type, industries, stages, min_check, max_check, geography,
-        profiles:owner_id ( full_name )
+        display_name, firm_name
       `)
       .not("stages", "is", null)
       // B18: match against real investors only.
       .eq("is_external", false)
+      // Identity protection holds here too: a private (is_public=false)
+      // investor never opted into the directory, and this tool must not
+      // surface them to a founder who has no deal with them -- the profile
+      // page itself 404s the same row for the same reason. Audit finding:
+      // this query had no is_public filter and joined profiles.full_name,
+      // which handed a founder the account holder's real name (not the
+      // display_name/firm_name the investor chose to publish) for every
+      // investor on the platform, public or not.
+      .eq("is_public", true)
       .limit(CAP);
 
     if (!investors || investors.length === 0) {
@@ -114,7 +123,10 @@ export async function POST(req: NextRequest) {
 
     const scored = investors
       .map((inv) => {
-        const name = (inv.profiles as { full_name?: string | null } | null)?.full_name || "Investor";
+        // Public directory identity only, same fallback order as everywhere
+        // else an investor is named pre-deal (investors-client.tsx,
+        // /api/messages/accounts) -- never profiles.full_name.
+        const name = (inv.display_name as string | null) || (inv.firm_name as string | null) || "Investor";
         const shaped = {
           id: inv.id as string,
           slug: inv.slug as string,

@@ -356,7 +356,10 @@ function WaitingOnYou({ deals, investor, live }: { deals: Deal[]; investor: Inve
   if (!loaded) {
     return (
       <Section id="waiting" title={title}>
-        <Ledger busy columns="minmax(0,1fr)">
+        {/* Separated variant (globals.css "Ledger: separated variant") on the
+           skeleton too, so the loading state doesn't flash as a flat hairline
+           list a moment before the loaded rows resolve into cards. */}
+        <Ledger busy columns="minmax(0,1fr)" className="cr-ledger--separated">
           {Array.from({ length: Math.max(1, rows.length) }, (_, i) => (
             <LedgerRow key={i}>
               <LedgerCell primary><RowSkeleton /></LedgerCell>
@@ -378,7 +381,11 @@ function WaitingOnYou({ deals, investor, live }: { deals: Deal[]; investor: Inve
 
   return (
     <Section id="waiting" title={title}>
-      <Ledger columns="minmax(0,1fr) auto auto" className="crd-waiting">
+      {/* Opt-in separated variant (globals.css "Ledger: separated variant")
+         -- each row here is a distinct deal, offer or share in motion, not
+         a line in a dense table, so it gets the same treatment as the
+         investor directory and the watchlist below. */}
+      <Ledger columns="minmax(0,1fr) auto auto" className="crd-waiting cr-ledger--separated">
         {rows.map((r, i) => {
           const primaryAction = i === 0 && r.href
             ? <Link href={r.href} className="cr-btn cr-btn--primary">{r.action}</Link>
@@ -644,6 +651,10 @@ function WatchlistSection({ watchlist, canExport, showBrowse }: { watchlist: Wat
       ) : (
         <Ledger
           columns="minmax(0,1fr) auto auto"
+          /* Opt-in separated variant (globals.css "Ledger: separated
+             variant") -- same class the investor directory uses: each row
+             is a distinct saved company, not a line in a dense table. */
+          className="cr-ledger--separated"
           head={
             <LedgerHead>
               <LedgerCell>{t("dashboard.startupLabel")}</LedgerCell>

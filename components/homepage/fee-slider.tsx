@@ -11,9 +11,15 @@ import { useTranslation } from "@/hooks/useTranslation";
  * a founder feel it with their own number. Reuses the feeCalc locale keys the
  * listing calculator shipped with (all fifteen languages, day one).
  *
- * Everything here sits on --cr-band-bg, which is a dark slab in all four
- * theme combinations, so colours are mixed against --cr-band-ink rather than
- * --cr-ink: the page palette flips between light and dark, the band does not.
+ * Everything here sits on --cr-band-bg by default (theme="band"), which is a
+ * dark slab in all four theme combinations, so colours are mixed against
+ * --cr-band-ink rather than --cr-ink: the page palette flips between light
+ * and dark, the band does not. /pricing opens on this component and wants it
+ * to read as part of the page rather than a permanent black insert, so it
+ * passes theme="adaptive": the section and every derived colour below follow
+ * --cr-paper/--cr-ink instead, so the widget flips light/dark with the rest
+ * of the page. Any other caller (none today, but this is what shipped on the
+ * homepage before the proof strip was rewritten) gets theme="band" for free.
  */
 const STEPS = [100_000, 250_000, 500_000, 750_000, 1_000_000, 1_500_000, 2_000_000, 3_000_000, 5_000_000, 7_500_000, 10_000_000];
 const LAST = STEPS.length - 1;
@@ -33,20 +39,63 @@ const ANCHORS = [0, 4, 8, 10];
  *  half-thumb inset or its ticks point at the wrong values. */
 const THUMB_INSET = "9px";
 
+type FeeSliderTheme = "band" | "adaptive";
+
 /** Copper and --cr-up are tuned for a light page; on the always-dark band they
  *  sit near 3:1, which is under the floor for anything smaller than a display
  *  figure. Lifting each toward --cr-band-ink keeps the hue and buys the
- *  contrast, in every theme, without naming a colour. */
+ *  contrast, in every theme, without naming a colour. On an actual light page
+ *  (theme="adaptive") the same pair clears the floor unlifted -- measured
+ *  worst case 3.69:1 (editorial register, --cr-copper against the panel
+ *  tint), still a display-figure-only use -- so the adaptive surface below
+ *  takes them plain instead of re-deriving a second lift. */
 const UP_ON_BAND = "color-mix(in srgb, var(--cr-up) 72%, var(--cr-band-ink))";
 const COPPER_ON_BAND = "color-mix(in srgb, var(--cr-copper) 78%, var(--cr-band-ink))";
 
-const PANEL_BG = "color-mix(in srgb, var(--cr-band-ink) 4%, transparent)";
+const PANEL_BG_BAND = "color-mix(in srgb, var(--cr-band-ink) 4%, transparent)";
 const RULE_ON_BAND = "color-mix(in srgb, var(--cr-band-ink) 12%, transparent)";
 const EDGE_ON_BAND = "color-mix(in srgb, var(--cr-band-ink) 10%, transparent)";
 const TRACK_ON_BAND = "color-mix(in srgb, var(--cr-band-ink) 8%, transparent)";
 const BROKER_ON_BAND = "color-mix(in srgb, var(--cr-band-ink) 30%, transparent)";
 const TICK_ON_BAND = "color-mix(in srgb, var(--cr-band-ink) 25%, transparent)";
-const RING = "0 0 0 2px var(--cr-band-bg), 0 0 0 4px color-mix(in srgb, var(--cr-copper) 65%, transparent)";
+const RING_BAND = "0 0 0 2px var(--cr-band-bg), 0 0 0 4px color-mix(in srgb, var(--cr-copper) 65%, transparent)";
+
+/** Adaptive mirrors of the constants above, mixed against --cr-ink instead of
+ *  --cr-band-ink so the same panel geometry reads correctly on whichever
+ *  paper the page is currently showing (light or dark, either style
+ *  register) rather than always against the permanent dark slab. */
+const PANEL_BG_ADAPTIVE = "color-mix(in srgb, var(--cr-ink) 4%, transparent)";
+const RULE_ON_ADAPTIVE = "color-mix(in srgb, var(--cr-ink) 12%, transparent)";
+const EDGE_ON_ADAPTIVE = "color-mix(in srgb, var(--cr-ink) 10%, transparent)";
+const TRACK_ON_ADAPTIVE = "color-mix(in srgb, var(--cr-ink) 8%, transparent)";
+const BROKER_ON_ADAPTIVE = "color-mix(in srgb, var(--cr-ink) 30%, transparent)";
+const TICK_ON_ADAPTIVE = "color-mix(in srgb, var(--cr-ink) 25%, transparent)";
+/* The ring's inner layer is a gap the width of the surface colour, not a
+   visible ring itself -- it has to match whatever --bg this theme uses or
+   the gap shows as a mismatched halo. */
+const RING_ADAPTIVE = "0 0 0 2px var(--cr-paper), 0 0 0 4px color-mix(in srgb, var(--cr-copper) 65%, transparent)";
+
+/** Everything the component reads to paint itself, keyed by theme. "band" is
+ *  the untouched original: always the dark slab, in every theme x style
+ *  combination. "adaptive" follows the page's own light/dark toggle instead. */
+const SURFACE: Record<FeeSliderTheme, {
+  bg: string; ink: string; inkDim: string; panelBg: string;
+  ruleOn: string; edgeOn: string; trackOn: string; brokerOn: string; tickOn: string;
+  ring: string; upOn: string; copperOn: string;
+}> = {
+  band: {
+    bg: "var(--cr-band-bg)", ink: "var(--cr-band-ink)", inkDim: "var(--cr-band-ink-dim)",
+    panelBg: PANEL_BG_BAND, ruleOn: RULE_ON_BAND, edgeOn: EDGE_ON_BAND, trackOn: TRACK_ON_BAND,
+    brokerOn: BROKER_ON_BAND, tickOn: TICK_ON_BAND, ring: RING_BAND,
+    upOn: UP_ON_BAND, copperOn: COPPER_ON_BAND,
+  },
+  adaptive: {
+    bg: "var(--cr-paper)", ink: "var(--cr-ink)", inkDim: "var(--cr-ink-3)",
+    panelBg: PANEL_BG_ADAPTIVE, ruleOn: RULE_ON_ADAPTIVE, edgeOn: EDGE_ON_ADAPTIVE, trackOn: TRACK_ON_ADAPTIVE,
+    brokerOn: BROKER_ON_ADAPTIVE, tickOn: TICK_ON_ADAPTIVE, ring: RING_ADAPTIVE,
+    upOn: "var(--cr-up)", copperOn: "var(--cr-copper)",
+  },
+};
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums" as const };
 const LABEL = {
@@ -100,8 +149,9 @@ function useRolledValue(target: number, animate: boolean): number {
   return shown;
 }
 
-export function FeeSlider() {
+export function FeeSlider({ theme = "band" }: { theme?: FeeSliderTheme } = {}) {
   const { t } = useTranslation();
+  const S = SURFACE[theme];
   const [idx, setIdx] = useState(4); // $1M default
   const [animate, setAnimate] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -154,22 +204,22 @@ export function FeeSlider() {
   ];
 
   return (
-    <section aria-label={t("feeCalc.title")} style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)" }}>
+    <section aria-label={t("feeCalc.title")} style={{ background: S.bg, borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)" }}>
       <div className="max-w-[880px] mx-auto px-6 md:px-10 py-12 md:py-16">
         <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("feeCalc.title")}</div>
 
         <div
           className="p-4 md:p-6"
           style={{
-            background: PANEL_BG,
-            border: `1px solid ${RULE_ON_BAND}`,
+            background: S.panelBg,
+            border: `1px solid ${S.ruleOn}`,
             borderRadius: "var(--radius)",
-            boxShadow: `inset 0 1px 0 ${EDGE_ON_BAND}`,
+            boxShadow: `inset 0 1px 0 ${S.edgeOn}`,
           }}
         >
           {/* Input: the figure is the readout of the handle, not a heading. */}
           <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <span style={{ ...LABEL, color: "var(--cr-band-ink-dim)" }}>{t("feeCalc.inputRaise")}</span>
+            <span style={{ ...LABEL, color: S.inkDim }}>{t("feeCalc.inputRaise")}</span>
             <span
               style={{
                 ...MONO,
@@ -177,7 +227,7 @@ export function FeeSlider() {
                 fontSize: "28px",
                 lineHeight: 1.1,
                 letterSpacing: "-0.02em",
-                color: dragging ? COPPER_ON_BAND : "var(--cr-band-ink)",
+                color: dragging ? S.copperOn : S.ink,
                 transition: `color ${ease}`,
               }}
             >
@@ -196,7 +246,7 @@ export function FeeSlider() {
             style={{
               marginTop: 0,
               borderRadius: "var(--radius)",
-              boxShadow: sliderRing ? RING : "none",
+              boxShadow: sliderRing ? S.ring : "none",
               transition: `box-shadow ${ease}`,
             }}
           >
@@ -222,7 +272,7 @@ export function FeeSlider() {
                 style={{
                   width: "1px",
                   height: ANCHORS.includes(i) ? "10px" : i <= idx ? "7px" : "4px",
-                  backgroundColor: i <= idx ? "var(--cr-copper)" : TICK_ON_BAND,
+                  backgroundColor: i <= idx ? "var(--cr-copper)" : S.tickOn,
                   transition: `height ${ease}, background-color ${ease}`,
                 }}
               />
@@ -258,7 +308,7 @@ export function FeeSlider() {
                     fontSize: "11px",
                     letterSpacing: "0.04em",
                     whiteSpace: "nowrap",
-                    color: idx === i ? "var(--cr-band-ink)" : "var(--cr-band-ink-dim)",
+                    color: idx === i ? S.ink : S.inkDim,
                     background: "transparent",
                     border: "none",
                     cursor: "pointer",
@@ -273,7 +323,7 @@ export function FeeSlider() {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "var(--radius)",
-                    boxShadow: anchorRing === i ? RING : "none",
+                    boxShadow: anchorRing === i ? S.ring : "none",
                     transition: `color ${ease}`,
                   }}
                 >
@@ -283,12 +333,12 @@ export function FeeSlider() {
             ))}
           </div>
 
-          <div style={{ height: "1px", background: RULE_ON_BAND, marginTop: "8px" }} />
+          <div style={{ height: "1px", background: S.ruleOn, marginTop: "8px" }} />
 
           {/* The saving is the argument, so it gets the display figure and the
               only colour on the panel. */}
           <div style={{ marginTop: "24px" }}>
-            <div style={{ ...LABEL, color: "var(--cr-band-ink-dim)" }}>{t("feeCalc.rowSave")}</div>
+            <div style={{ ...LABEL, color: S.inkDim }}>{t("feeCalc.rowSave")}</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: "16px", flexWrap: "wrap", marginTop: "8px" }}>
               <span
                 style={{
@@ -297,12 +347,12 @@ export function FeeSlider() {
                   fontSize: "clamp(36px, 10vw, 52px)",
                   lineHeight: 1,
                   letterSpacing: "-0.04em",
-                  color: UP_ON_BAND,
+                  color: S.upOn,
                 }}
               >
                 {money(broker - ours)}
               </span>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", lineHeight: 1.65, color: "var(--cr-band-ink-dim)", maxWidth: "26ch" }}>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", lineHeight: 1.65, color: S.inkDim, maxWidth: "26ch" }}>
                 {t("feeCalc.keepShare", { pct: SAVED_PCT })}
               </p>
             </div>
@@ -315,14 +365,14 @@ export function FeeSlider() {
             {rows.map((row) => (
               <div key={row.key}>
                 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "8px" }}>
-                  <span style={{ ...LABEL, color: row.primary ? "var(--cr-band-ink)" : "var(--cr-band-ink-dim)" }}>{row.label}</span>
-                  <span style={{ ...MONO, fontWeight: 700, fontSize: "15px", color: row.primary ? "var(--cr-band-ink)" : "var(--cr-band-ink-dim)" }}>
+                  <span style={{ ...LABEL, color: row.primary ? S.ink : S.inkDim }}>{row.label}</span>
+                  <span style={{ ...MONO, fontWeight: 700, fontSize: "15px", color: row.primary ? S.ink : S.inkDim }}>
                     {money(row.value)}
                   </span>
                 </div>
-                <div style={{ display: "flex", height: "8px", borderRadius: "var(--radius)", background: TRACK_ON_BAND, overflow: "hidden" }}>
-                  <div style={{ width: `${OUR_SHARE.toFixed(3)}%`, background: row.primary ? "var(--cr-copper)" : BROKER_ON_BAND }} />
-                  {!row.primary && <div style={{ flex: 1, background: UP_ON_BAND }} />}
+                <div style={{ display: "flex", height: "8px", borderRadius: "var(--radius)", background: S.trackOn, overflow: "hidden" }}>
+                  <div style={{ width: `${OUR_SHARE.toFixed(3)}%`, background: row.primary ? "var(--cr-copper)" : S.brokerOn }} />
+                  {!row.primary && <div style={{ flex: 1, background: S.upOn }} />}
                 </div>
               </div>
             ))}

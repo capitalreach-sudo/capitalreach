@@ -609,8 +609,11 @@ export function PricingClient({ pricing, viewer }: { pricing: StagePricing; view
         </section>
 
         {/* The fee, felt: the slider moved here from the homepage -- the
-            pricing page opens with the only number that matters, movable. */}
-        <FeeSlider />
+            pricing page opens with the only number that matters, movable.
+            theme="adaptive": this page follows the light/dark toggle like
+            every other section on it, so the slider drops the always-dark
+            band and reads off --cr-paper/--cr-ink instead. */}
+        <FeeSlider theme="adaptive" />
 
         {/* Plans */}
         <section id="founders" style={{ padding: "64px 0", scrollMarginTop: "60px" }}>

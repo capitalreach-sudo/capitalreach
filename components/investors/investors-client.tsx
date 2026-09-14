@@ -802,6 +802,13 @@ export function InvestorsClient({ initialInvestors, initialIsPartial, initialRai
               <Ledger
                 columns={COLUMNS}
                 aria-label={t("nav.investors")}
+                /* Opt-in separated variant (globals.css "Ledger: separated
+                   variant") -- founder wanted the directory rows to read as
+                   distinct investors, not one continuous ruled table. CSS
+                   only: cascades to every LedgerRow below, no per-row class
+                   needed, and every other <Ledger> (deals, watchlist, data
+                   centre) is untouched since it opts in per class. */
+                className="cr-ledger--separated"
                 head={
                   <LedgerHead>
                     <LedgerCell>{tf("investors.ledger.colInvestor", "Investor")}</LedgerCell>

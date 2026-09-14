@@ -2127,6 +2127,53 @@ html, body { overflow-x: clip; }
   .cr-row > .cr-cell--desktop { display: none; }
 }
 
+/* ── Ledger: separated variant (opt-in, S1 exception) ────────────────────
+   S1's continuous hairline row is right for a dense table (deals,
+   watchlist, data centre) but wrong wherever the rows themselves ARE the
+   content and each one should read as its own entity rather than a line
+   in a list -- first use: /investors ("I just wanted it to be more
+   separated, so it doesn't look like a list" -- founder). Opt in by
+   putting "cr-ledger--separated" on <Ledger> alone; it cascades to every
+   <LedgerRow> underneath via the descendant selectors below, so no
+   per-row class is needed and no other page's <Ledger> is touched. Text
+   treatment (cr-row-title, cr-row-sub, cr-cell--figure, cr-colhead) is
+   untouched -- this only changes the row's own box.
+   Surface + shadow reuse the app's existing "elevated surface" tokens
+   (same --cr-card-edge/--cr-card-shadow pair as .plan-card and .cr-lift)
+   rather than inventing a new one; radius matches the dropdown/sheet
+   surfaces (--cr-radius-control doubled) since a full-width row reads
+   closer to those than to a button-scale control. */
+.cr-ledger--separated {
+  /* A bordered row should sit flush with the page's other elements (H1,
+     filter bar), not bleed past them the way the hairline wash does. */
+  margin-inline: 0;
+}
+.cr-ledger--separated > [role="rowgroup"] + [role="rowgroup"] {
+  /* Gap between the column-header bar and the first card. */
+  margin-block-start: 1rem;
+}
+.cr-ledger--separated .cr-row {
+  background-image: none; /* drop the continuous hairline */
+  background-color: var(--cr-paper-2);
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: calc(var(--cr-radius-control) * 2);
+  box-shadow: var(--cr-card-edge), var(--cr-card-shadow);
+  transition: background-color 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+}
+.cr-ledger--separated .cr-row + .cr-row {
+  margin-block-start: 1rem;
+}
+/* The focus ring is drawn on the stretched link, sized to the row -- round
+   it with the card instead of the square corner the hairline row uses. */
+.cr-ledger--separated .cr-row__link:focus-visible {
+  border-radius: inherit;
+}
+@media (hover: hover) {
+  .cr-ledger--separated .cr-row[data-link]:hover {
+    box-shadow: var(--cr-card-edge), var(--cr-card-shadow-hover);
+  }
+}
+
 /* ── Footnote, link, chip, empty state ───────────────────────────────────── */
 .cr-footnote {
   max-width: 72ch;
@@ -2688,4 +2735,8 @@ textarea.cr-input { padding-block: 0.75rem; min-height: 5.5rem; line-height: 1.5
   .cr-filterbar[data-stuck="true"] { box-shadow: inset 0 -1px 0 var(--cr-rule-dark); }
   .cr-filterbar[data-sticky="true"]::after { display: none; }
   .cr-sheet__panel { border-block-start: 1px solid var(--cr-rule-dark); }
+  /* The card's border already draws a defined edge; drop the ambient
+     shadow rather than let it compete with a forced-contrast palette. */
+  .cr-ledger--separated .cr-row,
+  .cr-ledger--separated .cr-row[data-link]:hover { box-shadow: none; }
 }

@@ -13,7 +13,7 @@ import {
 } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Bookmark, X } from "lucide-react";
+import { Bookmark, LayoutGrid, List, X } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { isValidFundingTarget } from "@/lib/validators";
@@ -40,7 +40,7 @@ import {
   type FilterOption,
   type SortOption,
 } from "@/components/ui/filter-bar";
-import { startupMetaBits } from "@/components/startup/startup-card";
+import { StartupCard, startupMetaBits, type StartupCardData } from "@/components/startup/startup-card";
 // The canonical sector list: a local copy once drifted and left live sectors
 // unfilterable.
 import { INDUSTRIES } from "@/types";
@@ -59,8 +59,13 @@ const SCORE_STEPS = [60, 80];
 const RUNWAY_STEP = 12;
 const GROWTH_STEP = 20;
 const PAGE_SIZE = 24;
-/** Region and business model are secondary: they appear once the market is this large (S2). */
-const SECONDARY_MIN_ROWS = 10;
+/** Region and business model are secondary: they appear once the pool is large
+ *  enough that the filter is worth a control (S2). menuRenders() below already
+ *  refuses to render a menu with fewer than 2 populated option values, so this
+ *  only guards the case of one extra filter over an all-but-empty pool -- it
+ *  is deliberately low rather than tuned to a "mature marketplace" size the
+ *  live pool (2-3 listings) may not reach for a long time. */
+const SECONDARY_MIN_ROWS = 3;
 /** The filter bar sticks only when the list is longer than 12 rows. */
 const STICKY_ABOVE_ROWS = 12;
 /** A derived match below this is noise, not a signal. */
@@ -199,6 +204,44 @@ const LANE_CSS = `
 .cr-su-skel-line--sub { height: 1.1375rem; }
 
 @media (prefers-reduced-motion: reduce) { .cr-su-bookmark svg { transition: none; } }
+
+/* View toggle: list (the separated ledger, below) vs. a card grid. Sits flush
+   right, just above the results, so it reads as acting on the list beneath
+   it rather than as another filter. Icon-only buttons never wrap to a second
+   line at any width. */
+.cr-su-viewrow { display: flex; justify-content: flex-end; margin-block-end: 1rem; }
+.cr-su-viewtoggle { display: inline-flex; border: 1px solid var(--cr-rule-dark); border-radius: var(--cr-radius-control); overflow: hidden; }
+.cr-su-viewtoggle__btn {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: var(--cr-ink-3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out);
+}
+.cr-su-viewtoggle__btn + .cr-su-viewtoggle__btn { border-inline-start: 1px solid var(--cr-rule-dark); }
+.cr-su-viewtoggle__btn[aria-pressed="true"] { color: var(--cr-ink); background-color: var(--cr-paper-3); }
+@media (hover: hover) {
+  .cr-su-viewtoggle__btn:not([aria-pressed="true"]):hover { background-color: var(--cr-paper-2); color: var(--cr-ink); }
+}
+.cr-su-viewtoggle__btn:focus-visible { outline: 2px solid var(--cr-copper) !important; outline-offset: -2px; box-shadow: none !important; }
+
+/* Card grid: one track on a phone, growing with the viewport. Every track is
+   minmax(0,1fr) rather than a bare 1fr, so a card's content (the logo, the
+   name) can never force the row wider than the viewport. */
+.cr-su-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0,1fr); gap: 1rem; transition: opacity 150ms var(--ease-out); }
+.cr-su-grid[aria-busy="true"] { opacity: 0.6; }
+@media (min-width: 640px) { .cr-su-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width: 1024px) { .cr-su-grid { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-su-viewtoggle__btn, .cr-su-grid { transition: none; }
+}
 `;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -589,6 +632,26 @@ export function StartupsSearch({
   const myInvestorId = useRef<string | null>(null);
   const supabase = useRef(createClient()).current;
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Grid default: with the live pool at 2-3 listings, a few bordered cards
+  // read as a small curated set; the same rows as a table read as a mostly
+  // empty spreadsheet. The list (the separated ledger) is one tap away and
+  // remembered per browser, same convention as the deals board's view
+  // toggle (localStorage, no URL state -- a display preference, not a filter
+  // worth sharing in a link). Server and client must agree on the very first
+  // render, so the stored choice is applied after mount, not in the
+  // initializer.
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cr-startups-view");
+      if (saved === "grid" || saved === "list") setViewMode(saved);
+    } catch { /* private mode */ }
+  }, []);
+  function chooseView(next: "grid" | "list") {
+    setViewMode(next);
+    try { localStorage.setItem("cr-startups-view", next); } catch { /* private mode */ }
+  }
 
   const mergeRows = useCallback((rows: Startup[]) => {
     setAllStartups((prev) => {
@@ -1266,6 +1329,15 @@ export function StartupsSearch({
     trailingKind === "save" ? COL_SAVE : trailingKind === "unhide" ? COL_UNHIDE : null,
   ].filter(Boolean).join(" ");
   const showUpsell = isInvestor && ledgerShown && (!viewer.canSeeFinancials || !viewer.canSeeScore);
+  // The card grid has no row for the "unhide" action (it is a StartupCard,
+  // not a ledger row with a trailing cell) -- showing hidden listings always
+  // falls back to the list, which is the one view that can undo a dismissal.
+  const effectiveView: "grid" | "list" = trailingKind === "unhide" ? "list" : viewMode;
+  // StartupCard gates its score figure on a subscription tier, not the bare
+  // boolean this page already resolved server-side; any non-"free" tier
+  // reproduces the same scoreColumn decision without teaching the card a
+  // second, page-specific way to ask the question.
+  const cardTier = scoreColumn ? "pro_investor" : null;
 
   let body: ReactNode;
   if (loading) {
@@ -1318,12 +1390,42 @@ export function StartupsSearch({
         />
       );
     }
+  } else if (effectiveView === "grid") {
+    // Same rows as the list, in the same StartupCard already used to browse
+    // by sector and on the investor dashboard -- one card component for the
+    // app, not a second bespoke one for this toggle. The card carries no
+    // "viewed" dimming or match-score badge (it has neither prop): those are
+    // secondary signals the list view keeps; the card's job is the separated,
+    // specimen-like read the founder asked for, not full parity with the row.
+    body = (
+      <ul className="cr-su-grid" aria-label={t("nav.startups")} aria-busy={searching || undefined}>
+        {visible.map((s) => (
+          <li key={s.id}>
+            {/* This file's own Startup type keeps `stage` as a bare string (it
+                only ever calls .replace() on it); StartupCardData narrows to
+                the DB's StartupStage union. Same cast the investor dashboard
+                uses for the same mismatch (app/dashboard/investor/page.tsx). */}
+            <StartupCard
+              startup={s as unknown as StartupCardData}
+              investorTier={cardTier}
+              isSaved={isInvestor ? savedIds.has(s.id) : undefined}
+              onSave={isInvestor ? toggleSave : undefined}
+            />
+          </li>
+        ))}
+      </ul>
+    );
   } else {
     body = (
       <Ledger
         columns={columns}
         busy={searching}
         aria-label={t("nav.startups")}
+        /* Opt-in separated variant (globals.css "Ledger: separated variant"),
+           the same class the investor directory uses for the same reason --
+           founder wanted directory rows to read as distinct listings rather
+           than lines in a table. CSS only, cascades to every LedgerRow below. */
+        className="cr-ledger--separated"
         head={
           <LedgerHead
             trailingLabel={trailingKind === "save" ? t("startup.saveWatchlist") : trailingKind === "unhide" ? t("startups.unhide") : undefined}
@@ -1470,6 +1572,31 @@ export function StartupsSearch({
         >
           {controls.length > 0 ? controls : undefined}
         </FilterBar>
+      )}
+
+      {ledgerShown && trailingKind !== "unhide" && (
+        <div className="cr-su-viewrow">
+          <div className="cr-su-viewtoggle" role="group" aria-label={tf("startups.ledger.viewMode", "Layout")}>
+            <button
+              type="button"
+              className="cr-su-viewtoggle__btn"
+              aria-pressed={viewMode === "grid"}
+              aria-label={tf("startups.ledger.viewGrid", "Grid view")}
+              onClick={() => chooseView("grid")}
+            >
+              <LayoutGrid size={16} aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              className="cr-su-viewtoggle__btn"
+              aria-pressed={viewMode === "list"}
+              aria-label={tf("startups.ledger.viewList", "List view")}
+              onClick={() => chooseView("list")}
+            >
+              <List size={16} aria-hidden="true" />
+            </button>
+          </div>
+        </div>
       )}
 
       {showUpsell && (

@@ -1176,7 +1176,12 @@ function InvestorsSection({ startup, views, saves, showMessages, readOnly }: {
             <div className="sd-group__head">
               <h3 className="sd-group__title">{t("dashboard.yourTargets")}</h3>
             </div>
-            <Ledger columns="minmax(0,1fr) auto auto">
+            {/* Opt-in separated variant (globals.css "Ledger: separated
+               variant") -- the founder's own pipeline of investors being
+               pursued, the mirror image of the investor's watchlist, so it
+               gets the same "each row is an entity, not a table line"
+               treatment. */}
+            <Ledger columns="minmax(0,1fr) auto auto" className="cr-ledger--separated">
               {targets.map((tg) => (
                 <TargetRow
                   key={tg.id}
