@@ -59,13 +59,6 @@ const SCORE_STEPS = [60, 80];
 const RUNWAY_STEP = 12;
 const GROWTH_STEP = 20;
 const PAGE_SIZE = 24;
-/** Region and business model are secondary: they appear once the pool is large
- *  enough that the filter is worth a control (S2). menuRenders() below already
- *  refuses to render a menu with fewer than 2 populated option values, so this
- *  only guards the case of one extra filter over an all-but-empty pool -- it
- *  is deliberately low rather than tuned to a "mature marketplace" size the
- *  live pool (2-3 listings) may not reach for a long time. */
-const SECONDARY_MIN_ROWS = 3;
 /** The filter bar sticks only when the list is longer than 12 rows. */
 const STICKY_ABOVE_ROWS = 12;
 /** A derived match below this is noise, not a signal. */
@@ -1300,14 +1293,14 @@ export function StartupsSearch({
     );
   }
   const regionSelected = filters.country ? [filters.country] : [];
-  if ((pool.length >= SECONDARY_MIN_ROWS || filters.country) && menuRenders(regionOptions, regionSelected)) {
+  if (menuRenders(regionOptions, regionSelected)) {
     controls.push(
       <FilterMenu key="region" multiple={false} label={t("startups.region")} options={regionOptions}
         value={filters.country || null} onChange={(next) => patch({ country: next ?? "" })} />,
     );
   }
   const modelSelected = filters.businessModel ? [filters.businessModel] : [];
-  if ((pool.length >= SECONDARY_MIN_ROWS || filters.businessModel) && menuRenders(modelOptions, modelSelected)) {
+  if (menuRenders(modelOptions, modelSelected)) {
     controls.push(
       <FilterMenu key="bmodel" multiple={false} label={t("startups.businessModelGroup")} options={modelOptions}
         value={filters.businessModel || null} onChange={(next) => patch({ businessModel: next ?? "" })} />,
