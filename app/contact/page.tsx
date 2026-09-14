@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import { brand } from "@/lib/brand";
 
@@ -50,7 +50,6 @@ export default function ContactPage() {
   const [company, setCompany] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const { toast } = useToast();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,20 +62,12 @@ export default function ContactPage() {
       });
       const data = await res.json();
       if (!res.ok) {
-        toast({
-          title: t("contact.toastFailedTitle"),
-          description: data.error || (brand.support ? t("contact.toastFailedDescFallback", { email: brand.support }) : t("errors.generic")),
-          variant: "destructive",
-        });
+        notify.error(`${t("contact.toastFailedTitle")}. ${data.error || (brand.support ? t("contact.toastFailedDescFallback", { email: brand.support }) : t("errors.generic"))}`);
       } else {
         setSent(true);
       }
     } catch {
-      toast({
-        title: t("contact.toastNetworkErrorTitle"),
-        description: brand.support ? t("contact.toastNetworkErrorDesc", { email: brand.support }) : t("errors.generic"),
-        variant: "destructive",
-      });
+      notify.error(`${t("contact.toastNetworkErrorTitle")}. ${brand.support ? t("contact.toastNetworkErrorDesc", { email: brand.support }) : t("errors.generic")}`);
     }
     setLoading(false);
   }
@@ -93,7 +84,7 @@ export default function ContactPage() {
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{brand.name}</div>
             <h1
               style={{
-                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontFamily:    "var(--font-serif)",
                 fontWeight:    700,
                 fontStyle:     "italic",
                 fontSize:      "clamp(30px, 4.5vw, 42px)",
@@ -154,7 +145,7 @@ export default function ContactPage() {
                 <span aria-hidden style={{ display: "block", color: "var(--cr-copper)", fontSize: "22px", lineHeight: 1, marginBottom: "16px" }}>✦</span>
                 <h2
                   style={{
-                    fontFamily:    "'Playfair Display', Georgia, serif",
+                    fontFamily:    "var(--font-serif)",
                     fontWeight:    700,
                     fontStyle:     "italic",
                     fontSize:      "clamp(22px, 3vw, 28px)",

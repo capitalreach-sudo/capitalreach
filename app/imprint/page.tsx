@@ -58,7 +58,7 @@ export default async function ImprintPage() {
           <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("privacy.legalLabel")}</div>
           <h1
             style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontFamily:    "var(--font-serif)",
               fontWeight:    700,
               fontStyle:     "italic",
               fontSize:      "clamp(30px, 5vw, 44px)",

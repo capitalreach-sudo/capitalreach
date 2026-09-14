@@ -67,7 +67,7 @@ export function ToastNotifyProvider() {
             boxShadow:    "0 8px 32px rgba(0,0,0,0.28)",
             padding:      "12px 18px 14px 20px",
             minWidth:     "280px",
-            animation:    "toastInLeft 220ms cubic-bezier(0.16,1,0.3,1) forwards",
+            animation:    "toastInLeft 220ms var(--ease-out) forwards",
           }}
         >
           <span aria-hidden style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: "3px", background: accent[t.type] }} />

@@ -105,7 +105,7 @@ function PitchTab({ viewer }: { viewer: Viewer }) {
       <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
         <div>
           <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("ai.tabs.pitchDesc")}</div>
-          <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("ai.pitch.title")}</h3>
+          <h3 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{t("ai.pitch.title")}</h3>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
             {t("ai.pitch.descLong")}
           </p>
@@ -195,7 +195,7 @@ function PitchTab({ viewer }: { viewer: Viewer }) {
               </div>
               <Loader2 style={{ position: "absolute", top: "-6px", right: "-6px", width: 20, height: 20, color: "var(--cr-copper)" }} className="animate-spin" />
             </div>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("ai.pitch.evaluating")}</p>
+            <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{t("ai.pitch.evaluating")}</p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
               {t("ai.pitch.evaluatingSub")}
             </p>
@@ -376,7 +376,7 @@ function MatchingTab({ viewer }: { viewer: Viewer }) {
     <div id="match" style={{ display: "flex", flexDirection: "column", gap: "32px", scrollMarginTop: "112px" }}>
       <div>
         <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("ai.tabs.matchDesc")}</div>
-        <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("ai.matching.title")}</h3>
+        <h3 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{t("ai.matching.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
           {t("ai.matching.descLong")}
         </p>
@@ -595,7 +595,7 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
     <div id="due-diligence" style={{ display: "flex", flexDirection: "column", gap: "32px", scrollMarginTop: "112px" }}>
       <div>
         <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("ai.tabs.ddDesc")}</div>
-        <h3 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("ai.diligence.title")}</h3>
+        <h3 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{t("ai.diligence.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)", lineHeight: 1.6 }}>
           {t("ai.diligence.descLong")}
         </p>
@@ -856,7 +856,7 @@ export function AiToolsHub({ initialAuthed, viewerRole = null }: { initialAuthed
               {t("ai.hub.heroPowered")}
             </span>
           </div>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(34px, 6vw, 52px)", color: "var(--cr-ink)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "16px" }}>
+          <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(34px, 6vw, 52px)", color: "var(--cr-ink)", lineHeight: 0.95, letterSpacing: "-0.02em", marginBottom: "16px" }}>
             {t("ai.hub.heroLine1")}<br />
             <span style={{ color: "var(--cr-copper)" }}>{t("ai.hub.heroLine2")}</span>
           </h1>
@@ -953,7 +953,7 @@ export function AiToolsHub({ initialAuthed, viewerRole = null }: { initialAuthed
 
         {isAuthed === false ? (
           <div style={{ textAlign: "center", padding: "64px 24px" }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>
+            <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>
               {t("ai.signInTitle")}
             </p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)", marginBottom: "32px", maxWidth: "420px", marginLeft: "auto", marginRight: "auto" }}>
@@ -984,7 +984,7 @@ export function AiToolsHub({ initialAuthed, viewerRole = null }: { initialAuthed
         <div className="px-6 md:px-10" style={{ maxWidth: "1100px", margin: "0 auto", paddingTop: "64px", paddingBottom: "64px" }}>
           <div style={{ marginBottom: "32px" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("ai.hub.tablePlansSub")}</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("ai.hub.tablePlansTitle")}</h2>
+            <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("ai.hub.tablePlansTitle")}</h2>
           </div>
 
           <div style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden", boxShadow: "var(--cr-card-shadow)" }}>

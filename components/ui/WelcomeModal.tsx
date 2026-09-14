@@ -19,6 +19,10 @@ export function WelcomeModal({ role }: { role: "startup" | "investor" }) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // The exit is a real animation, not an instant unmount: `closing` keeps
+  // the dialog mounted (in the "closed" data-state, so cr-modal-in/out plays
+  // in reverse) for the exit's duration before `open` actually flips false.
+  const [closing, setClosing] = useState(false);
   const key = `cr_welcomed_${role}`;
 
   useEffect(() => {
@@ -29,9 +33,13 @@ export function WelcomeModal({ role }: { role: "startup" | "investor" }) {
   }, [sp]);
 
   function close() {
-    setOpen(false);
     try { localStorage.setItem(key, new Date().toISOString()); } catch { /* ignore */ }
     router.replace(pathname);
+    const reduced = typeof window !== "undefined"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { setOpen(false); return; }
+    setClosing(true);
+    setTimeout(() => { setOpen(false); setClosing(false); }, 190);
   }
   useEscapeKey(open, close);
   if (!open) return null;
@@ -42,15 +50,20 @@ export function WelcomeModal({ role }: { role: "startup" | "investor" }) {
 
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="welcome-title"
+      className="cr-modal-scrim" data-state={closing ? "closed" : "open"}
       style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.55)", padding: "16px" }}
       onClick={close}>
-      <div className="animate-fade-up" onClick={(e) => e.stopPropagation()}
+      <div className="cr-modal-panel" data-state={closing ? "closed" : "open"} onClick={(e) => e.stopPropagation()}
         style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "460px", padding: "28px", position: "relative", boxShadow: "0 24px 64px rgba(26,22,18,0.25)" }}>
         <button onClick={close} aria-label={t("common.close")} style={{ position: "absolute", top: 14, right: 14, background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex" }}>
           <X style={{ width: 16, height: 16 }} />
         </button>
         <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("welcome.eyebrow")}</div>
-        <h2 id="welcome-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>
+        {/* Roman, not italic (design-consistency pass, 2026-09-14): this is a
+            transactional in-app moment, not the marketing voice -- brought in
+            line with the roman Ledger convention (S1) along with the rest of
+            the app's functional surfaces. */}
+        <h2 id="welcome-title" style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>
           {role === "startup" ? t("welcome.founderTitle") : t("welcome.investorTitle")}
         </h2>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "16px" }}>

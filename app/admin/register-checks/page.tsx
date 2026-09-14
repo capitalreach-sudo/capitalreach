@@ -232,7 +232,7 @@ export default function AdminRegisterChecksPage() {
         <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "100px 24px 64px" }}>
           <div className="ruled-label" style={{ marginBottom: "16px" }}>Register checks</div>
           <h1 style={{
-            fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700,
+            fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700,
             fontSize: "clamp(28px,4vw,44px)", color: "var(--cr-ink)",
             letterSpacing: "-0.02em", marginBottom: "8px",
           }}>

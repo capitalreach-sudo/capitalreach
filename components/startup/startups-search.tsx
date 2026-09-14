@@ -119,7 +119,13 @@ interface Startup {
 
 interface Filters {
   query: string; industries: string[]; stages: string[];
-  mrrMin: number; aiScoreMin: number; sort: string; country: string;
+  mrrMin: number; aiScoreMin: number; sort: string;
+  /** Multi-select, mirroring the investor directory's `geographies` filter
+   *  (components/investors/investors-client.tsx) -- a listing matches if its
+   *  country is any one of these. Was a single-select `country: string`,
+   *  which is why lib/search-match.ts still accepts that shape too, for
+   *  saved searches written before this change. */
+  countries: string[];
   newOnly?: boolean;
   raisingMin?: number; runwayMin?: number; growthMin?: number;
   closingSoon?: boolean; businessModel?: string; hasDemo?: boolean;
@@ -127,7 +133,7 @@ interface Filters {
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
-  mrrMin: 0, aiScoreMin: 0, sort: "recent", country: "", newOnly: false,
+  mrrMin: 0, aiScoreMin: 0, sort: "recent", countries: [], newOnly: false,
   raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
 };
 
@@ -148,7 +154,7 @@ function tractionActive(f: Filters) {
  * screen by default, and nothing is more than one click away.
  */
 function advancedActive(f: Filters) {
-  return tractionActive(f) + (f.country ? 1 : 0) + (f.businessModel ? 1 : 0);
+  return tractionActive(f) + f.countries.length + (f.businessModel ? 1 : 0);
 }
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -284,10 +290,12 @@ function SavedSearches({ filters, onApply, isDefault }: {
  * always-visible chip soup: fifteen chips in a scrolling strip read as
  * noise, three labelled groups with counts read as a system.
  */
-function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
+function FilterGroup({ label, count, open, onToggle, children, tipKey, tipFallback }: {
   label: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode;
   /** glossary.* key explaining what this group filters on and how. */
   tipKey?: string;
+  /** English text for tipKey when the dictionaries do not carry it yet. */
+  tipFallback?: string;
 }) {
   const { t } = useTranslation();
   const doneLabel = t("common.done");
@@ -320,7 +328,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
       {/* Beside the trigger, never inside it: a button cannot nest a button,
           and the tip must stay reachable while the panel is closed -- the
           reader deciding whether to open a group is exactly who needs it. */}
-      {tipKey && <InfoTip termKey={tipKey} />}
+      {tipKey && <InfoTip termKey={tipKey} fallback={tipFallback} />}
       {/* Desktop: a panel anchored under its chip. */}
       {open && (
         <div className="hidden lg:flex animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
@@ -362,7 +370,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
                 {label}
                 {/* Repeated in the sheet header because the 12px trigger
                     beside the chip is a poor tap target; here there is room. */}
-                {tipKey && <InfoTip termKey={tipKey} />}
+                {tipKey && <InfoTip termKey={tipKey} fallback={tipFallback} />}
               </span>
               <button
                 onClick={onToggle}
@@ -693,7 +701,14 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     stages:     searchParams.get("stages")?.split(",").filter(Boolean) ?? [],
     mrrMin:     Number(searchParams.get("mrr")) || 0,
     aiScoreMin: Number(searchParams.get("score")) || 0,
-    country:    searchParams.get("country") ?? "",
+    // "geo" is current (mirrors the investor directory's ?geo=); "country"
+    // is the pre-multi-select param name, folded in so a bookmarked or
+    // shared ?country=Germany link still filters exactly as it did.
+    countries: (() => {
+      const geo = searchParams.get("geo")?.split(",").filter(Boolean) ?? [];
+      const legacy = searchParams.get("country");
+      return legacy && !geo.includes(legacy) ? [...geo, legacy] : geo;
+    })(),
     newOnly:    searchParams.get("new") === "1",
     raisingMin: Number(searchParams.get("raising")) || 0,
     runwayMin:  Number(searchParams.get("runway")) || 0,
@@ -1057,7 +1072,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
   const activeCount = [
     filters.industries.length, filters.stages.length,
     filters.mrrMin > 0 ? 1 : 0, filters.aiScoreMin > 0 ? 1 : 0,
-    filters.country ? 1 : 0,
+    filters.countries.length,
     filters.newOnly ? 1 : 0,
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
     filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0, filters.hasDemo ? 1 : 0,
@@ -1095,7 +1110,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       if (filters.stages.length)      p.set("stages", filters.stages.join(","));
       if (filters.mrrMin > 0)         p.set("mrr", String(filters.mrrMin));
       if (filters.aiScoreMin > 0)     p.set("score", String(filters.aiScoreMin));
-      if (filters.country)            p.set("country", filters.country);
+      if (filters.countries.length)   p.set("geo", filters.countries.join(","));
       if (filters.newOnly)            p.set("new", "1");
       if (filters.raisingMin)         p.set("raising", String(filters.raisingMin));
       if (filters.runwayMin)          p.set("runway", String(filters.runwayMin));
@@ -1523,12 +1538,13 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </p>
               )}
             </FilterGroup>
-            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0} tipKey="glossary.filterRegion"
+            <FilterGroup label={t("investors.geography")} count={filters.countries.length} tipKey="glossary.filterGeography"
+              tipFallback="Shows companies based in one or more countries, as reported on the listing. Spellings are normalized, so each country appears once, with its listing count. Pick as many as you like -- a listing matches if it is based in any of them."
               open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
               {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
                 <FilterChip key={c}
-                  active={filters.country === c}
-                  onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                  active={filters.countries.includes(c)}
+                  onClick={() => patch({ countries: filters.countries.includes(c) ? filters.countries.filter(x => x !== c) : [...filters.countries, c] })}>
                   {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
                 </FilterChip>
               ))}
@@ -1584,9 +1600,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {filters.newOnly && (
               <AppliedChip label={t("startups.newThisWeek")} onRemove={() => patch({ newOnly: false })} />
             )}
-            {filters.country && (
-              <AppliedChip label={filters.country} onRemove={() => patch({ country: "" })} />
-            )}
+            {filters.countries.map((c) => (
+              <AppliedChip key={`geo-${c}`} label={c}
+                onRemove={() => patch({ countries: filters.countries.filter((x) => x !== c) })} />
+            ))}
             {(filters.raisingMin ?? 0) > 0 && (
               <AppliedChip label={RAISING_PRESETS.find(r => r.value === filters.raisingMin)?.label ?? "Raising+"}
                 onRemove={() => patch({ raisingMin: 0 })} />
@@ -1765,7 +1782,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
           { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ") },
           { label: t("onboarding.su.industry"),  get: (s) => s.industry },
-          { label: t("startups.region"),         get: (s) => s.country ?? "—" },
+          { label: t("investors.geography"),     get: (s) => s.country ?? "—" },
           { label: t("startupDetail.founded"),   get: (s) => s.founded_year ? String(s.founded_year) : "—" },
           { label: t("startupDetail.teamSize"),  get: (s) => (s as unknown as { team_size?: number | null }).team_size ? String((s as unknown as { team_size?: number | null }).team_size) : "—" },
           { label: t("startupDetail.mrr"),       get: (s) => safeFormatMRR(s.mrr) },
@@ -1949,10 +1966,11 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
               {countries.length > 0 && (
                 <div>
-                  <p style={SECTION}>{t("startups.region")}<InfoTip termKey="glossary.filterRegion" /></p>
+                  <p style={SECTION}>{t("investors.geography")}<InfoTip termKey="glossary.filterGeography" fallback="Shows companies based in one or more countries, as reported on the listing. Spellings are normalized, so each country appears once, with its listing count. Pick as many as you like -- a listing matches if it is based in any of them." /></p>
                   <div style={ROW}>
                     {countries.map((c) => (
-                      <FilterChip key={c} active={filters.country === c} onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                      <FilterChip key={c} active={filters.countries.includes(c)}
+                        onClick={() => patch({ countries: filters.countries.includes(c) ? filters.countries.filter(x => x !== c) : [...filters.countries, c] })}>
                         {c}{facets.country?.[c] ? ` (${facets.country[c]})` : ""}
                       </FilterChip>
                     ))}

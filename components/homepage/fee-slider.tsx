@@ -185,6 +185,12 @@ export function FeeSlider({ theme = "band" }: { theme?: FeeSliderTheme } = {}) {
   const ours = (shownRaise * OUR_PCT) / 100;
   const broker = (shownRaise * BROKER_PCT) / 100;
 
+  // Distinct from --ease-out on purpose: this only plays on the post-drag
+  // settle of a numeric value (see useRolledValue below), not on drag itself
+  // (animate is false while dragging, so live tracking stays 1:1 per the
+  // direct-manipulation rule). --ease-out's sharp early deceleration reads
+  // right for a UI element snapping into place; a rolling number wants a
+  // gentler, more even ease so the digits don't blur past unreadably fast.
   const ease = animate ? "220ms cubic-bezier(0.22, 0.61, 0.36, 1)" : "0ms";
 
   // :focus-visible cannot be expressed inline, and .cr-range clears the UA

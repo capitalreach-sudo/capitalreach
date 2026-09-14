@@ -40,6 +40,12 @@ export async function GET(req: NextRequest) {
   const entity = (["startups", "investors", "deals"].includes(sp.get("entity") ?? "") ? sp.get("entity") : "startups") as Entity;
   const q = clean(sp.get("q") ?? "");
   const status = clean(sp.get("status") ?? "");
+  // Demo rows default to hidden -- an operator working the real book should
+  // not have to wade through seed data to find it, but must still be able to
+  // pull it up on request (moderating or deleting a demo row is still admin
+  // work). Scoped to startups and investors, the two entities this finding
+  // covers; the deals list is untouched here.
+  const demo = sp.get("demo") === "1";
   const csv = sp.get("format") === "csv";
   const page = Math.max(1, parseInt(sp.get("page") ?? "1", 10) || 1);
   const pageSize = csv ? CSV_MAX : Math.min(PAGE_MAX, Math.max(5, parseInt(sp.get("pageSize") ?? "25", 10) || 25));
@@ -48,14 +54,16 @@ export async function GET(req: NextRequest) {
   let query;
   if (entity === "startups") {
     query = admin.from("startups")
-      .select("id, name, slug, status, industry, stage, subscription_tier, funding_target, verified_at, edited_since_review_at, created_at, owner:profiles(email, full_name)", { count: "exact" })
+      .select("id, name, slug, status, industry, stage, subscription_tier, verified_at, edited_since_review_at, is_demo, funding_target, created_at, owner:profiles(email, full_name)", { count: "exact" })
       .order("created_at", { ascending: false });
+    if (!demo) query = query.eq("is_demo", false);
     if (status) query = query.eq("status", status);
     if (q) query = query.or(`name.ilike.%${q}%,slug.ilike.%${q}%,industry.ilike.%${q}%`);
   } else if (entity === "investors") {
     query = admin.from("investors")
-      .select("id, slug, type, display_name, firm_name, subscription_tier, verified_at, is_public, is_external, created_at, owner:profiles(email, full_name, subscription_tier)", { count: "exact" })
+      .select("id, slug, type, display_name, firm_name, subscription_tier, verified_at, is_public, is_external, is_demo, created_at, owner:profiles(email, full_name, subscription_tier)", { count: "exact" })
       .order("created_at", { ascending: false });
+    if (!demo) query = query.eq("is_demo", false);
     if (status === "external") query = query.eq("is_external", true);
     else if (status === "public") query = query.eq("is_public", true).eq("is_external", false);
     if (q) query = query.or(`display_name.ilike.%${q}%,firm_name.ilike.%${q}%,slug.ilike.%${q}%`);

@@ -29,6 +29,12 @@ describe("matchesSavedSearch — one matcher for browse and alerts", () => {
     expect(matchesSavedSearch({ hasDemo: true }, { ...base, demo_video_url: null })).toBe(false);
     expect(matchesSavedSearch({ country: "germany" }, base)).toBe(true);
   });
+  it("countries (multi-select) matches on any one, and wins over legacy country when both are present", () => {
+    expect(matchesSavedSearch({ countries: ["France", "germany"] }, base)).toBe(true);
+    expect(matchesSavedSearch({ countries: ["France", "Austria"] }, base)).toBe(false);
+    expect(matchesSavedSearch({ countries: [] }, base)).toBe(true); // empty selection matches everything
+    expect(matchesSavedSearch({ country: "France", countries: ["Germany"] }, base)).toBe(true);
+  });
   it("closingSoon requires a live close date", () => {
     expect(matchesSavedSearch({ closingSoon: true }, base)).toBe(false);
     const soon = new Date(Date.now() + 5 * 86400000).toISOString().slice(0, 10);

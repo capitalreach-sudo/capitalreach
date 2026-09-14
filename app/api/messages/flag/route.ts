@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { messagingAccess, usableThreadIds } from "@/lib/messaging-access";
 import { isUuid } from "@/lib/utils";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 /**
  * The importance marker: YOUR star on a conversation, invisible to the
@@ -14,6 +15,9 @@ export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   const { threadId, important } = await req.json().catch(() => ({}));
   if (!isUuid(threadId ?? "") || typeof important !== "boolean") {

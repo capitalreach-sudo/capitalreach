@@ -368,7 +368,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
             style={{
               background: "var(--cr-down)", border: "none", borderRadius: "4px",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-              color: "#fff", padding: "12px 24px", cursor: "pointer",
+              color: "var(--cr-on-accent)", padding: "12px 24px", cursor: "pointer",
             }}>
             {t("adminUsers.suspendAll")}
           </button>
@@ -402,7 +402,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
           <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end" }}>
             <button onClick={() => setTierTarget(null)} style={ghostBtn}>{t("adminUsers.cancel")}</button>
             <button onClick={applyTier} disabled={busy === tierTarget.id}
-              style={{ background: "var(--cr-copper)", color: "#fff", border: "none", borderRadius: "4px", padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", cursor: "pointer", opacity: busy === tierTarget.id ? 0.5 : 1 }}>
+              style={{ background: "var(--cr-copper)", color: "var(--cr-on-accent)", border: "none", borderRadius: "4px", padding: "8px 16px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", cursor: "pointer", opacity: busy === tierTarget.id ? 0.5 : 1 }}>
               {busy === tierTarget.id ? t("adminUsers.saving") : t("adminUsers.applyTier")}
             </button>
           </div>
@@ -423,7 +423,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
             <button onClick={suspend} disabled={!reason.trim() || busy === target.id}
               style={{
                 flex: 1, height: "38px", background: "var(--cr-down)", border: "none", borderRadius: "4px",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff",
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)",
                 cursor: !reason.trim() ? "default" : "pointer", opacity: !reason.trim() ? 0.5 : 1,
               }}>
               {busy === target.id ? t("adminUsers.suspending") : t("adminUsers.suspendAccount")}
@@ -448,7 +448,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
             <button onClick={() => setBulkStep(2)} disabled={bulkPhrase !== CONFIRM_PHRASE}
               style={{
                 flex: 1, height: "38px", background: "var(--cr-down)", border: "none", borderRadius: "4px",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff",
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)",
                 cursor: bulkPhrase !== CONFIRM_PHRASE ? "default" : "pointer",
                 opacity: bulkPhrase !== CONFIRM_PHRASE ? 0.5 : 1,
               }}>
@@ -469,7 +469,7 @@ export function AdminUsersClient({ users, currentAdminId, myLevel }: { users: Ad
             <button onClick={() => bulk("suspend")} disabled={busy === "bulk"}
               style={{
                 flex: 1, height: "38px", background: "var(--cr-down)", border: "none", borderRadius: "4px",
-                fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "#fff",
+                fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)",
                 cursor: "pointer", opacity: busy === "bulk" ? 0.6 : 1,
               }}>
               {busy === "bulk" ? t("adminUsers.suspending") : t("adminUsers.suspendAll")}

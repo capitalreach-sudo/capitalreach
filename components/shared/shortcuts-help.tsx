@@ -69,7 +69,7 @@ export function ShortcutsHelp() {
           padding: "24px",
         }}
       >
-        <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "16px" }}>
+        <p style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontSize: "18px", color: "var(--cr-ink)", marginBottom: "16px" }}>
           {t("shortcuts.title")}
         </p>
         <dl style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: "12px 16px", alignItems: "center" }}>

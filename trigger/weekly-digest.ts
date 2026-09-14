@@ -1,6 +1,7 @@
 import { schedules } from "@trigger.dev/sdk/v3";
 import { createAdminClient } from "@/lib/supabase-server";
 import { sendWeeklyDigest } from "@/lib/resend";
+import { getInvestorPlan } from "@/lib/plans";
 
 // Runs every Monday at 8am UTC
 export const weeklyInvestorDigest = schedules.task({
@@ -9,13 +10,21 @@ export const weeklyInvestorDigest = schedules.task({
   run: async () => {
     const supabase = createAdminClient();
 
-    // Get all Angel+ investors who haven't opted out
-    const { data: investors } = await supabase
+    // Get all Angel+ investors who haven't opted out. Filtered in memory
+    // through getInvestorPlan (lib/plans.ts), the single source of truth for
+    // tier ids -- a DB-side .in(["angel","pro_investor","institutional"])
+    // used to hardcode legacy strings the Stripe webhook stopped writing
+    // (canonical ids are "angel"/"pro"/"institution"), so this job matched
+    // nobody and silently sent no digests.
+    const { data: allInvestors } = await supabase
       .from("investors")
-      .select("id, industries, stages, owner:profiles(email, full_name)")
-      .in("subscription_tier", ["angel", "pro_investor", "institutional"]);
+      .select("id, industries, stages, subscription_tier, owner:profiles(email, full_name)");
 
-    if (!investors || investors.length === 0) {
+    const investors = (allInvestors ?? []).filter(
+      (inv) => getInvestorPlan(inv.subscription_tier).id !== "free",
+    );
+
+    if (investors.length === 0) {
       console.log("No investors to digest");
       return;
     }

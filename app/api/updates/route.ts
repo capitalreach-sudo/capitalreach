@@ -3,6 +3,8 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { resolveEntity } from "@/lib/membership";
 import { isUuid } from "@/lib/utils";
 import { founderGate, planRequired } from "@/lib/plan-gate";
+import { isAccountSuspended } from "@/lib/suspension-guard";
+import { sendListingUpdateEmail } from "@/lib/resend";
 
 /**
  * Investor updates (migration 035): the founder's periodic post. POST
@@ -13,6 +15,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   // Plan gate: posting an update to your investors is a Starter feature.
   const caps = await founderGate(user.id);
@@ -77,6 +82,21 @@ export async function POST(req: NextRequest) {
           body: body.trim().slice(0, 140),
           href: `/startups/${startup.slug}`,
         })));
+
+        // Email leg (deal closed / new message / listing live all mail their
+        // recipients; this fan-out previously only inserted the row above, so
+        // a saver who was not looking at their bell never heard about it).
+        // Best-effort and awaited -- Vercel kills detached promises -- and
+        // send() itself honours each recipient's email_opt_out and supplies
+        // the unsubscribe footer, same as every other mail in this file.
+        const { data: recipients } = await admin
+          .from("profiles")
+          .select("email")
+          .in("id", userIds);
+        const emails = (recipients ?? []).map((p) => p.email).filter((e): e is string => !!e);
+        await Promise.all(emails.map((email) =>
+          sendListingUpdateEmail(email, startup.name, title.trim(), body.trim(), startup.slug).catch(() => {})
+        ));
       }
     }
   } catch (e) {
@@ -126,6 +146,9 @@ export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
   const { id, title, body } = await req.json().catch(() => ({}));
   if (!isUuid(id)) return NextResponse.json({ error: "id required" }, { status: 400 });
   const patch: { title?: string; body?: string; updated_at: string } = { updated_at: new Date().toISOString() };

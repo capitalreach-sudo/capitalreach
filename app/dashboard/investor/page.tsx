@@ -33,6 +33,13 @@ export default async function InvestorDashboardPage() {
     .from("investors")
     .select("*")
     .eq("owner_id", user.id)
+    // A real account owns at most one investor entity, but .single() errors
+    // (and this destructure silently treats that as "no investor") if a row
+    // ever duplicates -- order + limit(1) makes the earliest-created entity
+    // win deterministically instead of failing closed. Same defensive shape
+    // as app/dashboard/startup/page.tsx's owner-row lookup.
+    .order("created_at", { ascending: true })
+    .limit(1)
     .single()
     .returns<Investor>();
 

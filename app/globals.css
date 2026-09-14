@@ -841,7 +841,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
   height: 1px;
   width: 0;
   background: var(--cr-copper);
-  animation: drawLine 1.6s cubic-bezier(0.16,1,0.3,1) 0.4s forwards;
+  animation: drawLine 1.6s var(--ease-out) 0.4s forwards;
 }
 
 /* ── FEATURE 10: Ink splash reveal ──────────────────────── */
@@ -852,7 +852,7 @@ blockquote, .pull-quote { font-variation-settings: 'opsz' 72, 'SOFT' 50, 'WONK' 
 }
 .ink-reveal { opacity: 0; }
 .ink-reveal.visible {
-  animation: inkReveal 800ms cubic-bezier(.16,1,.3,1) forwards;
+  animation: inkReveal 800ms var(--ease-out) forwards;
 }
 
 /* Theme flip as a circular reveal from the toggle button (View
@@ -1040,7 +1040,7 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
   animation: none;
 }
 .ruled-label.visible::before, .ruled-label[data-cr-visible]::before {
-  animation: ruleExtend 400ms cubic-bezier(.16,1,.3,1) forwards;
+  animation: ruleExtend 400ms var(--ease-out) forwards;
 }
 
 /* ── Plan cards ───────────────────────────────────────────────
@@ -1074,11 +1074,31 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.animate-fade-up   { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) both; }
-.animate-fade-up-1 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 100ms both; }
-.animate-fade-up-2 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 200ms both; }
-.animate-fade-up-3 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 350ms both; }
-.animate-fade-up-4 { animation: fadeUp 700ms cubic-bezier(.16,1,.3,1) 500ms both; }
+/* ── Modal enter/exit ─────────────────────────────────────
+   animate-fade-up above is the scroll-reveal entrance (700ms -- right for
+   content arriving as the page scrolls to it). A modal the user just
+   triggered by clicking needs to feel instant by comparison, and needs a
+   way OUT: these two pairs are keyed off data-state="open"/"closed" so the
+   same scrim/panel elements can play a forward and a reverse animation
+   without separate mount/unmount CSS. Components hold the closing state
+   in JS for the ~200ms the exit takes before actually unmounting. */
+@keyframes cr-modal-in  { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes cr-modal-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(4px) scale(0.98); } }
+@keyframes cr-scrim-in  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes cr-scrim-out { from { opacity: 1; } to { opacity: 0; } }
+.cr-modal-scrim[data-state="open"]   { animation: cr-scrim-in  180ms var(--ease-out) both; }
+.cr-modal-scrim[data-state="closed"] { animation: cr-scrim-out 160ms var(--ease-out) both; }
+.cr-modal-panel[data-state="open"]   { animation: cr-modal-in  220ms var(--ease-out) both; }
+.cr-modal-panel[data-state="closed"] { animation: cr-modal-out 180ms var(--ease-out) both; }
+@media (prefers-reduced-motion: reduce) {
+  .cr-modal-scrim[data-state], .cr-modal-panel[data-state] { animation: none !important; }
+}
+
+.animate-fade-up   { animation: fadeUp 700ms var(--ease-out) both; }
+.animate-fade-up-1 { animation: fadeUp 700ms var(--ease-out) 100ms both; }
+.animate-fade-up-2 { animation: fadeUp 700ms var(--ease-out) 200ms both; }
+.animate-fade-up-3 { animation: fadeUp 700ms var(--ease-out) 350ms both; }
+.animate-fade-up-4 { animation: fadeUp 700ms var(--ease-out) 500ms both; }
 
 /* ── The rest of the shared motion vocabulary. One definition each; every
       component reuses these instead of declaring its own keyframes. ────── */
@@ -1114,14 +1134,14 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
 /* Investor filter block reused inside the mobile bottom sheet: fill the
    sheet instead of being a sticky 16rem desktop column. */
 .investor-sheet-body > aside { width: 100% !important; position: static !important; max-height: none !important; border: none !important; border-radius: 0 !important; }
-.animate-slide-in-right{ animation: slideInRight 500ms cubic-bezier(.16,1,.3,1) both; }
-.animate-draw-bar      { animation: drawBar 1.2s cubic-bezier(.33,1,.68,1) both; }
+.animate-slide-in-right{ animation: slideInRight 500ms var(--ease-out) both; }
+.animate-draw-bar      { animation: drawBar 1.2s var(--ease-out) both; }
 .animate-count-up      { animation: countUp 600ms ease both; }
 
 /* Staggered card reveal: initial load only (the class is dropped after the
    first paint by the grid), 80ms per card, capped at 12 so a long page never
    waits a full second for its last row. */
-.card-reveal { animation: fadeUp 520ms cubic-bezier(.16,1,.3,1) both; animation-delay: calc(var(--reveal-i, 0) * 80ms); }
+.card-reveal { animation: fadeUp 520ms var(--ease-out) both; animation-delay: calc(var(--reveal-i, 0) * 80ms); }
 @media (prefers-reduced-motion: reduce) {
   .card-reveal, .animate-fade-in, .animate-slide-in-right, .animate-draw-bar, .animate-count-up { animation: none !important; }
 }
@@ -1315,9 +1335,35 @@ html { scroll-behavior: smooth; }
   z-index: 90;
   display: flex;
   align-items: stretch;
-  background: var(--cr-paper-2);
+  /* Frosted glass: the page scrolls beneath the bar, same material as the
+     navbar it shares its file family with. */
+  background: var(--cr-nav-glass);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
   border-top: 1px solid var(--cr-rule-dark);
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .cr-bottom-nav {
+    background: var(--cr-paper-2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Sticky action bar: same always-visible-chrome case as the tab bar it rides
+   on top of, so it gets the same frosted material. */
+.cr-sticky-action-bar {
+  background: var(--cr-nav-glass);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  .cr-sticky-action-bar {
+    background: var(--cr-paper-2);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 /* 52px of tab + the 1px top border, or the last pixel of content hides.
    Same expression as --cr-tabbar-h, and it collapses to 0 at lg for free. */
@@ -1525,7 +1571,7 @@ body::before {
     mask-size: 300% 100%;
     -webkit-mask-position: 100% 0;
     mask-position: 100% 0;
-    animation: inkBleed 1.4s cubic-bezier(.65,0,.35,1) 200ms both;
+    animation: inkBleed 1.4s var(--ease-in-out) 200ms both;
   }
 }
 @keyframes inkBleed { to { -webkit-mask-position: 0% 0; mask-position: 0% 0; } }
@@ -2701,6 +2747,48 @@ textarea.cr-input { padding-block: 0.75rem; min-height: 5.5rem; line-height: 1.5
 }
 .cr-sheet__foot > .cr-btn { flex: 1 1 0; }
 
+/* ── Command palette (Cmd/Ctrl-K) ────────────────────────────────────────── */
+/* Floating chrome over content, same frosted material as the nav and filter
+   bar glass. Fades and scales in from the center and leaves the same way --
+   it stays mounted through the exit, so a fast reopen never begins from a
+   jump cut. z-index sits above --z-sheet: the palette can be summoned while
+   a sheet is open and has to win. */
+.cr-palette-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh 1rem 1rem;
+  background-color: var(--cr-scrim);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 180ms var(--ease-out), visibility 0s linear 180ms;
+}
+.cr-palette-scrim[data-open="true"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 180ms var(--ease-out), visibility 0s linear 0s;
+}
+.cr-palette {
+  width: 100%;
+  max-width: 560px;
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: 4px;
+  background-color: var(--cr-paper-2);
+  background-color: color-mix(in oklab, var(--cr-paper-2) 92%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--cr-card-shadow-hover);
+  overflow: hidden;
+  transform: translateY(-0.5rem) scale(0.98);
+  transition: transform 180ms var(--ease-out);
+}
+.cr-palette-scrim[data-open="true"] .cr-palette { transform: none; }
+
 .cr-section,
 .cr-filterbar { scroll-margin-block-start: calc(var(--cr-sticky-top) + 1rem); }
 
@@ -2714,11 +2802,15 @@ textarea.cr-input { padding-block: 0.75rem; min-height: 5.5rem; line-height: 1.5
   .cr-menu, .cr-menu[data-open="true"] { transform: none; }
   .cr-sheet__panel { transform: none; opacity: 0; transition: opacity 150ms linear; }
   .cr-sheet[data-open="true"] .cr-sheet__panel { transform: none; opacity: 1; }
+  .cr-palette-scrim { transition: opacity 150ms linear, visibility 0s linear 150ms; }
+  .cr-palette-scrim[data-open="true"] { transition: opacity 150ms linear, visibility 0s linear 0s; }
+  .cr-palette, .cr-palette-scrim[data-open="true"] .cr-palette { transform: none; transition: none; }
 }
 @media (prefers-reduced-transparency: reduce) {
   .cr-filterbar[data-sticky="true"],
   .cr-menu,
-  .cr-sheet__panel {
+  .cr-sheet__panel,
+  .cr-palette {
     background-color: var(--cr-paper);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -2727,7 +2819,8 @@ textarea.cr-input { padding-block: 0.75rem; min-height: 5.5rem; line-height: 1.5
 @media (prefers-contrast: more) {
   .cr-filterbar[data-sticky="true"],
   .cr-menu,
-  .cr-sheet__panel {
+  .cr-sheet__panel,
+  .cr-palette {
     background-color: var(--cr-paper);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

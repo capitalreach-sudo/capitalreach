@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DealKanban, type OwnProfile } from "@/components/shared/deal-kanban";
 import { DealClosedMoment } from "@/components/shared/deal-closed-moment";
@@ -36,6 +36,14 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
   // preceded by the non-circumvention acknowledgment. The server answers 428
   // with the startup; we show the modal, record the ack, and retry the move.
   const [ackPending, setAckPending] = useState<{ startupId: string; startupName: string; retry: () => Promise<void> } | null>(null);
+  // NonCircumventionModal plays its own ~190ms exit animation and needs to
+  // stay mounted with stable props while it does; keeping the modal always
+  // rendered (open={!!ackPending}) instead of `ackPending && <Modal/>` is
+  // what gives it that time, and this ref keeps startupId/startupName
+  // available for the frames after ackPending itself is cleared to null.
+  const lastAckPending = useRef<{ startupId: string; startupName: string } | null>(null);
+  if (ackPending) lastAckPending.current = ackPending;
+  const ackForModal = ackPending ?? lastAckPending.current;
   const [closedMoment, setClosedMoment] = useState<{ amount: number | null; currency: string | null; counterpartName: string | null } | null>(null);
 
   // The stage the board has been asked for but has not been given yet. The
@@ -132,15 +140,13 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
         onDone={() => setClosedMoment(null)}
       />
     )}
-    {ackPending && (
-      <NonCircumventionModal
-        open
-        startupId={ackPending.startupId}
-        startupName={ackPending.startupName}
-        onCancel={() => setAckPending(null)}
-        onConfirmed={() => { const r = ackPending.retry; setAckPending(null); r(); }}
-      />
-    )}
+    <NonCircumventionModal
+      open={!!ackPending}
+      startupId={ackForModal?.startupId ?? ""}
+      startupName={ackForModal?.startupName ?? ""}
+      onCancel={() => setAckPending(null)}
+      onConfirmed={() => { const r = ackPending?.retry; setAckPending(null); void r?.(); }}
+    />
     {/* The consent step, above the board it gates. Admin sees every deal
         anyway and answers for neither side, so the strip is participant-only. */}
     {viewAs === "admin" && myEntityIds.length > 0 && (() => {

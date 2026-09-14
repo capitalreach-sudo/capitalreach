@@ -132,13 +132,13 @@ export default function UpdatePasswordPage() {
               <div style={{ width: 48, height: 48, background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
                 <CheckCircle2 style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
-              <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "8px" }}>{t("auth.passwordUpdated")}</h2>
+              <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{t("auth.passwordUpdated")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.redirectingSignIn")}</p>
             </div>
           ) : (
             <>
               <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
-                <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.updateTitle")}</h1>
+                <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "4px" }}>{t("auth.updateTitle")}</h1>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.updateSub")}</p>
               </div>
 

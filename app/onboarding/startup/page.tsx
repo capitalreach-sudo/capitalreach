@@ -127,7 +127,7 @@ async function runPostSignupHooks() {
 }
 
 // Every step opens the house way: ruled label carrying the mono 01/07
-// counter, then the serif italic step title.
+// counter, then the serif step title.
 function StepHead({ n, label, title, sub }: { n: number; label: string; title: string; sub: string }) {
   return (
     <>
@@ -137,7 +137,7 @@ function StepHead({ n, label, title, sub }: { n: number; label: string; title: s
         </span>
         {label}
       </div>
-      <h2 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", letterSpacing: "-0.01em", color: "var(--cr-ink)", marginBottom: "6px" }}>
+      <h2 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", letterSpacing: "-0.01em", color: "var(--cr-ink)", marginBottom: "6px" }}>
         {title}
       </h2>
       <p style={{ ...hintSt, fontSize: "13px", lineHeight: 1.6, marginBottom: "24px" }}>{sub}</p>

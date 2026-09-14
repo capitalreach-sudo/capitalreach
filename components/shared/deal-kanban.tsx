@@ -1410,7 +1410,7 @@ function ExternalInvestorModal({ onClose, onCreated }: { onClose: () => void; on
     <div role="dialog" aria-modal="true" className="cr-dialog-scrim" style={{ position: "fixed", inset: 0, zIndex: 70, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cr-scrim)", padding: 16 }} onClick={onClose}>
       <div onClick={(e) => e.stopPropagation()} className="cr-dialog-panel"
         style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, width: "100%", maxWidth: 420, padding: 24 }}>
-        <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: 22, color: "var(--cr-ink)", marginBottom: 4 }}>{t("external.title")}</h3>
+        <h3 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: 22, color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: 4 }}>{t("external.title")}</h3>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 13, color: "var(--cr-ink-3)", marginBottom: 16, lineHeight: 1.5 }}>{t("external.intro")}</p>
         <div style={{ display: "grid", gap: 12 }}>
           <input value={name} onChange={(e) => setName(e.target.value)} placeholder={t("external.namePh")} autoFocus maxLength={120} style={input} />

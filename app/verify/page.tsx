@@ -205,7 +205,7 @@ export default async function VerifyPage() {
       {/* ── The offer, before the form ────────────────────────────────── */}
       <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("verify.label")}</div>
       <h1 style={{
-        fontFamily: "var(--font-serif), 'Playfair Display', Georgia, serif", fontWeight: 700,
+        fontFamily: "var(--font-serif)", fontWeight: 700,
         fontSize: "clamp(30px,4vw,44px)", lineHeight: 1.1, letterSpacing: "-0.02em",
         color: "var(--cr-ink)", marginBottom: "16px",
       }}>
@@ -226,7 +226,7 @@ export default async function VerifyPage() {
             {String(shownLevel).padStart(2, "0")}
           </span>
           <span style={{
-            fontFamily: "var(--font-serif), 'Playfair Display', Georgia, serif", fontWeight: 700,
+            fontFamily: "var(--font-serif)", fontWeight: 700,
             fontSize: "18px", color: shownLevel > 0 ? "var(--verdigris)" : "var(--cr-ink-2)",
           }}>
             {t(TRUST_LADDER[shownLevel].key)}

@@ -21,11 +21,18 @@ import { useTranslation } from "@/hooks/useTranslation";
  * outside click, and it is a real <button> with aria-describedby so a screen
  * reader gets the definition rather than an unlabelled icon.
  */
-export function InfoTip({ termKey, label }: {
+export function InfoTip({ termKey, label, fallback }: {
   /** i18n key holding the explanation, e.g. "glossary.aiScore". */
   termKey: string;
   /** Optional accessible name; defaults to "What is this?". */
   label?: string;
+  /**
+   * English text to show when termKey has no dictionary entry yet -- t()
+   * echoes an unmatched key back, so that echo is the signal to fall back.
+   * Lets a caller introduce a genuinely new glossary key without editing
+   * messages/*.json, matching the tf() convention used elsewhere.
+   */
+  fallback?: string;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -68,7 +75,8 @@ export function InfoTip({ termKey, label }: {
     };
   }, [open]);
 
-  const text = t(termKey);
+  const raw = t(termKey);
+  const text = raw === termKey && fallback ? fallback : raw;
 
   return (
     <span

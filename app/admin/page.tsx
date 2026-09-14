@@ -52,7 +52,7 @@ export default async function AdminPage() {
     { count: startupCount },
     { count: investorCount },
   ] = await Promise.all([
-    supabase.from("startups").select("*, owner:profiles(email, full_name)").eq("status", "pending_review").order("created_at", { ascending: false }).returns<AdminStartup[]>(),
+    supabase.from("startups").select("*, owner:profiles(email, full_name)").eq("status", "pending_review").order("created_at", { ascending: false }).limit(50).returns<AdminStartup[]>(),
     supabase.from("startups").select("*, owner:profiles(email, full_name)").order("created_at", { ascending: false }).limit(50).returns<AdminStartup[]>(),
     supabase.from("investors").select("*, owner:profiles(email, full_name, subscription_tier)").order("created_at", { ascending: false }).limit(50).returns<AdminInvestor[]>(),
     supabase.from("deals").select("*, startup:startups(name), investor:investors(slug)").order("updated_at", { ascending: false }).limit(50).returns<AdminDeal[]>(),

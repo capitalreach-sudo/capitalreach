@@ -1,5 +1,6 @@
 import { getFounderPlan, getInvestorPlan } from "@/lib/plans";
 import { feeState, feeMajor, type FeeDeal } from "@/lib/fees";
+import { DEFAULT_CURRENCY } from "@/lib/currency";
 
 /**
  * E45: the operator's revenue, computed rather than estimated.
@@ -14,16 +15,32 @@ import { feeState, feeMajor, type FeeDeal } from "@/lib/fees";
  * outstanding (raised, unpaid), and unbillable (a fee was due but the founder
  * had no payment method — money the platform earned and cannot collect).
  */
+/** One currency's slice of the fee ledger. Deals never blend currencies,
+ *  see feesByCurrency below for why. */
+export interface CurrencyRevenue {
+  currency: string;
+  billed: number;
+  collected: number;
+  outstanding: number;
+  /** Refunded or charged back, money that came back out after being paid. */
+  reversed: number;
+  unbillable: number;
+}
+
 export interface RevenueSummary {
   subscriptionMrr: number;
   payingAccounts: number;
   byTier: Array<{ tier: string; count: number; mrr: number }>;
-  feesBilled: number;
-  feesCollected: number;
-  feesOutstanding: number;
-  feesUnbillable: number;
-  /** Refunded or charged back — money that came back out after being paid. */
-  feesReversed: number;
+  /**
+   * Fee totals grouped by currency, never summed across currencies, a EUR
+   * amount and a USD amount are different units, and adding the digits
+   * together produces a number with no meaning, not "roughly the total".
+   * Same shape the round calculator and deal pipeline stats already use
+   * (app/pricing/pricing-client.tsx, components/shared/deal-kanban.tsx
+   * `stats.byCurrency`). Sorted by billed volume, largest first, so the
+   * platform's primary currency leads.
+   */
+  feesByCurrency: CurrencyRevenue[];
   feeCurrencies: string[];
 }
 
@@ -58,26 +75,36 @@ export function summariseRevenue(
   // columns. This function had its own copy of the rules and would have gone
   // on counting a refunded fee as collected — exactly the drift that having
   // one state machine is meant to prevent.
-  let feesBilled = 0, feesCollected = 0, feesOutstanding = 0, feesUnbillable = 0, feesReversed = 0;
-  const currencies = new Set<string>();
+  //
+  // Grouped by currency from the start: summing feeMajor(d) into one running
+  // total regardless of d.currency would blend a EUR fee and a USD fee into a
+  // single number that is neither, meaningless the moment a non-USD deal
+  // closes. Grouping needs no FX rate to get wrong; it just keeps units apart.
+  const byCurrency = new Map<string, CurrencyRevenue>();
+  const bump = (cur: string, key: keyof Omit<CurrencyRevenue, "currency">, amount: number) => {
+    const row = byCurrency.get(cur) ?? { currency: cur, billed: 0, collected: 0, outstanding: 0, reversed: 0, unbillable: 0 };
+    row[key] += amount;
+    byCurrency.set(cur, row);
+  };
   for (const d of deals) {
     const amount = feeMajor(d);
     if (amount <= 0) continue;
-    if (d.currency) currencies.add(d.currency);
+    const cur = d.currency || DEFAULT_CURRENCY;
     switch (feeState(d)) {
-      case "collected":   feesBilled += amount; feesCollected += amount; break;
-      case "outstanding": feesBilled += amount; feesOutstanding += amount; break;
-      case "disputed":    feesBilled += amount; feesOutstanding += amount; break;
-      case "reversed":    feesBilled += amount; feesReversed += amount; break;
-      case "unbillable":  feesUnbillable += amount; break;
+      case "collected":   bump(cur, "billed", amount); bump(cur, "collected", amount); break;
+      case "outstanding": bump(cur, "billed", amount); bump(cur, "outstanding", amount); break;
+      case "disputed":    bump(cur, "billed", amount); bump(cur, "outstanding", amount); break;
+      case "reversed":    bump(cur, "billed", amount); bump(cur, "reversed", amount); break;
+      case "unbillable":  bump(cur, "unbillable", amount); break;
       default: break;   // waived and none are not revenue and not a shortfall
     }
   }
+  const feesByCurrency = Array.from(byCurrency.values()).sort((a, b) => b.billed - a.billed);
 
   return {
     subscriptionMrr, payingAccounts,
     byTier: Array.from(counts.entries()).map(([tier, v]) => ({ tier, ...v })).sort((a, b) => b.mrr - a.mrr),
-    feesBilled, feesCollected, feesOutstanding, feesUnbillable, feesReversed,
-    feeCurrencies: Array.from(currencies),
+    feesByCurrency,
+    feeCurrencies: feesByCurrency.map(c => c.currency),
   };
 }

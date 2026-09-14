@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
+import { notify } from "@/components/ui/toast-notify";
 import { Navbar } from "@/components/shared/navbar";
 import { ArrowLeft, Save, X, Plus, Globe, Eye } from "lucide-react";
 import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelector";
@@ -172,7 +172,6 @@ export default function InvestorSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
@@ -275,14 +274,14 @@ export default function InvestorSettingsPage() {
     }
 
     if (!ok) {
-      toast({ title: t("dashboard.saveFailed"), description: saved?.error || "", variant: "destructive" });
+      notify.error(saved?.error ? `${t("dashboard.saveFailed")}. ${saved.error}` : t("dashboard.saveFailed"));
     } else if (saved.contactsWithheld?.length) {
       // The form still holds what was typed; put back what was stored, so the
       // box on screen is the profile people will read.
       setInvestor((i: any) => ({ ...i, ...saved.maskedFields }));
-      toast({ title: t("dashboard.profileUpdated"), description: t("listingSafety.withheld") });
+      notify.success(`${t("dashboard.profileUpdated")}. ${t("listingSafety.withheld")}`);
     } else {
-      toast({ title: t("dashboard.profileUpdated"), description: t("dashboard.allChangesSaved") });
+      notify.success(`${t("dashboard.profileUpdated")}. ${t("dashboard.allChangesSaved")}`);
     }
     setSaving(false);
   }

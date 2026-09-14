@@ -44,7 +44,7 @@ export default async function AboutPage() {
           </div>
           <h1
             style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontFamily:    "var(--font-serif)",
               fontWeight:    700,
               fontStyle:     "italic",
               fontSize:      "clamp(30px, 5.5vw, 52px)",
@@ -78,7 +78,7 @@ export default async function AboutPage() {
               </div>
               <h2
                 style={{
-                  fontFamily:    "'Playfair Display', Georgia, serif",
+                  fontFamily:    "var(--font-serif)",
                   fontWeight:    700,
                   fontStyle:     "italic",
                   fontSize:      "clamp(22px, 3vw, 28px)",
@@ -130,7 +130,7 @@ export default async function AboutPage() {
           <div className="ruled-label" style={{ marginBottom: "24px" }}>{t("about.valuesLabel")}</div>
           <h2
             style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontFamily:    "var(--font-serif)",
               fontWeight:    700,
               fontStyle:     "italic",
               fontSize:      "clamp(22px, 3vw, 28px)",

@@ -65,7 +65,7 @@ export default async function ContractPage({ params }: { params: { id: string } 
         </div>
 
         <p style={label}>{contract.contract_type.replace(/_/g, " ")} · {contract.status}</p>
-        <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "30px", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "6px" }}>
+        <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontStyle: "italic", fontSize: "30px", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "6px" }}>
           {contract.title}
         </h1>
         <p style={{ ...cell, color: "var(--cr-ink-3)", marginBottom: "26px" }}>
@@ -91,7 +91,7 @@ export default async function ContractPage({ params }: { params: { id: string } 
             <div style={{ display: "grid", gap: "14px" }}>
               {(signatures ?? []).map((sg) => (
                 <div key={sg.id} style={{ display: "grid", gap: "3px", paddingBottom: "12px", borderBottom: "1px solid var(--cr-rule)" }}>
-                  <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "19px", color: "var(--cr-ink)" }}>{sg.signer_name}</p>
+                  <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "19px", color: "var(--cr-ink)" }}>{sg.signer_name}</p>
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-3)" }}>
                     {new Date(sg.created_at).toISOString().replace("T", " ").slice(0, 19)} UTC · IP {maskIp(sg.signed_ip)}
                   </p>

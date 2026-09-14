@@ -6,7 +6,6 @@ import { ShortcutsHelp } from "@/components/shared/shortcuts-help";
 import { LocaleChangeToast } from "@/components/ui/LocaleChangeToast";
 import { RuleLabelAnimator } from "@/components/ui/RuleLabelAnimator";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
-import { Toaster } from "@/components/ui/toaster";
 import { ToastNotifyProvider } from "@/components/ui/toast-notify";
 
 /**
@@ -18,7 +17,7 @@ import { ToastNotifyProvider } from "@/components/ui/toast-notify";
  * requirement that separate chunks cannot honour.
  *
  * Not one of them puts a pixel on the screen before it is asked to. The tab
- * bar waits on a profile fetch, both toast hosts start empty, the shortcuts
+ * bar waits on a profile fetch, the toast host starts empty, the shortcuts
  * sheet and the back-to-top button start hidden, and the rule animator and
  * the worker registrar render nothing at all. The whole server HTML they used
  * to contribute was an empty toast viewport and an invisible button.
@@ -36,7 +35,6 @@ export function DeferredChromeContent() {
       <ShortcutsHelp />
       <ScrollToTop />
       <BottomNav />
-      <Toaster />
       <ServiceWorkerRegistrar />
     </>
   );

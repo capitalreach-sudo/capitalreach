@@ -117,7 +117,7 @@ export function NotificationBell() {
       >
         <Bell className="h-4 w-4" style={pulse ? { animation: "bellPulse 800ms ease" } : undefined} />
         {unread > 0 && (
-          <span style={{ position: "absolute", top: "-5px", right: "-6px", animation: pulse ? "badgePop 500ms cubic-bezier(.16,1,.3,1)" : undefined, minWidth: "16px", height: "16px", padding: "0 4px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
+          <span style={{ position: "absolute", top: "-5px", right: "-6px", animation: pulse ? "badgePop 500ms var(--ease-out)" : undefined, minWidth: "16px", height: "16px", padding: "0 4px", borderRadius: "999px", background: "var(--cr-copper)", color: "var(--cr-on-accent)", fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", boxSizing: "border-box" }}>
             {unread > 9 ? "9+" : unread}
           </span>
         )}

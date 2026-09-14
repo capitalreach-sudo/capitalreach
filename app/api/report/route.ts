@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { notifyUsers } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
+import { contactRatelimit, isRedisConfigured } from "@/lib/redis";
 
 /**
  * E50: reporting content.
@@ -23,6 +25,27 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  // Same two limiters as the sibling /api/reports (content_reports' unauthenticated
+  // cousin): dbRateLimit always counts (Postgres, no Redis dependency), and
+  // contactRatelimit is an IP-scoped backstop against one person cycling accounts
+  // from the same machine.
+  {
+    const rl = await dbRateLimit(user.id, "report_content", ...(Object.values(RATE.perDay(10)) as [number, number]));
+    if (!rl.ok) {
+      return NextResponse.json({ error: "You have filed a lot of reports today." }, { status: 429 });
+    }
+  }
+  if (isRedisConfigured) {
+    const ip =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+    const { success } = await contactRatelimit.limit(`report_content:${ip}`).catch(() => ({ success: true }));
+    if (!success) {
+      return NextResponse.json({ error: "Too many reports. Try again later." }, { status: 429 });
+    }
+  }
 
   const { targetType, targetId, reason, detail } = await req.json().catch(() => ({}));
   if (!TARGETS.includes(targetType)) return NextResponse.json({ error: "Unknown target" }, { status: 400 });

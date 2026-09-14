@@ -56,6 +56,13 @@ export default async function DealsPage() {
       .from("startups")
       .select("id, subscription_tier, funding_target, equity_offered, stage, industry, mrr, arr")
       .eq("owner_id", user.id)
+      // A real account owns at most one startup, but plain .maybeSingle()
+      // errors (and this destructure treats that as "no startup") if a row
+      // ever duplicates -- order + limit(1) makes the earliest-created
+      // listing win deterministically instead of failing closed. Same
+      // defensive shape as app/dashboard/startup/page.tsx's owner-row lookup.
+      .order("created_at", { ascending: true })
+      .limit(1)
       .maybeSingle();
     if (!startup) redirect("/onboarding/startup");
 
@@ -110,6 +117,11 @@ export default async function DealsPage() {
       .from("investors")
       .select("id, min_check, max_check, stages, industries")
       .eq("owner_id", user.id)
+      // Same defensive shape as the startup branch above and
+      // app/dashboard/startup/page.tsx: order + limit(1) so a duplicate row
+      // resolves to the earliest one instead of erroring the whole lookup.
+      .order("created_at", { ascending: true })
+      .limit(1)
       .maybeSingle();
     if (!investor) redirect("/onboarding/investor");
 

@@ -53,7 +53,7 @@ export default async function SuspendedPage() {
           }}>!</div>
 
           <h1 style={{
-            fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700,
+            fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700,
             fontSize: "28px", color: "var(--cr-ink)", letterSpacing: "-0.02em",
           }}>
             {banned ? "Your account has been closed" : "Your account has been suspended"}

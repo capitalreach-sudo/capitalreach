@@ -5,6 +5,7 @@ import { resolveEntity } from "@/lib/membership";
 import { notifyUser } from "@/lib/notify-user";
 import { maskFreeText } from "@/lib/message-safety";
 import { isUuid } from "@/lib/utils";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 /**
  * Listing Q&A (migration 038). POST asks (investors), PATCH answers
@@ -15,6 +16,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
   { const rl = await dbRateLimit(user.id, "question", ...Object.values(RATE.perDay(20)) as [number, number]);
     if (!rl.ok) return NextResponse.json({ error: "You've asked a lot of questions today. Try again tomorrow." }, { status: 429 }); }
 
@@ -66,6 +70,9 @@ export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   const { id, answer, isPrivate } = await req.json().catch(() => ({}));
   if (!isUuid(id)) return NextResponse.json({ error: "id required" }, { status: 400 });

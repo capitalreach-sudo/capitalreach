@@ -156,7 +156,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
             <Link href="/" className="flex items-center gap-2" style={{ textDecoration: "none" }}>
               <DiamondLogo size={10} />
               <span style={{
-                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontFamily:    "var(--font-serif)",
                 fontWeight:    700,
                 fontSize:      "18px",
                 color:         "var(--cr-ink)",
@@ -429,7 +429,7 @@ export function Navbar({ initialProfile = null }: NavbarProps = {}) {
               <Link href="/" className="flex items-center gap-2" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
                 <DiamondLogo size={10} />
                 <span style={{
-                  fontFamily:    "'Playfair Display', Georgia, serif",
+                  fontFamily:    "var(--font-serif)",
                   fontWeight:    700,
                   fontSize:      "15px",
                   color:         "var(--cr-ink)",

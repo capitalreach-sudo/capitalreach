@@ -5,6 +5,7 @@ import { getLaunchStatus } from "@/lib/launchMode";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
 import { notifyUser } from "@/lib/notify-user";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 // watchlists.investor_id references investors(id), NOT profiles(id).
 //
@@ -29,6 +30,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   const { startupId, note } = (await req.json().catch(() => ({}))) as { startupId: string; note?: string | null };
   if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
@@ -161,6 +165,9 @@ export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
   const { startupId, status, priority, note } = (await req.json().catch(() => ({}))) as { startupId?: string; status?: string; priority?: number; note?: string | null };
   if (!isUuid(startupId ?? "")) return NextResponse.json({ error: "startupId required" }, { status: 400 });
   const investorId = await resolveInvestorId(supabase, user.id);

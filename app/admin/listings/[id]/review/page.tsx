@@ -207,7 +207,7 @@ export default function ListingReviewPage() {
 
           <div className="ruled-label" style={{ margin: "16px 0" }}>Listing review</div>
           <h1 style={{
-            fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700,
+            fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700,
             fontSize: "clamp(24px,3.4vw,36px)", color: "var(--cr-ink)",
             letterSpacing: "-0.02em", marginBottom: "8px",
           }}>

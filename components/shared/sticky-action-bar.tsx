@@ -35,7 +35,7 @@ export function StickyActionBar({
 
   return (
     <div
-      className="lg:hidden"
+      className="cr-sticky-action-bar lg:hidden"
       aria-hidden={!visible}
       style={{
         position: "fixed",
@@ -53,7 +53,6 @@ export function StickyActionBar({
         // zero there; signed out the variable is 0px and the bar, now on the
         // viewport floor, takes the whole inset itself.
         padding: "12px 16px calc(12px + max(0px, env(safe-area-inset-bottom, 0px) - var(--cr-tabbar-h, 0px)))",
-        background: "var(--cr-paper-2)",
         borderTop: "1px solid var(--cr-rule-dark)",
         boxShadow: "0 -6px 20px rgba(26,22,18,0.06)",
         transform: visible ? "translateY(0)" : "translateY(110%)",

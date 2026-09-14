@@ -60,7 +60,7 @@ export default function Error({
         ◆
       </div>
 
-      <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)", marginBottom: "10px" }}>
+      <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "26px", color: "var(--cr-ink)", marginBottom: "10px" }}>
         {t("errorPage.title")}
       </h1>
 

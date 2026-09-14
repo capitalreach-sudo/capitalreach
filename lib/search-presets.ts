@@ -21,7 +21,7 @@ export const STARTUP_PRESETS: StartupPreset[] = [
   { id: "revenue",    emoji: "▲", labelKey: "presets.revenueStage",
     patch: { mrrMin: 25_000 } },
   { id: "germany",    emoji: "◆", labelKey: "presets.germany",
-    patch: { country: "Germany" } },
+    patch: { countries: ["Germany"] } },
   { id: "high_score", emoji: "★", labelKey: "presets.highScore",
     patch: { aiScoreMin: 80 } },
   { id: "new_week",   emoji: "●", labelKey: "presets.newThisWeek",

@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { isAccountSuspended } from "@/lib/suspension-guard";
 import { isUuid } from "@/lib/utils";
 import { brand } from "@/lib/brand";
+import { dbRateLimit, RATE } from "@/lib/db-rate-limit";
 
 /**
  * F: invite links.
@@ -66,6 +67,21 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (await isAccountSuspended(user.id)) return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+
+  // The 25-open-invite cap below counts un-revoked invites only, so it does
+  // nothing against mint-then-revoke: revoking an invite frees a slot
+  // immediately, and cycling create/revoke mints codes without bound. A time
+  // window closes that regardless of how many are currently open. This uses
+  // dbRateLimit (Postgres-backed, scoped per user like uploadRatelimit's shape
+  // in lib/redis.ts) rather than one of the Redis limiters, because prod has
+  // no Redis configured -- a limiter that fails open would protect nothing
+  // here, which is the whole point of the fix.
+  {
+    const rl = await dbRateLimit(user.id, "invite_mint", ...(Object.values(RATE.perHour(20)) as [number, number]));
+    if (!rl.ok) {
+      return NextResponse.json({ error: "You're creating invites too quickly. Try again later." }, { status: 429 });
+    }
+  }
 
   const { role, note } = await req.json().catch(() => ({}));
   if (role !== "startup" && role !== "investor") {

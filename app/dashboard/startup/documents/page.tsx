@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/use-toast";
+import { notify } from "@/components/ui/toast-notify";
 import { Navbar } from "@/components/shared/navbar";
 import { ArrowLeft, Upload, Trash2, ExternalLink } from "lucide-react";
 import Link from "next/link";
@@ -88,8 +88,7 @@ const FIELD_LABEL = "mb-2 block text-[11px] font-medium uppercase tracking-[0.07
  */
 function OutstandingRequests() {
   const { t } = useTranslation();
-  const { toast } = useToast();
-  type Req = { id: string; doc_type: string; message: string | null; status: string; created_at: string; investor: { slug: string; display_name: string | null; firm_name: string | null } | null };
+  type Req ={ id: string; doc_type: string; message: string | null; status: string; created_at: string; investor: { slug: string; display_name: string | null; firm_name: string | null } | null };
   const [reqs, setReqs] = useState<Req[] | null>(null);
   useEffect(() => {
     fetch("/api/documents/request").then(r => r.ok ? r.json() : null).then(j => setReqs(j?.requests ?? [])).catch(() => setReqs([]));
@@ -99,7 +98,7 @@ function OutstandingRequests() {
   const LABEL: Record<string, string> = { pitch_deck: "dashboard.docPitchDeck", financial_model: "dashboard.docFinModel", cap_table: "dashboard.docCapTable", other: "dashboard.docOther" };
   async function resolve(id: string, status: "declined") {
     const res = await fetch("/api/documents/request", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, status }) });
-    if (!res.ok) { toast({ title: t("errors.generic"), variant: "destructive" }); return; }
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
     setReqs(prev => (prev ?? []).map(r => r.id === id ? { ...r, status } : r));
   }
   return (
@@ -152,7 +151,6 @@ export default function DocumentsPage() {
   const [requiresNda, setRequiresNda] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const { toast } = useToast();
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
@@ -201,15 +199,15 @@ export default function DocumentsPage() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        toast({ title: t("dashboard.uploadFailed"), description: data.error, variant: "destructive" });
+        notify.error(data.error ? `${t("dashboard.uploadFailed")}. ${data.error}` : t("dashboard.uploadFailed"));
       } else {
-        toast({ title: t("dashboard.docUploaded") });
+        notify.success(t("dashboard.docUploaded"));
         setDocuments(prev => [...prev, data.document]);
         if (fileRef.current) fileRef.current.value = "";
         setDocLabel("");
       }
     } catch {
-      toast({ title: t("dashboard.uploadFailed"), variant: "destructive" });
+      notify.error(t("dashboard.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -218,11 +216,11 @@ export default function DocumentsPage() {
   async function deleteDocument(docId: string) {
     const { error } = await supabase.from("startup_documents").delete().eq("id", docId);
     if (error) {
-      toast({ title: t("errors.generic"), variant: "destructive" });
+      notify.error(t("errors.generic"));
       return;
     }
     setDocuments(prev => prev.filter(d => d.id !== docId));
-    toast({ title: t("dashboard.docRemoved") });
+    notify.success(t("dashboard.docRemoved"));
   }
 
   const isLimitedPlan = startup?.subscription_tier === "starter";

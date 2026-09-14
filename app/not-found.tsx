@@ -64,7 +64,7 @@ export default async function NotFound() {
 
           <h1
             style={{
-              fontFamily: "'Playfair Display', Georgia, serif",
+              fontFamily: "var(--font-serif)",
               fontWeight: 700,
               fontStyle: "italic",
               fontSize: "clamp(30px, 5vw, 44px)",

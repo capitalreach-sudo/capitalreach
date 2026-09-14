@@ -11,7 +11,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { useToast } from "@/components/ui/use-toast";
 import { Navbar } from "@/components/shared/navbar";
 import { ArrowLeft, Save } from "lucide-react";
 import { LanguageSettingsSelector } from "@/components/ui/LanguageSettingsSelector";
@@ -104,7 +103,6 @@ export default function AccountSettingsPage() {
   const [deleteVerdict, setDeleteVerdict] = useState<{ mode: "erase" | "anonymise"; closedDeals: number; openFees: number } | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const router = useRouter();
-  const { toast } = useToast();
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
 
@@ -130,9 +128,9 @@ export default function AccountSettingsPage() {
       .update({ full_name: fullName, avatar_url: avatarUrl })
       .eq("id", profile!.id);
     if (error) {
-      toast({ title: t("settings.saveFailed"), description: error.message, variant: "destructive" });
+      notify.error(`${t("settings.saveFailed")}. ${error.message}`);
     } else {
-      toast({ title: t("dashboard.profileUpdated") });
+      notify.success(t("dashboard.profileUpdated"));
       setProfile(prev => prev ? { ...prev, full_name: fullName, avatar_url: avatarUrl } : prev);
     }
     setSaving(false);
@@ -141,11 +139,11 @@ export default function AccountSettingsPage() {
   async function handleChangePassword(e: React.FormEvent) {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      toast({ title: t("auth.passwordsNoMatch"), variant: "destructive" });
+      notify.error(t("auth.passwordsNoMatch"));
       return;
     }
     if (newPassword.length < 8) {
-      toast({ title: t("errors.passwordTooShort"), variant: "destructive" });
+      notify.error(t("errors.passwordTooShort"));
       return;
     }
     setSavingPassword(true);
@@ -153,15 +151,15 @@ export default function AccountSettingsPage() {
     // same mistake at a worse time.
     const { breached } = await isPasswordBreached(newPassword);
     if (breached) {
-      toast({ title: t("auth.passwordBreachedShort"), variant: "destructive" });
+      notify.error(t("auth.passwordBreachedShort"));
       setSavingPassword(false);
       return;
     }
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
-      toast({ title: t("settings.passwordUpdateFailed"), description: error.message, variant: "destructive" });
+      notify.error(`${t("settings.passwordUpdateFailed")}. ${error.message}`);
     } else {
-      toast({ title: t("settings.passwordUpdatedSuccess") });
+      notify.success(t("settings.passwordUpdatedSuccess"));
       setNewPassword("");
       setConfirmPassword("");
     }
@@ -398,16 +396,16 @@ export default function AccountSettingsPage() {
                         const res = await fetch("/api/account/delete", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: "{}" });
                         const data = await res.json();
                         if (!res.ok) {
-                          toast({ title: t("settings.deletionFailed"), description: data.error, variant: "destructive" });
+                          notify.error(`${t("settings.deletionFailed")}. ${data.error}`);
                           setDeleteLoading(false);
                           return;
                         }
                         // Sign out locally after server-side deletion
                         await supabase.auth.signOut();
-                        toast({ title: t("settings.accountDeleted"), description: t("settings.accountDeletedDesc") });
+                        notify.success(`${t("settings.accountDeleted")}. ${t("settings.accountDeletedDesc")}`);
                         router.push("/");
                       } catch {
-                        toast({ title: t("settings.networkError"), description: t("settings.networkErrorDesc"), variant: "destructive" });
+                        notify.error(`${t("settings.networkError")}. ${t("settings.networkErrorDesc")}`);
                         setDeleteLoading(false);
                       }
                     }}

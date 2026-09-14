@@ -126,7 +126,7 @@ export default async function StatusPage() {
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--cr-copper)", marginBottom: "10px" }}>
             {t("statusPage.kicker")}
           </p>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", marginBottom: "6px", display: "flex", alignItems: "center", gap: "12px" }}>
+          <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontSize: "32px", color: "var(--cr-ink)", marginBottom: "6px", display: "flex", alignItems: "center", gap: "12px" }}>
             <span aria-hidden style={{ width: 12, height: 12, borderRadius: "50%", background: STATE_STYLE[worst].dot, flexShrink: 0 }} />
             {worst === "ok" ? t("statusPage.allOk") : worst === "degraded" ? t("statusPage.partial") : t("statusPage.disruption")}
           </h1>

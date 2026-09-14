@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { isUuid } from "@/lib/utils";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 /**
  * C33: opt-in co-investor visibility. Off by default. When an investor
@@ -15,6 +16,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   const { dealId, publicInterest } = await req.json().catch(() => ({}));
   if (!isUuid(dealId ?? "")) return NextResponse.json({ error: "dealId required" }, { status: 400 });

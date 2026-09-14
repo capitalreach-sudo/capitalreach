@@ -855,8 +855,8 @@ function WatchlistSection({ watchlist, canExport, showBrowse }: { watchlist: Wat
  * section head for plans that track it. Deployed and committed are computed
  * from deals server-side so they cannot drift; the target is the investor's.
  */
-function PositionsSection({ positions, investor, allocation, canTrack }: {
-  positions: PortfolioPosition[]; investor: Investor; allocation?: { committed: number; deployed: number }; canTrack: boolean;
+function PositionsSection({ positions, investor, allocation, canTrack, canExport }: {
+  positions: PortfolioPosition[]; investor: Investor; allocation?: { committed: number; deployed: number }; canTrack: boolean; canExport: boolean;
 }) {
   const { t, tf } = useStrings();
   const readOnly = useReadOnly();
@@ -924,7 +924,52 @@ function PositionsSection({ positions, investor, allocation, canTrack }: {
     </span>
   ) : undefined;
 
-  const end = !canTrack ? undefined
+  const markUp = (p: PortfolioPosition) =>
+    p.valuationAtClose && p.currentValuation && p.valuationAtClose > 0
+      ? Math.round((p.currentValuation / p.valuationAtClose - 1) * 100)
+      : null;
+
+  // Same CSV-escaping/download pattern as WatchlistSection's exportCsv: every
+  // cell quoted, since a listing name or update title is free text and one
+  // stray comma shifts every later column of that row.
+  const showExport = canExport && positions.length > 0;
+  function exportCsv() {
+    if (positions.length === 0) return;
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const header = [
+      t("dashboard.startupLabel"),
+      tf("dashboard.investor.csvStatus", "Status"),
+      t("dashboard.amountLabel"), tf("dashboard.investor.csvCurrency", "Currency"),
+      t("portfolio.ownership"),
+      tf("dashboard.investor.csvValuationClose", "Valuation at close"),
+      tf("dashboard.investor.csvValuationCurrent", "Current valuation"),
+      t("portfolio.markChange"),
+      tf("dashboard.investor.csvClosedDate", "Closed date"),
+      t("portfolio.latestUpdate"),
+      tf("dashboard.investor.csvProfile", "Profile"),
+    ];
+    const lines = positions.map((p) => {
+      const listed = p.status === "active";
+      const mu = markUp(p);
+      return [
+        p.name, listed ? tf("dashboard.investor.csvListed", "Listed") : t("portfolio.notListed"),
+        p.amount ?? "", p.currency,
+        p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : "",
+        p.valuationAtClose ?? "", p.currentValuation ?? "",
+        mu != null ? `${mu > 0 ? "+" : ""}${mu}%` : "",
+        p.closedAt ? formatDate(p.closedAt) : "",
+        p.latestUpdate ? `${p.latestUpdate.title} · ${formatDate(p.latestUpdate.created_at)}` : t("portfolio.noUpdates"),
+        listed ? `${window.location.origin}/startups/${p.slug}` : `${window.location.origin}/deals?deal=${p.dealId}`,
+      ].map(esc).join(",");
+    });
+    const csv = [header.map(esc).join(","), ...lines].join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = "capitalreach-positions.csv"; a.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  }
+
+  const targetControl = !canTrack ? undefined
     : readOnly
       ? (targetText ? <span className="crd-end-text">{tf("dashboard.investor.target", "Target {amount}", { amount: targetText })}</span> : undefined)
       : (
@@ -939,11 +984,14 @@ function PositionsSection({ positions, investor, allocation, canTrack }: {
           {targetText ? tf("dashboard.investor.targetEdit", "Target {amount}, edit", { amount: targetText }) : t("allocation.set")}
         </button>
       );
-
-  const markUp = (p: PortfolioPosition) =>
-    p.valuationAtClose && p.currentValuation && p.valuationAtClose > 0
-      ? Math.round((p.currentValuation / p.valuationAtClose - 1) * 100)
-      : null;
+  const end = targetControl || showExport ? (
+    <>
+      {targetControl}
+      {showExport && (
+        <button type="button" className="cr-btn cr-btn--text" onClick={exportCsv}>{t("dashboard.exportCsv")}</button>
+      )}
+    </>
+  ) : undefined;
 
   return (
     <Section id="positions" title={tf("dashboard.investor.positionsTitle", "Positions")} meta={meta} end={end}>
@@ -1228,7 +1276,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {caps.portfolio && portfolio.length > 0 && (
           <ErrorBoundary labelKey="dashboard.portfolio">
-            <PositionsSection positions={portfolio} investor={investor} allocation={allocation} canTrack={caps.allocationTracking} />
+            <PositionsSection positions={portfolio} investor={investor} allocation={allocation} canTrack={caps.allocationTracking} canExport={caps.dataExport} />
           </ErrorBoundary>
         )}
 

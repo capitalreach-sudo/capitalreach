@@ -165,6 +165,31 @@ export async function sendListingRejectedEmail(to: string, startupName: string, 
   );
 }
 
+/**
+ * Founder investor-update broadcast (app/api/updates/route.ts). The update
+ * fan-out previously only inserted notifications rows -- every other
+ * comparably important event (deal closed, new message, listing live) sends
+ * an email, and a saver who is not staring at their bell missed the update
+ * entirely. Mirrors sendListingLiveEmail's voice; routed through send() so
+ * email_opt_out and the unsubscribe footer apply like every other mail here.
+ */
+export async function sendListingUpdateEmail(
+  to: string,
+  startupName: string,
+  title: string,
+  body: string,
+  slug: string
+) {
+  return send(
+    to,
+    `${startupName}: ${title}`,
+    `<h2>${startupName} posted an update</h2>
+    <p><strong>${title}</strong></p>
+    <blockquote style="border-left:3px solid #4f46e5;padding-left:16px;color:#374151">${body.substring(0, 280)}${body.length > 280 ? "..." : ""}</blockquote>
+    <p><a href="${process.env.NEXT_PUBLIC_APP_URL}/startups/${slug}" style="background:#4f46e5;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;display:inline-block">View Listing →</a></p>`
+  );
+}
+
 export async function sendNewMessageEmail(
   to: string,
   senderName: string,

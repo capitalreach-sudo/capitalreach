@@ -143,7 +143,13 @@ export function CommandPalette() {
   }, []);
 
   useEffect(() => {
-    if (!open) { setQ(""); setHits([]); setActive(0); return; }
+    if (!open) {
+      // Cleared after the exit transition finishes, not on the frame the
+      // close is requested -- otherwise the query and results vanish out
+      // from under a panel that is still visibly fading away.
+      const clearId = window.setTimeout(() => { setQ(""); setHits([]); setActive(0); }, 180);
+      return () => window.clearTimeout(clearId);
+    }
     document.body.style.overflow = "hidden";
     const id = window.setTimeout(() => inputRef.current?.focus(), 20);
     return () => { document.body.style.overflow = ""; window.clearTimeout(id); };
@@ -215,28 +221,19 @@ export function CommandPalette() {
       ?.scrollIntoView({ block: "nearest" });
   }, [active]);
 
-  if (!open) return null;
-
   return (
     <div
-      className="fixed inset-0 z-[120] flex items-start justify-center"
-      style={{ background: "var(--cr-scrim)", padding: "10vh 16px 16px" }}
+      className="cr-palette-scrim"
+      data-open={open}
+      aria-hidden={!open}
       onClick={() => setOpen(false)}
     >
       <div
+        className="cr-palette"
         role="dialog"
         aria-modal="true"
         aria-label={t("palette.title")}
         onClick={(e) => e.stopPropagation()}
-        style={{
-          width: "100%",
-          maxWidth: "560px",
-          background: "var(--cr-paper-2)",
-          border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "4px",
-          boxShadow: "var(--cr-card-shadow-hover)",
-          overflow: "hidden",
-        }}
       >
         <div className="flex items-center gap-2" style={{ padding: "0 16px", borderBottom: "1px solid var(--cr-rule)" }}>
           <Search size={16} style={{ color: "var(--cr-ink-4)", flexShrink: 0 }} aria-hidden />

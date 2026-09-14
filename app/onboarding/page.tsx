@@ -31,7 +31,7 @@ export default async function OnboardingIndex() {
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
           <div style={{ borderBottom: "1px solid var(--cr-rule)", marginBottom: "24px", paddingBottom: "16px" }}>
             <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("auth.joiningAs")}</div>
-            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("auth.joinTitle")}</h1>
+            <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>{t("auth.joinTitle")}</h1>
           </div>
 
           {/* Rule-separated rows with mono rails -- the ledger, not icon cards.

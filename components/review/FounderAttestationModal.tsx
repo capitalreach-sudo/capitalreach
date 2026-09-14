@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -120,6 +120,13 @@ export function FounderAttestationModal({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // See NonCircumventionModal.tsx for why this lags `open` on the falling
+  // edge: the caller can drop this component the same render it flips
+  // `open` false, so the exit animation has to be driven from here.
+  const [rendered, setRendered] = useState(open);
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEscapeKey(open && !busy, onCancel);
 
   const load = useCallback(async () => {
@@ -146,15 +153,29 @@ export function FounderAttestationModal({
   }, [startupId]);
 
   useEffect(() => {
-    if (!open) return;
-    setAgreed(false);
-    setName("");
-    setError(null);
-    setBusy(false);
-    void load();
+    if (open) {
+      if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
+      setRendered(true);
+      setClosing(false);
+      setAgreed(false);
+      setName("");
+      setError(null);
+      setBusy(false);
+      void load();
+      return;
+    }
+    if (!rendered) return;
+    const reduced = typeof window !== "undefined"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { setRendered(false); return; }
+    setClosing(true);
+    closeTimer.current = setTimeout(() => { setRendered(false); setClosing(false); }, 190);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, load]);
 
-  if (!open) return null;
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
+
+  if (!rendered) return null;
 
   const trimmed = name.trim();
   const nameLooksWrong = trimmed.length >= 2 && !namesLooselyMatch(trimmed, doc?.profileName);
@@ -195,15 +216,17 @@ export function FounderAttestationModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="attest-title"
+      className="cr-modal-scrim"
+      data-state={closing ? "closed" : "open"}
       style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.6)", padding: "16px" }}
     >
-      <div className="animate-fade-up" style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "560px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(26,22,18,0.25)" }}>
+      <div className="cr-modal-panel" data-state={closing ? "closed" : "open"} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "560px", maxHeight: "90vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(26,22,18,0.25)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", padding: "24px 26px 0" }}>
           <div>
             <div className="ruled-label" style={{ marginBottom: "10px" }}>
               {tf("attest.eyebrow", "Your statement")}
             </div>
-            <h3 id="attest-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1.2 }}>
+            <h3 id="attest-title" style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
               {tf("attest.title", "Confirm your listing")}
             </h3>
           </div>

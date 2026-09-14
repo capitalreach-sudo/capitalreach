@@ -194,7 +194,7 @@ function LoginForm() {
       <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "32px" }}>
         <div style={{ borderBottom: "1px solid var(--cr-rule)", marginBottom: "24px", paddingBottom: "16px" }}>
           <div className="ruled-label" style={{ marginBottom: "12px" }}>{t("auth.signIn")}</div>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.welcomeBack")}</h1>
+          <h1 style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "4px" }}>{t("auth.welcomeBack")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("auth.signInSub")}</p>
         </div>
 

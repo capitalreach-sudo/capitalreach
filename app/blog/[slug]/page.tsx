@@ -42,7 +42,7 @@ export default function BlogPostPage({ params }: Props) {
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--cr-copper)", margin: "28px 0 10px" }}>
             {post.date} · {post.minutes} min
           </p>
-          <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "clamp(28px, 4vw, 38px)", lineHeight: 1.15, color: "var(--cr-ink)", marginBottom: "12px" }}>
+          <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontSize: "clamp(28px, 4vw, 38px)", lineHeight: 1.15, color: "var(--cr-ink)", marginBottom: "12px" }}>
             {post.title}
           </h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "16px", color: "var(--cr-ink-3)", lineHeight: 1.7, marginBottom: "8px" }}>

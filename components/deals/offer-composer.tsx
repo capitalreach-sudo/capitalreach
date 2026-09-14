@@ -200,14 +200,21 @@ export function OfferComposer({
   }, [ask?.amount, ask?.equityPct, amountNum, equity]);
 
   const differing = useMemo(() => {
+    // Amount and valuation are both stated in `currency`, one selector for
+    // the whole form -- 500000 EUR is not 500000 USD, so a swapped currency
+    // has to register as a difference on those two rows even when the digits
+    // typed are identical. Same null-guards as before: only when the ask
+    // stated a currency and the side being compared has a value at all, so a
+    // field the counter-party left untouched still reads as untouched.
+    const currencyDiffers = ask?.currency != null && currency !== ask.currency;
     const d = {
-      amount: ask?.amount != null && amountNum != null && amountNum !== ask.amount,
+      amount: ask?.amount != null && amountNum != null && (amountNum !== ask.amount || currencyDiffers),
       equity: ask?.equityPct != null && equityNum != null && equityNum !== ask.equityPct,
-      valuation: ask?.valuation != null && valuationNum != null && valuationNum !== ask.valuation,
+      valuation: ask?.valuation != null && valuationNum != null && (valuationNum !== ask.valuation || currencyDiffers),
       instrument: !!ask?.instrument && !!instrument && instrument !== ask.instrument,
     };
     return { ...d, count: Object.values(d).filter(Boolean).length };
-  }, [ask, amountNum, equityNum, valuationNum, instrument]);
+  }, [ask, amountNum, equityNum, valuationNum, instrument, currency]);
 
   const instrumentOptions = useMemo(() => {
     const base: string[] = [...INSTRUMENTS];

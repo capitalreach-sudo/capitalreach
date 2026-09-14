@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { resolveEntity } from "@/lib/membership";
 import { isUuid } from "@/lib/utils";
 import { founderGate, planRequired } from "@/lib/plan-gate";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 /**
  * The founder's target list: investors this startup wants in the round.
@@ -57,6 +58,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   // Plan gate: tracking investors you know off-platform is a Starter feature.
   const caps = await founderGate(user.id);

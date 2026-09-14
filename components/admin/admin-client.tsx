@@ -11,11 +11,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import VerificationQueue from "@/components/admin/verification-queue";
 import CircumventionQueue from "@/components/admin/circumvention-queue";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import { notify } from "@/components/ui/toast-notify";
 import { CheckCircle2, XCircle, AlertCircle, DollarSign, Users, Building2, TrendingUp } from "lucide-react";
 import { formatCurrency, formatDate, STATUS_COLORS } from "@/lib/utils";
 import { formatMoney } from "@/lib/currency";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import type { LedgerTotals } from "@/lib/fees";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { RevenueSummary } from "@/lib/revenue";
@@ -78,13 +78,21 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       setPendingStage(null);
       setEditingTarget(false);
     } else {
-      toast({ title: data?.error || t("errors.generic"), variant: "destructive" });
+      notify.error(data?.error || t("errors.generic"));
     }
   }
   const { t } = useTranslation();
+  // Local fallback pattern used across the app (see app/pricing/pricing-client.tsx,
+  // components/ui/filter-bar.tsx): render the translation when the key exists,
+  // an English fallback otherwise, so new copy never needs a messages/*.json edit.
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    if (out !== key) return out;
+    if (!vars) return fallback;
+    return fallback.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? `{${k}}`));
+  };
   const [rejectionReason, setRejectionReason] = useState<Record<string, string>>({});
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const { toast } = useToast();
 
   // The register bench and the listing review both read through routes that
   // require operator, so for a support admin those two links would lead to a
@@ -97,8 +105,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ investorId, verified }),
     });
-    if (res.ok) toast({ title: verified ? t("adminVerify.done") : t("adminVerify.undone") });
-    else { toast({ title: t("adminVerify.failed"), variant: "destructive" }); return; }
+    if (res.ok) notify.success(verified ? t("adminVerify.done") : t("adminVerify.undone"));
+    else { notify.error(t("adminVerify.failed")); return; }
     window.location.reload();
   }
 
@@ -108,8 +116,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ startupId, verified }),
     });
-    if (res.ok) toast({ title: verified ? t("adminVerify.done") : t("adminVerify.undone") });
-    else { toast({ title: t("adminVerify.failed"), variant: "destructive" }); return; }
+    if (res.ok) notify.success(verified ? t("adminVerify.done") : t("adminVerify.undone"));
+    else { notify.error(t("adminVerify.failed")); return; }
     window.location.reload();
   }
 
@@ -121,21 +129,17 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       body: JSON.stringify({ startupId: id }),
     });
     setProcessingId(null);
-    if (res.ok) { toast({ title: t("admin.toastApproved") }); window.location.reload(); return; }
+    if (res.ok) { notify.success(t("admin.toastApproved")); window.location.reload(); return; }
     // A trust-gate refusal is not a failure to approve -- it is the listing
     // not being verified yet, and the operator needs to read that rather than
     // a generic error.
     const detail = await res.json().catch(() => null) as { adminMessage?: string; error?: string } | null;
-    toast({
-      title: t("admin.toastApproveFailed"),
-      description: detail?.adminMessage ?? undefined,
-      variant: "destructive",
-    });
+    notify.error(detail?.adminMessage ? `${t("admin.toastApproveFailed")}. ${detail.adminMessage}` : t("admin.toastApproveFailed"));
   }
 
   async function rejectStartup(id: string) {
     const reason = rejectionReason[id];
-    if (!reason) { toast({ title: t("admin.toastRejectReasonRequired"), variant: "destructive" }); return; }
+    if (!reason) { notify.error(t("admin.toastRejectReasonRequired")); return; }
     setProcessingId(id);
     const res = await fetch("/api/admin/startup/reject", {
       method: "POST",
@@ -143,8 +147,8 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       body: JSON.stringify({ startupId: id, reason }),
     });
     setProcessingId(null);
-    if (res.ok) { toast({ title: t("admin.toastRejected") }); window.location.reload(); }
-    else toast({ title: t("admin.toastRejectFailed"), variant: "destructive" });
+    if (res.ok) { notify.success(t("admin.toastRejected")); window.location.reload(); }
+    else notify.error(t("admin.toastRejectFailed"));
   }
 
   async function suspendStartup(id: string) {
@@ -154,7 +158,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
       body: JSON.stringify({ startupId: id }),
     });
     if (res.ok) window.location.reload();
-    else toast({ title: t("errors.generic"), variant: "destructive" });
+    else notify.error(t("errors.generic"));
   }
 
   return (
@@ -164,7 +168,10 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
           <AlertCircle className="h-5 w-5 text-cr-paper" />
         </div>
         <div>
-          <h1 className="text-[22px] font-bold text-cr-ink">{t("admin.panelTitle")}</h1>
+          {/* Roman Ledger convention (S1): serif, upright, -0.01em tracking -- matches
+              cr-section-title's voice rather than the italic-editorial marketing pages.
+              The admin panel reads as an operating surface, not a storefront. */}
+          <h1 className="font-serif text-[22px] font-semibold not-italic tracking-[-0.01em] text-cr-ink">{t("admin.panelTitle")}</h1>
           <p className="text-cr-i3 text-[13px]">{t("admin.panelSub")}</p>
         </div>
       </div>
@@ -291,21 +298,41 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 {revenue.feeCurrencies.length > 1 && ` · ${t("revenue.mixedCurrencies", { list: revenue.feeCurrencies.join(", ") })}`}
               </span>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              {[
-                { k: "revenue.feesBilled", v: revenue.feesBilled, cls: "text-cr-ink" },
-                { k: "revenue.feesCollected", v: revenue.feesCollected, cls: "text-cr-up" },
-                { k: "revenue.feesOutstanding", v: revenue.feesOutstanding, cls: revenue.feesOutstanding > 0 ? "text-cr-copper" : "text-cr-i3" },
-                { k: "revenue.feesUnbillable", v: revenue.feesUnbillable, cls: revenue.feesUnbillable > 0 ? "text-cr-down" : "text-cr-i3" },
-                { k: "revenue.feesReversed", v: revenue.feesReversed, cls: revenue.feesReversed > 0 ? "text-cr-down" : "text-cr-i3" },
-              ].map(({ k, v, cls }) => (
-                <div key={k}>
-                  <p className={`font-mono text-lg font-bold ${cls}`}>{formatCurrency(v)}</p>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3 mt-1">{t(k)}</p>
-                </div>
-              ))}
-            </div>
-            {revenue.feesUnbillable > 0 && (
+            {/* Fee totals are grouped by currency, never summed across them --
+                a EUR figure and a USD figure are different units, and adding
+                their digits together would produce a number this page's
+                operator could actually bill from by mistake. One row per
+                currency; the currency code only shows once there is more than
+                one, so the common single-currency case looks exactly as it
+                always has. */}
+            {revenue.feesByCurrency.length === 0 ? (
+              <p className="text-[13px] text-cr-i4">{tf("revenue.noFees", "No success fees yet.")}</p>
+            ) : (
+              <div className={revenue.feesByCurrency.length > 1 ? "space-y-4" : undefined}>
+                {revenue.feesByCurrency.map(row => (
+                  <div key={row.currency}>
+                    {revenue.feesByCurrency.length > 1 && (
+                      <p className="font-mono text-[11px] font-semibold text-cr-i3 mb-1">{row.currency}</p>
+                    )}
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                      {[
+                        { k: "revenue.feesBilled", v: row.billed, cls: "text-cr-ink" },
+                        { k: "revenue.feesCollected", v: row.collected, cls: "text-cr-up" },
+                        { k: "revenue.feesOutstanding", v: row.outstanding, cls: row.outstanding > 0 ? "text-cr-copper" : "text-cr-i3" },
+                        { k: "revenue.feesUnbillable", v: row.unbillable, cls: row.unbillable > 0 ? "text-cr-down" : "text-cr-i3" },
+                        { k: "revenue.feesReversed", v: row.reversed, cls: row.reversed > 0 ? "text-cr-down" : "text-cr-i3" },
+                      ].map(({ k, v, cls }) => (
+                        <div key={k}>
+                          <p className={`font-mono text-lg font-bold ${cls}`}>{formatMoney(v, row.currency)}</p>
+                          <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-cr-i3 mt-1">{t(k)}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {revenue.feesByCurrency.some(c => c.unbillable > 0) && (
               <p className="text-[11px] text-cr-down mt-3">{t("revenue.unbillableNote")}</p>
             )}
             {revenue.byTier.length > 0 && (
@@ -343,13 +370,24 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         </Card>
       )}
 
-      {/* Stats */}
+      {/* Stats. Collected fees render as one term per currency actually
+          collected -- joined rather than summed, matching the byCurrency
+          pattern in components/shared/deal-kanban.tsx's pipeline stats. */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
           { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-cr-i3" },
           { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-cr-i3" },
           { label: t("revenue.subscriptionMrr"), value: formatCurrency(revenue?.subscriptionMrr ?? stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
-          { label: t("revenue.feesCollected"), value: formatCurrency(revenue?.feesCollected ?? 0), icon: TrendingUp, color: "text-cr-up" },
+          {
+            label: t("revenue.feesCollected"),
+            value: (() => {
+              const collected = (revenue?.feesByCurrency ?? []).filter(c => c.collected > 0);
+              return collected.length
+                ? collected.map(c => formatMoney(c.collected, c.currency, { compact: true })).join(" + ")
+                : formatCurrency(0);
+            })(),
+            icon: TrendingUp, color: "text-cr-up",
+          },
         ].map(s => (
           <Card key={s.label}>
             <CardContent className="p-4">
@@ -419,6 +457,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                           <h3 className="font-semibold text-cr-ink">{s.name}</h3>
                           <Badge variant="outline" className="text-xs">{s.stage}</Badge>
                           <Badge variant="outline" className="text-xs">{s.industry}</Badge>
+                          {s.is_demo && <DemoBadge />}
                         </div>
                         <p className="text-[13px] text-cr-i3">{s.tagline}</p>
                         <p className="text-xs text-cr-i4 mt-1">
@@ -487,7 +526,13 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
               <div key={s.id} className="flex items-center justify-between bg-cr-paper border rounded-[6px] px-4 py-3">
                 <div className="flex items-center gap-3">
                   <div>
-                    <p className="font-medium text-cr-ink text-[13px]">{s.name}</p>
+                    <p className="font-medium text-cr-ink text-[13px] flex items-center gap-2">
+                      {s.name}
+                      {/* Sample data mixed into the real book with no marker was the
+                          finding -- an operator working this list has to be able to
+                          tell at a glance which rows are seed data. */}
+                      {s.is_demo && <DemoBadge />}
+                    </p>
                     <p className="text-xs text-cr-i4">
                       {s.owner?.email} · {s.industry} · {s.stage}
                       {" · "}
@@ -515,7 +560,7 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                       title={new Date(s.edited_since_review_at).toLocaleString()}
                       onClick={async () => {
                         const res = await fetch("/api/admin/startup/ack-edits", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: s.id }) });
-                        if (res.ok) { toast({ title: t("admin.editsAcked") }); window.location.reload(); } else toast({ title: t("errors.generic"), variant: "destructive" });
+                        if (res.ok) { notify.success(t("admin.editsAcked")); window.location.reload(); } else notify.error(t("errors.generic"));
                       }}>
                       {t("admin.editedSinceReview")}
                     </Button>
@@ -549,7 +594,10 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
             {(rows as unknown as typeof allInvestors).map(inv => (
               <div key={inv.id} className="flex items-center justify-between bg-cr-paper border rounded-[6px] px-4 py-3">
                 <div>
-                  <p className="font-medium text-cr-ink text-[13px]">{inv.owner?.email}</p>
+                  <p className="font-medium text-cr-ink text-[13px] flex items-center gap-2">
+                    {inv.owner?.email}
+                    {inv.is_demo && <DemoBadge />}
+                  </p>
                   <p className="text-xs text-cr-i4">{inv.type} · {inv.industries?.join(", ") || t("admin.noPreferences")}</p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -855,17 +903,29 @@ function AdminList({ entity, initial, statuses, children }: {
   children: (rows: Record<string, unknown>[]) => React.ReactNode;
 }) {
   const { t } = useTranslation();
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    if (out !== key) return out;
+    if (!vars) return fallback;
+    return fallback.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? `{${k}}`));
+  };
   const [rows, setRows] = useState(initial);
   const [total, setTotal] = useState<number | null>(null);
   const [page, setPage] = useState(1);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
+  // Demo/seed rows are hidden by default -- real by default, an explicit
+  // toggle away, per E?? (admin lists were ~98% unlabeled demo rows with no
+  // way to tell real from sample at a glance). Only startups and investors
+  // carry an is_demo column, so the toggle only renders for those entities.
+  const hasDemoToggle = entity === "startups" || entity === "investors";
+  const [showDemo, setShowDemo] = useState(false);
   const [loading, setLoading] = useState(false);
   const PAGE_SIZE = 25;
 
-  const load = useCallback(async (p: number, query: string, st: string) => {
+  const load = useCallback(async (p: number, query: string, st: string, demo: boolean) => {
     setLoading(true);
-    const res = await fetch(`/api/admin/list?entity=${entity}&page=${p}&pageSize=${PAGE_SIZE}&q=${encodeURIComponent(query)}&status=${encodeURIComponent(st)}`);
+    const res = await fetch(`/api/admin/list?entity=${entity}&page=${p}&pageSize=${PAGE_SIZE}&q=${encodeURIComponent(query)}&status=${encodeURIComponent(st)}&demo=${demo ? "1" : "0"}`);
     setLoading(false);
     if (!res.ok) return;
     const j = await res.json();
@@ -873,14 +933,15 @@ function AdminList({ entity, initial, statuses, children }: {
   }, [entity]);
 
   // First load replaces the server's page with a counted one, so the row count
-  // on screen is the real total rather than "however many fitted".
-  useEffect(() => { void load(1, "", ""); }, [load]);
+  // on screen is the real total rather than "however many fitted". Demo rows
+  // stay hidden on this first load too, same as every later one.
+  useEffect(() => { void load(1, "", "", false); }, [load]);
 
   // Debounced so typing does not fire a query per keystroke.
   useEffect(() => {
-    const id = setTimeout(() => { setPage(1); void load(1, q, status); }, 300);
+    const id = setTimeout(() => { setPage(1); void load(1, q, status, showDemo); }, 300);
     return () => clearTimeout(id);
-  }, [q, status, load]);
+  }, [q, status, showDemo, load]);
 
   const pages = total == null ? 1 : Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -894,12 +955,18 @@ function AdminList({ entity, initial, statuses, children }: {
           <option value="">{t("dashboard.filterAll")}</option>
           {statuses.map(s => <option key={s} value={s}>{s.replace(/_/g, " ")}</option>)}
         </select>
+        {hasDemoToggle && (
+          <label className="flex items-center gap-1.5 text-[13px] text-cr-i3 select-none">
+            <input type="checkbox" checked={showDemo} onChange={e => setShowDemo(e.target.checked)} />
+            {tf("adminList.showDemo", "Show demo rows")}
+          </label>
+        )}
         <span className="font-mono text-xs text-cr-i4">
           {loading ? t("common.loading")
             : total == null ? ""
             : t("adminList.showing", { shown: rows.length, total })}
         </span>
-        <a href={`/api/admin/list?entity=${entity}&format=csv&q=${encodeURIComponent(q)}&status=${encodeURIComponent(status)}`}
+        <a href={`/api/admin/list?entity=${entity}&format=csv&q=${encodeURIComponent(q)}&status=${encodeURIComponent(status)}&demo=${hasDemoToggle && showDemo ? "1" : "0"}`}
           className="text-xs font-semibold text-cr-copper ml-auto">{t("dashboard.exportCsv")}</a>
       </div>
 
@@ -909,10 +976,10 @@ function AdminList({ entity, initial, statuses, children }: {
 
       {pages > 1 && (
         <div className="flex items-center justify-center gap-3 mt-4">
-          <button disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); void load(p, q, status); }}
+          <button disabled={page <= 1} onClick={() => { const p = page - 1; setPage(p); void load(p, q, status, showDemo); }}
             className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("common.back")}</button>
           <span className="font-mono text-xs text-cr-i4">{t("adminList.page", { page, pages })}</span>
-          <button disabled={page >= pages} onClick={() => { const p = page + 1; setPage(p); void load(p, q, status); }}
+          <button disabled={page >= pages} onClick={() => { const p = page + 1; setPage(p); void load(p, q, status, showDemo); }}
             className="text-xs font-semibold text-cr-copper disabled:opacity-40">{t("adminList.next")}</button>
         </div>
       )}

@@ -57,7 +57,7 @@ export function DealClosedMoment({ amount, currency, counterpartName, onDone }: 
             {formatMoney(amount, currency)}
           </p>
         )}
-        <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-band-ink)", marginTop: 16, textWrap: "balance" }}>
+        <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(22px, 3vw, 28px)", color: "var(--cr-band-ink)", letterSpacing: "-0.01em", marginTop: 16, textWrap: "balance" }}>
           {counterpartName ? t("closed.lineNamed", { name: counterpartName }) : t("closed.line")}
         </p>
         {/* The stamp comes down last -- the ledger entry made official. */}

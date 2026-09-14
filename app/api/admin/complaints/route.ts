@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/admin-guard";
+import { requireAdmin, logAdminAction } from "@/lib/admin-guard";
 import { notifyUser } from "@/lib/notify-user";
 import { isUuid } from "@/lib/utils";
 import { logSystemEvent } from "@/lib/system-events";
@@ -70,6 +70,17 @@ export async function POST(req: NextRequest) {
   if (error) return NextResponse.json({ error: "Update failed" }, { status: 500 });
 
   await logSystemEvent("complaints", "info", `complaint ${status}`, { complaintId: id, by: guard.adminId }).catch(() => {});
+  // system_events is the operational heartbeat (what happened, for debugging);
+  // admin_actions is the structured audit trail an operator's own decisions
+  // belong in (who resolved what, and why) -- this write was landing only in
+  // the former. Target is the filer's profile, same convention as suspend/
+  // set-tier: an action taken because of the complaint, against the person it
+  // was filed by, with the complaint and note kept in details.
+  await logAdminAction(guard.admin, guard.adminId, `complaint_${status}`, "profile", row.opened_by, {
+    complaintId: id,
+    subject: row.subject,
+    resolutionNote: note,
+  });
   await notifyUser({
     userId: row.opened_by,
     type: "complaint_update",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
@@ -30,15 +30,39 @@ export function NonCircumventionModal({ open, startupId, startupName, onConfirme
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState<string>("");
 
+  // `open` is a prop the caller flips straight to false on cancel/confirm,
+  // often by also dropping this component from the tree in the same render
+  // -- which would leave no time for an exit animation. `rendered` mirrors
+  // `open` but lags behind on the falling edge by the exit's duration, so
+  // the dialog stays mounted (data-state="closed", playing cr-modal-out)
+  // instead of vanishing instantly.
+  const [rendered, setRendered] = useState(open);
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEscapeKey(open && !busy, onCancel);
 
   useEffect(() => {
-    if (!open) return;
-    setAgreed(false); setError(null); setBusy(false);
-    setNow(new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }));
+    if (open) {
+      if (closeTimer.current) { clearTimeout(closeTimer.current); closeTimer.current = null; }
+      setRendered(true);
+      setClosing(false);
+      setAgreed(false); setError(null); setBusy(false);
+      setNow(new Date().toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }));
+      return;
+    }
+    if (!rendered) return;
+    const reduced = typeof window !== "undefined"
+      && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) { setRendered(false); return; }
+    setClosing(true);
+    closeTimer.current = setTimeout(() => { setRendered(false); setClosing(false); }, 190);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  if (!open) return null;
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
+
+  if (!rendered) return null;
 
   async function confirm() {
     if (!agreed || busy) return;
@@ -74,13 +98,15 @@ export function NonCircumventionModal({ open, startupId, startupName, onConfirme
       role="dialog"
       aria-modal="true"
       aria-labelledby="ncm-title"
+      className="cr-modal-scrim"
+      data-state={closing ? "closed" : "open"}
       style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(26,22,18,0.6)", padding: "16px" }}
     >
-      <div className="animate-fade-up" style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "480px", boxShadow: "0 24px 64px rgba(26,22,18,0.25)" }}>
+      <div className="cr-modal-panel" data-state={closing ? "closed" : "open"} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", width: "100%", maxWidth: "480px", boxShadow: "0 24px 64px rgba(26,22,18,0.25)" }}>
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "12px", padding: "24px 24px 0" }}>
           <div>
             <div className="ruled-label" style={{ marginBottom: "10px" }}>{t("circumvention.eyebrow")}</div>
-            <h3 id="ncm-title" style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", lineHeight: 1.2 }}>
+            <h3 id="ncm-title" style={{ fontFamily: "var(--font-serif)", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", lineHeight: 1.2 }}>
               {t("circumvention.title", { name: startupName })}
             </h3>
           </div>

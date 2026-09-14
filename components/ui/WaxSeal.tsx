@@ -4,6 +4,11 @@
  * The signature moment: a verdigris wax seal stamped onto a closed deal.
  * Copper that has matured. Pure SVG; the stamp animation runs once (callers
  * gate on first render via `stamp`), reduced motion lands it instantly.
+ *
+ * The overshoot curve (.34,1.56,.64,1) is deliberate, not a stray bounce --
+ * wax stamped by hand overshoots and settles, same family as .cr-stamp-in
+ * and .cr-diamond-live in globals.css. Left off the --ease-out/--ease-in-out
+ * token pass for that reason.
  */
 export function WaxSeal({ size = 96, date, stamp = false }: { size?: number; date?: string; stamp?: boolean }) {
   // Scalloped outer edge: a circle with sine-perturbed radius, 24 bumps.

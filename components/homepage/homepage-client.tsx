@@ -213,7 +213,20 @@ export function HomepageClient({ stats, listings, launch, viewerRole = null, can
           {/* The one place WONK is allowed: the homepage's opening claim,
               revealed as ink bleeding into paper (pure CSS mask -- the text
               is always real DOM and cannot break). This is the single loudest
-              element on the page; nothing else comes within 40px of it. */}
+              element on the page; nothing else comes within 40px of it.
+
+              FLAGGED, not fixed (design-consistency audit, 2026-09-14): every
+              other italic-editorial surface (AI hub, auth, onboarding) has
+              been brought in line with the roman Ledger convention (S1), the
+              newer and more considered voice. The homepage's italic display
+              serif is left as-is -- this hero is a bespoke, built-for-italic
+              moment (ink-bleed mask + WONK variation, tuned for the slanted
+              letterforms specifically), and the whole homepage narrative
+              (this h1, the CTA h2 below, market-matcher.tsx) reads as one
+              deliberate editorial-brand voice rather than incidental italic
+              use. Converting it risks fighting the marketing page's own
+              established identity harder than the inconsistency costs.
+              Flagging for a human call rather than silently picking a side. */}
           <h1
             className="ink-bleed display-wonk"
             style={{

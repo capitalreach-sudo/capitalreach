@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase-server";
 import { matchStartupsToInvestor } from "@/lib/openai";
 import { resend } from "@/lib/resend";
 import { env } from "@/lib/env";
+import { getInvestorPlan } from "@/lib/plans";
 
 // Runs every day at 9am UTC — refresh recommendations for Pro+ investors
 export const investorRecommendations = schedules.task({
@@ -11,13 +12,21 @@ export const investorRecommendations = schedules.task({
   run: async () => {
     const supabase = createAdminClient();
 
-    // Only Pro+ investors get daily AI recommendations
-    const { data: investors } = await supabase
+    // Only Pro+ investors get daily AI recommendations. Filtered in memory
+    // through getInvestorPlan (lib/plans.ts), the single source of truth for
+    // tier ids -- a DB-side .in(["pro_investor","institutional"]) hardcoded
+    // legacy strings the Stripe webhook stopped writing (canonical ids are
+    // "pro"/"institution"), so this job matched nobody and never ran.
+    const { data: allInvestors } = await supabase
       .from("investors")
-      .select("id, industries, stages, min_check, max_check, geography, owner:profiles(email, full_name)")
-      .in("subscription_tier", ["pro_investor", "institutional"]);
+      .select("id, industries, stages, min_check, max_check, geography, subscription_tier, owner:profiles(email, full_name)");
 
-    if (!investors || investors.length === 0) return;
+    const investors = (allInvestors ?? []).filter((inv) => {
+      const plan = getInvestorPlan(inv.subscription_tier).id;
+      return plan === "pro" || plan === "institution";
+    });
+
+    if (investors.length === 0) return;
 
     const { data: activeStartups } = await supabase
       .from("startups")

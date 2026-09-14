@@ -91,7 +91,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 w-fit select-none" style={{ textDecoration: "none" }}>
               <DiamondLogo />
               <span style={{
-                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontFamily:    "var(--font-serif)",
                 fontWeight:    700,
                 /* 18, not 16: the wordmark leads the footer's brand block, and
                    16 is off the type scale -- it also read level with the

@@ -50,7 +50,7 @@ export default async function CareersPage() {
           </div>
           <h1
             style={{
-              fontFamily:    "'Playfair Display', Georgia, serif",
+              fontFamily:    "var(--font-serif)",
               fontWeight:    700,
               fontStyle:     "italic",
               fontSize:      "clamp(30px, 5.5vw, 52px)",
@@ -78,7 +78,7 @@ export default async function CareersPage() {
           <div className="text-center" style={{ marginTop: "8px" }}>
             <h3
               style={{
-                fontFamily:    "'Playfair Display', Georgia, serif",
+                fontFamily:    "var(--font-serif)",
                 fontWeight:    700,
                 fontStyle:     "italic",
                 fontSize:      "clamp(22px, 3vw, 28px)",

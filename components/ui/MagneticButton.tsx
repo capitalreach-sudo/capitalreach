@@ -28,6 +28,11 @@ export function MagneticButton({
         el.style.transform = `translate(${dx * 0.18}px, ${dy * 0.18}px)`;
       }}
       onMouseLeave={() => { if (ref.current) ref.current.style.transform = ""; }}
+      // .2,.8,.2,1 is deliberate, not a stray curve: --ease-out front-loads
+      // its deceleration (y hits 1 by the first control point), which reads
+      // as a snap for a one-shot reveal but as jitter under a mousemove that
+      // re-triggers the transition on every pixel. This gentler, more linear
+      // ease keeps the pull smooth while it's continuously retargeted.
       style={{ transition: "transform 300ms cubic-bezier(.2,.8,.2,1)", ...style }}
       {...props}
     >

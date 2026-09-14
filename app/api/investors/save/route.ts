@@ -3,6 +3,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { PROFILE_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
 import { sanitizeUrlFields } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
+import { isAccountSuspended } from "@/lib/suspension-guard";
 
 /**
  * The investor's own profile, saved.
@@ -67,6 +68,9 @@ export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   const { fields, create } = await req.json().catch(() => ({}));
   if (!fields || typeof fields !== "object" || Array.isArray(fields)) {
