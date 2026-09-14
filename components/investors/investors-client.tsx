@@ -70,7 +70,7 @@ function FilterChip({ active, onClick, children }: { active: boolean; onClick: (
         color:         active ? "var(--cr-copper)" : "var(--cr-ink-3)",
         cursor:        "pointer",
         whiteSpace:    "nowrap",
-        transition:    "background-color 100ms ease, color 100ms ease",
+        transition:    "background-color 140ms var(--ease-out), color 140ms var(--ease-out)",
       }}
     >
       {children}
@@ -602,7 +602,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                 onBlurCapture={e => ((e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)")}
               />
               {suggestOpen && f.query.trim().length < 2 && recent.length > 0 && (
-                <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
+                <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50 animate-fade-in"
                   style={{ marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
                   <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
                     {t("startups.recentSearches")}
@@ -625,7 +625,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                   .filter(i => (i.full_name || "").toLowerCase().includes(f.query.trim().toLowerCase()))
                   .slice(0, 6);
                 return hits.length > 0 ? (
-                  <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50"
+                  <div className="absolute top-full left-0 w-full max-w-sm overflow-hidden z-50 animate-fade-in"
                     style={{ marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)" }}>
                     {hits.map((i, hi) => (
                       <Link key={i.id} href={`/investors/${i.slug}`}
@@ -683,7 +683,10 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
 
           {/* Compare tray + modal, mirroring the startups directory */}
           {compareIds.length > 0 && (
-            <div style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+            // animate-fade-in, not fade-up: the tray is centered via
+            // transform: translateX(-50%), which fade-up's translateY
+            // keyframe would overwrite once the animation settles.
+            <div className="animate-fade-in" style={{ position: "fixed", bottom: "calc(18px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "6px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
                 {compareIds.map(id => investors.find(i => i.id === id)?.full_name).filter(Boolean).join(" · ")}
               </span>
@@ -710,8 +713,11 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
             ];
             return (
               <div role="dialog" aria-modal="true" className="fixed inset-0 z-[70]">
-                <div className="absolute inset-0 bg-[color:var(--cr-scrim)]" onClick={() => setShowCompare(false)} />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto"
+                <div className="absolute inset-0 bg-[color:var(--cr-scrim)] animate-fade-in" onClick={() => setShowCompare(false)} />
+                {/* animate-fade-in only: the panel's centering already lives in
+                    the -translate-x/y-1/2 utility classes, and fade-up's own
+                    transform keyframe would replace that transform outright. */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(92vw,760px)] max-h-[84vh] overflow-y-auto animate-fade-in"
                   style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "24px" }}>
                   <div className="flex items-center justify-between" style={{ marginBottom: "16px" }}>
                     <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("investors.compareInvestors")}</h2>
@@ -879,7 +885,7 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
                       <div key={inv.id} className="cr-lift cr-spot cr-tilt group relative flex flex-col"
-                        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px", transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease" }}
+                        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px", transition: "border-color 160ms var(--ease-out), transform 200ms var(--ease-out), box-shadow 200ms var(--ease-out)" }}
                         onMouseMove={e => {
                           const r = e.currentTarget.getBoundingClientRect();
                           const x = e.clientX - r.left, y = e.clientY - r.top;

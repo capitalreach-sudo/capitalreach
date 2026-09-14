@@ -58,6 +58,7 @@ const BADGE_COPPER: CSSProperties = {
 // Interactive chips keep Label type but reach a 40px touch target.
 const BADGE_ACTION: CSSProperties = {
   ...BADGE_COPPER, minHeight: "40px", padding: "0 12px",
+  transition: "transform 160ms var(--ease-out), box-shadow 160ms var(--ease-out)",
 };
 
 const DATA: CSSProperties = {
@@ -366,8 +367,8 @@ export default async function InvestorProfilePage({ params }: Props) {
       <main className="container mx-auto px-4 py-12 max-w-3xl" style={{ background: "var(--cr-paper)" }}>
 
         {/* Back nav */}
-        <Link href="/investors" className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i4 hover:text-cr-i2 mb-8 transition-colors">
-          ← {t("investorProfile.back")}
+        <Link href="/investors" className="group inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i4 hover:text-cr-i2 mb-8 transition-colors duration-150 ease-[var(--ease-out)]">
+          <span aria-hidden="true" className="inline-block transition-transform duration-150 ease-[var(--ease-out)] group-hover:-translate-x-0.5">←</span> {t("investorProfile.back")}
         </Link>
 
         {/* ── Self-preview ──────────────────────────────────────────────────
@@ -382,7 +383,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             </div>
             <Link
               href="/dashboard/investor/settings"
-              className="inline-flex items-center gap-1.5 min-h-[40px] flex-shrink-0"
+              className="inline-flex items-center gap-1.5 min-h-[40px] flex-shrink-0 transition-opacity duration-150 ease-[var(--ease-out)] hover:opacity-70"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}
             >
               <Pencil className="h-3.5 w-3.5" /> {t("investorProfile.editProfile")}
@@ -456,7 +457,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                 // Same pill as the startup profile: the two ends of a deal
                 // should both show it. Wording reuses the kanban's own column
                 // labels so profile and pipeline never disagree.
-                <Link href="/deals" style={BADGE_ACTION}>
+                <Link href="/deals" style={BADGE_ACTION} className="hover:-translate-y-0.5 hover:shadow-[var(--cr-card-shadow)] active:translate-y-0">
                   <Handshake className="h-3 w-3" />
                   {t("startupDetail.inYourPipeline")}{" — "}
                   {viewerDeal.status === "intro" ? t("deals.colIntro")
@@ -473,7 +474,8 @@ export default async function InvestorProfilePage({ params }: Props) {
                 <InterestedButton targetType="investor" targetId={investor.id} />
               )}
               {investor.booking_url && user && (
-                <a href={investor.booking_url} target="_blank" rel="noopener noreferrer" style={BADGE_ACTION}>
+                <a href={investor.booking_url} target="_blank" rel="noopener noreferrer" style={BADGE_ACTION}
+                  className="hover:-translate-y-0.5 hover:shadow-[var(--cr-card-shadow)] active:translate-y-0">
                   {t("startupDetail.bookCall")}
                 </a>
               )}
@@ -526,19 +528,19 @@ export default async function InvestorProfilePage({ params }: Props) {
             <div className="flex flex-wrap gap-x-4 gap-y-0 mt-2">
               {investor.linkedin_url && (
                 <a href={investor.linkedin_url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors">
+                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors duration-150 ease-[var(--ease-out)]">
                   <Linkedin className="h-4 w-4" /> LinkedIn
                 </a>
               )}
               {investor.twitter_url && (
                 <a href={investor.twitter_url} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors">
+                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors duration-150 ease-[var(--ease-out)]">
                   <Twitter className="h-4 w-4" /> Twitter / X
                 </a>
               )}
               {investor.website && (
                 <a href={investor.website} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors">
+                  className="inline-flex items-center gap-1.5 min-h-[40px] text-sm text-cr-i3 hover:text-cr-copper transition-colors duration-150 ease-[var(--ease-out)]">
                   <Globe className="h-4 w-4" /> {t("investorProfile.website")}
                 </a>
               )}
@@ -680,6 +682,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                 {portfolio.length > 6 && (
                   <details data-cr-expander>
                     <summary
+                      className="transition-opacity duration-150 ease-[var(--ease-out)] hover:opacity-70"
                       style={{
                         listStyle: "none", cursor: "pointer",
                         display: "flex", alignItems: "center", gap: "6px",
@@ -706,10 +709,10 @@ export default async function InvestorProfilePage({ params }: Props) {
             <div>
               {similar.map((s, i) => (
                 <a key={s.slug} href={`/investors/${s.slug}`}
-                  className="group flex items-center justify-between gap-4 hover:bg-cr-p3 transition-colors -mx-2 px-2"
+                  className="group flex items-center justify-between gap-4 hover:bg-cr-p3 hover:translate-x-0.5 transition-[background-color,transform] duration-150 ease-[var(--ease-out)] -mx-2 px-2"
                   style={{ padding: "12px 8px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none", textDecoration: "none", minHeight: "48px", borderRadius: "4px" }}>
                   <div className="min-w-0">
-                    <p className="truncate text-cr-ink group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
+                    <p className="truncate text-cr-ink group-hover:text-cr-copper transition-colors duration-150 ease-[var(--ease-out)]" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px" }}>
                       {s.display_name || s.firm_name || s.slug}
                     </p>
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
@@ -737,6 +740,7 @@ export default async function InvestorProfilePage({ params }: Props) {
               {t("investorProfile.founderCta", { name: displayName })}
             </p>
             <a href="/auth/signup?role=startup"
+              className="transition-transform duration-150 ease-[var(--ease-out)] hover:scale-[1.02] active:scale-[0.98]"
               style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", background: "var(--cr-copper)", color: "white", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", padding: "12px 24px", borderRadius: "999px", textDecoration: "none" }}>
               {t("investors.listYourStartup")} →
             </a>

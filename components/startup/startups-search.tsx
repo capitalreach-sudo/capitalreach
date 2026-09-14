@@ -315,7 +315,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
           cursor: "pointer", whiteSpace: "nowrap",
         }}>
         {label}{count > 0 ? ` · ${count}` : ""}
-        <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
+        <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 160ms var(--ease-out)" }} />
       </button>
       {/* Beside the trigger, never inside it: a button cannot nest a button,
           and the tip must stay reachable while the panel is closed -- the
@@ -323,7 +323,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
       {tipKey && <InfoTip termKey={tipKey} />}
       {/* Desktop: a panel anchored under its chip. */}
       {open && (
-        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
+        <div className="hidden lg:flex animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
           {children}
         </div>
       )}
@@ -422,7 +422,7 @@ function FilterChip({ active, onClick, children, disabled, title }: { active: bo
         cursor:        disabled ? "not-allowed" : "pointer",
         opacity:       disabled ? 0.55 : 1,
         whiteSpace:    "nowrap",
-        transition:    "background-color 100ms ease, color 100ms ease",
+        transition:    "background-color 140ms var(--ease-out), color 140ms var(--ease-out)",
       }}
     >
       {children}
@@ -1246,10 +1246,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                     ordering reads, and that sorting never removes a listing. */}
                 <InfoTip termKey="glossary.filterSort" />
                 {sortOpen && (
-                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
+                  <div className="animate-fade-in" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
                     {sortOptions.map((o) => (
                       <button key={o.value} onClick={() => { patch({ sort: o.value }); setSortOpen(false); }}
-                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px" }}
+                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px", transition: "background 120ms var(--ease-out)" }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                       >
@@ -1264,7 +1264,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
                 {(["grid", "list"] as const).map((v) => (
                   <button key={v} onClick={() => chooseView(v)} aria-label={v} aria-pressed={viewMode === v}
-                    style={{ padding: "8px 12px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
+                    style={{ padding: "8px 12px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 140ms var(--ease-out)" }}>
                     {v === "grid" ? <LayoutGrid style={{ width: 16, height: 16 }} /> : <List style={{ width: 16, height: 16 }} />}
                   </button>
                 ))}
@@ -1291,7 +1291,14 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           state it describes. No overflowX here: it clipped the open panels. */}
       {/* top is the navbar's own height (components/shared/navbar: h-[56px]),
           not a rhythm value -- the bar has to come to rest exactly under it. */}
-      <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>
+      <div style={{
+        position: "sticky", top: "56px", zIndex: 40,
+        // Frosted glass: results scroll beneath the bar, same material as the navbar.
+        background: "var(--cr-nav-glass)",
+        backdropFilter: "blur(14px) saturate(1.4)",
+        WebkitBackdropFilter: "blur(14px) saturate(1.4)",
+        borderBottom: "1px solid var(--cr-rule-dark)",
+      }}>
         <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
           {/* Search */}
           <div style={{ position: "relative", flexShrink: 0 }}>
@@ -1325,7 +1332,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
             />
             {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
+              <div className="animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
                   {t("startups.recentSearches")}
                 </p>
@@ -1342,7 +1349,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
             )}
             {suggestOpen && suggestions.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
+              <div className="animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 {suggestions.map((s, si) => (
                   <Link key={s.id} href={`/startups/${s.slug}`} onClick={() => rememberQuery(filters.query)}
                     style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "8px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
@@ -1396,7 +1403,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               cursor: "pointer", whiteSpace: "nowrap",
             }}>
             {t("filters.more")}{advancedCount > 0 ? ` · ${advancedCount}` : ""}
-            <ChevronDown style={{ width: 12, height: 12, transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
+            <ChevronDown style={{ width: 12, height: 12, transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform 160ms var(--ease-out)" }} />
           </button>
 
           {/* The full-list bottom sheet, below lg only. It also carried an
@@ -1428,7 +1435,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             renders at every width, so the presets stay reachable on mobile
             (the full-list sheet behind "Filters" does not carry them). */}
         {moreOpen && (
-          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
+          <div className="px-6 md:px-10 lg:px-20 animate-fade-in" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
             <FilterGroup label={t("startups.traction")} tipKey="glossary.filterTraction"
               count={tractionActive(filters)}
@@ -1734,7 +1741,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       {/* The tray clears the mobile tab bar via --cr-tabbar-h, which is 0
           wherever no tab bar is on screen (desktop, or signed out). */}
       {compareIds.length > 0 && (
-        <div style={{ position: "fixed", bottom: "calc(16px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "4px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+        // animate-fade-in, not fade-up: the tray is horizontally centered via
+        // transform: translateX(-50%), which fade-up's translateY keyframe
+        // would overwrite once the animation settles.
+        <div className="animate-fade-in" style={{ position: "fixed", bottom: "calc(16px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "4px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
             {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
           </span>
@@ -1779,8 +1789,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         }
         return (
           <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
-            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: RHYTHM.block }}>
+            {/* animate-fade-in only, not fade-up: the panel's transform is
+                already doing centering work (translate(-50%,-50%)), and
+                fade-up's keyframe transform would stomp that after the
+                animation settles. */}
+            <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
+            <div className="animate-fade-in" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: RHYTHM.block }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: RHYTHM.block }}>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

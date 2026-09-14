@@ -111,12 +111,13 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
           is ON (saved, comparing) stays visible -- hiding it would hide the
           state, not just the control. */}
       <style>{`
-        .cr-startup-card .cr-card-act { opacity: 0; transition: opacity 120ms ease; }
+        .cr-startup-card .cr-card-act { opacity: 0; transition: opacity 140ms var(--ease-out), transform 100ms var(--ease-out); }
         .cr-startup-card:hover .cr-card-act,
         .cr-startup-card:focus-within .cr-card-act,
         .cr-startup-card .cr-card-act.cr-on { opacity: 1; }
+        .cr-startup-card .cr-card-act:active { transform: scale(0.92); }
         @media (hover: none) { .cr-startup-card .cr-card-act { opacity: 1; } }
-        @media (prefers-reduced-motion: reduce) { .cr-startup-card .cr-card-act { transition: none; } }
+        @media (prefers-reduced-motion: reduce) { .cr-startup-card .cr-card-act { transition: none; } .cr-startup-card .cr-card-act:active { transform: none; } }
       `}</style>
       <Link
         href={`/startups/${startup.slug}`}
@@ -133,7 +134,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
           // 6px: the card/panel radius; 4px stays with controls.
           borderRadius: "6px",
           padding:      "16px",
-          transition:   "background 120ms ease, border-color 120ms ease",
+          transition:   "background 160ms var(--ease-out), border-color 160ms var(--ease-out)",
           cursor:       "pointer",
         }}
         onMouseEnter={e => {
