@@ -12,6 +12,7 @@ import {
   Globe, Twitter, Linkedin, Plus, Trash2, Building2, Lock,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { RoleSwitchLink } from "@/components/shared/role-switch-link";
 
 // ── Shared style tokens ────────────────────────────────────────
 // 4px: control radius. 15px: what the member types is reading text.
@@ -464,6 +465,7 @@ export default function InvestorOnboardingPage() {
       </div>
 
       <div style={{ maxWidth: "960px", margin: "0 auto", padding: "32px 24px" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "8px" }}><RoleSwitchLink to="startup" /></div>
         <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8">
 
           {/* Sidebar: the numbered rail down the steps, ledger-line connected */}

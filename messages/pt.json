@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Mercado de capital privado",
     "homeDesc": "O mercado revisto onde as startups angariam e os investidores encontram a próxima ronda. 2% de comissão de sucesso no fecho, nada antes.",
     "dataDescNoCloseRate": "Números em direto da plataforma: rondas abertas, capital procurado e o funil de deals."
+  },
+  "roleSwitch": {
+    "toInvestor": "Investe em vez de angariar? Mudar para uma conta de investidor",
+    "toFounder": "Angaria em vez de investir? Mudar para uma conta de fundador",
+    "signupToInvestor": "Aderir antes como investidor",
+    "signupToFounder": "Aderir antes como fundador",
+    "failed": "Não foi possível mudar o tipo de conta. Tente novamente ou contacte o suporte.",
+    "hasProfile": "Esta conta já tem um perfil, pelo que o tipo não pode ser mudado. Contacte o suporte."
   }
 }

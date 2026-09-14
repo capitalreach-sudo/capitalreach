@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Privater Kapitalmarktplatz",
     "homeDesc": "Der geprüfte Marktplatz, auf dem Startups Kapital aufnehmen und Investoren ihre nächste Runde finden. 2% Erfolgsgebühr beim Abschluss, vorher nichts.",
     "dataDescNoCloseRate": "Live-Zahlen der Plattform: laufende Runden, gesuchtes Kapital und der Deal-Funnel."
+  },
+  "roleSwitch": {
+    "toInvestor": "Sie investieren statt Kapital aufzunehmen? Zu einem Investorenkonto wechseln",
+    "toFounder": "Sie nehmen Kapital auf statt zu investieren? Zu einem Gründerkonto wechseln",
+    "signupToInvestor": "Stattdessen als Investor beitreten",
+    "signupToFounder": "Stattdessen als Gründer beitreten",
+    "failed": "Der Kontotyp konnte nicht gewechselt werden. Versuchen Sie es erneut oder kontaktieren Sie den Support.",
+    "hasProfile": "Dieses Konto hat bereits ein Profil, daher kann der Typ nicht gewechselt werden. Wenden Sie sich an den Support."
   }
 }

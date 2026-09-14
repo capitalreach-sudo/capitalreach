@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Prywatny rynek kapitału",
     "homeDesc": "Zweryfikowany rynek, na którym startupy pozyskują kapitał, a inwestorzy znajdują kolejną rundę. 2% prowizji od sukcesu przy zamknięciu, wcześniej nic.",
     "dataDescNoCloseRate": "Dane platformy na żywo: otwarte rundy, poszukiwany kapitał i lejek deali."
+  },
+  "roleSwitch": {
+    "toInvestor": "Inwestujesz zamiast pozyskiwać? Przełącz na konto inwestora",
+    "toFounder": "Pozyskujesz zamiast inwestować? Przełącz na konto założyciela",
+    "signupToInvestor": "Dołącz zamiast tego jako inwestor",
+    "signupToFounder": "Dołącz zamiast tego jako założyciel",
+    "failed": "Nie udało się zmienić typu konta. Spróbuj ponownie lub skontaktuj się z pomocą.",
+    "hasProfile": "To konto ma już profil, więc nie można zmienić jego typu. Skontaktuj się z pomocą."
   }
 }

@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Private Capital Marketplace",
     "homeDesc": "The reviewed marketplace where startups raise and investors find their next round. 2% success fee at close, nothing before.",
     "dataDescNoCloseRate": "Live platform figures: rounds raising, capital being sought and the deal funnel."
+  },
+  "roleSwitch": {
+    "toInvestor": "Investing, not raising? Switch to an investor account",
+    "toFounder": "Raising, not investing? Switch to a founder account",
+    "signupToInvestor": "Join as an investor instead",
+    "signupToFounder": "Join as a founder instead",
+    "failed": "Could not switch the account type. Try again, or contact support if it keeps failing.",
+    "hasProfile": "This account already has a profile, so its type cannot be switched. Contact support to change it."
   }
 }

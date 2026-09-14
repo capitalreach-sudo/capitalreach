@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - 私募资本市场",
     "homeDesc": "经审核的市场：创业公司在这里融资，投资者在这里找到下一轮。交割时收取 2% 成功佣金，此前分文不取。",
     "dataDescNoCloseRate": "平台实时数据:进行中的轮次、寻求的资本与交易漏斗。"
+  },
+  "roleSwitch": {
+    "toInvestor": "是投资而不是融资?切换为投资者账户",
+    "toFounder": "是融资而不是投资?切换为创始人账户",
+    "signupToInvestor": "改为以投资者身份加入",
+    "signupToFounder": "改为以创始人身份加入",
+    "failed": "无法切换账户类型。请重试,或联系支持团队。",
+    "hasProfile": "此账户已有档案,无法切换类型。请联系支持团队。"
   }
 }

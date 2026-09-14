@@ -88,6 +88,8 @@ function SignupForm() {
   // asking it again makes the click look like it did nothing.
   const [step, setStep]         = useState<"role" | "details" | "confirm">(presetRole ? "details" : "role");
   const [role, setRole]         = useState<Role | null>(presetRole);
+  // A plan belongs to the role it was picked under; switching role drops it.
+  const activePlan = role === presetRole ? presetPlan : null;
   const [fullName, setFullName] = useState("");
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -169,7 +171,7 @@ function SignupForm() {
             // there when launch pricing ends. Deliberately in user_metadata
             // rather than a profiles column: it is a record of what they
             // *wanted*, not an entitlement, and it needs no migration.
-            ...(presetPlan ? { intended_plan: presetPlan.id } : {}),
+            ...(activePlan ? { intended_plan: activePlan.id } : {}),
             // F: carried through signup so the invite can be redeemed once
             // the account exists. Metadata rather than a column for the same
             // reason as intended_plan — it is a record of how they arrived.
@@ -500,7 +502,19 @@ function SignupForm() {
         <div style={{ borderBottom: "3px solid var(--cr-copper)", marginBottom: "24px", paddingBottom: "16px" }}>
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("auth.createAccount")}</h1>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
-            {t("auth.joiningAsRole")} <span style={{ color: "var(--cr-copper)", fontWeight: 500, textTransform: "capitalize" }}>{role}</span>
+            {t("auth.joiningAsRole")} <span style={{ color: "var(--cr-ink)", fontWeight: 600 }}>{role === "startup" ? t("auth.startupFounder") : t("auth.investor")}</span>
+            {/* A role preset by the link (the homepage button carries role=startup)
+                must stay one visible click from changing: skipping the question
+                silently registered investors as founders. An invite fixes the role. */}
+            {inviteRole === null && role && (
+              <>
+                {" · "}
+                <button type="button" onClick={() => setRole(role === "startup" ? "investor" : "startup")}
+                  style={{ background: "none", border: "none", padding: 0, cursor: "pointer", font: "inherit", color: "var(--cr-copper)", textDecoration: "underline", textUnderlineOffset: "3px" }}>
+                  {role === "startup" ? t("roleSwitch.signupToInvestor") : t("roleSwitch.signupToFounder")}
+                </button>
+              </>
+            )}
           </p>
         </div>
 
@@ -508,10 +522,10 @@ function SignupForm() {
 
         {/* Confirms the plan click actually registered. Without this the form
             is identical whether you picked a plan or not. */}
-        {presetPlan && (
+        {activePlan && (
           <div style={noticeBlock("var(--cr-copper)")}>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink)", fontWeight: 500 }}>
-              {t("auth.selectedPlan", { plan: presetPlan.name })}
+              {t("auth.selectedPlan", { plan: activePlan.name })}
             </p>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
               {t("auth.selectedPlanLaunch")}

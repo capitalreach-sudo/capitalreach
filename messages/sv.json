@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Privat kapitalmarknadsplats",
     "homeDesc": "Den granskade marknadsplatsen där startups reser kapital och investerare hittar sin nästa runda. 2% framgångsavgift vid stängning, inget innan.",
     "dataDescNoCloseRate": "Liveuppgifter från plattformen: pågående rundor, sökt kapital och affärstratten."
+  },
+  "roleSwitch": {
+    "toInvestor": "Investerar du i stället för att resa kapital? Byt till ett investerarkonto",
+    "toFounder": "Reser du kapital i stället för att investera? Byt till ett grundarkonto",
+    "signupToInvestor": "Gå med som investerare i stället",
+    "signupToFounder": "Gå med som grundare i stället",
+    "failed": "Kontotypen kunde inte ändras. Försök igen eller kontakta support.",
+    "hasProfile": "Kontot har redan en profil, så typen kan inte ändras. Kontakta support."
   }
 }

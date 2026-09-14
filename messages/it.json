@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Marketplace del capitale privato",
     "homeDesc": "Il marketplace verificato dove le startup raccolgono capitale e gli investitori trovano il prossimo round. Success fee del 2% alla chiusura, nulla prima.",
     "dataDescNoCloseRate": "Dati in tempo reale della piattaforma: round in corso, capitale ricercato e funnel dei deal."
+  },
+  "roleSwitch": {
+    "toInvestor": "Investi invece di raccogliere? Passa a un account investitore",
+    "toFounder": "Raccogli invece di investire? Passa a un account fondatore",
+    "signupToInvestor": "Iscriviti invece come investitore",
+    "signupToFounder": "Iscriviti invece come fondatore",
+    "failed": "Impossibile cambiare il tipo di account. Riprova o contatta l'assistenza.",
+    "hasProfile": "Questo account ha già un profilo, quindi il tipo non può essere cambiato. Contatta l'assistenza."
   }
 }

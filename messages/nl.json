@@ -4911,5 +4911,13 @@
     "homeTitle": "CapitalReach - Private kapitaalmarktplaats",
     "homeDesc": "De beoordeelde marktplaats waar startups kapitaal ophalen en investeerders hun volgende ronde vinden. 2% succesfee bij sluiting, daarvoor niets.",
     "dataDescNoCloseRate": "Live platformcijfers: lopende rondes, gezocht kapitaal en de dealfunnel."
+  },
+  "roleSwitch": {
+    "toInvestor": "Investeert u in plaats van op te halen? Overschakelen naar een investeerdersaccount",
+    "toFounder": "Haalt u op in plaats van te investeren? Overschakelen naar een oprichtersaccount",
+    "signupToInvestor": "In plaats daarvan als investeerder deelnemen",
+    "signupToFounder": "In plaats daarvan als oprichter deelnemen",
+    "failed": "Het accounttype kon niet worden gewijzigd. Probeer het opnieuw of neem contact op met support.",
+    "hasProfile": "Dit account heeft al een profiel, dus het type kan niet worden gewijzigd. Neem contact op met support."
   }
 }

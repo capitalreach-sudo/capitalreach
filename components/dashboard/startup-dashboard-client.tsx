@@ -23,6 +23,7 @@ import { listingCompleteness } from "@/lib/listing-completeness";
 import { MetricsRecorder } from "@/components/dashboard/metrics-recorder";
 import { FundraiseChecklist } from "@/components/dashboard/fundraise-checklist";
 import { FounderAttestationModal } from "@/components/review/FounderAttestationModal";
+import { RoleSwitchLink } from "@/components/shared/role-switch-link";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -1204,6 +1205,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
           {t("dashboard.setUpProfileSub")}
         </p>
         <Link href="/onboarding/startup" style={primaryBtn}>{t("dashboard.createYourProfile")}</Link>
+        <div style={{ marginTop: "16px" }}><RoleSwitchLink to="investor" /></div>
       </main>
     );
   }
