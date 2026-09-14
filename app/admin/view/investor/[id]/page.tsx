@@ -6,6 +6,7 @@ import { Navbar } from "@/components/shared/navbar";
 import { AdminNotes } from "@/components/admin/admin-notes";
 import { AdminBack } from "@/components/admin/admin-back";
 import { MemberMessages } from "@/components/admin/member-messages";
+import { getLaunchStatus } from "@/lib/launchMode";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -66,6 +67,14 @@ export default async function AdminViewInvestorPage({
     note: owner?.full_name || owner?.email || investor.slug,
   });
 
+  // Same flag the real dashboard reads (app/dashboard/investor/page.tsx):
+  // caps are computed from `profile` (the investor's own tier) crossed with
+  // this. Leaving it out defaults investorCan to isLaunchMode=false, which
+  // under an active launch (platform_config launch_mode=on) understates every
+  // member's capabilities here relative to what they actually see -- a
+  // support view that disagrees with the account it is mirroring.
+  const { isLaunch } = await getLaunchStatus();
+
   return (
     <>
       <Navbar />
@@ -78,6 +87,7 @@ export default async function AdminViewInvestorPage({
         watchlist={watchlist ?? []}
         deals={deals ?? []}
         aiReports={aiReports ?? []}
+        isLaunchMode={isLaunch}
         viewingAs={owner?.full_name || owner?.email || investor.slug}
       />
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>

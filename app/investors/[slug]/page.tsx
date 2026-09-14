@@ -20,7 +20,6 @@ import { JsonLdScript } from "@/components/shared/json-ld";
 import { TranslatedContent, T } from "@/components/shared/translated-content";
 import { investorJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Linkedin, Globe, Twitter, Eye, Pencil, Handshake } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
 import { getLocale, getTranslator } from "@/lib/locale-server";

@@ -7,7 +7,7 @@ import { getLaunchStatus } from "@/lib/launchMode";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { StartupsSearch, StartupsDirectorySkeleton, type DirectoryViewer } from "@/components/startup/startups-search";
-import { loadActiveStartups, stripBrowseFinancials, viewerCanSeeFinancials } from "@/lib/browse-data";
+import { loadActiveStartups, stripBrowseFinancials } from "@/lib/browse-data";
 import type { Metadata } from "next";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 
@@ -35,6 +35,9 @@ export default async function StartupsPage() {
     advancedFilters: false,
     dataExport: false,
   };
+  // Set inside the gate block below for a signed-in viewer; stays false for
+  // an anonymous one, matching what viewerCanSeeFinancials() would resolve.
+  let canSeeFinancials = false;
 
   // Signed out, the product is the home page, the pricing page and the data
   // centre. The catalogue names real companies that are raising, and a
@@ -60,9 +63,15 @@ export default async function StartupsPage() {
         const role = profile.role === "investor" || profile.role === "startup" || profile.role === "admin"
           ? profile.role
           : null;
+        // Same investorCan() call this block already made for the other caps
+        // -- viewerCanSeeFinancials() used to be called again below and redid
+        // getUser(), the profile fetch AND getLaunchStatus() a second time,
+        // three more sequential round trips to a database that is a full
+        // region away from where this route runs.
+        canSeeFinancials = caps.viewFinancials;
         viewer = {
           role,
-          canSeeFinancials: false,
+          canSeeFinancials,
           canSeeScore: caps.aiScore,
           savedSearches: caps.savedSearches,
           advancedFilters: caps.advancedFilters,
@@ -77,8 +86,6 @@ export default async function StartupsPage() {
   // client. A failed load hands `undefined` down and the client fetches.
   // Gated financials are stripped from the payload for any viewer who has not
   // unlocked them before the rows are serialized to the browser.
-  const canSeeFinancials = await viewerCanSeeFinancials();
-  viewer = { ...viewer, canSeeFinancials };
   const loaded = await loadActiveStartups();
   const initial = loaded ? stripBrowseFinancials(loaded.rows, canSeeFinancials) : null;
   const marketTotal = loaded?.total ?? 0;

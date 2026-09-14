@@ -27,11 +27,16 @@ export async function GET() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ unread: 0, available: false });
 
+  // available mirrors lib/messaging-access's messagingAvailable(): a sealed
+  // pair OR an admin-authored thread (recipient_*) that names one of the
+  // caller's own entities also counts, so this has to be decided from the
+  // same usable set usableThreadIds resolves -- deciding it from
+  // access.pairs/access.admin alone (as this route did before the
+  // admin-authored-thread fix) hid the Messages nav entry from exactly the
+  // member that fix was for.
   const access = await messagingAccess(user.id);
-  const available = access.admin || access.pairs.length > 0;
-  if (!available) return NextResponse.json({ unread: 0, available });
-
   const ids = await usableThreadIds(user.id, access);
+  const available = access.admin || ids.length > 0;
   if (!ids.length) return NextResponse.json({ unread: 0, available });
 
   const admin = createAdminClient();
