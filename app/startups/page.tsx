@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { buildAccessContext, isSuspended } from "@/lib/access";
+import { buildAccessContext, investorCan, isSuspended } from "@/lib/access";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { browseIndexPublic } from "@/lib/listing-visibility";
+import { getLaunchStatus } from "@/lib/launchMode";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
-import { StartupsSearch } from "@/components/startup/startups-search";
-import { LegalDisclaimer } from "@/components/shared/legal-disclaimer";
+import { StartupsSearch, StartupsDirectorySkeleton, type DirectoryViewer } from "@/components/startup/startups-search";
 import { loadActiveStartups, stripBrowseFinancials, viewerCanSeeFinancials } from "@/lib/browse-data";
 import type { Metadata } from "next";
 import { getLocale, getTranslator } from "@/lib/locale-server";
@@ -25,6 +25,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function StartupsPage() {
+  // What the viewer's plan allows, resolved here so the client renders gates
+  // rather than deciding them. Signed out, everything is off.
+  let viewer: DirectoryViewer = {
+    role: null,
+    canSeeFinancials: false,
+    canSeeScore: false,
+    savedSearches: false,
+    advancedFilters: false,
+    dataExport: false,
+  };
+
   // Signed out, the product is the home page, the pricing page and the data
   // centre. The catalogue names real companies that are raising, and a
   // private marketplace does not put that in front of the street.
@@ -39,8 +50,24 @@ export default async function StartupsPage() {
       const { data: prof } = await createAdminClient()
         .from("profiles").select("id, role, subscription_tier, suspended, account_status")
         .eq("id", user.id).maybeSingle();
-      if (prof && isSuspended(buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], false))) {
+      const profile = prof as Parameters<typeof buildAccessContext>[0];
+      if (profile && isSuspended(buildAccessContext(profile, false))) {
         redirect("/suspended");
+      }
+      if (profile) {
+        const { isLaunch } = await getLaunchStatus();
+        const caps = investorCan(buildAccessContext(profile, isLaunch));
+        const role = profile.role === "investor" || profile.role === "startup" || profile.role === "admin"
+          ? profile.role
+          : null;
+        viewer = {
+          role,
+          canSeeFinancials: false,
+          canSeeScore: caps.aiScore,
+          savedSearches: caps.savedSearches,
+          advancedFilters: caps.advancedFilters,
+          dataExport: caps.dataExport,
+        };
       }
     }
   }
@@ -48,46 +75,31 @@ export default async function StartupsPage() {
   // Rows are fetched on the server so the page ships with its listings in
   // the HTML: no "Loading" first paint, crawlable, and instant on a cold
   // client. A failed load hands `undefined` down and the client fetches.
-  // MRR/ARR are gated, so they are stripped from the payload for any viewer who
-  // has not unlocked financials before the rows are serialized to the browser.
+  // Gated financials are stripped from the payload for any viewer who has not
+  // unlocked them before the rows are serialized to the browser.
   const canSeeFinancials = await viewerCanSeeFinancials();
+  viewer = { ...viewer, canSeeFinancials };
   const loaded = await loadActiveStartups();
   const initial = loaded ? stripBrowseFinancials(loaded.rows, canSeeFinancials) : null;
   const marketTotal = loaded?.total ?? 0;
   return (
     <>
       <Navbar />
-      <Suspense
-        fallback={
-          /* The fallback at the page's TRUE geometry: header line, toolbar
-             bar, and a grid of card frames at real card height. The old
-             empty 80vh box swapped for a ~3000px page and threw everything
-             below it across the viewport -- measured CLS 0.48 on mobile.
-             Quiet frames in the right places make the swap invisible. */
-          <div aria-busy="true" style={{ background: "var(--cr-paper)" }}>
-            <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "32px", paddingBottom: "64px" }}>
-              {/* 105px above the grid and 255px per card frame: measured
-                  from the live mobile page, so the streamed swap lands the
-                  real grid exactly where the frames stood. */}
-              <div style={{ height: "33px", width: "min(340px, 70%)", background: "var(--cr-paper-3)", borderRadius: "4px", marginBottom: "18px" }} />
-              <div style={{ height: "44px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", marginBottom: "10px" }} />
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
-                {Array.from({ length: 9 }, (_, i) => (
-                  <div key={i} style={{ height: "255px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px" }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        }
-      >
-        {/* First page only: 103 full listings serialized twice (HTML + RSC
-            payload) made this route a 300KB document. 48 rows cover two
-            pages of the grid; the client tops up from the cached API. */}
-        <StartupsSearch initialStartups={initial ? initial.slice(0, 48) : undefined} initialIsPartial={(initial?.length ?? 0) > 48} marketTotal={marketTotal} />
-      </Suspense>
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
-        <LegalDisclaimer />
-      </div>
+      <main style={{ backgroundColor: "var(--cr-paper)" }}>
+        {/* The fallback is the live page's own frame and classes, so the
+            streamed swap lands the real rows where the skeleton rows stood. */}
+        <Suspense fallback={<StartupsDirectorySkeleton />}>
+          {/* First page only: the full market serialized twice (HTML and RSC
+              payload) made this route a 300KB document. The client tops up
+              from the API. */}
+          <StartupsSearch
+            initialStartups={initial ? initial.slice(0, 48) : undefined}
+            initialIsPartial={(initial?.length ?? 0) > 48}
+            marketTotal={marketTotal}
+            viewer={viewer}
+          />
+        </Suspense>
+      </main>
       <Footer />
     </>
   );

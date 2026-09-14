@@ -53,7 +53,7 @@ export function FilterPresets({
               whiteSpace: "nowrap",
               border: active ? "1px solid var(--cr-copper)" : "1px solid var(--cr-rule-dark)",
               background: active ? "var(--cr-copper)" : "var(--cr-paper-2)",
-              color: active ? "#fff" : "var(--cr-ink-3)",
+              color: active ? "var(--cr-on-accent)" : "var(--cr-ink-3)",
               transition: "background 120ms ease, color 120ms ease",
             }}
           >

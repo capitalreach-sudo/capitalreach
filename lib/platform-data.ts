@@ -37,22 +37,46 @@ export interface PlatformData {
   recentStartups: PlatformTopStartup[];
   /** Twelve months to now, oldest first. Always twelve entries, zeros included. */
   monthly: PlatformMonth[];
-  /** The state-of-the-market report band: medians and this-month movement. */
+  /** Medians and this-month movement. */
   report: {
+    /** Median stated round target per stage. Only stages with at least
+     *  MEDIAN_MIN_N stated targets appear: below that the "median" is one
+     *  listing's own target, and this payload reaches viewers whose listing
+     *  names are withheld. */
     medianByStage: Record<string, number>;
+    /** How many stated targets sit behind each median above (same keys). */
+    medianCountByStage: Record<string, number>;
     newThisMonth: number;
   };
   lastUpdated: string;
 }
+
+/** The fewest stated targets a stage needs before its median is published. */
+export const MEDIAN_MIN_N = 3;
 
 export const EMPTY_PLATFORM_DATA: PlatformData = {
   sampleCount: 0, startupCount: 0, investorCount: 0, totalRaised: 0, dealsCount: 0,
   byDealStage: { intro: 0, due_diligence: 0, term_sheet: 0, closed: 0, passed: 0 },
   activeDeals: 0, closeRate: null, closedCurrencies: [],
   byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [], monthly: [],
-  report: { medianByStage: {}, newThisMonth: 0 },
+  report: { medianByStage: {}, medianCountByStage: {}, newThisMonth: 0 },
   lastUpdated: new Date(0).toISOString(),
 };
+
+/** The DB has carried both "pre_seed" and "pre-seed"; only the second is a
+ *  display key, so raw enums never reach the page. */
+function normaliseStage(stage: string | null | undefined): string {
+  return stage === "pre_seed" ? "pre-seed" : (stage ?? "");
+}
+
+/** Middle value of a sorted copy; the mean of the two middle values when the
+ *  count is even. */
+export function median(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+}
 
 /**
  * A funding target that can be reported, or null.
@@ -216,7 +240,8 @@ export async function computePlatformData(): Promise<PlatformData | null> {
     // Stage breakdown
     const byStage: Record<string, number> = {};
     startupData.forEach((s) => {
-      if (s.stage) byStage[s.stage] = (byStage[s.stage] ?? 0) + 1;
+      const stage = normaliseStage(s.stage);
+      if (stage) byStage[stage] = (byStage[stage] ?? 0) + 1;
     });
 
     // Top by AI score (vaultrise_score column)
@@ -228,7 +253,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         name: s.name,
         slug: s.slug,
         industry: s.industry,
-        stage: s.stage,
+        stage: normaliseStage(s.stage),
         mrr: null,
         ai_score: s.vaultrise_score,
         funding_target: s.funding_target,
@@ -243,7 +268,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         name: s.name,
         slug: s.slug,
         industry: s.industry,
-        stage: s.stage,
+        stage: normaliseStage(s.stage),
         mrr: null,
         ai_score: s.vaultrise_score,
         funding_target: s.funding_target,
@@ -251,20 +276,26 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       }));
 
 
-    // ── The report band: median round target per stage, and this month's
-    // new rounds. Medians, not means -- one mega-round must not move the
-    // "typical" number the report claims.
+    // Median round target per stage, and this month's new rounds. Medians,
+    // not means: one mega-round must not move the "typical" number. A stage
+    // with fewer than MEDIAN_MIN_N stated targets publishes nothing, so no
+    // single listing's target leaves this function.
     const targetsByStage: Record<string, number[]> = {};
     for (const st of startupData) {
+      const stage = normaliseStage(st.stage);
       const target = statedTarget(st.funding_target);
-      if (st.stage && target !== null) {
-        (targetsByStage[st.stage] ??= []).push(target);
+      if (stage && target !== null) {
+        (targetsByStage[stage] ??= []).push(target);
       }
     }
     const medianByStage: Record<string, number> = {};
+    const medianCountByStage: Record<string, number> = {};
     for (const [stage, arr] of Object.entries(targetsByStage)) {
-      arr.sort((a, b) => a - b);
-      medianByStage[stage] = arr[Math.floor(arr.length / 2)];
+      if (arr.length < MEDIAN_MIN_N) continue;
+      const m = median(arr);
+      if (m === null) continue;
+      medianByStage[stage] = m;
+      medianCountByStage[stage] = arr.length;
     }
     const monthStart = new Date();
     monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
@@ -285,7 +316,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       topStartups,
       recentStartups,
       monthly,
-      report: { medianByStage, newThisMonth },
+      report: { medianByStage, medianCountByStage, newThisMonth },
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {

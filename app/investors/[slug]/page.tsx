@@ -124,7 +124,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     // Sample profiles never reach a search result.
     ...(data.is_demo ? { robots: { index: false, follow: false } } : {}),
-    title: `${name}${firm} — Investor on CapitalReach`,
+    title: `${name}${firm} | Investor on CapitalReach`,
     description: data.bio || `${data.type} investor on CapitalReach`,
     alternates: { canonical: `/investors/${params.slug}` },
     openGraph: { title: `${name}${firm} | CapitalReach`, description: data.bio ?? undefined, type: "website", url: `/investors/${params.slug}` },
@@ -411,7 +411,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                 a panel, and a dialog nested inside an h1 is neither valid nor
                 readable to a screen reader announcing the heading. */}
             <div className="flex items-center flex-wrap gap-x-3 gap-y-2" style={{ marginBottom: "8px" }}>
-              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(30px, 5vw, 44px)", lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
+              <h1 style={{ fontFamily: "var(--font-serif)", fontWeight: 600, fontStyle: "normal", fontSize: "clamp(30px, 5vw, 44px)", lineHeight: 1.05, letterSpacing: "-0.02em", color: "var(--cr-ink)" }}>
                 {displayName}
               </h1>
               {showTrust && (
@@ -458,7 +458,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                 // labels so profile and pipeline never disagree.
                 <Link href="/deals" style={BADGE_ACTION}>
                   <Handshake className="h-3 w-3" />
-                  {t("startupDetail.inYourPipeline")}{" — "}
+                  {t("startupDetail.inYourPipeline")}{" · "}
                   {viewerDeal.status === "intro" ? t("deals.colIntro")
                     : viewerDeal.status === "due_diligence" ? t("dashboard.dueDiligence")
                     : viewerDeal.status === "term_sheet" ? t("deals.colTermSheet")

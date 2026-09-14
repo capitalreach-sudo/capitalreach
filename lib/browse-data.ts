@@ -186,10 +186,54 @@ export type BrowseInvestor = {
 };
 
 /**
- * Directory rows. Names come from investors.display_name — the profiles
+ * The directory completeness bar. A profile below it never reaches the
+ * directory: a bio of at least DIRECTORY_MIN_BIO characters, a plausible
+ * check size, and at least one recognised stage. The client fallback fetch
+ * in components/investors/investors-client.tsx applies the same bar and the
+ * same stage spellings; the two must agree, or the fallback would admit rows
+ * this loader withholds.
+ */
+const DIRECTORY_MIN_BIO = 40;
+// Above this a stored check size is a typo, not a mandate.
+const DIRECTORY_MAX_CHECK = 10_000_000_000;
+
+function plausibleCheck(n: number | null | undefined): number | null {
+  return typeof n === "number" && Number.isFinite(n) && n > 0 && n <= DIRECTORY_MAX_CHECK ? n : null;
+}
+
+// STAGE_LABELS, the stage filter and fit matching all key on the canonical
+// startup stages, so every stored spelling maps onto one of them. Anything
+// unrecognised is dropped: a raw enum never renders.
+const INVESTOR_STAGE_ALIASES: Record<string, string> = {
+  "pre-seed": "pre-seed",
+  pre_seed: "pre-seed",
+  preseed: "pre-seed",
+  seed: "seed",
+  series_a: "series_a",
+  "series-a": "series_a",
+  series_b_plus: "series_b_plus",
+  series_b: "series_b_plus",
+  "series-b": "series_b_plus",
+  series_c: "series_b_plus",
+  growth: "series_b_plus",
+};
+const INVESTOR_STAGE_ORDER = ["pre-seed", "seed", "series_a", "series_b_plus"];
+
+function normaliseInvestorStages(stages: ReadonlyArray<unknown> | null | undefined): string[] {
+  const found = new Set<string>();
+  for (const raw of stages ?? []) {
+    const key = String(raw).trim().toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(INVESTOR_STAGE_ALIASES, key)) found.add(INVESTOR_STAGE_ALIASES[key]);
+  }
+  return INVESTOR_STAGE_ORDER.filter((stage) => found.has(stage));
+}
+
+/**
+ * Directory rows. Names come from investors.display_name: the profiles
  * table is not publicly readable (migration 019), so joining it from an
- * anonymous session yields nothing; display_name is the field investors
- * chose to publish. Rows with is_public = false are excluded.
+ * anonymous session yields nothing, and display_name is the field investors
+ * chose to publish. Rows with is_public = false are excluded, and so is every
+ * row below the completeness bar above.
  */
 export async function loadPublicInvestors(): Promise<BrowseInvestor[] | null> {
   try {
@@ -205,24 +249,34 @@ export async function loadPublicInvestors(): Promise<BrowseInvestor[] | null> {
       // Same scale bound as the startups loader.
       .limit(1000);
     if (error) return null;
-    return (data ?? []).map((inv) => ({
-      id: inv.id,
-      slug: inv.slug,
-      type: inv.type || "angel",
-      bio: inv.bio,
-      industries: inv.industries || [],
-      stages: inv.stages || [],
-      min_check: inv.min_check,
-      max_check: inv.max_check,
-      geography: inv.geography || [],
-      subscription_tier: inv.subscription_tier,
-      verified_at: inv.verified_at ?? null,
-      lead_rounds: !!inv.lead_rounds,
-      number_of_investments: inv.number_of_investments ?? null,
-      created_at: inv.created_at,
-      full_name: inv.display_name || null,
-      firm: inv.firm_name || null,
-    }));
+    const rows: BrowseInvestor[] = [];
+    for (const inv of data ?? []) {
+      const stages = normaliseInvestorStages(inv.stages);
+      const min_check = plausibleCheck(inv.min_check);
+      const max_check = plausibleCheck(inv.max_check);
+      const bio = typeof inv.bio === "string" ? inv.bio.trim() : "";
+      if (bio.length < DIRECTORY_MIN_BIO || (min_check === null && max_check === null) || stages.length === 0) continue;
+      rows.push({
+        id: inv.id,
+        slug: inv.slug,
+        type: inv.type || "angel",
+        bio,
+        industries: inv.industries || [],
+        stages,
+        min_check,
+        max_check,
+        geography: inv.geography || [],
+        subscription_tier: inv.subscription_tier,
+        verified_at: inv.verified_at ?? null,
+        lead_rounds: !!inv.lead_rounds,
+        number_of_investments: inv.number_of_investments ?? null,
+        created_at: inv.created_at,
+        is_demo: !!inv.is_demo,
+        full_name: inv.display_name || null,
+        firm: inv.firm_name || null,
+      });
+    }
+    return rows;
   } catch {
     return null;
   }

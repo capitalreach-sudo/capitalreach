@@ -1,16 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { PieChart } from "lucide-react";
 import { formatMoney } from "@/lib/currency";
 import { formatDate } from "@/lib/utils";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Ledger, LedgerCell, LedgerHead, LedgerRow } from "@/components/ui/ledger";
 
 /**
- * The cap-table card: closed rounds as a ledger — who, how much, what
- * percent, at what valuation, when — plus the running total of equity
- * ceded through the platform. Renders nothing until a close exists;
- * an empty cap table is not a feature.
+ * The cap table: closed rounds as a ledger (who, how much, what percent, at
+ * what valuation, when), plus the running total of equity ceded through the
+ * platform. Renders nothing until a close exists; an empty cap table is not
+ * a feature, so this component is its own data gate.
  */
 type Row = {
   id: string; investor: string | null; amount: number | null; currency: string | null;
@@ -30,47 +30,68 @@ export function CapTableCard() {
 
   if (!data || data.rows.length === 0) return null;
 
+  // formatMoney answers a dash for an implausible amount; a figure column
+  // shows nothing rather than a bare dash.
+  const money = (amount: number, currency: string | null, compact = false) => {
+    const out = formatMoney(amount, currency, { compact });
+    return out === "—" ? null : out;
+  };
+
+  const dateStyle: React.CSSProperties = {
+    fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+    fontSize: "0.8125rem",
+    lineHeight: 1.4,
+    color: "var(--cr-ink-3)",
+    fontVariantNumeric: "tabular-nums",
+    whiteSpace: "nowrap",
+  };
+
   return (
-    // Card radius sits on the 6px card step; padding snaps 20 -> 24.
-    <section className="border border-cr-p4 rounded-[6px] p-6 mb-6" style={{ background: "var(--cr-paper-2)" }}>
-      <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-        <h2 className="font-semibold text-cr-ink inline-flex items-center gap-2 text-[13px]">
-          <PieChart className="h-4 w-4 text-cr-copper" /> {t("capTable.title")}
-        </h2>
+    <div className="sd-group">
+      <div className="sd-group__head">
+        <h3 className="sd-group__title">{t("capTable.title")}</h3>
         {data.totalPct > 0 && (
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, color: "var(--cr-copper)" }}>
+          <span style={{
+            fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+            fontSize: "0.8125rem",
+            lineHeight: 1.4,
+            color: "var(--cr-ink-3)",
+            fontVariantNumeric: "tabular-nums",
+          }}>
             {t("capTable.total", { pct: data.totalPct.toFixed(2) })}
           </span>
         )}
       </div>
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr>
-              {/* Caps-label spec: 11/500/0.08em on ink-3 -- sub-11 ink-4 caps are illegal. */}
-              {["investor", "amount", "ownership", "valuation", "date"].map(h => (
-                <th key={h} style={{ textAlign: "start", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule-dark)" }}>
-                  {t(`capTable.${h}`)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.rows.map(r => (
-              <tr key={r.id}>
-                <td style={{ padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, color: "var(--cr-ink)" }}>{r.investor ?? t("capTable.unknown")}</td>
-                <td style={{ padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule)", fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", color: "var(--cr-ink-2)" }}>{r.amount ? formatMoney(r.amount, r.currency) : "—"}</td>
-                <td style={{ padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule)", fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", color: "var(--cr-copper)", fontWeight: 700 }}>{r.ownershipPercent != null ? `${r.ownershipPercent.toFixed(2)}%` : "—"}</td>
-                <td style={{ padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule)", fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", color: "var(--cr-ink-3)" }}>{r.valuationAtClose ? formatMoney(r.valuationAtClose, r.currency, { compact: true }) : "—"}</td>
-                <td style={{ padding: "8px 12px 8px 0", borderBottom: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 12, color: "var(--cr-ink-4)" }}>{r.closedAt ? formatDate(r.closedAt) : "—"}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: 11, color: "var(--cr-ink-4)", marginTop: 12, lineHeight: 1.5 }}>
-        {t("capTable.note")}
-      </p>
-    </section>
+      <Ledger
+        columns="minmax(0,1fr) auto auto auto"
+        head={
+          <LedgerHead>
+            <LedgerCell>{t("capTable.investor")}</LedgerCell>
+            <LedgerCell figure>{t("capTable.amount")}</LedgerCell>
+            <LedgerCell figure>{t("capTable.ownership")}</LedgerCell>
+            <LedgerCell align="end">{t("capTable.date")}</LedgerCell>
+          </LedgerHead>
+        }
+      >
+        {data.rows.map(r => (
+          <LedgerRow key={r.id}>
+            <LedgerCell primary>
+              <span className="cr-row-title">{r.investor ?? t("capTable.unknown")}</span>
+              {r.valuationAtClose != null && money(r.valuationAtClose, r.currency, true) && (
+                <span className="cr-row-sub">
+                  {t("capTable.valuation")}: {money(r.valuationAtClose, r.currency, true)}
+                </span>
+              )}
+            </LedgerCell>
+            <LedgerCell figure>{r.amount ? money(r.amount, r.currency) : null}</LedgerCell>
+            <LedgerCell figure>{r.ownershipPercent != null ? `${r.ownershipPercent.toFixed(2)}%` : null}</LedgerCell>
+            <LedgerCell align="end">
+              {r.closedAt ? <span style={dateStyle}>{formatDate(r.closedAt)}</span> : null}
+            </LedgerCell>
+          </LedgerRow>
+        ))}
+      </Ledger>
+      <p className="cr-footnote">{t("capTable.note")}</p>
+    </div>
   );
 }

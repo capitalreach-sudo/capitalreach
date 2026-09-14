@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { UserPlus, Copy, Check, X } from "lucide-react";
+import { useCallback, useEffect, useId, useState } from "react";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useReadOnly } from "@/components/dashboard/read-only";
+import { Ledger, LedgerCell, LedgerRow } from "@/components/ui/ledger";
 
 type Invite = {
   id: string; code: string; invite_role: string; note: string | null;
@@ -15,113 +16,171 @@ type Invite = {
  * F: bring the other side.
  *
  * A two-sided marketplace has one problem before it has any others, and
- * everybody already on it knows people on the other side -- founders have
+ * everybody already on it knows people on the other side: founders have
  * investors who passed, investors have founders they liked but could not
  * fund. This is a link they copy and send themselves, through the
  * relationship that makes the invite worth anything. No email is sent: the
  * platform has no mail domain yet, and an invite that silently fails to send
  * is worse than none.
+ *
+ * It sits at the foot of a dashboard as one text link and opens in place,
+ * because it is a thing a member does occasionally, not daily work. Both
+ * dashboards mount it the same way:
+ *
+ *   <InvitePanel defaultRole="investor" />
  */
 export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investor" }) {
   const { t } = useTranslation();
+  const readOnly = useReadOnly();
+  const [open, setOpen] = useState(false);
   const [invites, setInvites] = useState<Invite[] | null>(null);
   const [role, setRole] = useState<"startup" | "investor">(defaultRole);
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
+  const panelId = useId();
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/invites");
-    setInvites(res.ok ? (await res.json()).invites ?? [] : []);
+    const res = await fetch("/api/invites").catch(() => null);
+    setInvites(res && res.ok ? (await res.json()).invites ?? [] : []);
   }, []);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { if (open && invites === null) void load(); }, [open, invites, load]);
 
   async function create() {
-    if (busy) return;
+    if (readOnly || busy) return;
     setBusy(true);
     const res = await fetch("/api/invites", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ role, note }),
-    });
-    const j = await res.json().catch(() => ({}));
+    }).catch(() => null);
+    const j = res ? await res.json().catch(() => ({})) : {};
     setBusy(false);
-    if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+    if (!res || !res.ok) { notify.error(j.error || t("errors.generic")); return; }
     setNote("");
     void load();
-    await copy(j.invite.url);
+    if (j.invite?.url) await copy(j.invite.url);
   }
 
+  // Copying leaves nothing on screen to see, so the button says it happened.
+  // Clipboard is blocked in some embedded browsers; the link is on screen
+  // either way, so a failure is a nudge rather than an error state.
   async function copy(url: string) {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(url);
-      notify.success(t("invite.copied"));
-      setTimeout(() => setCopied(null), 2000);
+      setTimeout(() => setCopied((c) => (c === url ? null : c)), 2000);
     } catch {
-      // Clipboard is blocked in some embedded browsers. The link is on
-      // screen either way, so this is a nudge rather than a failure.
       notify.error(t("invite.copyFailed"));
     }
   }
 
   async function revoke(id: string) {
-    const res = await fetch(`/api/invites?id=${id}`, { method: "DELETE" });
-    if (!res.ok) { notify.error((await res.json().catch(() => ({}))).error || t("errors.generic")); return; }
+    if (readOnly) return;
+    const res = await fetch(`/api/invites?id=${id}`, { method: "DELETE" }).catch(() => null);
+    if (!res || !res.ok) { notify.error(t("errors.generic")); return; }
     void load();
   }
 
-  const open = (invites ?? []).filter(i => !i.accepted_at && !i.revoked_at);
+  const live = (invites ?? []).filter(i => !i.accepted_at && !i.revoked_at);
   const used = (invites ?? []).filter(i => i.accepted_at);
+  const triggerLabel = defaultRole === "startup" ? t("invite.roleFounder") : t("invite.roleInvestor");
+
+  const stack: React.CSSProperties = { display: "grid", gap: "0.75rem", maxInlineSize: "40rem", paddingBlockStart: "0.75rem" };
+  const row: React.CSSProperties = { display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.5rem" };
+  const intro: React.CSSProperties = {
+    margin: 0,
+    maxWidth: "60ch",
+    fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+    fontSize: "0.8125rem",
+    lineHeight: 1.4,
+    color: "var(--cr-ink-3)",
+  };
+  const urlStyle: React.CSSProperties = {
+    display: "block",
+    fontFamily: "var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace",
+    fontSize: "0.8125rem",
+    lineHeight: 1.4,
+    color: "var(--cr-ink-3)",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  };
+
+  if (readOnly) return null;
 
   return (
-    <section className="border border-cr-p4 rounded-md p-4">
-      <div className="flex items-center gap-2 mb-1">
-        <UserPlus className="h-4 w-4 text-cr-copper" />
-        <h2 className="font-bold text-cr-ink">{t("invite.title")}</h2>
-      </div>
-      <p className="text-[13px] text-cr-i4 mb-4">{t("invite.intro")}</p>
+    <div>
+      <button
+        type="button"
+        className="cr-btn cr-btn--text"
+        style={{ marginInlineStart: "-0.5rem" }}
+        aria-expanded={open}
+        aria-controls={open ? panelId : undefined}
+        onClick={() => setOpen((o) => !o)}
+      >
+        {triggerLabel}
+      </button>
+      {open && (
+        <div id={panelId} style={stack}>
+          <p style={intro}>{t("invite.intro")}</p>
+          <form style={row} onSubmit={(e) => { e.preventDefault(); void create(); }}>
+            <label htmlFor={`${panelId}role`} className="sr-only">{t("invite.title")}</label>
+            <select
+              id={`${panelId}role`}
+              className="cr-select"
+              value={role}
+              onChange={(e) => setRole(e.target.value as "startup" | "investor")}
+            >
+              <option value="investor">{t("invite.roleInvestor")}</option>
+              <option value="startup">{t("invite.roleFounder")}</option>
+            </select>
+            <label htmlFor={`${panelId}note`} className="sr-only">{t("invite.notePh")}</label>
+            <input
+              id={`${panelId}note`}
+              className="cr-input"
+              style={{ flex: "1 1 12rem", width: "auto", minWidth: 0 }}
+              value={note}
+              placeholder={t("invite.notePh")}
+              onChange={(e) => setNote(e.target.value.slice(0, 120))}
+            />
+            <button type="submit" className="cr-btn" disabled={busy} aria-busy={busy || undefined}>
+              {busy ? t("common.saving") : t("invite.create")}
+            </button>
+          </form>
 
-      <div className="flex flex-wrap gap-2 mb-4">
-        <select value={role} onChange={e => setRole(e.target.value as "startup" | "investor")}
-          className="text-[13px] border rounded px-2 py-1.5 bg-cr-paper text-cr-ink">
-          <option value="investor">{t("invite.roleInvestor")}</option>
-          <option value="startup">{t("invite.roleFounder")}</option>
-        </select>
-        <input value={note} onChange={e => setNote(e.target.value.slice(0, 120))}
-          placeholder={t("invite.notePh")}
-          className="flex-1 min-w-[160px] text-[13px] border rounded px-3 py-1.5 bg-cr-paper text-cr-ink" />
-        <button onClick={create} disabled={busy}
-          className="text-xs font-semibold rounded px-3 py-1.5 disabled:opacity-50" style={{ background: "var(--cr-band-bg)", color: "var(--cr-band-ink)" }}>
-          {t("invite.create")}
-        </button>
-      </div>
+          {live.length > 0 && (
+            <Ledger columns="minmax(0,1fr) auto">
+              {live.map((i) => (
+                <LedgerRow
+                  key={i.id}
+                  trailing={
+                    <>
+                      <button type="button" className="cr-btn cr-btn--text" onClick={() => void copy(i.url)}>
+                        {copied === i.url ? t("invite.copied") : t("invite.copy")}
+                      </button>
+                      <button type="button" className="cr-btn cr-btn--text" onClick={() => void revoke(i.id)}>
+                        {t("invite.revoke")}
+                      </button>
+                    </>
+                  }
+                >
+                  <LedgerCell primary>
+                    <span style={urlStyle}>{i.url}</span>
+                    {i.note && <span className="cr-row-sub">{i.note}</span>}
+                  </LedgerCell>
+                </LedgerRow>
+              ))}
+            </Ledger>
+          )}
 
-      {open.length > 0 && (
-        <ul className="space-y-2 mb-4">
-          {open.map(i => (
-            <li key={i.id} className="flex items-center gap-2 border-t border-cr-p4 pt-2">
-              <code className="text-[11px] font-mono text-cr-i3 truncate flex-1">{i.url}</code>
-              {i.note && <span className="text-[11px] text-cr-i4 truncate max-w-[120px]">{i.note}</span>}
-              <button onClick={() => copy(i.url)} title={t("invite.copy")} className="text-cr-copper shrink-0">
-                {copied === i.url ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-              </button>
-              <button onClick={() => revoke(i.id)} title={t("invite.revoke")} className="text-cr-i4 hover:text-cr-down shrink-0">
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </li>
-          ))}
-        </ul>
+          {used.length > 0 && (
+            <p style={intro}>
+              {t("invite.joined", { count: used.length })}
+              {used.some(u => u.acceptedName) && `: ${used.map(u => u.acceptedName).filter(Boolean).join(", ")}`}
+            </p>
+          )}
+        </div>
       )}
-
-      {used.length > 0 && (
-        <p className="text-xs text-cr-i3 border-t border-cr-p4 pt-2">
-          {t("invite.joined", { count: used.length })}
-          {used.some(u => u.acceptedName) && ` — ${used.map(u => u.acceptedName).filter(Boolean).join(", ")}`}
-        </p>
-      )}
-      {invites !== null && open.length === 0 && used.length === 0 && (
-        <p className="text-xs text-cr-i4">{t("invite.none")}</p>
-      )}
-    </section>
+    </div>
   );
 }

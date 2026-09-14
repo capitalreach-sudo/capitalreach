@@ -1830,3 +1830,862 @@ html, body { overflow-x: clip; }
    theme. Scoped away from the business register: this rule sits outside
    @layer base and would otherwise beat business dark's own #6FB5BF. */
 :root[data-theme="dark"]:not([data-style="business"]) { --verdigris: #72B49E; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LEDGER SYSTEM
+   Hallmark · genre: modern-minimal · component: ledger system (page header,
+   section, ledger rows, filter bar, menus, sheet, buttons, fields)
+   states: default · hover · focus · active · disabled · loading · error
+   pre-emit critique: P5 H4 E4 S4 R5 V4
+   Shared by /investors, /startups, /data and both dashboards through
+   components/ui/{page-header,ledger,filter-bar,EmptyState}.tsx.
+   Additions only: .listing-row, .ruled-label, cr-lift/cr-tilt/cr-spot, the
+   business flatten and the font remaps above are load-bearing elsewhere.
+   Spacing is rem on the 4/8/12/16/24/32/48/64 steps, so a larger user text
+   size scales the layout with the type. Colours are tokens only.
+   The global button transition and :focus-visible rules above are
+   !important, so the classes here restate transition and focus with
+   !important at class specificity to win them back.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --z-raised: 1;
+  --z-sticky: 20;
+  --z-dropdown: 40;
+  --z-sheet: 60;
+  /* The row wash bleeds this far past the text column; hairlines stay inset
+     so every text edge lines up with the H1 above it. */
+  --cr-row-inset: 0.75rem;
+  /* The navbar is sticky top-0 at a fixed 56px (navbar.tsx). */
+  --cr-sticky-top: 56px;
+}
+
+/* ── Page header ─────────────────────────────────────────────────────────── */
+.cr-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 1.5rem;
+  row-gap: 0.75rem;
+  padding-block-start: 2rem;
+  margin-block-end: 1.5rem;
+}
+.cr-page-header__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  row-gap: 0.25rem;
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+.cr-page-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--cr-ink);
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.cr-page-meta {
+  margin: 0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--cr-ink-3);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+.cr-page-header__end {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+@media (max-width: 639px) {
+  .cr-page-header__main { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Section ─────────────────────────────────────────────────────────────── */
+.cr-section + .cr-section { margin-block-start: 3rem; }
+.cr-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 0.75rem;
+  row-gap: 0.25rem;
+  padding-block-end: 0.75rem;
+  border-block-end: 1px solid var(--cr-rule-dark);
+}
+/* A column header draws its own dark rule; one dark rule per head. The
+   column header is hidden below md, so the section rule stays there. */
+@media (min-width: 768px) {
+  .cr-section:has(> .cr-ledger[data-head]) > .cr-section-head { border-block-end-color: transparent; }
+}
+.cr-section-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--cr-ink);
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.cr-section-meta {
+  margin: 0;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-3);
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+.cr-section-end {
+  margin-inline-start: auto;
+  align-self: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ── Ledger ──────────────────────────────────────────────────────────────── */
+.cr-ledger {
+  list-style: none;
+  margin-block: 0;
+  margin-inline: calc(-1 * var(--cr-row-inset));
+  padding: 0;
+  transition: opacity 150ms var(--ease-out);
+}
+/* Previous rows stay on screen while a reload is in flight. */
+.cr-ledger[aria-busy="true"] { opacity: 0.6; }
+
+.cr-colhead,
+.cr-row {
+  display: grid;
+  grid-template-columns: var(--cr-ledger-cols, minmax(0, 1fr) auto);
+  column-gap: 1.5rem;
+  align-items: baseline;
+  padding-inline: var(--cr-row-inset);
+  background-repeat: no-repeat;
+  background-size: calc(100% - 2 * var(--cr-row-inset)) 1px;
+  background-position: center bottom;
+}
+.cr-colhead {
+  align-items: end;
+  min-height: 2rem;
+  padding-block: 0.5rem;
+  background-image: linear-gradient(var(--cr-rule-dark), var(--cr-rule-dark));
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cr-ink-3);
+}
+.cr-row {
+  position: relative;
+  min-height: 3.5rem;
+  padding-block: 1rem;
+  background-color: transparent;
+  background-image: linear-gradient(var(--cr-rule), var(--cr-rule));
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--cr-ink-2);
+  transition: background-color 120ms var(--ease-out);
+}
+@media (hover: hover) {
+  .cr-row[data-link]:hover { background-color: var(--cr-paper-3); }
+}
+.cr-row[data-link]:has(.cr-row__link:active) {
+  background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4));
+  transition-duration: 100ms;
+}
+
+/* The stretched link: an overlay anchor inside the primary cell, positioned
+   against the row. Cells stay static so the row is its containing block;
+   anything interactive in a row sits above it via --z-raised. */
+.cr-row__link {
+  position: absolute;
+  inset: 0;
+  color: inherit;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cr-row__link:focus-visible {
+  outline: 2px solid var(--cr-copper) !important;
+  outline-offset: -2px;
+  box-shadow: none !important;
+  border-radius: 0;
+}
+.cr-row__raised { position: relative; z-index: var(--z-raised); }
+
+.cr-cell { min-width: 0; }
+.cr-cell--end { text-align: end; }
+.cr-cell--figure {
+  text-align: end;
+  white-space: nowrap;
+  font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--cr-ink);
+  font-variant-numeric: tabular-nums;
+}
+.cr-cell--trailing {
+  position: relative;
+  z-index: var(--z-raised);
+  align-self: center;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cr-colhead .cr-cell {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.cr-row-title {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--cr-ink);
+}
+.cr-row-sub {
+  display: block;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* "Not stated": words, never a bare dash, and never in the figure face. */
+.cr-absent {
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cr-ink-3);
+}
+.cr-ledger-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding-block-start: 0.75rem;
+}
+
+/* Below md one line carries the primary text at the start and the first
+   figure plus the trailing control at the end; every other cell stacks
+   underneath in DOM order. Empty auto tracks collapse to zero, which is why
+   the gaps live on the cells rather than on the grid. */
+@media (max-width: 767px) {
+  .cr-colhead { display: none; }
+  .cr-row {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    column-gap: 0;
+    row-gap: 0.25rem;
+  }
+  .cr-row > .cr-cell { grid-column: 1 / -1; }
+  .cr-row > .cr-cell--primary { grid-column: 1; grid-row: 1; }
+  .cr-row > .cr-cell--figure { grid-column: 2; grid-row: 1; margin-inline-start: 0.75rem; }
+  .cr-row > .cr-cell--figure ~ .cr-cell--figure {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    margin-inline-start: 0;
+    text-align: start;
+  }
+  .cr-row > .cr-cell--trailing { grid-column: 3; grid-row: 1; margin-inline-start: 0.5rem; }
+  .cr-row > .cr-cell--desktop { display: none; }
+}
+
+/* ── Footnote, link, chip, empty state ───────────────────────────────────── */
+.cr-footnote {
+  max-width: 72ch;
+  margin-block-start: 1.5rem;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--cr-ink-3);
+}
+.cr-footnote > * + * { margin-block-start: 0.5rem; }
+
+.cr-link {
+  color: var(--cr-ink-2);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklab, currentColor 40%, transparent);
+  transition: color 120ms var(--ease-out), text-decoration-color 120ms var(--ease-out);
+}
+@media (hover: hover) {
+  .cr-link:hover { color: var(--cr-ink); text-decoration-color: currentColor; }
+}
+.cr-link:active { color: var(--cr-ink); text-decoration-color: currentColor; }
+.cr-link:focus-visible {
+  outline: 2px solid var(--cr-copper) !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+  border-radius: 2px;
+}
+
+/* Status chips are the only other caps voice on these surfaces. */
+.cr-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.25rem;
+  padding-inline: 0.5rem;
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: 999px;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--cr-ink-2);
+  vertical-align: middle;
+}
+.cr-chip[data-tone="up"] { color: var(--cr-up); border-color: color-mix(in oklab, var(--cr-up) 45%, transparent); }
+.cr-chip[data-tone="down"] { color: var(--cr-down); border-color: color-mix(in oklab, var(--cr-down) 45%, transparent); }
+
+.cr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  padding-block: 1rem;
+  text-align: start;
+}
+.cr-empty__title {
+  margin: 0;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.4;
+  color: var(--cr-ink);
+}
+.cr-empty__body {
+  margin: 0;
+  max-width: 60ch;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-3);
+}
+.cr-empty__action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-start: 0.5rem;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+/* Always paired: class="cr-btn", "cr-btn cr-btn--primary", "cr-btn cr-btn--text". */
+.cr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding-block: 0;
+  padding-inline: 1rem;
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: var(--cr-radius-control);
+  background-color: transparent;
+  color: var(--cr-ink);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 120ms var(--ease-out),
+    border-color 120ms var(--ease-out),
+    color 120ms var(--ease-out),
+    scale 100ms var(--ease-out) !important;
+}
+@media (hover: hover) {
+  .cr-btn:hover { background-color: var(--cr-paper-3); border-color: var(--cr-ink-4); }
+}
+.cr-btn:active {
+  scale: 0.98;
+  background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4));
+}
+.cr-btn--primary {
+  background-color: var(--cr-copper);
+  border-color: var(--cr-copper);
+  color: var(--cr-on-accent);
+}
+/* Mixing toward ink raises contrast with --cr-on-accent in all four
+   registers: ink is dark where on-accent is light, and light where it is dark. */
+@media (hover: hover) {
+  .cr-btn--primary:hover {
+    background-color: color-mix(in oklab, var(--cr-copper) 88%, var(--cr-ink));
+    border-color: color-mix(in oklab, var(--cr-copper) 88%, var(--cr-ink));
+  }
+}
+.cr-btn--primary:active {
+  background-color: color-mix(in oklab, var(--cr-copper) 80%, var(--cr-ink));
+  border-color: color-mix(in oklab, var(--cr-copper) 80%, var(--cr-ink));
+}
+.cr-btn--text {
+  border-color: transparent;
+  background-color: transparent;
+  color: var(--cr-ink-2);
+  padding-inline: 0.5rem;
+}
+@media (hover: hover) {
+  .cr-btn--text:hover { background-color: var(--cr-paper-3); border-color: transparent; color: var(--cr-ink); }
+}
+.cr-btn--text:active {
+  border-color: transparent;
+  color: var(--cr-ink);
+  background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4));
+}
+.cr-btn:focus-visible,
+.cr-menu-btn:focus-visible,
+.cr-input:focus-visible,
+.cr-select:focus-visible {
+  outline: 2px solid var(--cr-copper) !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+.cr-btn[aria-busy="true"] { cursor: progress; color: var(--cr-ink-3); }
+.cr-btn:disabled,
+.cr-btn[aria-disabled="true"],
+.cr-btn--primary:disabled,
+.cr-btn--primary[aria-disabled="true"] {
+  cursor: not-allowed;
+  scale: 1;
+  color: var(--cr-ink-4);
+  border-color: var(--cr-rule);
+  background-color: transparent;
+}
+.cr-btn--text:disabled,
+.cr-btn--text[aria-disabled="true"] { border-color: transparent; }
+
+/* ── Fields ──────────────────────────────────────────────────────────────── */
+.cr-input,
+.cr-select {
+  box-sizing: border-box;
+  min-height: 2.75rem;
+  padding-block: 0;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: var(--cr-radius-control);
+  background-color: var(--cr-paper);
+  color: var(--cr-ink);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.4;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 120ms var(--ease-out), background-color 120ms var(--ease-out);
+}
+.cr-input { width: 100%; font-size: 0.9375rem; }
+textarea.cr-input { padding-block: 0.75rem; min-height: 5.5rem; line-height: 1.55; resize: vertical; }
+.cr-input::placeholder { color: var(--cr-ink-4); opacity: 1; }
+.cr-select {
+  max-width: 100%;
+  padding-inline-end: 2.25rem;
+  font-size: 0.8125rem;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--cr-ink-3) 50%),
+    linear-gradient(135deg, var(--cr-ink-3) 50%, transparent 50%);
+  background-size: 5px 5px, 5px 5px;
+  background-position: calc(100% - 1.125rem) 50%, calc(100% - 0.8125rem) 50%;
+  background-repeat: no-repeat;
+}
+[dir="rtl"] .cr-select { background-position: 0.8125rem 50%, 1.125rem 50%; }
+@media (hover: hover) {
+  .cr-input:hover:not(:disabled),
+  .cr-select:hover:not(:disabled) { border-color: var(--cr-ink-4); }
+}
+.cr-input:active:not(:disabled) { border-color: var(--cr-ink-3); }
+.cr-select:active:not(:disabled) { background-color: var(--cr-paper-3); border-color: var(--cr-ink-3); }
+.cr-input:focus-visible,
+.cr-select:focus-visible { border-color: var(--cr-ink-3); }
+.cr-input[aria-invalid="true"],
+.cr-select[aria-invalid="true"] { border-color: var(--cr-down); }
+.cr-input:disabled,
+.cr-select:disabled { cursor: not-allowed; color: var(--cr-ink-4); background-color: var(--cr-paper-2); }
+/* iOS Safari zooms any focused field set under 16px. */
+@media (max-width: 767px) and (pointer: coarse) {
+  .cr-input, .cr-select { font-size: 1rem; }
+}
+
+.cr-search { position: relative; display: flex; align-items: center; min-width: 0; }
+.cr-search__icon { position: absolute; inset-inline-start: 0.75rem; color: var(--cr-ink-3); pointer-events: none; }
+.cr-search .cr-input { padding-inline-start: 2.25rem; padding-inline-end: 2.75rem; }
+.cr-search .cr-input::-webkit-search-cancel-button,
+.cr-search .cr-input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+.cr-search__clear {
+  position: absolute;
+  inset-inline-end: 0;
+  inset-block: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cr-radius-control);
+  background-color: transparent;
+  color: var(--cr-ink-3);
+  cursor: pointer;
+}
+@media (hover: hover) { .cr-search__clear:hover { color: var(--cr-ink); } }
+.cr-search__clear:active { color: var(--cr-ink); }
+.cr-search__clear:focus-visible {
+  outline: 2px solid var(--cr-copper) !important;
+  outline-offset: -6px;
+  box-shadow: none !important;
+}
+
+/* ── Menu button and toggle chip ─────────────────────────────────────────── */
+.cr-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding-block: 0;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: var(--cr-radius-control);
+  background-color: transparent;
+  color: var(--cr-ink-2);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.2;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 120ms var(--ease-out),
+    border-color 120ms var(--ease-out),
+    color 120ms var(--ease-out),
+    scale 100ms var(--ease-out) !important;
+}
+.cr-menu-btn[data-active="true"],
+.cr-menu-btn[aria-pressed="true"] { border-color: var(--cr-ink-3); color: var(--cr-ink); font-weight: 500; }
+@media (hover: hover) {
+  .cr-menu-btn:hover { background-color: var(--cr-paper-3); color: var(--cr-ink); }
+}
+.cr-menu-btn[aria-expanded="true"] { background-color: var(--cr-paper-3); color: var(--cr-ink); }
+.cr-menu-btn:active {
+  scale: 0.98;
+  background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4));
+}
+.cr-menu-btn:disabled { cursor: not-allowed; scale: 1; color: var(--cr-ink-4); border-color: var(--cr-rule); background-color: transparent; }
+.cr-menu-btn__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.cr-menu-btn__chevron { flex: none; color: var(--cr-ink-3); transition: rotate 160ms var(--ease-out); }
+.cr-menu-btn[aria-expanded="true"] .cr-menu-btn__chevron { rotate: 180deg; }
+.cr-check-glyph {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 0.875rem;
+  height: 0.875rem;
+  border: 1px solid var(--cr-ink-3);
+  border-radius: 2px;
+  color: var(--cr-paper);
+  background-color: transparent;
+}
+.cr-menu-btn[aria-pressed="true"] > .cr-check-glyph { background-color: var(--cr-ink); border-color: var(--cr-ink); }
+
+/* ── Options (inside menus and the sheet) ────────────────────────────────── */
+.cr-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.75rem;
+  padding-inline: 0.75rem;
+  border-radius: var(--cr-radius-control);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms var(--ease-out);
+}
+@media (hover: hover) { .cr-option:hover { background-color: var(--cr-paper-3); color: var(--cr-ink); } }
+.cr-option:active { background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4)); }
+.cr-option:has(input:checked) { color: var(--cr-ink); }
+.cr-option:has(input:disabled) { cursor: not-allowed; color: var(--cr-ink-4); }
+.cr-option input { flex: none; width: 1rem; height: 1rem; margin: 0; accent-color: var(--cr-ink); cursor: inherit; }
+.cr-option input:focus-visible { outline: 2px solid var(--cr-copper) !important; outline-offset: 2px; box-shadow: none !important; }
+.cr-option__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cr-group { margin: 0; padding: 0; border: 0; min-width: 0; }
+.cr-group + .cr-group { margin-block-start: 0.5rem; padding-block-start: 0.5rem; border-block-start: 1px solid var(--cr-rule); }
+.cr-group__legend {
+  float: none;
+  width: 100%;
+  padding-block: 0.75rem 0.25rem;
+  padding-inline: 0.75rem;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--cr-ink);
+}
+
+/* ── Menu popover ────────────────────────────────────────────────────────── */
+/* Scales and fades from the trigger edge it hangs from, and leaves the same
+   way. Transitions start from the computed value, so a reversal mid-flight
+   is smooth; visibility is delayed on the way out only. */
+.cr-popover-anchor { position: relative; display: inline-flex; max-width: 100%; min-width: 0; }
+.cr-menu {
+  position: absolute;
+  inset-block-start: calc(100% + 0.25rem);
+  inset-inline-start: 0;
+  z-index: var(--z-dropdown);
+  box-sizing: border-box;
+  min-width: 12rem;
+  max-width: min(20rem, calc(100vw - 2rem));
+  max-height: min(22rem, 60vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.25rem;
+  border: 1px solid var(--cr-rule-dark);
+  border-radius: calc(var(--cr-radius-control) * 2);
+  background-color: var(--cr-paper);
+  background-color: color-mix(in oklab, var(--cr-paper) 92%, transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--cr-card-shadow-hover);
+  transform-origin: top left;
+  opacity: 0;
+  transform: translateY(-0.25rem) scale(0.98);
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), visibility 0s linear 160ms;
+}
+.cr-menu[data-align="end"] { inset-inline-start: auto; inset-inline-end: 0; transform-origin: top right; }
+[dir="rtl"] .cr-menu { transform-origin: top right; }
+[dir="rtl"] .cr-menu[data-align="end"] { transform-origin: top left; }
+.cr-menu[data-open="true"] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+  transition: opacity 160ms var(--ease-out), transform 160ms var(--ease-out), visibility 0s linear 0s;
+}
+
+/* ── Filter bar ──────────────────────────────────────────────────────────── */
+/* Controls sit 24px under the page header and 16px above the list: the bar
+   carries 8px of padding so its sticky material has room when stuck. */
+.cr-filterbar {
+  position: relative;
+  margin-block: -0.5rem 0.5rem;
+  margin-inline: calc(-1 * var(--cr-row-inset));
+  padding-block: 0.5rem;
+  padding-inline: var(--cr-row-inset);
+}
+.cr-filterbar[data-sticky="true"] {
+  position: sticky;
+  inset-block-start: var(--cr-sticky-top);
+  z-index: var(--z-sticky);
+  background-color: var(--cr-paper);
+  background-color: color-mix(in oklab, var(--cr-paper) 78%, transparent);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+}
+/* Scroll-edge fade instead of a hard divider, only once rows are beneath. */
+.cr-filterbar[data-sticky="true"]::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 100%;
+  height: 0.75rem;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom, var(--cr-rule-dark), transparent);
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
+}
+.cr-filterbar[data-stuck="true"]::after { opacity: 1; }
+.cr-filterbar__row { display: flex; align-items: center; gap: 0.5rem; }
+.cr-filterbar__search { flex: 1 1 14rem; min-width: 0; }
+.cr-filterbar__controls { display: none; }
+.cr-filterbar__sheet-btn { flex: none; }
+@media (min-width: 1024px) {
+  .cr-filterbar__controls {
+    display: flex;
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  .cr-filterbar__sheet-btn { display: none; }
+}
+
+/* ── Filters sheet (below lg) ────────────────────────────────────────────── */
+/* A modal task: a scrim dims the page. The sheet enters from the bottom and
+   exits to the bottom. It stops above the mobile tab bar (z 90, which is
+   above --z-sheet) so neither covers the other. */
+.cr-sheet {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-start: 0;
+  inset-block-end: var(--cr-tabbar-h, 0px);
+  z-index: var(--z-sheet);
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 0s linear 240ms;
+}
+.cr-sheet[data-open="true"] { visibility: visible; pointer-events: auto; transition: visibility 0s linear 0s; }
+.cr-sheet__scrim {
+  position: absolute;
+  inset: 0;
+  background-color: var(--cr-scrim);
+  opacity: 0;
+  transition: opacity 240ms var(--ease-out);
+}
+.cr-sheet[data-open="true"] .cr-sheet__scrim { opacity: 1; }
+.cr-sheet__panel {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+  max-height: min(85dvh, calc(100% - 2rem));
+  border-start-start-radius: calc(var(--cr-radius-control) * 2);
+  border-start-end-radius: calc(var(--cr-radius-control) * 2);
+  background-color: var(--cr-paper);
+  background-color: color-mix(in oklab, var(--cr-paper) 94%, transparent);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow: var(--cr-card-shadow-hover);
+  transform: translateY(100%);
+  transition: transform 240ms var(--ease-out);
+}
+.cr-sheet[data-open="true"] .cr-sheet__panel { transform: translateY(0); }
+.cr-sheet__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: 3.5rem;
+  padding-inline: 1rem;
+  border-block-end: 1px solid var(--cr-rule);
+}
+.cr-sheet__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--cr-ink);
+  font-optical-sizing: auto;
+  font-variation-settings: 'SOFT' 0, 'WONK' 0;
+}
+.cr-sheet__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 0.25rem 1rem;
+  padding-inline: 0.25rem;
+}
+.cr-sheet__body .cr-option { font-size: 0.9375rem; }
+.cr-sheet__body > .cr-search { margin-inline: 0.75rem; margin-block: 0.75rem 0.25rem; }
+.cr-sheet__foot {
+  flex: none;
+  display: flex;
+  gap: 0.5rem;
+  padding-block: 0.75rem;
+  padding-inline: 1rem;
+  /* The tab bar pads for the home indicator when it is mounted; otherwise the
+     sheet does. The subtraction goes negative, and so to 0, with a tab bar. */
+  padding-block-end: max(0.75rem, calc(env(safe-area-inset-bottom, 0px) + 0.75rem - var(--cr-tabbar-h, 0px)));
+  border-block-start: 1px solid var(--cr-rule);
+}
+.cr-sheet__foot > .cr-btn { flex: 1 1 0; }
+
+.cr-section,
+.cr-filterbar { scroll-margin-block-start: calc(var(--cr-sticky-top) + 1rem); }
+
+/* ── Reduced motion, transparency, contrast ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .cr-row, .cr-ledger, .cr-btn, .cr-menu-btn, .cr-menu-btn__chevron,
+  .cr-input, .cr-select, .cr-option, .cr-link,
+  .cr-filterbar[data-sticky="true"]::after { transition: none !important; }
+  .cr-btn:active, .cr-menu-btn:active { scale: 1; }
+  .cr-menu-btn[aria-expanded="true"] .cr-menu-btn__chevron { rotate: none; }
+  .cr-menu, .cr-menu[data-open="true"] { transform: none; }
+  .cr-sheet__panel { transform: none; opacity: 0; transition: opacity 150ms linear; }
+  .cr-sheet[data-open="true"] .cr-sheet__panel { transform: none; opacity: 1; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .cr-filterbar[data-sticky="true"],
+  .cr-menu,
+  .cr-sheet__panel {
+    background-color: var(--cr-paper);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+@media (prefers-contrast: more) {
+  .cr-filterbar[data-sticky="true"],
+  .cr-menu,
+  .cr-sheet__panel {
+    background-color: var(--cr-paper);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .cr-filterbar[data-stuck="true"] { box-shadow: inset 0 -1px 0 var(--cr-rule-dark); }
+  .cr-filterbar[data-sticky="true"]::after { display: none; }
+  .cr-sheet__panel { border-block-start: 1px solid var(--cr-rule-dark); }
+}

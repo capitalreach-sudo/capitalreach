@@ -1,98 +1,74 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { seriesColor } from "./palette";
 
-export interface Bar { key: string; label: string; value: number; colorIndex?: number }
+export interface Bar {
+  key: string;
+  label: string;
+  value: number;
+  /** Palette slot. Omit for the single ink a ranked list needs. */
+  colorIndex?: number;
+}
+
+const SANS = "var(--font-dm-sans), system-ui, sans-serif";
+const MONO = "var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace";
 
 /**
- * Magnitude across categories -- the workhorse, and the right answer far more
- * often than a pie.
+ * Magnitude across categories, ranked.
  *
- * Horizontal because the labels are words: a category name reads left to
- * right, and rotating it 45° to fit under a vertical bar makes a chart nobody
- * reads. Values sit at the end of each bar rather than on an axis, so the
- * number is where the eye already is -- which is also why nothing here is
- * gated on hover: a touch reader sees every figure without asking.
+ * Horizontal because the labels are words. Rendered as a real table: the
+ * label is the row header, the bar is decoration, and the value is text, so
+ * a screen reader and a touch reader get every figure without hovering.
+ * Nothing moves and nothing is revealed on hover.
  */
-export function BarChart({ bars, format, hrefFor }: {
+export function BarChart({ bars, format, hrefFor, caption }: {
   bars: Bar[];
   format?: (n: number) => string;
-  /** Where a bar leads. A count is a question; the list behind it is the answer. */
+  /** Where a bar's label leads. A count is a question; the list is the answer. */
   hrefFor?: (key: string) => string | null;
+  /** Accessible table caption, e.g. the section title. */
+  caption?: string;
 }) {
-  const [hover, setHover] = useState<string | null>(null);
-  // Inline styles cannot carry a media query, so the growing-bar transition
-  // is gated in script: a reader who asked for reduced motion gets the bars
-  // already at length.
-  const [reducedMotion, setReducedMotion] = useState(false);
-  useEffect(() => {
-    if (typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReducedMotion(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
   const max = Math.max(1, ...bars.map(b => b.value));
-  const total = bars.reduce((s, b) => s + b.value, 0);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      {bars.map((b, i) => {
-        const pct = (b.value / max) * 100;
-        const href = hrefFor?.(b.key) ?? null;
-        const rowStyle: React.CSSProperties = {
-          display: "grid", gridTemplateColumns: "minmax(90px, 130px) 1fr auto",
-          alignItems: "center", gap: 12, textDecoration: "none",
-          cursor: href ? "pointer" : "default",
-        };
-        const label = (
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11.5, color: "var(--cr-ink-3)", textDecoration: href ? "underline" : "none", textUnderlineOffset: 3, textDecorationColor: "var(--cr-rule-dark)" }}>{b.label}</span>
-        );
-        return (
-          <div key={b.key}
-            // Mouse only: on touch, pointerenter fires on tap and there is no
-            // matching leave, which left every other bar dimmed for good.
-            onPointerEnter={(e) => { if (e.pointerType !== "touch") setHover(b.key); }}
-            onPointerLeave={(e) => { if (e.pointerType !== "touch") setHover(null); }}
-            style={{ display: "contents" }}>
-          <div style={rowStyle}>
-            {href ? <Link href={href} style={{ textDecoration: "none" }}>{label}</Link> : label}
-            {/* The track is a quiet channel one step off the paper; the bar
-                is the mark. 8px keeps the row a ledger line rather than a
-                slab. */}
-            <div style={{ height: 8, background: "var(--cr-paper-3)", borderRadius: 4, overflow: "hidden" }}>
-              <div style={{
-                width: `${Math.max(pct, b.value > 0 ? 2 : 0)}%`, height: "100%",
-                // Rounded only at the data end; the baseline end stays square
-                // so every bar starts from the same visual zero.
-                borderRadius: "0 4px 4px 0",
-                background: seriesColor(b.colorIndex ?? i),
-                opacity: hover && hover !== b.key ? 0.55 : 1,
-                transition: reducedMotion ? "opacity 120ms" : "width 260ms ease, opacity 120ms",
-              }} />
-            </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: 11.5, color: "var(--cr-ink)", minWidth: 34, textAlign: "right" }}>
-              {format ? format(b.value) : b.value}
-              {/* Share of the whole surfaces on hover. Rendered always and
-                  faded in, so the column never resizes under the pointer;
-                  hover-only because the figure itself is never hidden. */}
-              {total > 0 && (
-                <span aria-hidden={hover !== b.key} style={{
-                  fontSize: 10, fontWeight: 400, color: "var(--cr-ink-4)", marginLeft: 6,
-                  opacity: hover === b.key ? 1 : 0, transition: "opacity 120ms",
-                }}>
-                  {Math.round((b.value / total) * 100)}%
-                </span>
-              )}
-            </span>
-          </div>
-          </div>
-        );
-      })}
-    </div>
+    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      {caption && <caption className="sr-only">{caption}</caption>}
+      <tbody>
+        {bars.map((b) => {
+          const pct = (b.value / max) * 100;
+          const href = hrefFor?.(b.key) ?? null;
+          const fill = b.colorIndex === undefined ? "var(--cr-ink-3)" : seriesColor(b.colorIndex);
+          return (
+            <tr key={b.key}>
+              <th scope="row" style={{
+                fontFamily: SANS, fontSize: "0.8125rem", fontWeight: 400, lineHeight: 1.4,
+                color: "var(--cr-ink-2)", textAlign: "start", whiteSpace: "nowrap",
+                width: "1%", height: "2.75rem", padding: 0, paddingInlineEnd: "0.75rem",
+              }}>
+                {href ? (
+                  <Link href={href} className="cr-link" style={{ display: "inline-flex", alignItems: "center", minHeight: "2.75rem" }}>
+                    {b.label}
+                  </Link>
+                ) : b.label}
+              </th>
+              <td style={{ padding: 0, width: "100%" }}>
+                <div aria-hidden style={{
+                  height: "0.5rem",
+                  width: `${Math.max(pct, b.value > 0 ? 2 : 0)}%`,
+                  background: fill,
+                }} />
+              </td>
+              <td style={{
+                fontFamily: MONO, fontSize: "0.8125rem", fontWeight: 500, lineHeight: 1.4,
+                color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums",
+                textAlign: "end", whiteSpace: "nowrap", padding: 0, paddingInlineStart: "0.75rem",
+              }}>
+                {format ? format(b.value) : b.value}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
   );
 }

@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import Link from "next/link";
-import { Bell, FileText, Activity, Pause, BarChart3 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useReadOnly } from "@/components/dashboard/read-only";
+import { Ledger, LedgerCell, LedgerRow, Section } from "@/components/ui/ledger";
+import { formatDate } from "@/lib/format";
 
 type Change = {
   type: "update" | "document" | "round_state" | "metrics";
@@ -14,9 +15,9 @@ type Change = {
   summary: string;
 };
 
-// Data-room size per company. A count with no timestamp -- documents carry
-// none in the schema -- so it renders as current state, never as an entry on
-// the "since you last looked" timeline.
+// Data-room size per company. A count with no timestamp (documents carry
+// none in the schema), so it renders as current state, never as an entry on
+// the dated timeline.
 type DocRoom = {
   startupId: string;
   startupName: string;
@@ -24,119 +25,82 @@ type DocRoom = {
   count: number;
 };
 
-const ICON = {
-  update: Activity,
-  document: FileText,
-  round_state: Pause,
-  metrics: BarChart3,
-} as const;
-
 /**
- * What moved on the companies you are watching.
+ * What moved on the companies you are watching, as ledger rows.
  *
- * Saving a company used to be a one-way action: it went on a list and the list
- * never spoke again. Everything here was already in the database — this is
- * assembly, not new data.
- *
- * Marking as read is explicit rather than on-open, so glancing at the panel
- * while walking past does not silently clear twenty companies you meant to
- * come back to.
+ * Renders only when something changed (S4): a quiet week is not a section.
+ * Marking as read is explicit rather than on-open, so glancing at the list
+ * does not silently clear companies you meant to come back to. Rows are real
+ * links to the listing, so the detail page counts the visit.
  */
 export function WatchlistChanges() {
   const { t } = useTranslation();
+  const readOnly = useReadOnly();
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
   const [changes, setChanges] = useState<Change[] | null>(null);
   const [docRooms, setDocRooms] = useState<DocRoom[]>([]);
   const [watching, setWatching] = useState(0);
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    const res = await fetch("/api/watchlist/changes");
-    if (!res.ok) { setChanges([]); return; }
-    const j = await res.json();
-    setChanges(j.changes ?? []);
+    const res = await fetch("/api/watchlist/changes").catch(() => null);
+    if (!res?.ok) { setChanges([]); return; }
+    const j = await res.json().catch(() => ({}));
+    setChanges(Array.isArray(j.changes) ? j.changes : []);
     setDocRooms(Array.isArray(j.documents) ? j.documents : []);
     setWatching(j.watching ?? 0);
   }, []);
   useEffect(() => { void load(); }, [load]);
 
   async function markSeen() {
+    if (readOnly || busy) return;
     setBusy(true);
     await fetch("/api/watchlist/changes", { method: "POST" }).catch(() => {});
     setBusy(false);
     void load();
   }
 
-  // Nothing saved yet is not an empty state worth a panel — it is a different
-  // page's job to get them to save something.
-  if (changes === null || watching === 0) return null;
+  if (changes === null || watching === 0 || changes.length === 0) return null;
 
   return (
-    <section style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "20px", marginBottom: "24px" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: changes.length || docRooms.length ? 14 : 0 }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <Bell style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-          <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-            {t("watchChanges.title")}
-          </h3>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
-            {t("watchChanges.watching", { n: watching })}
-          </span>
-        </span>
-        {changes.length > 0 && (
-          <button onClick={markSeen} disabled={busy}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "11.5px", color: "var(--cr-copper)" }}>
-            {t("watchChanges.markSeen")}
-          </button>
-        )}
-      </div>
-
-      {changes.length === 0 ? (
-        <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink-4)" }}>
-          {t("watchChanges.quiet")}
-        </p>
-      ) : (
-        <ul style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-          {changes.map((c, i) => {
-            const Icon = ICON[c.type] ?? Activity;
-            return (
-              <li key={`${c.startupId}-${c.at}-${i}`} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
-                <Icon style={{ width: 12, height: 12, color: "var(--cr-ink-4)", marginTop: 3, flexShrink: 0 }} />
-                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
-                  <Link href={`/startups/${c.startupSlug}`}
-                    style={{ color: "var(--cr-ink)", fontWeight: 600, textDecoration: "none", borderBottom: "1px dotted var(--cr-ink-4)" }}>
-                    {c.startupName}
-                  </Link>
-                  {" — "}{c.summary}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "10px", color: "var(--cr-ink-4)", marginLeft: 6 }}>
-                    {new Date(c.at).toLocaleDateString()}
-                  </span>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+    <Section
+      id="what-moved"
+      title={tf("dashboard.investor.whatMoved", "What moved")}
+      end={!readOnly && (
+        <button type="button" className="cr-btn cr-btn--text" onClick={markSeen} disabled={busy} aria-busy={busy || undefined}>
+          {t("watchChanges.markSeen")}
+        </button>
       )}
-
-      {/* Data rooms, below a rule: current state, deliberately outside the
-          timeline above -- the schema has no per-document timestamps, and a
-          made-up "added on" date would be a lie in a panel investors act on. */}
-      {docRooms.length > 0 && (
-        <ul style={{ display: "flex", flexDirection: "column", gap: 9, borderTop: "1px solid var(--cr-rule)", marginTop: changes.length ? 14 : 12, paddingTop: 12 }}>
-          {docRooms.map((d) => (
-            <li key={d.startupId} style={{ display: "flex", alignItems: "flex-start", gap: 9 }}>
-              <FileText style={{ width: 12, height: 12, color: "var(--cr-ink-4)", marginTop: 3, flexShrink: 0 }} />
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "12.5px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
-                <Link href={`/startups/${d.startupSlug}`}
-                  style={{ color: "var(--cr-ink)", fontWeight: 600, textDecoration: "none", borderBottom: "1px dotted var(--cr-ink-4)" }}>
-                  {d.startupName}
-                </Link>
-                {" - "}
+    >
+      <Ledger columns="minmax(0,1fr) auto">
+        {changes.map((c, i) => (
+          <LedgerRow key={`${c.startupId}-${c.at}-${i}`} href={`/startups/${c.startupSlug}`} label={c.startupName}>
+            <LedgerCell primary>
+              <span className="cr-row-title">{c.startupName}</span>
+              <span className="cr-row-sub">{c.summary}</span>
+            </LedgerCell>
+            <LedgerCell align="end">
+              <time className="cr-row-sub" dateTime={c.at} style={{ fontVariantNumeric: "tabular-nums" }}>
+                {formatDate(c.at)}
+              </time>
+            </LedgerCell>
+          </LedgerRow>
+        ))}
+        {docRooms.map((d) => (
+          <LedgerRow key={`room-${d.startupId}`} href={`/startups/${d.startupSlug}`} label={d.startupName}>
+            <LedgerCell primary>
+              <span className="cr-row-title">{d.startupName}</span>
+              <span className="cr-row-sub">
                 {d.count === 1 ? t("watchChanges.docsInRoomOne") : t("watchChanges.docsInRoom", { count: d.count })}
               </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
+            </LedgerCell>
+            <LedgerCell />
+          </LedgerRow>
+        ))}
+      </Ledger>
+    </Section>
   );
 }

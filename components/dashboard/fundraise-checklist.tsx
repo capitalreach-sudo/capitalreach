@@ -1,31 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { CheckCircle2, Circle, ListChecks } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { Ledger, LedgerCell, LedgerRow, Section } from "@/components/ui/ledger";
 import type { Startup } from "@/types";
 
 /**
- * The fundraising checklist, for founders raising for the first time.
+ * Next steps: the small number of things still standing between this listing
+ * and an investor reading it.
  *
  * Every step is DERIVED from real state, none is a manual checkbox: a
  * checklist you can tick without doing the work is a mood board, and the
  * founder who most needs this is exactly the one who would tick "build a
  * target list" after bookmarking one investor. Ticks here are earned --
- * upload the deck and the deck step ticks itself.
+ * upload the deck and the deck step stops being listed.
  *
- * Each unfinished step links to the place where it gets done, so the list
- * doubles as navigation for people who do not yet know where things live.
+ * Finished steps are not rows. They collapse to a count beside the heading,
+ * and when nothing is left the section renders nothing at all. Each row is
+ * one link to the place where that step gets done.
+ *
+ *   <FundraiseChecklist
+ *     startup={startup}
+ *     completeness={percent}
+ *     nextHint="Add your website · +5 points"
+ *     attestation={signed ? null : { onSign: readOnly ? undefined : open }}
+ *     tractionHref="#round"
+ *   />
  */
 export function FundraiseChecklist({
   startup,
   completeness,
+  nextHint = null,
+  attestation = null,
+  tractionHref = "#round",
 }: {
   startup: Startup;
   completeness: number;
+  /** The heaviest gap in the listing, already worded: shown under step one. */
+  nextHint?: string | null;
+  /** Present only while the founder statement is unsigned. */
+  attestation?: { onSign?: () => void } | null;
+  /** Where "record traction" goes. The recorder lives in the Round section. */
+  tractionHref?: string;
 }) {
   const { t } = useTranslation();
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    return out === key ? fallback.replace(/\{(\w+)\}/g, (_, k: string) => String(vars?.[k] ?? `{${k}}`)) : out;
+  };
   const [targetCount, setTargetCount] = useState<number | null>(null);
   const [metricMonths, setMetricMonths] = useState<number | null>(null);
 
@@ -36,12 +58,15 @@ export function FundraiseChecklist({
       .then((j) => setMetricMonths(j?.metrics?.length ?? 0)).catch(() => setMetricMonths(0));
   }, []);
 
-  const steps: Array<{ key: string; done: boolean | null; href: string; detail?: string }> = [
+  // done === null means "not known yet": the step stays listed rather than
+  // claiming either state while its count is in flight.
+  const steps: Array<{ key: string; done: boolean | null; href: string; figure?: string; sub?: string }> = [
     {
       key: "complete",
       done: completeness >= 90,
       href: "/dashboard/startup/edit",
-      detail: `${completeness}%`,
+      figure: `${completeness}%`,
+      sub: nextHint ?? undefined,
     },
     {
       key: "deck",
@@ -54,83 +79,81 @@ export function FundraiseChecklist({
       href: "/dashboard/startup/edit",
     },
     {
-      // null while loading -- render a hollow ring rather than a false "not done".
+      // The recorder is a row inside Round; the step opens it there rather
+      // than linking back to the page it already sits on.
       key: "traction",
       done: metricMonths === null ? null : metricMonths >= 2,
-      href: "/dashboard/startup",
-      detail: metricMonths === null ? undefined : t("fundraise.months", { count: metricMonths }),
+      href: tractionHref,
+      figure: metricMonths ? String(metricMonths) : undefined,
     },
     {
       key: "targets",
       done: targetCount === null ? null : targetCount >= 5,
       href: "/investors",
-      detail: targetCount === null ? undefined : t("fundraise.targets", { count: targetCount }),
-    },
-    {
-      key: "preview",
-      // Not trackable, and pretending otherwise would be a lie -- this one is
-      // a pointer, permanently unticked, styled as a tip rather than a task.
-      done: null,
-      href: `/startups/${startup.slug}?preview=investor`,
+      figure: targetCount ? String(targetCount) : undefined,
     },
   ];
 
   const doneCount = steps.filter((s) => s.done === true).length;
-  const measurable = steps.filter((s) => s.key !== "preview").length;
+  const open = steps.filter((s) => s.done !== true);
+  const signRow = attestation ? 1 : 0;
+  // At most five rows. The statement is compliance, so it keeps its place
+  // first and the derived steps fill what is left.
+  const shown = open.slice(0, 5 - signRow);
+
+  if (shown.length === 0 && !attestation) return null;
+
+  const goHint: ReactNode = (
+    <span style={{
+      fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
+      fontSize: "0.8125rem",
+      lineHeight: 1.4,
+      color: "var(--cr-ink-3)",
+      whiteSpace: "nowrap",
+    }}>
+      {t("fundraise.go")}
+    </span>
+  );
 
   return (
-    // Card internals sit on the 24px step of the spacing scale.
-    <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", marginTop: "16px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-        <ListChecks style={{ width: 13, height: 13, color: "var(--cr-copper)" }} />
-        <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
-          {t("fundraise.title")}
-        </h3>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", marginInlineStart: "auto" }}>
-          {doneCount}/{measurable}
-        </span>
-      </div>
-      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", lineHeight: 1.6, marginBottom: "12px" }}>
-        {t("fundraise.sub")}
-      </p>
-
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        {steps.map((s) => (
-          <Link
-            key={s.key}
-            href={s.href}
-            style={{
-              display: "flex", alignItems: "baseline", gap: "8px",
-              padding: "8px 4px", textDecoration: "none",
-              borderBottom: "1px solid var(--cr-rule)",
-            }}
+    <Section
+      id="next-steps"
+      title={tf("dashboard.startup.nextSteps", "Next steps")}
+      meta={doneCount > 0 ? tf("dashboard.startup.stepsDone", "{count} done", { count: doneCount }) : null}
+    >
+      <Ledger columns="minmax(0,1fr) auto auto">
+        {attestation && (
+          <LedgerRow
+            trailing={attestation.onSign ? (
+              <button type="button" className="cr-btn cr-btn--text" onClick={attestation.onSign}>
+                {t("attest.dashCta")}
+              </button>
+            ) : undefined}
           >
-            {s.done === true ? (
-              <CheckCircle2 style={{ width: 14, height: 14, color: "var(--cr-up)", flexShrink: 0, alignSelf: "center" }} />
-            ) : (
-              <Circle style={{ width: 14, height: 14, color: s.key === "preview" ? "var(--cr-copper)" : "var(--cr-paper-4)", flexShrink: 0, alignSelf: "center" }} />
-            )}
-            <span style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontWeight: s.done === true ? 300 : 500,
-              fontSize: "13px",
-              color: s.done === true ? "var(--cr-ink-4)" : "var(--cr-ink)",
-              textDecoration: s.done === true ? "line-through" : "none",
-              textDecorationColor: "var(--cr-paper-4)",
-            }}>
-              {t(`fundraise.step_${s.key}`)}
-            </span>
-            {s.detail && (
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{s.detail}</span>
-            )}
-            {s.done !== true && (
-              <span style={{ marginInlineStart: "auto", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", whiteSpace: "nowrap" }}>
-                {s.key === "preview" ? t("fundraise.tip") : t("fundraise.go")} →
-              </span>
-            )}
-          </Link>
-        ))}
-      </div>
-    </div>
+            <LedgerCell primary>
+              <span className="cr-row-title">{t("attest.dashTitle")}</span>
+              {/* sd-wrap comes from the founder dashboard, the only page that
+                  mounts this: a sentence is not a one-line meta string. */}
+              <span className="cr-row-sub sd-wrap">{t("attest.dashBody")}</span>
+            </LedgerCell>
+            <LedgerCell />
+          </LedgerRow>
+        )}
+        {shown.map((s) => {
+          const label = t(`fundraise.step_${s.key}`);
+          return (
+            <LedgerRow key={s.key} href={s.href} label={label}>
+              <LedgerCell primary>
+                <span className="cr-row-title">{label}</span>
+                {s.sub && <span className="cr-row-sub">{s.sub}</span>}
+              </LedgerCell>
+              {/* A zero is never a figure: the cell simply stays empty. */}
+              <LedgerCell figure>{s.figure ?? null}</LedgerCell>
+              <LedgerCell align="end" desktopOnly>{goHint}</LedgerCell>
+            </LedgerRow>
+          );
+        })}
+      </Ledger>
+    </Section>
   );
 }

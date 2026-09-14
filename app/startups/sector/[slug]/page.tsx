@@ -14,6 +14,8 @@ import { loadSectorTeaser } from "@/lib/sector-teaser";
 import { STAGE_LABELS } from "@/lib/utils";
 import { safeFormatCurrency } from "@/lib/format";
 import { safeFormatTotal } from "@/lib/validators";
+import { buildAccessContext, investorCan } from "@/lib/access";
+import { getLaunchStatus } from "@/lib/launchMode";
 
 /**
  * Sector landing pages: /startups/sector/fintech and friends.
@@ -138,6 +140,29 @@ export default async function SectorPage({ params }: Props) {
   }
 
   const marketIsEmpty = anonymous ? teaser!.activeCount === 0 : list.length === 0;
+
+  // The paywall is said once, above the cards, and only to an investor whose
+  // plan lacks what it names: founders and paid plans never see it.
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
+  let showUpsell = false;
+  if (!anonymous && list.length > 0) {
+    const session = await createServerSupabaseClient();
+    const { data: { user } } = await session.auth.getUser();
+    if (user) {
+      const { data: prof } = await createAdminClient()
+        .from("profiles").select("id, role, subscription_tier, suspended, account_status")
+        .eq("id", user.id).maybeSingle();
+      const profile = prof as Parameters<typeof buildAccessContext>[0];
+      if (profile?.role === "investor") {
+        const { isLaunch } = await getLaunchStatus();
+        const caps = investorCan(buildAccessContext(profile, isLaunch));
+        showUpsell = !caps.viewFinancials || !caps.aiScore;
+      }
+    }
+  }
 
   // One empty state for both audiences: with no active rounds there is
   // nothing to mask, so anonymous and member honestly see the same thing.
@@ -283,11 +308,21 @@ export default async function SectorPage({ params }: Props) {
               </div>
             </>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
-              {list.map((s) => (
-                <StartupCard key={s.id} startup={s} investorTier={null} />
-              ))}
-            </div>
+            <>
+              {showUpsell && (
+                <p style={{ margin: "0 0 16px", fontFamily: "var(--font-dm-sans), system-ui, sans-serif", fontSize: "13px", fontWeight: 400, lineHeight: 1.4, color: "var(--cr-ink-2)" }}>
+                  {tf("startups.ledger.upsell", "Financials and AI consistency scores come with a paid investor plan.")}{" "}
+                  <Link href="/pricing" className="cr-link" style={{ display: "inline-block", paddingBlock: "12px", marginBlock: "-12px" }}>
+                    {t("common.upgrade")}
+                  </Link>
+                </p>
+              )}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
+                {list.map((s) => (
+                  <StartupCard key={s.id} startup={s} investorTier={null} />
+                ))}
+              </div>
+            </>
           )}
 
           {/* Sector index, so every sector page links every other -- crawlers

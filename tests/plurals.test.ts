@@ -66,8 +66,13 @@ describe("plural selection", () => {
 
   it("keys without plural variants are unaffected", () => {
     // Backwards compatibility: passing a count to an ordinary key must still
-    // resolve the base string, not fall through to the raw key name.
+    // resolve the base string, not fall through to the raw key name. Asserted
+    // against the base string itself rather than a copy literal, so rewording
+    // the label cannot fail a test about resolution order.
+    const base = load("en").startups.showHidden as string;
+    expect(base, "showHidden must still take a {count} placeholder").toContain("{count}");
     const s = translate("en", "startups.showHidden", { count: 3 });
-    expect(s).toBe("Show hidden (3)");
+    expect(s).toBe(base.replace("{count}", "3"));
+    expect(s).not.toBe("startups.showHidden");
   });
 });

@@ -1,112 +1,230 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { DemoBadge } from "@/components/shared/demo-badge";
-import { useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase";
-import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows, Clock } from "lucide-react";
-import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
-import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget } from "@/lib/validators";
-import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
-import { STARTUP_PRESETS } from "@/lib/search-presets";
-import { FilterPresets } from "@/components/search/filter-presets";
-import { notify } from "@/components/ui/toast-notify";
-import { useEscapeKey } from "@/hooks/useEscapeKey";
-import { announce } from "@/lib/announce";
-import { normalizeCountry, sameCountry } from "@/lib/countries";
-import { roundCloseState } from "@/lib/round-close";
-import { matchesSavedSearch } from "@/lib/search-match";
-import { EmptyState as EmptyStateBlock } from "@/components/ui/EmptyState";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Bookmark, X } from "lucide-react";
+import { createClient } from "@/lib/supabase";
+import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
+import { isValidFundingTarget } from "@/lib/validators";
+import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
+import { notify } from "@/components/ui/toast-notify";
+import { announce } from "@/lib/announce";
+import { normalizeCountry } from "@/lib/countries";
+import { matchesSavedSearch } from "@/lib/search-match";
+import { displayLocale } from "@/lib/display-locale";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
-import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { EntityLogo } from "@/components/shared/entity-logo";
+import { DemoBadge } from "@/components/shared/demo-badge";
+import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/page-header";
+import { Ledger, LedgerCell, LedgerHead, LedgerRow } from "@/components/ui/ledger";
+import {
+  FilterBar,
+  FilterMenu,
+  FilterPopover,
+  FilterSearch,
+  SortSelect,
+  type FilterOption,
+  type SortOption,
+} from "@/components/ui/filter-bar";
+import { startupMetaBits } from "@/components/startup/startup-card";
+// The canonical sector list: a local copy once drifted and left live sectors
+// unfilterable.
+import { INDUSTRIES } from "@/types";
+
+/* Hallmark · genre: modern-minimal · surface: /startups ledger
+ * Built on components/ui/{page-header,filter-bar,ledger,EmptyState}. Colours
+ * are tokens only; spacing is rem on the 4/8/12/16/24/32/48/64 steps.
+ */
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-// The CANONICAL list -- a local copy drifted (no AgriTech, no SpaceTech), so
-// the filter could never offer sectors founders actually pick at onboarding
-// while six live AgriTech listings sat unfilterable.
-import { INDUSTRIES as CANONICAL_INDUSTRIES } from "@/types";
-const INDUSTRIES = CANONICAL_INDUSTRIES;
-
-const STAGES = [
-  { value: "pre-seed",      label: "Pre-Seed"  },
-  { value: "seed",          label: "Seed"       },
-  { value: "series_a",      label: "Series A"   },
-  { value: "series_b_plus", label: "Series B+"  },
-];
-
-
-// mrrMin, aiScoreMin and country have been in the filter state and applied by
-// the filter logic since this component was written -- but nothing ever
-// rendered a control for them, so they were dead depth. Preset chips rather
-// than sliders/inputs to stay inside the page's single control convention.
-const MRR_PRESETS = [
-  { value: 5_000,   label: "MRR $5k+"   },
-  { value: 25_000,  label: "MRR $25k+"  },
-  { value: 100_000, label: "MRR $100k+" },
-];
-const SCORE_PRESETS = [
-  { value: 60, label: "Score 60+" },
-  { value: 80, label: "Score 80+" },
-];
-
-const RAISING_PRESETS = [
-  { value: 1_000_000, label: "Raising $1M+" },
-  { value: 2_000_000, label: "Raising $2M+" },
-];
-
-// Newest leads, and it is the default below. The score is a model's reading of
-// what a founder published; ordering the whole catalogue by it out of the box
-// makes the platform the one recommending, which is a claim it cannot back. It
-// stays available as a sort the reader chooses.
-const SORT_OPTIONS = [
-  { value: "recent",  labelKey: "filters.sortRecent"  },
-  { value: "score",   labelKey: "filters.sortScore"   },
-  { value: "updated", labelKey: "filters.sortUpdated" },
-  { value: "closing", labelKey: "filters.sortClosing" },
-  { value: "founded", labelKey: "filters.sortFounded" },
-  { value: "mrr",     labelKey: "filters.sortMrr"     },
-  { value: "funding", labelKey: "filters.sortRaising" },
-];
-
+const STAGE_ORDER = ["pre-seed", "seed", "series_a", "series_b_plus"];
+const MRR_STEPS = [5_000, 25_000, 100_000];
+const RAISING_STEPS = [1_000_000, 2_000_000];
+const SCORE_STEPS = [60, 80];
+const RUNWAY_STEP = 12;
+const GROWTH_STEP = 20;
 const PAGE_SIZE = 24;
+/** Region and business model are secondary: they appear once the market is this large (S2). */
+const SECONDARY_MIN_ROWS = 10;
+/** The filter bar sticks only when the list is longer than 12 rows. */
+const STICKY_ABOVE_ROWS = 12;
+/** A derived match below this is noise, not a signal. */
+const MATCH_FLOOR = 40;
+const UNDO_MS = 8000;
 
-/**
- * The vertical rhythm of this surface, in one place so every block obeys it:
- * 48 between major sections (bar to results, grid to pager), 24 between blocks
- * (grid gutters, card internals, sheet sections), 12-16 inside a block, 8
- * between a label and its value, 4 between a value and its unit.
- *
- * WHY one constant: the bar, the cards and the sheet each used to carry their
- * own ad-hoc numbers (7, 9, 10, 14, 18, 20, 22), so nothing lined up and the
- * density read as clutter. Every gap on this page now comes from here.
- */
-const RHYTHM = { section: "48px", block: "24px", inner: "16px", pair: "8px" } as const;
-
-/**
- * A row-level tool (copy link, export, show hidden). Same size as the count it
- * sits beside, one step down in ink and with no underline: these act on the
- * result set, they are not the result set.
- */
-const QUIET_ACTION: React.CSSProperties = {
-  background: "none", border: "none", padding: 0, cursor: "pointer",
-  fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px",
-  color: "var(--cr-ink-3)", textDecoration: "none", textAlign: "left",
+/** The one page column, shared with the loading skeleton so the swap does not move. */
+const FRAME: CSSProperties = {
+  maxWidth: "68.75rem",
+  marginInline: "auto",
+  paddingInline: "clamp(1.5rem, 5vw, 2rem)",
+  paddingBlockEnd: "4rem",
 };
 
-/**
- * A chip cluster and the small "i" that explains it, kept as one wrapping
- * unit so the tip visibly belongs to its own chips and not to whichever
- * neighbour the flex row happened to break beside.
- */
-const TIPPED_CLUSTER: React.CSSProperties = {
-  display: "inline-flex", alignItems: "center", flexWrap: "wrap", gap: RHYTHM.pair,
+// Figure tracks are fixed: every row is its own grid, so an auto track would
+// size per row and the columns would not line up.
+const COL_COMPANY = "minmax(0,1.5fr)";
+const COL_META = "minmax(0,1fr)";
+const COL_FIGURE = "6.5rem";
+const COL_SAVE = "2.75rem";
+const COL_UNHIDE = "5.5rem";
+
+const FOOTNOTE_TEXT: CSSProperties = {
+  fontFamily: "inherit",
+  fontSize: "inherit",
+  lineHeight: "inherit",
+  color: "inherit",
+  maxWidth: "none",
 };
+
+const LANE_CSS = `
+.cr-su-company { display: flex; align-items: center; gap: 0.75rem; min-width: 0; }
+.cr-su-company__text { flex: 1 1 auto; min-width: 0; align-self: baseline; }
+.cr-su-logo { display: inline-flex; flex: none; }
+.cr-su-logo > span { border-color: transparent !important; }
+.cr-su-name { display: flex; align-items: baseline; gap: 0.5rem; min-width: 0; }
+.cr-su-name > .cr-row-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cr-su-name > .cr-row-title[data-viewed] { color: var(--cr-ink-3); }
+.cr-su-match { font-weight: 500; color: var(--cr-ink); }
+.cr-su-score-label {
+  margin-inline-end: 0.5rem;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--cr-ink-3);
+}
+.cr-su-tip { text-transform: none; letter-spacing: 0; white-space: normal; }
+.cr-su-icon-btn { min-width: 2.75rem; padding-inline: 0; }
+.cr-su-bookmark svg { color: var(--cr-ink-3); transition: color 120ms var(--ease-out); }
+@media (hover: hover) { .cr-su-bookmark:hover svg { color: var(--cr-ink); } }
+.cr-su-bookmark[data-saved] svg,
+.cr-su-bookmark[data-saved]:hover svg { color: var(--cr-copper); }
+.cr-su-text-action { margin-inline-start: -0.5rem; }
+@media (min-width: 768px) { .cr-su-score-label { display: none; } }
+@media (max-width: 767px) { .cr-su-indent { display: block; padding-inline-start: 2.75rem; } }
+
+.cr-su-upsell {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-2);
+}
+.cr-su-upsell .cr-link { display: inline-block; padding-block: 0.75rem; margin-block: -0.75rem; }
+
+.cr-su-saved-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-width: 0; }
+@media (min-width: 640px) { .cr-su-saved-actions { margin-block: -0.325rem; } }
+.cr-su-saveform { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; min-width: 0; }
+.cr-su-saveform .cr-input { width: 14rem; max-width: 100%; }
+@media (max-width: 639px) { .cr-su-saveform .cr-input { flex: 1 1 10rem; width: auto; } }
+.cr-su-saveform__error {
+  flex-basis: 100%;
+  margin: 0;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--cr-down);
+}
+
+.cr-su-saved { display: flex; flex-direction: column; min-width: min(18rem, calc(100vw - 4rem)); }
+.cr-su-saved__row { display: flex; align-items: center; gap: 0.25rem; min-width: 0; }
+.cr-su-saved__apply {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+  text-align: start;
+  font: inherit;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+}
+.cr-su-saved__apply:focus-visible { outline: 2px solid var(--cr-copper) !important; outline-offset: -2px; box-shadow: none !important; }
+.cr-su-saved__name { font-weight: 600; color: var(--cr-ink); }
+.cr-su-saved__summary { color: var(--cr-ink-3); }
+.cr-su-saved__removed {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-inline: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--cr-ink-2);
+}
+.cr-su-saved__note {
+  margin: 0.25rem 0 0;
+  padding: 0.5rem 0.75rem;
+  border-block-start: 1px solid var(--cr-rule);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-3);
+}
+
+.cr-su-subgroup { min-width: 0; }
+.cr-su-subgroup + .cr-su-subgroup { margin-block-start: 0.25rem; padding-block-start: 0.25rem; border-block-start: 1px solid var(--cr-rule); }
+.cr-su-subgroup__label {
+  margin: 0;
+  padding: 0.5rem 0.75rem 0.25rem;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: var(--cr-ink-3);
+}
+
+.cr-su-skel { display: inline-block; vertical-align: middle; border-radius: var(--cr-radius-control); background-color: var(--cr-paper-3); }
+.cr-su-skel--logo { flex: none; width: 2rem; height: 2rem; }
+.cr-su-skel-line { display: flex; align-items: center; min-width: 0; }
+.cr-su-skel-line--title { height: 1.3125rem; }
+.cr-su-skel-line--sub { height: 1.1375rem; }
+
+@media (prefers-reduced-motion: reduce) { .cr-su-bookmark svg { transition: none; } }
+`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
+
+/**
+ * What the server resolved about the viewer. Plan gates are decided on the
+ * server (lib/access investorCan); the client only renders what they allow.
+ */
+export interface DirectoryViewer {
+  role: "investor" | "startup" | "admin" | null;
+  /** Gated financial fields are already stripped server-side when false. */
+  canSeeFinancials: boolean;
+  canSeeScore: boolean;
+  savedSearches: boolean;
+  advancedFilters: boolean;
+  dataExport: boolean;
+}
+
+const ANONYMOUS_VIEWER: DirectoryViewer = {
+  role: null,
+  canSeeFinancials: false,
+  canSeeScore: false,
+  savedSearches: false,
+  advancedFilters: false,
+  dataExport: false,
+};
 
 interface Startup {
   id: string; slug: string; name: string; tagline: string;
@@ -114,756 +232,379 @@ interface Startup {
   mrr: number | null; arr: number | null; growth_rate: number | null;
   runway_months: number | null; created_at: string; updated_at: string;
   vaultrise_score: number | null;
-  country: string | null; business_model: string | null; round_close_date: string | null; demo_video_url: string | null; founded_year: number | null; verified_at: string | null;
+  country: string | null; business_model: string | null; round_close_date: string | null;
+  demo_video_url: string | null; founded_year: number | null; verified_at: string | null;
+  round_state?: string | null;
+  logo_url?: string | null;
+  logo_color?: string | null;
+  is_demo?: boolean;
 }
 
+/**
+ * Every key the saved-search matcher and the alert cron understand stays in
+ * the state, including the ones this page no longer offers as a first-class
+ * control, so an old link or saved search still filters (and shows) exactly
+ * what it did.
+ */
 interface Filters {
   query: string; industries: string[]; stages: string[];
   mrrMin: number; aiScoreMin: number; sort: string; country: string;
-  newOnly?: boolean;
-  raisingMin?: number; runwayMin?: number; growthMin?: number;
-  closingSoon?: boolean; businessModel?: string; hasDemo?: boolean;
+  newOnly: boolean; raisingMin: number; runwayMin: number; growthMin: number;
+  closingSoon: boolean; businessModel: string; hasDemo: boolean;
 }
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
-  mrrMin: 0, aiScoreMin: 0, sort: "recent", country: "", newOnly: false,
-  raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
+  mrrMin: 0, aiScoreMin: 0, sort: "recent", country: "",
+  newOnly: false, raisingMin: 0, runwayMin: 0, growthMin: 0,
+  closingSoon: false, businessModel: "", hasDemo: false,
 };
 
-/**
- * How many of the traction filters are on. Drives the count on the Traction
- * group and, with region and business model, the count on "More filters".
- */
-function tractionActive(f: Filters) {
-  return (f.mrrMin > 0 ? 1 : 0) + (f.aiScoreMin > 0 ? 1 : 0) + (f.newOnly ? 1 : 0)
-    + (f.raisingMin ? 1 : 0) + (f.runwayMin ? 1 : 0) + (f.growthMin ? 1 : 0)
-    + (f.closingSoon ? 1 : 0) + (f.hasDemo ? 1 : 0);
-}
+interface SavedSearch { id: string; name: string; filters: Record<string, unknown> | null }
 
-/**
- * The filters that sit behind the "More filters" disclosure: traction
- * thresholds, region, business model. Industry and stage stay on the bar
- * because they are how a deal-flow list is read first; nothing else is on
- * screen by default, and nothing is more than one click away.
- */
-function advancedActive(f: Filters) {
-  return tractionActive(f) + (f.country ? 1 : 0) + (f.businessModel ? 1 : 0);
-}
+type Vars = Record<string, string | number>;
+type TFn = (key: string, vars?: Vars) => string;
+type TfFn = (key: string, fallback: string, vars?: Vars, fallbackOne?: string) => string;
 
-// ── Saved searches ────────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-interface SavedSearch { id: string; name: string; filters: Partial<Filters>; }
-
-/**
- * Save the current filter set and come back to it.
- *
- * canUseSavedSearches() has been a plan capability and a pricing-page bullet
- * since the tier system existed, with no table behind it until migration 021.
- *
- * Renders nothing at all for signed-out visitors and for founders -- this is an
- * investor tool, and an empty bar on a public page is just noise. The plan gate
- * lives on the server; a 403 here surfaces as an upgrade prompt rather than a
- * hidden button, because a feature you cannot see is a feature you will not buy.
- */
-function SavedSearches({ filters, onApply, isDefault }: {
-  filters: Filters;
-  onApply: (f: Partial<Filters>) => void;
-  isDefault: boolean;
-}) {
+/** t() with an English fallback until the key lands in messages/. */
+function useTf() {
   const { t } = useTranslation();
-  const [searches, setSearches] = useState<SavedSearch[] | null>(null);
-  const [naming, setNaming]     = useState(false);
-  const [name, setName]         = useState("");
-  const [busy, setBusy]         = useState(false);
+  const tf = useCallback<TfFn>(
+    (key, fallback, vars, fallbackOne) => {
+      const out = t(key, vars);
+      if (out !== key) return out;
+      const base = fallbackOne !== undefined && vars?.count === 1 ? fallbackOne : fallback;
+      return vars ? base.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? `{${k}}`)) : base;
+    },
+    [t],
+  );
+  return { t: t as TFn, tf };
+}
 
-  useEffect(() => {
-    let live = true;
-    // Signed-out visitors cannot have saved searches; asking the server for
-    // them anyway put a guaranteed 401 in every visitor's console — noise
-    // that buries real errors. The session check is a local cookie read.
-    createClient().auth.getSession().then(({ data }) => {
-      if (!live || !data.session) { if (live) setSearches(null); return; }
-      fetch("/api/saved-searches")
-        .then((r) => (r.ok ? r.json() : null))
-        .then((d) => { if (live) setSearches(d?.searches ?? null); })
-        .catch(() => { if (live) setSearches(null); });
-    });
-    return () => { live = false; };
-  }, []);
+function advancedCount(f: Filters): number {
+  return (f.mrrMin > 0 ? 1 : 0) + (f.raisingMin > 0 ? 1 : 0) + (f.aiScoreMin > 0 ? 1 : 0)
+    + (f.runwayMin > 0 ? 1 : 0) + (f.growthMin > 0 ? 1 : 0)
+    + (f.newOnly ? 1 : 0) + (f.closingSoon ? 1 : 0) + (f.hasDemo ? 1 : 0);
+}
 
-  // null means "not an investor, or not signed in" -- render nothing.
-  if (searches === null) return null;
+function positive(v: unknown): number {
+  const n = Number(v);
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
 
-  async function save() {
-    const trimmed = name.trim();
-    if (!trimmed) { setNaming(false); return; }
-    setBusy(true);
-    const res = await fetch("/api/saved-searches", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: trimmed, filters }),
-    });
-    const body = await res.json().catch(() => ({}));
-    setBusy(false);
-    setNaming(false);
-    setName("");
-    if (!res.ok) {
-      notify.error(body.upgrade ? t("startups.savedSearchUpgrade") : (body.error || t("startups.savedSearchFailed")));
-      return;
-    }
-    // Replace an entry of the same name rather than appending a duplicate --
-    // the server upserts on (investor_id, name), so the list must too.
-    setSearches((prev) => [body.search, ...(prev ?? []).filter((s) => s.id !== body.search.id)]);
-    notify.success(t("startups.savedSearchSaved"));
+function strings(v: unknown): string[] {
+  return Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.length > 0) : [];
+}
+
+function text(v: unknown): string {
+  return typeof v === "string" ? v : "";
+}
+
+function readFilters(raw: Record<string, unknown> | null | undefined): Filters {
+  const r = raw ?? {};
+  return {
+    query: text(r.query),
+    industries: strings(r.industries),
+    stages: strings(r.stages),
+    mrrMin: positive(r.mrrMin),
+    aiScoreMin: positive(r.aiScoreMin),
+    sort: text(r.sort) || DEFAULT_FILTERS.sort,
+    country: text(r.country),
+    newOnly: r.newOnly === true,
+    raisingMin: positive(r.raisingMin),
+    runwayMin: positive(r.runwayMin),
+    growthMin: positive(r.growthMin),
+    closingSoon: r.closingSoon === true,
+    businessModel: text(r.businessModel),
+    hasDemo: r.hasDemo === true,
+  };
+}
+
+function stageLabel(stage: string): string {
+  return STAGE_LABELS[stage] ?? stage.replace(/_/g, " ");
+}
+
+function money(n: number): string {
+  return formatCurrency(n, true);
+}
+
+/** A threshold is worth offering only when it splits the loaded rows: some at or above it, some below. */
+function splits(values: number[], threshold: number): boolean {
+  let above = 0;
+  for (const v of values) if (v >= threshold) above += 1;
+  return above > 0 && above < values.length;
+}
+
+function stepsThatSplit(values: number[], steps: number[], selected: number): number[] {
+  const out = steps.filter((step) => splits(values, step));
+  if (selected > 0 && !out.includes(selected)) out.push(selected);
+  return out.sort((a, b) => a - b);
+}
+
+function joinList(items: string[]): string {
+  try {
+    return new Intl.ListFormat(displayLocale(), { style: "long", type: "conjunction" }).format(items);
+  } catch {
+    return items.join(", ");
   }
+}
 
-  async function remove(id: string) {
-    setSearches((prev) => (prev ?? []).filter((s) => s.id !== id));   // optimistic
-    const res = await fetch("/api/saved-searches", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    if (!res.ok) notify.error(t("startups.savedSearchDeleteFailed"));
+function optionsFrom(order: string[], counts: Record<string, number>, selected: string[], label: (v: string) => string): FilterOption[] {
+  const seen = new Set(order);
+  const extra: string[] = [];
+  for (const v of [...Object.keys(counts), ...selected]) {
+    if (!seen.has(v)) { seen.add(v); extra.push(v); }
   }
+  return [...order, ...extra.sort()].map((v) => ({ value: v, label: label(v), count: counts[v] ?? 0 }));
+}
 
+/** Mirrors FilterMenu's own render rule, so the bar knows whether it has any controls. */
+function menuRenders(options: ReadonlyArray<FilterOption>, selected: ReadonlyArray<string>): boolean {
+  const visible = options.filter((o) => o.count !== 0 || selected.includes(o.value));
+  return visible.length >= 2 || selected.length > 0;
+}
+
+function advancedParts(f: Filters, t: TFn, tf: TfFn): string[] {
+  const threshold = (label: string, value: string) => tf("startups.ledger.threshold", "{label} {value}+", { label, value });
+  const parts: string[] = [];
+  if (f.mrrMin > 0) parts.push(threshold(t("listings.mrr"), money(f.mrrMin)));
+  if (f.raisingMin > 0) parts.push(threshold(t("listings.raising"), money(f.raisingMin)));
+  if (f.aiScoreMin > 0) parts.push(threshold(t("listings.score"), String(f.aiScoreMin)));
+  if (f.runwayMin > 0) parts.push(f.runwayMin === RUNWAY_STEP ? t("startups.runway12") : threshold(t("startups.runwayLabel"), String(f.runwayMin)));
+  if (f.growthMin > 0) parts.push(f.growthMin === GROWTH_STEP ? t("startups.growth20") : threshold(t("startupDetail.growth"), `${f.growthMin}%`));
+  if (f.newOnly) parts.push(t("startups.newThisWeek"));
+  if (f.closingSoon) parts.push(t("startups.closingSoon"));
+  if (f.hasDemo) parts.push(t("startups.hasDemo"));
+  return parts;
+}
+
+function describeFilters(f: Filters, t: TFn, tf: TfFn): string[] {
+  const parts: string[] = [];
+  const q = f.query.trim();
+  if (q) parts.push(`“${q}”`);
+  parts.push(...f.industries, ...f.stages.map(stageLabel));
+  if (f.country) parts.push(f.country);
+  if (f.businessModel) parts.push(f.businessModel);
+  parts.push(...advancedParts(f, t, tf));
+  return parts;
+}
+
+function insertAt(list: SavedSearch[], item: SavedSearch, index: number): SavedSearch[] {
+  if (list.some((s) => s.id === item.id)) return list;
+  const next = [...list];
+  next.splice(Math.min(Math.max(index, 0), next.length), 0, item);
+  return next;
+}
+
+// ── More-menu groups ──────────────────────────────────────────────────────────
+
+function ThresholdGroup({ label, steps, value, format, onChange }: {
+  label: string;
+  steps: number[];
+  value: number;
+  format: (step: number) => string;
+  onChange: (next: number) => void;
+}) {
+  const { tf } = useTf();
+  const labelId = useId();
+  // Unique per instance: the bar and the sheet both render this group.
+  const name = useId();
   return (
-    <div style={{ background: "var(--cr-paper-2)", borderBottom: "1px solid var(--cr-rule)" }}>
-      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)" }}>
-          {t("startups.savedSearches")}
-        </span>
-
-        {searches.map((s) => (
-          <span key={s.id} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "999px", padding: "4px 8px 4px 12px" }}>
-            <button onClick={() => onApply(s.filters)}
-              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-2)", padding: 0 }}>
-              {s.name}
-            </button>
-            <button onClick={() => remove(s.id)} aria-label={t("startups.savedSearchDelete", { name: s.name })}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: "4px" }}>
-              <X style={{ width: 12, height: 12 }} />
-            </button>
-          </span>
-        ))}
-
-        {naming ? (
-          <input
-            autoFocus value={name} disabled={busy}
-            onChange={(e) => setName(e.target.value)}
-            onBlur={save}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-              if (e.key === "Escape") { setName(""); setNaming(false); }
-            }}
-            maxLength={80}
-            placeholder={t("startups.savedSearchNamePlaceholder")}
-            style={{ background: "var(--cr-paper)", border: "1px solid var(--cr-copper)", borderRadius: "999px", padding: "4px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink)", outline: "none", width: "180px" }}
-          />
-        ) : (
-          // Saving the default, empty filter set would just create an entry
-          // that does nothing, so the affordance only appears once something
-          // is actually filtered.
-          !isDefault && (
-            <button onClick={() => setNaming(true)}
-              style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-copper)", textDecoration: "underline", padding: 0 }}>
-              + {t("startups.saveThisSearch")}
-            </button>
-          )
-        )}
-      </div>
+    <div role="radiogroup" aria-labelledby={labelId} className="cr-su-subgroup">
+      <p id={labelId} className="cr-su-subgroup__label">{label}</p>
+      <label className="cr-option">
+        <input type="radio" name={name} checked={value <= 0} onChange={() => onChange(0)} />
+        <span className="cr-option__label">{tf("common.ledger.any", "Any")}</span>
+      </label>
+      {steps.map((step) => (
+        <label key={step} className="cr-option">
+          <input type="radio" name={name} value={String(step)} checked={value === step} onChange={() => onChange(step)} />
+          <span className="cr-option__label">{format(step)}</span>
+        </label>
+      ))}
     </div>
   );
 }
 
-// ── Primitives ────────────────────────────────────────────────────────────────
-
-/**
- * A labelled dropdown holding a group of FilterChips. Replaces the old
- * always-visible chip soup: fifteen chips in a scrolling strip read as
- * noise, three labelled groups with counts read as a system.
- */
-function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
-  label: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode;
-  /** glossary.* key explaining what this group filters on and how. */
-  tipKey?: string;
+function ToggleGroup({ label, options }: {
+  label: string;
+  options: Array<{ key: string; label: string; on: boolean; set: (on: boolean) => void }>;
 }) {
-  const { t } = useTranslation();
-  const doneLabel = t("common.done");
-
-  // Only the mobile sheet is modal. The desktop dropdown is an anchored panel
-  // the user should be able to scroll past, so the lock is gated on the same
-  // breakpoint the CSS uses rather than on `open` alone.
-  useEffect(() => {
-    if (!open || !window.matchMedia("(max-width: 1023px)").matches) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = prev; };
-  }, [open]);
-
+  const labelId = useId();
   return (
-    <div style={{ position: "relative", flexShrink: 0 }}>
-      <button onClick={onToggle}
-        style={{
-          display: "inline-flex", alignItems: "center", gap: "8px",
-          fontFamily: "'DM Sans', sans-serif", fontWeight: count > 0 ? 500 : 400, fontSize: "13px",
-          padding: "8px 12px", borderRadius: "4px",
-          border: count > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
-          background: count > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-          color: count > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
-          cursor: "pointer", whiteSpace: "nowrap",
-        }}>
-        {label}{count > 0 ? ` · ${count}` : ""}
-        <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
-      </button>
-      {/* Beside the trigger, never inside it: a button cannot nest a button,
-          and the tip must stay reachable while the panel is closed -- the
-          reader deciding whether to open a group is exactly who needs it. */}
-      {tipKey && <InfoTip termKey={tipKey} />}
-      {/* Desktop: a panel anchored under its chip. */}
-      {open && (
-        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
-          {children}
-        </div>
-      )}
-
-      {/* Mobile: a bottom sheet, because anchoring cannot work here. The chips
-          live in a horizontally scrolling row, so a chip scrolled to x=300 on a
-          375px screen opened a 280px panel mostly off the right edge -- and the
-          panel could not be scrolled back into view because the row scrolls,
-          not the page. A sheet is anchored to the viewport instead of the chip,
-          so it is always fully reachable, and it sits within thumb reach rather
-          than up under the sticky bar. */}
-      {open && (
-        <div className="lg:hidden">
-          <div
-            style={{ position: "fixed", inset: 0, background: "var(--cr-scrim)", zIndex: 95 }}
-            onClick={onToggle}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={label}
-            style={{
-              position: "fixed", insetInline: 0,
-              bottom: "var(--cr-tabbar-h, 0px)",
-              zIndex: 96,
-              background: "var(--cr-paper-2)",
-              borderTop: "1px solid var(--cr-rule-dark)",
-              borderRadius: "6px 6px 0 0",
-              boxShadow: "var(--cr-card-shadow-hover)",
-              maxHeight: "70vh",
-              display: "flex", flexDirection: "column",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: RHYTHM.inner, borderBottom: "1px solid var(--cr-rule)" }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
-                {label}
-                {/* Repeated in the sheet header because the 12px trigger
-                    beside the chip is a poor tap target; here there is room. */}
-                {tipKey && <InfoTip termKey={tipKey} />}
-              </span>
-              <button
-                onClick={onToggle}
-                // 48 rather than the 40 minimum: a touch target still has to
-                // sit on the spacing scale, and 48 is the first step that does.
-                style={{ minHeight: "48px", paddingInline: RHYTHM.inner, border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-2)", cursor: "pointer" }}
-              >
-                {doneLabel}
-              </button>
-            </div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: RHYTHM.pair, padding: RHYTHM.inner, overflowY: "auto", paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))" }}>
-              {children}
-            </div>
-          </div>
-        </div>
-      )}
+    <div role="group" aria-labelledby={labelId} className="cr-su-subgroup">
+      <p id={labelId} className="cr-su-subgroup__label">{label}</p>
+      {options.map((o) => (
+        <label key={o.key} className="cr-option">
+          <input type="checkbox" checked={o.on} onChange={(e) => o.set(e.target.checked)} />
+          <span className="cr-option__label">{o.label}</span>
+        </label>
+      ))}
     </div>
   );
 }
 
-/**
- * One applied filter in the summary row: label + its own remove control.
- *
- * Quiet on purpose. Eight copper chips under a bar of copper group buttons was
- * the same accent shouting twice; the buttons above carry the active state, so
- * this row is the ledger of what is on, not another alarm.
- */
-function AppliedChip({ label, onRemove }: { label: string; onRemove: () => void }) {
-  return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-2)", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 8px 4px 12px" }}>
-      {label}
-      <button onClick={onRemove} aria-label={`remove ${label}`} data-tap-exempt=""
-        style={{ background: "none", border: "none", color: "inherit", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
-        <X style={{ width: 12, height: 12 }} />
-      </button>
-    </span>
-  );
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+
+function SkeletonBar({ width, height }: { width: string; height: string }) {
+  return <span className="cr-su-skel" style={{ width, height }} />;
 }
 
-function FilterChip({ active, onClick, children, disabled, title }: { active: boolean; onClick: () => void; children: React.ReactNode; disabled?: boolean; title?: string }) {
+/** Rows at the real row geometry: a 32px logo beside a 15px name and a 13px line, one hairline each. Static, no pulse. */
+function LedgerSkeleton({ rows = 6 }: { rows?: number }) {
   return (
-    <button
-      onClick={onClick}
-      // A threshold the loaded rows cannot answer is offered as unavailable
-      // rather than as a filter that returns an empty market.
-      disabled={disabled}
-      title={title}
-      style={{
-        fontFamily:    "'DM Sans', sans-serif",
-        fontWeight:    active ? 500 : 400,
-        fontSize:      "13px",
-        padding:       "8px 16px",
-        borderRadius:  "4px",
-        border:        active ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
-        background:    active ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-        color:         disabled ? "var(--cr-ink-4)" : active ? "var(--cr-copper)" : "var(--cr-ink-3)",
-        cursor:        disabled ? "not-allowed" : "pointer",
-        opacity:       disabled ? 0.55 : 1,
-        whiteSpace:    "nowrap",
-        transition:    "background-color 100ms ease, color 100ms ease",
-      }}
+    <ul
+      className="cr-ledger"
+      aria-hidden="true"
+      style={{ "--cr-ledger-cols": `${COL_COMPANY} ${COL_META} ${COL_FIGURE}` } as CSSProperties}
     >
-      {children}
-    </button>
+      <li className="cr-colhead">
+        <div className="cr-cell"><SkeletonBar width="4rem" height="0.5rem" /></div>
+        <div className="cr-cell"><SkeletonBar width="5rem" height="0.5rem" /></div>
+        <div className="cr-cell cr-cell--figure"><SkeletonBar width="3.5rem" height="0.5rem" /></div>
+      </li>
+      {Array.from({ length: rows }, (_, i) => (
+        <li key={i} className="cr-row" style={{ alignItems: "start" }}>
+          <div className="cr-cell cr-cell--primary">
+            <span className="cr-su-company">
+              <span className="cr-su-skel cr-su-skel--logo" />
+              <span className="cr-su-company__text">
+                <span className="cr-su-skel-line cr-su-skel-line--title"><SkeletonBar width="min(10rem, 70%)" height="0.75rem" /></span>
+                <span className="cr-su-skel-line cr-su-skel-line--sub"><SkeletonBar width="min(16rem, 90%)" height="0.625rem" /></span>
+              </span>
+            </span>
+          </div>
+          <div className="cr-cell">
+            <span className="cr-su-skel-line cr-su-skel-line--sub cr-su-indent"><SkeletonBar width="8rem" height="0.625rem" /></span>
+          </div>
+          <div className="cr-cell cr-cell--figure">
+            <span className="cr-su-skel-line cr-su-skel-line--title" style={{ justifyContent: "flex-end" }}><SkeletonBar width="3.5rem" height="0.75rem" /></span>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
 /**
- * The loading card is the REAL card with its values suppressed, not a stack of
- * rounded gray bars: same 24 padding, same 16 between blocks, same hairline
- * metric strip. A number's absence is a dash, so the grid does not reflow when
- * the data lands and the wait reads as a quiet ledger instead of a shimmer.
+ * The directory before its data: page header, the 44px bar and six rows, in
+ * the same frame and classes as the live page. Used by app/startups/loading.tsx
+ * and the page's Suspense fallback.
  */
-function SkeletonCard() {
+export function StartupsDirectorySkeleton() {
   return (
-    <div aria-hidden style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "6px", padding: RHYTHM.block, opacity: 0.55 }}>
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: RHYTHM.inner }}>
-        <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }} />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink-4)" }}>—</p>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px" }}>—</p>
+    <div style={FRAME} aria-hidden="true">
+      <style>{LANE_CSS}</style>
+      <div className="cr-page-header">
+        <div className="cr-page-header__main">
+          <span className="cr-su-skel-line" style={{ height: "2.1rem" }}><SkeletonBar width="7rem" height="1.25rem" /></span>
+          <div className="cr-page-meta"><SkeletonBar width="7rem" height="0.75rem" /></div>
         </div>
       </div>
-      <div style={{ display: "flex", gap: RHYTHM.pair, marginBottom: RHYTHM.inner, flexWrap: "wrap" }}>
-        {[0, 1].map((i) => (
-          <span key={i} style={{ border: "1px solid var(--cr-rule)", color: "var(--cr-ink-4)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px" }}>—</span>
-        ))}
+      <div className="cr-filterbar">
+        <div className="cr-filterbar__row">
+          <span className="cr-su-skel" style={{ flex: "1 1 auto", height: "2.75rem" }} />
+        </div>
       </div>
-      {/* No boxed cells and no interior fences: space and alignment do the
-          fencing, exactly as on the loaded card below. */}
-      <div style={{ display: "flex", gap: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: RHYTHM.inner }}>
-        {[0, 1, 2].map((i) => (
-          <div key={i} style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>—</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-4)" }}>—</div>
-          </div>
-        ))}
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
-        <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink-4)" }}>—</div>
-        <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>—</div>
-      </div>
+      <LedgerSkeleton />
     </div>
-  );
-}
-
-function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: boolean; onReset: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <div style={{ gridColumn: "1 / -1" }}>
-      {/* Was a bespoke block whose heading and body rendered the same string
-          ("No results" twice) whenever a query was set. Now the shared shell,
-          with the body carrying the way out rather than repeating the title. */}
-      <EmptyStateBlock
-        Icon={Search}
-        title={query ? t("startups.noResultsFor", { query }) : t("startups.noListings")}
-        body={hasFilters ? t("startups.noResultsBody") : undefined}
-        action={hasFilters ? (
-          <button onClick={onReset} style={{
-            background: "transparent", color: "var(--cr-ink-3)",
-            fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
-            minHeight: "48px", padding: "8px 24px", borderRadius: "4px",
-            border: "1px solid var(--cr-rule-dark)", cursor: "pointer",
-          }}>
-            {t("filters.clearAll")}
-          </button>
-        ) : undefined}
-      />
-    </div>
-  );
-}
-
-// ── Search result card ────────────────────────────────────────────────────────
-
-function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
-  const { t } = useTranslation();
-  const score = s.vaultrise_score ?? null;
-  const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
-
-  return (
-    <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none", minWidth: 0, overflow: "hidden" }}>
-      {/* A card answers the pointer with ONE signal, and it is the paper-3
-          shift the ledger rows use -- so a card and a table row behave
-          alike. The shadow is a resting property of the card, not a hover
-          reward, which is why it sits inline rather than on .cr-lift. */}
-      <div
-        style={{
-          position: "relative", display: "flex", flexDirection: "column",
-          background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-          borderRadius: "6px", padding: RHYTHM.block,
-          boxShadow: "var(--cr-card-shadow), var(--cr-card-edge)",
-          transition: "background 120ms var(--ease-out)", cursor: "pointer",
-        }}
-        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)"; }}
-      >
-        {/* The serial number is gone with the card diet: a catalogue number
-            answers no browse decision, and its 9px type sat below the platform
-            floor. The specimen keeps its number on the detail page. */}
-        {/* Save / hide / compare, stacked in ONE rail rather than three loose
-            absolute offsets (14 / 38 / 60). One anchor, one 4px beat, and
-            8px touch padding on each -- all three controls stay, they simply
-            stop being three separate decisions about where the eye goes. */}
-        <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", zIndex: 1 }}>
-          <button
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSave(s.id); }}
-            style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
-            aria-label={saved ? "Remove" : "Save"}
-          >
-            <Bookmark style={{ width: 16, height: 16, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
-          </button>
-          {onHide && (
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHide(s.id); }}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
-              aria-label={hidden ? t("startups.unhide") : t("startups.hide")}
-              title={hidden ? t("startups.unhide") : t("startups.hide")}
-            >
-              <EyeOff style={{ width: 16, height: 16, color: hidden ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
-            </button>
-          )}
-          {onCompare && (
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCompare(s.id); }}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
-              aria-label={t("startups.compare")}
-              title={t("startups.compare")}
-            >
-              <GitCompareArrows style={{ width: 16, height: 16, color: comparing ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
-            </button>
-          )}
-        </div>
-
-        {/* Logo + Name */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: RHYTHM.inner, paddingRight: "32px" }}>
-          <EntityLogo name={s.name} logoUrl={(s as { logo_url?: string | null }).logo_url} logoColor={(s as { logo_color?: string | null }).logo_color} size={40} />
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{s.name}</span>
-              {(s as { is_demo?: boolean }).is_demo && <DemoBadge />}
-            </p>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {s.tagline}
-            </p>
-          </div>
-          {/* Ink, not ui/score-badge's copper: the raise figure below is
-              this card's one accent, and the badge's sub-11px caps label sat
-              below the platform floor. */}
-          {score != null && (
-            <span title={t("startup.scoreTitle", { score })} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
-                {score}
-                <span style={{ fontSize: "0.6em", color: "var(--cr-ink-4)", fontWeight: 500 }}>/100</span>
-              </span>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", maxWidth: "96px", textAlign: "right", lineHeight: 1.25 }}>{t("startup.scoreLabel")}</span>
-            </span>
-          )}
-        </div>
-
-        {/* Badges. This row used to carry three copper things at once -- a
-            filled match pill, a copper "new" outline and a filled "trending"
-            pill -- while the raise figure below was ALSO copper, so nothing on
-            the card was actually emphasised. Every badge is kept; the accent
-            budget is now spent once, on the raise. Match keeps a copper
-            hairline because it is the one figure personal to this viewer;
-            new and trending step down to the neutral badge family and carry
-            their meaning in the word and the glyph instead of in colour.
-
-            Match joined them: the raise below is the card's one accent
-            (components/startup/startup-card.tsx spends its budget the same
-            way), so match keeps its weight and its figure and gives up the
-            hue. */}
-        <div style={{ display: "flex", gap: RHYTHM.pair, marginBottom: RHYTHM.inner, flexWrap: "wrap", alignItems: "center", paddingRight: "32px" }}>
-          {viewed && (
-            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
-              <Eye style={{ width: 12, height: 12 }} /> {t("startups.viewed")}
-            </span>
-          )}
-          {match !== undefined && match >= 40 && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-2)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", letterSpacing: "0.03em" }}>
-              {t("filters.matchPct", { pct: match })}
-            </span>
-          )}
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            {s.industry}
-          </span>
-          <span style={{ background: "transparent", border: "1px solid var(--cr-rule)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-            {STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ")}
-          </span>
-          {isNew && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              {t("startup.new")}
-            </span>
-          )}
-          {(s as { trending?: boolean }).trending && (
-            <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-              ▲ {t("startups.trending")}
-            </span>
-          )}
-        </div>
-
-        {/* Metrics. Only the numbers this viewer actually HAS render -- a row of
-            boxes showing "—" (which is what every anonymous viewer saw once
-            MRR/ARR started being stripped server-side) reads as a broken card,
-            not a gated one. Present metrics sit on one hairline-divided strip;
-            absent ones are simply absent, and a card with no metrics at all
-            skips the strip and lets the raise row below carry it. */}
-        {(() => {
-          const metrics: Array<{ label: string; val: string; color?: string }> = [];
-          if (s.mrr) metrics.push({ label: t("startupDetail.mrr"), val: safeFormatMRR(s.mrr) ?? "" });
-          if (s.arr) metrics.push({ label: t("startupDetail.arr"), val: safeFormatMRR(s.arr) ?? "" });
-          // Ink, not up/down colour: a growth percentage on a browse card is
-          // decoration, and the accent budget is spent on the raise below.
-          if (s.growth_rate) metrics.push({
-            label: t("startupDetail.growth"),
-            val: `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%`,
-          });
-          if (!metrics.length) return null;
-          return (
-            // The stat idiom: one hairline above, caps label over figure,
-            // left-aligned, and no interior fences -- space and alignment do
-            // what the cell borders used to.
-            <div style={{ display: "flex", gap: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: RHYTHM.inner }}>
-              {metrics.map((m) => (
-                <div key={m.label} style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{m.label}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: m.color ?? "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {m.val}
-                  </div>
-                </div>
-              ))}
-            </div>
-          );
-        })()}
-
-        {/* Raise strip: the one loud thing on the card, and the only copper. */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
-          <div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("listings.raising")}</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
-              {safeFormatCurrencyAmount(s.funding_target)}
-            </div>
-          </div>
-          {s.runway_months != null && (
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-              {t("startups.runway", { months: s.runway_months ?? 0 })}
-            </div>
-          )}
-        </div>
-      </div>
-    </Link>
   );
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
-export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal = 0 }: { initialStartups?: Startup[]; initialIsPartial?: boolean; marketTotal?: number } = {}) {
-  const { t } = useTranslation();
-  const searchParams  = useSearchParams();
+export function StartupsSearch({
+  initialStartups,
+  initialIsPartial,
+  marketTotal = 0,
+  viewer = ANONYMOUS_VIEWER,
+}: {
+  initialStartups?: Startup[];
+  initialIsPartial?: boolean;
+  marketTotal?: number;
+  viewer?: DirectoryViewer;
+} = {}) {
+  const { t, tf } = useTf();
+  const searchParams = useSearchParams();
+  const isInvestor = viewer.role === "investor";
+  const canSaveSearches = isInvestor && viewer.savedSearches;
 
-  // The whole filter set lives in the address bar: a filtered view can be
-  // shared, bookmarked, or revisited via back/forward. Parsing happens once
-  // as the initial state; writing back is debounced below.
-  const initialFilters: Filters = {
-    ...DEFAULT_FILTERS,
-    query:      searchParams.get("q") ?? "",
-    industries: searchParams.get("industries")?.split(",").filter(Boolean) ?? [],
-    stages:     searchParams.get("stages")?.split(",").filter(Boolean) ?? [],
-    mrrMin:     Number(searchParams.get("mrr")) || 0,
-    aiScoreMin: Number(searchParams.get("score")) || 0,
-    country:    searchParams.get("country") ?? "",
-    newOnly:    searchParams.get("new") === "1",
-    raisingMin: Number(searchParams.get("raising")) || 0,
-    runwayMin:  Number(searchParams.get("runway")) || 0,
-    growthMin:  Number(searchParams.get("growth")) || 0,
-    closingSoon: searchParams.get("closing") === "1",
-    businessModel: searchParams.get("bmodel") ?? "",
-    hasDemo:    searchParams.get("demo") === "1",
-    sort:       searchParams.get("sort") ?? DEFAULT_FILTERS.sort,
-  };
-
-  const [filters, setFilters]         = useState<Filters>(initialFilters);
-  const [viewMode, setViewMode]       = useState<"grid" | "list">("grid");
-  useEffect(() => {
-    const saved = localStorage.getItem("cr-browse-view");
-    if (saved === "grid" || saved === "list") setViewMode(saved);
-  }, []);
-  function chooseView(v: "grid" | "list") {
-    setViewMode(v);
-    try { localStorage.setItem("cr-browse-view", v); } catch { /* private mode */ }
-  }
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  useEscapeKey(sidebarOpen, () => setSidebarOpen(false));
-  // Server-rendered rows arrive as `initialStartups`, so the first paint is
-  // the finished directory rather than a skeleton; the client fetch below
-  // then only runs when nothing was provided (or to refresh).
-  const [allStartups, setAllStartups] = useState<Startup[]>(initialStartups ?? []);
-  // The true market size (server count). The loaded set is a WINDOW of it;
-  // load-more pages deeper, and a text query searches the whole market
-  // server-side and merges hits into the window.
-  const [serverTotal, setServerTotal] = useState<number>(marketTotal);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const mergeRows = useCallback((rows: Startup[]) => {
-    setAllStartups(prev => {
-      const seen = new Set(prev.map(r => r.id));
-      const fresh = rows.filter(r => !seen.has(r.id));
-      return fresh.length ? [...prev, ...fresh] : prev;
-    });
-  }, []);
-  const [loading, setLoading]         = useState(!initialStartups);
-  const [page, setPage]               = useState(1);
-  const [savedIds, setSavedIds]       = useState<Set<string>>(new Set());
-  // Normalised MRR shapes per listing (server strips absolute values).
-  const [sparks, setSparks]           = useState<Record<string, number[]>>({});
-  useEffect(() => {
-    fetch("/api/startups/sparklines")
-      .then(r => r.ok ? r.json() : null)
-      .then(j => { if (j?.sparks) setSparks(j.sparks); })
-      .catch(() => {});
-  }, []);
-  // Which listings this investor has already opened. startup_views RLS is
-  // scoped to the viewing investor, so the bare select returns only their own
-  // history; anonymous and founder sessions just get an empty set.
-  const [viewedIds, setViewedIds]     = useState<Set<string>>(new Set());
-  // "Not for me" (migration 033). RLS scopes rows to the signed-in investor,
-  // so reads and writes go straight through the client. Hidden listings drop
-  // out of browse behind a show-hidden escape hatch.
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
-  const [showHidden, setShowHidden]     = useState(false);
-  // C27: the viewer's own scorecards, keyed by startup — shown in compare.
-  const [scorecards, setScorecards] = useState<Record<string, { total: number | null; note: string | null }>>({});
-  // C35: how long "not for me" lasts. A pre-seed pass is not a Series A pass.
-  const [snoozeChoice, setSnoozeChoice] = useState<number | null>(null); // days, null = forever
-  const myInvestorId = useRef<string | null>(null);
-  // The viewer's own thesis powers the fit sort. Absent for founders and
-  // anonymous visitors, which is exactly when the sort option is hidden.
-  const [myThesis, setMyThesis] = useState<InvestorThesis | null>(null);
-  const [lastHidden, setLastHidden] = useState<{ id: string; name: string } | null>(null);
-  // Compare tray: up to three listings side by side. Pure client state.
-  const [loadError, setLoadError] = useState(false);
-  const [compareIds, setCompareIds] = useState<string[]>([]);
-  // Compare tray survives reloads; unknown ids are dropped once data arrives.
-  useEffect(() => {
-    // A shared link outranks local memory: opening a colleague's shortlist
-    // should show their three companies, not whatever this browser last had.
-    const cmp = searchParams.get("cmp");
-    if (cmp) {
-      const ids = cmp.split(",").filter(x => /^[0-9a-f-]{36}$/i.test(x)).slice(0, 3);
-      if (ids.length >= 2) { setCompareIds(ids); return; }
+  // A plan without advanced filters (or without the score) cannot hold those
+  // filters through a URL or a saved search: they would narrow the list with no
+  // control on screen to show or remove them.
+  const fitToViewer = useCallback((f: Filters): Filters => {
+    let next = f;
+    if (!viewer.advancedFilters) {
+      next = { ...next, mrrMin: 0, aiScoreMin: 0, raisingMin: 0, runwayMin: 0, growthMin: 0, newOnly: false, closingSoon: false, hasDemo: false };
     }
-    try {
-      const raw = localStorage.getItem("cr_compare");
-      if (raw) setCompareIds(JSON.parse(raw).slice(0, 3));
-    } catch { /* corrupted storage — start empty */ }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-  useEffect(() => {
-    try { localStorage.setItem("cr_compare", JSON.stringify(compareIds)); } catch { /* quota */ }
-  }, [compareIds]);
-  // /compare (and /startups?compare=1) opens the comparison directly when a
-  // tray already has listings in it; otherwise the page simply shows browse.
-  const [showCompare, setShowCompare] = useState(false);
-  useEffect(() => {
-    if (searchParams.get("compare") === "1" && compareIds.length >= 2) setShowCompare(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [compareIds.length]);
-  useEscapeKey(showCompare, () => setShowCompare(false));
-  function exportStartupsCsv() {
-    // Neutralize spreadsheet formula injection (=,+,-,@ leading a cell) with a
-    // leading apostrophe, then quote and double internal quotes.
-    const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
-    const header = ["Name", "Tagline", "Industry", "Stage", "Raising", "MRR", "Growth %", "Runway (mo)", "AI consistency score", "Country", "Profile"];
-    const lines = filtered.map((s) => [
-      s.name, s.tagline, s.industry, s.stage, s.funding_target,
-      s.mrr ?? "", s.growth_rate ?? "", s.runway_months ?? "", s.vaultrise_score ?? "", s.country ?? "",
-      `${window.location.origin}/startups/${s.slug}`,
-    ]);
-    const csv = [header, ...lines].map((r) => r.map(esc).join(",")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = "startups.csv"; a.click();
-    URL.revokeObjectURL(url);
-  }
+    if (!viewer.canSeeScore) next = { ...next, aiScoreMin: 0 };
+    return next;
+  }, [viewer.advancedFilters, viewer.canSeeScore]);
 
-  function toggleCompare(id: string) {
-    setCompareIds((prev) => prev.includes(id)
-      ? prev.filter(x => x !== id)
-      : prev.length >= 3 ? prev : [...prev, id]);
-  }
-  const [sortOpen, setSortOpen]       = useState(false);
-  // Typeahead: name matches from the already-loaded list, so suggestions are
-  // instant and need no network round trip or debounce.
-  const [suggestOpen, setSuggestOpen] = useState(false);
-  const [suggestIdx, setSuggestIdx] = useState(-1);
-  // Recent queries, newest first, capped at 10 (FIFO). Local only: a search
-  // history is the user's business, and nothing here needs a round trip.
-  const RECENT_KEY = "cr_recent_startup_searches";
-  const [recent, setRecent] = useState<string[]>([]);
-  useEffect(() => {
-    try { setRecent(JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]")); } catch { /* corrupt */ }
-  }, []);
-  function rememberQuery(qq: string) {
-    const term = qq.trim();
-    if (term.length < 2) return;
-    setRecent((prev) => {
-      const next = [term, ...prev.filter((x) => x !== term)].slice(0, 10);
-      try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* private mode */ }
-      return next;
+  // The filter set lives in the address bar, so a filtered view can be shared,
+  // bookmarked and revisited with back/forward.
+  const [filters, setFilters] = useState<Filters>(() => {
+    const p = searchParams;
+    const country = p.get("country") ?? "";
+    return fitToViewer({
+      ...DEFAULT_FILTERS,
+      query: p.get("q") ?? "",
+      industries: p.get("industries")?.split(",").filter(Boolean) ?? [],
+      stages: p.get("stages")?.split(",").filter(Boolean) ?? [],
+      mrrMin: positive(p.get("mrr")),
+      aiScoreMin: positive(p.get("score")),
+      country: country ? normalizeCountry(country) || country : "",
+      newOnly: p.get("new") === "1",
+      raisingMin: positive(p.get("raising")),
+      runwayMin: positive(p.get("runway")),
+      growthMin: positive(p.get("growth")),
+      closingSoon: p.get("closing") === "1",
+      businessModel: p.get("bmodel") ?? "",
+      hasDemo: p.get("demo") === "1",
+      sort: p.get("sort") ?? DEFAULT_FILTERS.sort,
     });
-  }
-  function forgetQuery(term: string) {
-    setRecent((prev) => {
-      const next = prev.filter((x) => x !== term);
-      try { localStorage.setItem(RECENT_KEY, JSON.stringify(next)); } catch { /* private mode */ }
-      return next;
-    });
-  }
-  const [openGroup, setOpenGroup] = useState<null | "industry" | "stage" | "traction" | "region" | "bmodel">(null);
-  // The advanced row opens itself when the URL already carries one of its
-  // filters -- a shared link must never hide the state it is describing.
-  const [moreOpen, setMoreOpen] = useState(() => advancedActive(initialFilters) > 0);
-  const suggestions = filters.query.trim().length >= 2
-    ? allStartups
-        .filter(s => s.name.toLowerCase().includes(filters.query.trim().toLowerCase()))
-        .slice(0, 6)
-    : [];
+  });
+
+  // Server-rendered rows arrive as initialStartups, so the first paint is the
+  // finished directory; the client fetch runs only when nothing was provided
+  // or the server sent a partial first page.
+  const [allStartups, setAllStartups] = useState<Startup[]>(initialStartups ?? []);
+  // The true market size. The loaded set is a window of it: load more pages
+  // deeper, and a text query searches the whole market server-side.
+  const [serverTotal, setServerTotal] = useState<number>(marketTotal);
+  const [loading, setLoading] = useState(!initialStartups);
+  const [loadError, setLoadError] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [searching, setSearching] = useState(false);
+  const [page, setPage] = useState(1);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [viewedIds, setViewedIds] = useState<Set<string>>(new Set());
+  // Existing "not for me" dismissals stay honoured; this page offers no new
+  // hides, only the way back through "Hidden (n)".
+  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const [showHidden, setShowHidden] = useState(false);
+  const [myThesis, setMyThesis] = useState<InvestorThesis | null>(null);
+  const myInvestorId = useRef<string | null>(null);
   const supabase = useRef(createClient()).current;
   const searchRef = useRef<HTMLInputElement>(null);
 
+  const mergeRows = useCallback((rows: Startup[]) => {
+    setAllStartups((prev) => {
+      const seen = new Set(prev.map((r) => r.id));
+      const fresh = rows.filter((r) => !seen.has(r.id));
+      return fresh.length ? [...prev, ...fresh] : prev;
+    });
+  }, []);
+
   useEffect(() => {
     async function load() {
-      // A FULL server payload makes the round trip redundant. A PARTIAL one
-      // (the server now ships only the first page to keep the HTML light)
-      // still paints instantly — the full list arrives quietly behind it
-      // from the 60s-cached API, without a spinner.
       if (initialStartups && !initialIsPartial) return;
       if (initialStartups && initialIsPartial) {
         fetch("/api/startups/list")
-          .then(r => (r.ok ? r.json() : null))
-          .then(j => { if (j?.startups) { setAllStartups(j.startups as Startup[]); if (j.total) setServerTotal(j.total); } })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => { if (j?.startups) { setAllStartups(j.startups as Startup[]); if (j.total) setServerTotal(j.total); } })
           .catch(() => {});
         return;
       }
@@ -883,36 +624,22 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       setLoading(false);
     }
     load();
-    // View history for the seen tick -- one row per (investor, startup, day),
-    // deduped to a set of ids here.
+    // RLS scopes each of these reads to the signed-in investor; founders and
+    // anonymous sessions get empty sets.
     supabase.from("startup_views").select("startup_id").limit(1000)
-      .then(({ data }) => { if (data) setViewedIds(new Set(data.map(v => v.startup_id))); });
-    // The filled bookmarks, read back from the watchlist the save button
-    // writes to. watchlists RLS is scoped to the viewing investor, so the bare
-    // select returns their own saves and nobody else's; a founder or anonymous
-    // session simply gets none.
+      .then(({ data }) => { if (data) setViewedIds(new Set(data.map((v) => v.startup_id))); });
     supabase.from("watchlists").select("startup_id").limit(1000)
-      .then(({ data }) => { if (data) setSavedIds(new Set(data.map(w => w.startup_id))); });
-    // Snoozed dismissals expire on their own: a row whose snooze_until has
-    // passed no longer hides the listing (C35).
+      .then(({ data }) => { if (data) setSavedIds(new Set(data.map((w) => w.startup_id))); });
+    // A snoozed dismissal whose date has passed no longer hides the listing.
     supabase.from("startup_dismissals").select("startup_id, snooze_until").limit(1000)
       .then(({ data }) => {
         if (!data) return;
         const today = new Date().toISOString().slice(0, 10);
-        setDismissedIds(new Set(data.filter(v => !v.snooze_until || v.snooze_until > today).map(v => v.startup_id)));
+        setDismissedIds(new Set(data.filter((v) => !v.snooze_until || v.snooze_until > today).map((v) => v.startup_id)));
       });
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      // Only now is a scorecard even possible; anonymous visitors used to
-      // fire this and collect a 401 in the console.
-      fetch("/api/scorecard")
-        .then(r => r.ok ? r.json() : null)
-        .then(j => {
-          if (!j?.scorecards) return;
-          setScorecards(Object.fromEntries(j.scorecards.map((sc: { startup_id: string; total: number | null; note: string | null }) => [sc.startup_id, { total: sc.total, note: sc.note }])));
-        })
-        .catch(() => {});
       const { data: inv } = await supabase
         .from("investors")
         .select("id, stages, industries, geography, min_check, max_check")
@@ -921,7 +648,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       myInvestorId.current = inv?.id ?? null;
       if (inv) setMyThesis({ stages: inv.stages, industries: inv.industries, geography: inv.geography, min_check: inv.min_check, max_check: inv.max_check });
     })();
-    // "/" jumps to search from anywhere on the page, unless already typing.
+    // Mount-only: the server payload and the viewer's own rows are read once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // "/" focuses search from anywhere on the page, unless already typing.
+  useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key !== "/" || e.metaKey || e.ctrlKey || e.altKey) return;
       const el = document.activeElement as HTMLElement | null;
@@ -933,21 +665,23 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // Whole-market text search: the local filter only sees the loaded window,
-  // so a query also asks the SERVER (debounced) and merges its hits in --
-  // a listing outside the window becomes findable the moment it is typed for.
+  // The local filter only sees the loaded window, so a query also asks the
+  // server and merges its hits in. Local filtering is instant; only this
+  // network call waits, 150ms at most.
   const queryForServer = filters.query.trim();
   useEffect(() => {
     if (queryForServer.length < 2) return;
     if (serverTotal > 0 && allStartups.length >= serverTotal) return;
     const ctl = new AbortController();
     const id = window.setTimeout(() => {
+      setSearching(true);
       fetch(`/api/startups/list?q=${encodeURIComponent(queryForServer)}`, { signal: ctl.signal })
-        .then(r => (r.ok ? r.json() : null))
-        .then(j => { if (j?.startups?.length) mergeRows(j.startups as Startup[]); })
-        .catch(() => {});
-    }, 300);
-    return () => { ctl.abort(); window.clearTimeout(id); };
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => { if (j?.startups?.length) mergeRows(j.startups as Startup[]); })
+        .catch(() => {})
+        .finally(() => { if (!ctl.signal.aborted) setSearching(false); });
+    }, 150);
+    return () => { ctl.abort(); window.clearTimeout(id); setSearching(false); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryForServer]);
 
@@ -958,118 +692,119 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       const r = await fetch(`/api/startups/list?offset=${allStartups.length}`);
       const j = await r.json();
       if (r.ok && j?.startups) { mergeRows(j.startups as Startup[]); if (j.total) setServerTotal(j.total); }
-    } catch { /* the button stays; retry is a click away */ }
+    } catch { /* the button stays; retry is one press away */ }
     setLoadingMore(false);
   }
 
-  // How many listings each option would return, computed from the loaded
-  // set. Counts ignore the dimension they belong to (picking a second
-  // industry should widen, not zero out) but respect the visible universe.
+  // ── Derived data ────────────────────────────────────────────────────────────
+
+  const pool = useMemo(
+    () => allStartups.filter((s) => (showHidden ? dismissedIds.has(s.id) : !dismissedIds.has(s.id))),
+    [allStartups, dismissedIds, showHidden],
+  );
+
+  // Rows per option in the loaded, unfiltered set: an option with no rows is
+  // hidden rather than offered as a route to an empty list.
   const facets = useMemo(() => {
-    const pool = allStartups.filter((s) => showHidden ? dismissedIds.has(s.id) : !dismissedIds.has(s.id));
     const industry: Record<string, number> = {};
     const stage: Record<string, number> = {};
     const country: Record<string, number> = {};
+    const model: Record<string, number> = {};
     for (const s of pool) {
       industry[s.industry] = (industry[s.industry] ?? 0) + 1;
       stage[s.stage] = (stage[s.stage] ?? 0) + 1;
-      // Keyed on the canonical name, so "germany", "Germany" and
-      // "Deutschland" are one region with one combined count instead of
-      // three facets that each hide the others' listings.
       const c = normalizeCountry(s.country);
       if (c) country[c] = (country[c] ?? 0) + 1;
+      if (s.business_model) model[s.business_model] = (model[s.business_model] ?? 0) + 1;
     }
-    return { industry, stage, country };
-  }, [allStartups, dismissedIds, showHidden]);
+    return { industry, stage, country, model };
+  }, [pool]);
 
-  /**
-   * Which traction thresholds the loaded rows can actually answer.
-   *
-   * These filters run in the browser over the rows the server sent, and the
-   * server nulls gated financials before serialising them (lib/browse-data),
-   * so a column absent from every row makes its filter match nothing at any
-   * threshold -- an empty market rather than an unavailable control. MRR,
-   * growth and runway are stripped together, so all three missing at once
-   * means the viewer's plan, while one missing alone means nobody filed it.
-   */
-  const tractionData = useMemo(() => {
-    // With nothing loaded there is nothing to conclude, and a bar of greyed
-    // chips over a load error would blame the plan for a network failure.
-    const known = allStartups.length > 0;
-    return {
-      known,
-      mrr:    !known || allStartups.some((s) => s.mrr != null),
-      runway: !known || allStartups.some((s) => s.runway_months != null),
-      growth: !known || allStartups.some((s) => s.growth_rate != null),
-      // The date chips are the same dead end through a different door: no
-      // column is gated, but a market where nothing listed this week (the
-      // newOnly cutoff below) or no round carries an in-window close date
-      // (roundCloseState, the closingSoon matcher's own test) makes either
-      // chip a one-click route to an empty grid.
-      newWeek: !known || allStartups.some((s) => (Date.now() - new Date(s.created_at).getTime()) / 86400000 <= 7),
-      closing: !known || allStartups.some((s) => roundCloseState(s.round_close_date) !== null),
-    };
-  }, [allStartups]);
-  const financialsLocked = tractionData.known && !tractionData.mrr && !tractionData.runway && !tractionData.growth;
-  // The date chips are never plan-gated, so their disabled title is always
-  // the no-data wording, even while the financial chips are plan-locked.
-  const dateNote = !tractionData.newWeek || !tractionData.closing
-    ? t("startups.tractionFilterNoData")
-    : null;
-  const tractionNote = financialsLocked
-    ? t("startups.financialsFilterLocked")
-    : !tractionData.mrr || !tractionData.runway || !tractionData.growth
-      ? t("startups.tractionFilterNoData")
-      : dateNote;
+  const industryOptions = useMemo(
+    () => optionsFrom([...INDUSTRIES], facets.industry, filters.industries, (v) => v),
+    [facets.industry, filters.industries],
+  );
+  const stageOptions = useMemo(
+    () => optionsFrom(STAGE_ORDER, facets.stage, filters.stages, stageLabel),
+    [facets.stage, filters.stages],
+  );
+  const regionOptions = useMemo(
+    () => optionsFrom([], facets.country, filters.country ? [filters.country] : [], (v) => v),
+    [facets.country, filters.country],
+  );
+  const modelOptions = useMemo(
+    () => optionsFrom([], facets.model, filters.businessModel ? [filters.businessModel] : [], (v) => v),
+    [facets.model, filters.businessModel],
+  );
+
+  // Advanced thresholds render only where the loaded range spans them. Gated
+  // financials arrive as null for plans without them, so those groups vanish
+  // on their own rather than offering filters that match nothing.
+  const advanced = useMemo(() => ({
+    mrr: stepsThatSplit(pool.map((s) => s.mrr ?? 0), MRR_STEPS, filters.mrrMin),
+    raising: stepsThatSplit(pool.map((s) => (isValidFundingTarget(s.funding_target) ? s.funding_target : 0)), RAISING_STEPS, filters.raisingMin),
+    score: viewer.canSeeScore ? stepsThatSplit(pool.map((s) => s.vaultrise_score ?? 0), SCORE_STEPS, filters.aiScoreMin) : [],
+    runway: splits(pool.map((s) => s.runway_months ?? 0), RUNWAY_STEP) || filters.runwayMin > 0,
+    growth: splits(pool.map((s) => s.growth_rate ?? 0), GROWTH_STEP) || filters.growthMin > 0,
+  }), [pool, filters.mrrMin, filters.raisingMin, filters.aiScoreMin, filters.runwayMin, filters.growthMin, viewer.canSeeScore]);
+
+  const today = new Date().toISOString().slice(0, 10);
+  const anyCloseDate = pool.some((s) => !!s.round_close_date && s.round_close_date.slice(0, 10) >= today);
+
+  const matchById = useMemo(() => {
+    const m = new Map<string, number>();
+    if (myThesis) for (const s of allStartups) m.set(s.id, computeMatchScore(myThesis, s).score);
+    return m;
+  }, [myThesis, allStartups]);
+
+  // Only orderings the loaded data can answer: closing needs a future close
+  // date, best match needs the viewer's thesis.
+  const sortOptions: SortOption[] = [
+    { value: "recent", label: t("filters.sortRecent") },
+    { value: "funding", label: t("filters.sortRaising") },
+    ...(anyCloseDate ? [{ value: "closing", label: t("filters.sortClosing") }] : []),
+    ...(myThesis ? [{ value: "fit", label: t("filters.bestMatch") }] : []),
+  ];
+  const sort = sortOptions.some((o) => o.value === filters.sort) ? filters.sort : "recent";
 
   const filtered = useMemo(() => {
-    let res = allStartups.filter((s) => {
-      // The saved-search matcher is the single source of truth (lib/search-
-      // match) — the alert cron uses the same function, so an alert fires
-      // iff this page would show the listing. newOnly and hidden are
-      // browse-only concerns layered on top.
+    const rows = pool.filter((s) => {
+      // One matcher for browse and the saved-search alert cron (lib/search-match),
+      // so an alert fires if and only if this page would show the listing.
       if (!matchesSavedSearch(filters, s)) return false;
-      if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
-      if (!showHidden && dismissedIds.has(s.id)) return false;
-      if (showHidden && !dismissedIds.has(s.id)) return false;
+      if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86_400_000 > 7) return false;
       return true;
     });
-
-    switch (filters.sort) {
-      case "score":   res = [...res].sort((a, b) => ((b.vaultrise_score ?? 0) - (a.vaultrise_score ?? 0))); break;
-      case "mrr":     res = [...res].sort((a, b) => (b.mrr ?? 0) - (a.mrr ?? 0)); break;
-      case "recent":  res = [...res].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()); break;
-      case "updated": res = [...res].sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()); break;
-      case "closing": res = [...res].sort((a, b) => {
-        const av = a.round_close_date ? new Date(a.round_close_date).getTime() : Infinity;
-        const bv = b.round_close_date ? new Date(b.round_close_date).getTime() : Infinity;
-        return av - bv;
-      }); break;
-      case "founded": res = [...res].sort((a, b) => (b.founded_year ?? 0) - (a.founded_year ?? 0)); break;
-      case "funding": res = [...res].sort((a, b) => b.funding_target - a.funding_target); break;
-      case "fit":     res = myThesis ? [...res].sort((a, b) => computeMatchScore(myThesis, b).score - computeMatchScore(myThesis, a).score) : res; break;
+    const newest = (a: Startup, b: Startup) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    switch (sort) {
+      case "funding": {
+        const ask = (s: Startup) => (isValidFundingTarget(s.funding_target) ? s.funding_target : -1);
+        return rows.sort((a, b) => ask(b) - ask(a) || newest(a, b));
+      }
+      case "closing": {
+        const due = (s: Startup) => (s.round_close_date && s.round_close_date.slice(0, 10) >= today ? new Date(s.round_close_date).getTime() : Infinity);
+        return rows.sort((a, b) => {
+          const d = due(a) - due(b);
+          return Number.isNaN(d) || d === 0 ? newest(a, b) : d;
+        });
+      }
+      case "fit":
+        return rows.sort((a, b) => (matchById.get(b.id) ?? 0) - (matchById.get(a.id) ?? 0) || newest(a, b));
+      default:
+        return rows.sort(newest);
     }
-    return res;
-  }, [filters, allStartups, dismissedIds, showHidden, myThesis]);
+  }, [pool, filters, sort, matchById, today]);
 
-  const visible    = filtered.slice(0, page * PAGE_SIZE);
-  const hasMore    = visible.length < filtered.length;
-  const activeCount = [
-    filters.industries.length, filters.stages.length,
-    filters.mrrMin > 0 ? 1 : 0, filters.aiScoreMin > 0 ? 1 : 0,
-    filters.country ? 1 : 0,
-    filters.newOnly ? 1 : 0,
-    filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
-    filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0, filters.hasDemo ? 1 : 0,
-  ].reduce((a, b) => a + b, 0);
-  // What the "More filters" badge reports: everything behind the disclosure.
-  const advancedCount = advancedActive(filters);
+  const visible = filtered.slice(0, page * PAGE_SIZE);
+  const hasMore = visible.length < filtered.length;
+  const canFetchMore = !showHidden && allStartups.length < serverTotal;
+  const activeCount = filters.industries.length + filters.stages.length
+    + (filters.country ? 1 : 0) + (filters.businessModel ? 1 : 0) + advancedCount(filters);
+  const hasCriteria = activeCount > 0 || filters.query.trim().length > 0;
+  const total = serverTotal || allStartups.length;
 
-  // Filtering rewrites the whole grid without a navigation, which is silent to
-  // a screen reader: focus never moves and no page loads, so the only way to
-  // learn whether a filter did anything is to tab through the results. The
-  // first render is skipped -- announcing a count while the page title is
-  // still being read is noise, not information.
+  // Filtering rewrites the list without a navigation, which is silent to a
+  // screen reader. The first render is skipped.
   const hasAnnounced = useRef(false);
   useEffect(() => {
     if (loading) return;
@@ -1082,11 +817,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     setFilters((f) => ({ ...f, ...delta }));
   }, []);
 
-  const resetFilters = useCallback(() => { setFilters(DEFAULT_FILTERS); setPage(1); }, []);
+  const clearFilters = useCallback(() => {
+    setPage(1);
+    setFilters((f) => ({ ...DEFAULT_FILTERS, query: f.query, sort: f.sort }));
+  }, []);
 
-  // Write the filter set back to the address bar. replaceState rather than the
-  // router: no server round trip, no history spam -- back/forward still works
-  // across real navigations, and the current URL is always shareable.
+  // replaceState, not the router: no server round trip and no history spam.
   useEffect(() => {
     const id = setTimeout(() => {
       const p = new URLSearchParams();
@@ -1097,9 +833,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       if (filters.aiScoreMin > 0)     p.set("score", String(filters.aiScoreMin));
       if (filters.country)            p.set("country", filters.country);
       if (filters.newOnly)            p.set("new", "1");
-      if (filters.raisingMin)         p.set("raising", String(filters.raisingMin));
-      if (filters.runwayMin)          p.set("runway", String(filters.runwayMin));
-      if (filters.growthMin)          p.set("growth", String(filters.growthMin));
+      if (filters.raisingMin > 0)     p.set("raising", String(filters.raisingMin));
+      if (filters.runwayMin > 0)      p.set("runway", String(filters.runwayMin));
+      if (filters.growthMin > 0)      p.set("growth", String(filters.growthMin));
       if (filters.closingSoon)        p.set("closing", "1");
       if (filters.businessModel)      p.set("bmodel", filters.businessModel);
       if (filters.hasDemo)            p.set("demo", "1");
@@ -1113,6 +849,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     return () => clearTimeout(id);
   }, [filters]);
 
+  // ── Row actions ─────────────────────────────────────────────────────────────
+
   async function toggleSave(id: string) {
     const wasSaved = savedIds.has(id);
     const flip = (on: boolean) => setSavedIds((prev) => {
@@ -1120,10 +858,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       if (on) next.add(id); else next.delete(id);
       return next;
     });
-    // Optimistic, then reconciled: the bookmark answers the click immediately
-    // and goes back the way it was if the write is refused. Through the API
-    // rather than a direct table write, so the plan's watchlist cap and the
-    // founder's "saved" notification apply here as they do on the detail page.
+    // Optimistic and silent on success: the bookmark fill is the confirmation.
+    // Through the API, so the plan's watchlist cap and the founder's "saved"
+    // notification apply here as on the detail page.
     flip(!wasSaved);
     let res: Response;
     try {
@@ -1139,846 +876,620 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     }
     if (!res.ok) {
       flip(wasSaved);
-      // 401 is the only refusal with no readable sentence behind it; every
-      // other one (no investor profile yet, the free plan's cap) arrives as
-      // `error` and says more than a generic failure could.
       if (res.status === 401) { notify.info(t("startups.saveNeedsAccount")); return; }
       const data = await res.json().catch(() => ({}));
       notify.error(data.error || t("errors.generic"));
-      return;
     }
-    if (wasSaved) notify.info(t("toast.unsaved")); else notify.success(t("toast.saved"));
   }
 
-  async function toggleHide(id: string) {
+  async function unhide(id: string) {
     const inv = myInvestorId.current;
-    if (!inv) { notify.info(t("startups.hideNeedsAccount")); return; }
-    const hidden = dismissedIds.has(id);
-    // Optimistic; RLS enforces ownership server-side either way.
+    if (!inv) { notify.error(t("errors.generic")); return; }
+    // Leaving the hidden view once it empties, or the page would filter every
+    // listing out.
+    if (dismissedIds.size <= 1) setShowHidden(false);
     setDismissedIds((prev) => {
       const next = new Set(prev);
-      if (hidden) next.delete(id); else next.add(id);
-      // Unhiding the LAST hidden listing while viewing hidden used to strand
-      // the page: the toggle (gated on size > 0) vanished with showHidden
-      // still true, and the filter then rejected every listing -- "0 of 0"
-      // on a live market, recoverable only by reload.
-      if (next.size === 0) setShowHidden(false);
+      next.delete(id);
       return next;
     });
-    if (!hidden) {
-      const name = allStartups.find(x => x.id === id)?.name ?? "";
-      setLastHidden({ id, name });
-      setTimeout(() => setLastHidden((cur) => (cur?.id === id ? null : cur)), 8000);
-    } else if (lastHidden?.id === id) {
-      setLastHidden(null);
-    }
-    const { error } = hidden
-      ? await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id)
-      : await supabase.from("startup_dismissals").upsert(
-          {
-            investor_id: inv, startup_id: id,
-            snooze_until: snoozeChoice ? new Date(Date.now() + snoozeChoice * 86400000).toISOString().slice(0, 10) : null,
-          },
-          { onConflict: "investor_id,startup_id" });
+    const { error } = await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id);
     if (error) {
-      // Put the set back the way it was and say so. Also drop the undo toast,
-      // which otherwise lingers over an item that was never actually hidden.
-      setDismissedIds((prev) => {
-        const next = new Set(prev);
-        if (hidden) next.add(id); else next.delete(id);
-        return next;
-      });
-      if (!hidden) setLastHidden((cur) => (cur?.id === id ? null : cur));
+      setDismissedIds((prev) => new Set(prev).add(id));
       notify.error(t("errors.generic"));
     }
   }
 
-  // "Best match for me" only exists for a viewer with a thesis to match on.
-  const sortOptions = (myThesis
-    ? [...SORT_OPTIONS, { value: "fit", labelKey: "filters.bestMatch" }]
-    : SORT_OPTIONS
-  ).map((o) => ({ value: o.value, label: t(o.labelKey) }));
-  const sortLabel = sortOptions.find((o) => o.value === filters.sort)?.label ?? t("filters.sort");
+  function toggleHiddenView() {
+    setShowHidden((v) => !v);
+    setPage(1);
+  }
 
-  return (
-    <div style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
+  function exportCsv() {
+    // Neutralise spreadsheet formula injection (=, +, -, @ leading a cell),
+    // then quote and double internal quotes.
+    const esc = (v: unknown) => {
+      const x = String(v ?? "");
+      const safe = /^[=+\-@]/.test(x) ? `'${x}` : x;
+      return `"${safe.replace(/"/g, '""')}"`;
+    };
+    const header = [
+      t("listings.company"),
+      tf("startups.ledger.csvTagline", "Tagline"),
+      t("listings.industry"),
+      t("listings.stage"),
+      t("listings.raising"),
+      t("listings.mrr"),
+      tf("startups.ledger.csvGrowth", "Growth (%)"),
+      tf("startups.ledger.csvRunway", "Runway (months)"),
+      ...(viewer.canSeeScore ? [t("listings.aiScore")] : []),
+      t("filters.country"),
+      tf("startups.ledger.csvProfile", "Profile"),
+    ];
+    const lines = filtered.map((s) => [
+      s.name, s.tagline, s.industry, stageLabel(s.stage),
+      isValidFundingTarget(s.funding_target) ? s.funding_target : "",
+      s.mrr ?? "", s.growth_rate ?? "", s.runway_months ?? "",
+      ...(viewer.canSeeScore ? [s.vaultrise_score ?? ""] : []),
+      s.country ?? "",
+      `${window.location.origin}/startups/${s.slug}`,
+    ]);
+    const csv = [header, ...lines].map((r) => r.map(esc).join(",")).join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "startups.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
-      {/* ── Page header ── */}
-      <div className="px-6 md:px-10 lg:px-20" style={{ borderBottom: "1px solid var(--cr-rule)", paddingTop: "48px", paddingBottom: "32px" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
-            <div>
-              {/* Opener 16 above the headline, headline 8 above its own
-                  subtitle: the label belongs to the section, the count belongs
-                  to the title. Same two steps as the investor dashboard header,
-                  so the two surfaces open on one rhythm. */}
-              <div className="ruled-label" style={{ marginBottom: RHYTHM.inner }}>{t("dashboard.dealFlow")}</div>
-              <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(32px, 4vw, 48px)", color: "var(--cr-ink)", lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: RHYTHM.pair }}>
-                {t("startups.pageTitle")}
-              </h1>
-              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>
-                {loading ? t("common.loading") : allStartups.length > 0
-                  ? t("startups.pageSubtitle", { count: serverTotal || allStartups.length })
-                  : t("startups.noListings")}
+  // ── Saved searches ──────────────────────────────────────────────────────────
+  // The investor dashboard's saved-search manager moves here: apply, delete
+  // (optimistic, with Undo) and saving the current view. The server enforces
+  // the plan (a 403 with upgrade: true); the client only renders for investors
+  // whose plan carries saved searches.
+
+  const [savedSearches, setSavedSearches] = useState<SavedSearch[] | null>(null);
+  const [naming, setNaming] = useState(false);
+  const [searchName, setSearchName] = useState("");
+  const [nameInvalid, setNameInvalid] = useState(false);
+  const [savingSearch, setSavingSearch] = useState(false);
+  const [removedSearch, setRemovedSearch] = useState<{ search: SavedSearch; index: number } | null>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const saveSearchButtonRef = useRef<HTMLButtonElement>(null);
+  const undoButtonRef = useRef<HTMLButtonElement>(null);
+  const returnFocusToSave = useRef(false);
+  const pendingDelete = useRef<Promise<Response | null> | null>(null);
+  const nameErrorId = useId();
+
+  useEffect(() => {
+    if (!canSaveSearches) return;
+    let live = true;
+    fetch("/api/saved-searches")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (live) setSavedSearches(Array.isArray(j?.searches) ? (j.searches as SavedSearch[]) : null); })
+      .catch(() => { if (live) setSavedSearches(null); });
+    return () => { live = false; };
+  }, [canSaveSearches]);
+
+  useEffect(() => {
+    if (naming) {
+      nameInputRef.current?.focus();
+    } else if (returnFocusToSave.current) {
+      returnFocusToSave.current = false;
+      saveSearchButtonRef.current?.focus();
+    }
+  }, [naming]);
+
+  // Nothing left to save once the criteria are cleared.
+  useEffect(() => {
+    if (!hasCriteria && naming) setNaming(false);
+  }, [hasCriteria, naming]);
+
+  useEffect(() => {
+    if (!removedSearch) return;
+    undoButtonRef.current?.focus();
+    const id = window.setTimeout(() => setRemovedSearch(null), UNDO_MS);
+    return () => window.clearTimeout(id);
+  }, [removedSearch]);
+
+  function cancelNaming() {
+    returnFocusToSave.current = true;
+    setNaming(false);
+    setSearchName("");
+    setNameInvalid(false);
+  }
+
+  async function saveSearch(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (savingSearch) return;
+    const trimmed = searchName.trim();
+    if (!trimmed) {
+      setNameInvalid(true);
+      nameInputRef.current?.focus();
+      return;
+    }
+    setSavingSearch(true);
+    let res: Response | null = null;
+    try {
+      res = await fetch("/api/saved-searches", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: trimmed, filters }),
+      });
+    } catch {
+      res = null;
+    }
+    const body = res ? await res.json().catch(() => ({})) : {};
+    setSavingSearch(false);
+    if (!res?.ok || !body?.search) {
+      notify.error(body?.upgrade ? t("startups.savedSearchUpgrade") : (body?.error || t("startups.savedSearchFailed")));
+      return;
+    }
+    // The server upserts on (investor, name), so the list replaces rather than duplicates.
+    setSavedSearches((prev) => [body.search as SavedSearch, ...(prev ?? []).filter((s) => s.id !== body.search.id)]);
+    returnFocusToSave.current = true;
+    setNaming(false);
+    setSearchName("");
+  }
+
+  function applySaved(search: SavedSearch) {
+    setFilters(fitToViewer(readFilters(search.filters)));
+    setPage(1);
+    setShowHidden(false);
+  }
+
+  async function removeSearch(search: SavedSearch, index: number) {
+    setSavedSearches((prev) => (prev ?? []).filter((s) => s.id !== search.id));
+    setRemovedSearch({ search, index });
+    const request = fetch("/api/saved-searches", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: search.id }),
+    }).catch(() => null);
+    pendingDelete.current = request;
+    const res = await request;
+    if (!res?.ok) {
+      setSavedSearches((prev) => insertAt(prev ?? [], search, index));
+      setRemovedSearch((cur) => (cur?.search.id === search.id ? null : cur));
+      notify.error(t("startups.savedSearchDeleteFailed"));
+    }
+  }
+
+  async function undoRemove() {
+    const removed = removedSearch;
+    if (!removed) return;
+    setRemovedSearch(null);
+    setSavedSearches((prev) => insertAt(prev ?? [], removed.search, removed.index));
+    // Re-created only after the delete settles, or the delete would land on the restored row.
+    await pendingDelete.current;
+    const res = await fetch("/api/saved-searches", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: removed.search.name, filters: removed.search.filters ?? {} }),
+    }).catch(() => null);
+    const body = res ? await res.json().catch(() => ({})) : {};
+    if (!res?.ok || !body?.search) {
+      setSavedSearches((prev) => (prev ?? []).filter((s) => s.id !== removed.search.id));
+      notify.error(t("startups.savedSearchFailed"));
+      return;
+    }
+    setSavedSearches((prev) => (prev ?? []).map((s) => (s.id === removed.search.id ? (body.search as SavedSearch) : s)));
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  const notStated = tf("common.ledger.notStated", "Not stated");
+
+  let headerCount: string | null = null;
+  if (!loading && !loadError && filtered.length > 0) {
+    if (showHidden) {
+      headerCount = tf("startups.ledger.hiddenCount", "{count} hidden", { count: filtered.length });
+    } else if (!hasCriteria && dismissedIds.size === 0) {
+      headerCount = tf("startups.ledger.count", "{count} rounds raising", { count: total }, "{count} round raising");
+    } else {
+      headerCount = tf("startups.ledger.countOf", "{current} of {count} rounds", { current: filtered.length, count: total }, "{current} of {count} round");
+    }
+  }
+
+  const showSaveSearch = canSaveSearches && (naming || hasCriteria);
+  const showSavedMenu = canSaveSearches && ((savedSearches?.length ?? 0) > 0 || removedSearch !== null);
+
+  const headerEnd = showSaveSearch || showSavedMenu ? (
+    <div className="cr-su-saved-actions">
+      {showSaveSearch && (naming ? (
+        <form className="cr-su-saveform" onSubmit={saveSearch} noValidate>
+          <input
+            ref={nameInputRef}
+            className="cr-input"
+            value={searchName}
+            maxLength={80}
+            readOnly={savingSearch}
+            aria-label={tf("startups.ledger.searchName", "Search name")}
+            aria-invalid={nameInvalid || undefined}
+            aria-describedby={nameInvalid ? nameErrorId : undefined}
+            placeholder={t("startups.savedSearchNamePlaceholder")}
+            onChange={(e) => { setSearchName(e.target.value); if (nameInvalid) setNameInvalid(false); }}
+            onKeyDown={(e) => { if (e.key === "Escape") { e.preventDefault(); cancelNaming(); } }}
+          />
+          <button type="submit" className="cr-btn" aria-busy={savingSearch || undefined}>
+            {t("common.save")}
+          </button>
+          <button type="button" className="cr-btn cr-btn--text" onClick={cancelNaming}>
+            {t("common.cancel")}
+          </button>
+          {nameInvalid && (
+            <p id={nameErrorId} className="cr-su-saveform__error">
+              {tf("startups.ledger.nameRequired", "Name the search to save it.")}
+            </p>
+          )}
+        </form>
+      ) : (
+        <button ref={saveSearchButtonRef} type="button" className="cr-btn cr-btn--text" onClick={() => setNaming(true)}>
+          {tf("startups.ledger.saveSearch", "Save search")}
+        </button>
+      ))}
+      {showSavedMenu && (
+        <FilterPopover label={t("startups.savedSearches")} align="end">
+          {({ close }) => (
+            <div className="cr-su-saved">
+              {(savedSearches ?? []).map((s, index) => {
+                const summary = describeFilters(readFilters(s.filters), t, tf).join(", ");
+                return (
+                  <div key={s.id} className="cr-su-saved__row">
+                    <button
+                      type="button"
+                      className="cr-option cr-su-saved__apply"
+                      onClick={() => { applySaved(s); close(); }}
+                    >
+                      <span className="cr-option__label">
+                        <span className="cr-su-saved__name">{s.name}</span>
+                        {summary && <span className="cr-su-saved__summary">{` · ${summary}`}</span>}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="cr-btn cr-btn--text cr-su-icon-btn"
+                      aria-label={t("startups.savedSearchDelete", { name: s.name })}
+                      onClick={() => void removeSearch(s, index)}
+                    >
+                      <X size={16} aria-hidden="true" />
+                    </button>
+                  </div>
+                );
+              })}
+              {removedSearch && (
+                <div className="cr-su-saved__row" role="status">
+                  <span className="cr-su-saved__removed">
+                    {tf("startups.ledger.searchRemoved", "{name} removed.", { name: removedSearch.search.name })}
+                  </span>
+                  <button ref={undoButtonRef} type="button" className="cr-btn cr-btn--text" onClick={() => void undoRemove()}>
+                    {t("startups.hiddenUndo")}
+                  </button>
+                </div>
+              )}
+              {/* Alerts are not a per-search switch: the daily cron checks every saved search. */}
+              <p className="cr-su-saved__note">
+                {tf("startups.ledger.alertsNote", "New listings that match a saved search reach your notifications once a day.")}
               </p>
             </div>
-
-            {/* Sort + view toggle, at every width.
-                This carried `hidden lg:flex` AND an inline display:flex, so the
-                class never won and the cluster always rendered -- which is just
-                as well, because the sort dropdown is anchored inside this
-                relative box: hiding the cluster below lg would leave the
-                narrow-screen sort button opening a panel inside a display:none
-                subtree. The class is gone rather than the inline rule, so what
-                the code says is what the page does, and the duplicate sort
-                button that used to sit down in the results row is gone with it
-                (same control, same state, rendered twice). */}
-            <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
-              {/* Sort dropdown */}
-              <div style={{ position: "relative" }}>
-                <button
-                  onClick={() => setSortOpen((o) => !o)}
-                  style={{ display: "flex", alignItems: "center", gap: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 16px", cursor: "pointer" }}
-                >
-                  {sortLabel} <ChevronDown style={{ width: 12, height: 12 }} />
-                </button>
-                {/* Beside the control, not in it (button-in-button): what each
-                    ordering reads, and that sorting never removes a listing. */}
-                <InfoTip termKey="glossary.filterSort" />
-                {sortOpen && (
-                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
-                    {sortOptions.map((o) => (
-                      <button key={o.value} onClick={() => { patch({ sort: o.value }); setSortOpen(false); }}
-                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px" }}
-                        onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
-                        onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
-                      >
-                        {o.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* View toggle */}
-              <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
-                {(["grid", "list"] as const).map((v) => (
-                  <button key={v} onClick={() => chooseView(v)} aria-label={v} aria-pressed={viewMode === v}
-                    style={{ padding: "8px 12px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
-                    {v === "grid" ? <LayoutGrid style={{ width: 16, height: 16 }} /> : <List style={{ width: 16, height: 16 }} />}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Saved searches ── */}
-      <SavedSearches
-        filters={filters}
-        onApply={(f) => setFilters({ ...DEFAULT_FILTERS, ...f })}
-        isDefault={JSON.stringify(filters) === JSON.stringify({ ...DEFAULT_FILTERS, query: filters.query }) && !filters.query}
-      />
-
-      {/* ── Sticky filter bar ── */}
-      {/* At rest this is ONE row: search, industry, stage, and a "More filters"
-          disclosure carrying the count of everything behind it. Every filter
-          that existed still exists and is one click away -- traction, region,
-          business model and the one-click presets simply stop competing with
-          the results for attention. The disclosure opens itself when the URL
-          already sets one of those filters, so a shared link never hides the
-          state it describes. No overflowX here: it clipped the open panels. */}
-      {/* top is the navbar's own height (components/shared/navbar: h-[56px]),
-          not a rhythm value -- the bar has to come to rest exactly under it. */}
-      <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>
-        <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
-          {/* Search */}
-          <div style={{ position: "relative", flexShrink: 0 }}>
-            <Search style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", width: 12, height: 12, color: "var(--cr-ink-4)" }} />
-            <input
-              ref={searchRef}
-              type="text"
-              value={filters.query}
-              onChange={(e) => { patch({ query: e.target.value }); setSuggestOpen(true); setSuggestIdx(-1); }}
-              onKeyDown={(e) => {
-                if (e.key === "Escape") { setSuggestOpen(false); return; }
-                if (!suggestions.length) return;
-                if (e.key === "ArrowDown") { e.preventDefault(); setSuggestIdx(i => Math.min(i + 1, suggestions.length - 1)); }
-                else if (e.key === "ArrowUp") { e.preventDefault(); setSuggestIdx(i => Math.max(i - 1, -1)); }
-                else if (e.key === "Enter") {
-                  rememberQuery(filters.query);
-                  if (suggestIdx >= 0) {
-                    e.preventDefault();
-                    window.location.href = `/startups/${suggestions[suggestIdx].slug}`;
-                  }
-                }
-              }}
-              placeholder={t("startups.search")}
-              style={{
-                background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
-                borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400,
-                fontSize: "13px", color: "var(--cr-ink)", paddingLeft: "32px", paddingRight: "12px",
-                paddingTop: "8px", paddingBottom: "8px", width: "200px", outline: "none",
-              }}
-              onFocus={e => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; setSuggestOpen(true); }}
-              onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
-            />
-            {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
-                  {t("startups.recentSearches")}
-                </p>
-                {recent.slice(0, 5).map((term) => (
-                  <div key={term} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px", padding: "8px 12px" }}>
-                    <button onMouseDown={(e) => { e.preventDefault(); patch({ query: term }); }}
-                      style={{ display: "flex", alignItems: "center", gap: "8px", background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", padding: 0, textAlign: "left", flex: 1 }}>
-                      <Clock style={{ width: 12, height: 12, color: "var(--cr-ink-4)", flexShrink: 0 }} /> {term}
-                    </button>
-                    <button onMouseDown={(e) => { e.preventDefault(); forgetQuery(term); }} aria-label={`remove ${term}`}
-                      style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", fontSize: "13px", lineHeight: 1, padding: 0 }}>×</button>
-                  </div>
-                ))}
-              </div>
-            )}
-            {suggestOpen && suggestions.length > 0 && (
-              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
-                {suggestions.map((s, si) => (
-                  <Link key={s.id} href={`/startups/${s.slug}`} onClick={() => rememberQuery(filters.query)}
-                    style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "8px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
-                    onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
-                    onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
-                    <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)" }}>{s.name}</span>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.tagline}</span>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div style={{ width: 1, height: 24, background: "var(--cr-rule-dark)", flexShrink: 0 }} />
-
-          {/* Grouped filters: labelled dropdowns instead of fifteen
-              always-visible chips. Full industry list too -- the strip only
-              ever had room for the first six. */}
-          <FilterGroup label={t("startups.industry")} count={filters.industries.length} tipKey="glossary.filterIndustry"
-            open={openGroup === "industry"} onToggle={() => setOpenGroup(openGroup === "industry" ? null : "industry")}>
-            {INDUSTRIES.filter((ind) => facets.industry[ind] || filters.industries.includes(ind)).map((ind) => (
-              <FilterChip key={ind}
-                active={filters.industries.includes(ind)}
-                onClick={() => patch({ industries: filters.industries.includes(ind) ? filters.industries.filter(i => i !== ind) : [...filters.industries, ind] })}>
-                {ind}{facets.industry[ind] ? ` (${facets.industry[ind]})` : ""}
-              </FilterChip>
-            ))}
-          </FilterGroup>
-          <FilterGroup label={t("startups.stageGroup")} count={filters.stages.length} tipKey="glossary.filterStage"
-            open={openGroup === "stage"} onToggle={() => setOpenGroup(openGroup === "stage" ? null : "stage")}>
-            {STAGES.map((s) => (
-              <FilterChip key={s.value}
-                active={filters.stages.includes(s.value)}
-                onClick={() => patch({ stages: filters.stages.includes(s.value) ? filters.stages.filter(x => x !== s.value) : [...filters.stages, s.value] })}>
-                {s.label}{facets.stage[s.value] ? ` (${facets.stage[s.value]})` : ""}
-              </FilterChip>
-            ))}
-          </FilterGroup>
-          {/* The disclosure. Its badge counts everything behind it, so the bar
-              never hides an active filter without saying so. */}
-          <button
-            onClick={() => { setMoreOpen((o) => !o); setOpenGroup(null); }}
-            aria-expanded={moreOpen}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: "8px", flexShrink: 0,
-              fontFamily: "'DM Sans', sans-serif", fontWeight: advancedCount > 0 ? 500 : 400, fontSize: "13px",
-              padding: "8px 12px", borderRadius: "4px",
-              border: advancedCount > 0 ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
-              background: advancedCount > 0 ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
-              color: advancedCount > 0 ? "var(--cr-copper)" : "var(--cr-ink-3)",
-              cursor: "pointer", whiteSpace: "nowrap",
-            }}>
-            {t("filters.more")}{advancedCount > 0 ? ` · ${advancedCount}` : ""}
-            <ChevronDown style={{ width: 12, height: 12, transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
-          </button>
-
-          {/* The full-list bottom sheet, below lg only. It also carried an
-              inline display:flex that outranked `lg:hidden`, so a desktop bar
-              that already offers industry, stage and (behind More filters)
-              traction, region and business model showed a sixth button opening
-              the same set again. `flex lg:hidden` is two classes, so the
-              media-query one wins at lg and the row still lays out below it. */}
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="flex lg:hidden"
-            style={{ alignItems: "center", gap: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", padding: "8px 12px", cursor: "pointer", flexShrink: 0 }}
-          >
-            <SlidersHorizontal style={{ width: 12, height: 12 }} />
-            {t("startups.filters")}{activeCount > 0 ? ` · ${activeCount}` : ""}
-          </button>
-
-          {/* Clear */}
-          {(activeCount > 0 || filters.query) && (
-            <button onClick={resetFilters}
-              style={{ display: "flex", alignItems: "center", gap: "4px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-4)", padding: "8px 12px", cursor: "pointer", flexShrink: 0 }}>
-              <X style={{ width: 12, height: 12 }} /> {t("filters.clearAll")}
-            </button>
           )}
-        </div>
-
-        {/* The disclosed row: every filter that used to crowd the bar, plus
-            the one-click presets, on the same 8/12 beat as the row above. It
-            renders at every width, so the presets stay reachable on mobile
-            (the full-list sheet behind "Filters" does not carry them). */}
-        {moreOpen && (
-          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
-            <FilterGroup label={t("startups.traction")} tipKey="glossary.filterTraction"
-              count={tractionActive(filters)}
-              open={openGroup === "traction"} onToggle={() => setOpenGroup(openGroup === "traction" ? null : "traction")}>
-              {/* Each jargon cluster carries its own tip -- a chip is a
-                  button, so the "i" sits beside the cluster, not inside it.
-                  Plain-word chips (new this week, has demo) stay bare: an
-                  icon per chip would out-shout the chips. The score tip is
-                  glossary.aiScore, the same definition every other surface
-                  shows, never a rival wording. */}
-              <span style={TIPPED_CLUSTER}>
-                {MRR_PRESETS.map((m) => (
-                  <FilterChip key={m.value}
-                    active={filters.mrrMin === m.value}
-                    disabled={!tractionData.mrr}
-                    title={tractionData.mrr ? undefined : tractionNote ?? undefined}
-                    onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>
-                    {m.label}
-                  </FilterChip>
-                ))}
-                <InfoTip termKey="glossary.mrr" />
-              </span>
-              <span style={TIPPED_CLUSTER}>
-                {SCORE_PRESETS.map((sc) => (
-                  <FilterChip key={sc.value}
-                    active={filters.aiScoreMin === sc.value}
-                    onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
-                    {sc.label}
-                  </FilterChip>
-                ))}
-                <InfoTip termKey="glossary.aiScore" />
-              </span>
-              <FilterChip active={!!filters.newOnly}
-                disabled={!tractionData.newWeek}
-                title={tractionData.newWeek ? undefined : dateNote ?? undefined}
-                onClick={() => patch({ newOnly: !filters.newOnly })}>
-                {t("startups.newThisWeek")}
-              </FilterChip>
-              <span style={TIPPED_CLUSTER}>
-                {RAISING_PRESETS.map((r) => (
-                  <FilterChip key={r.value}
-                    active={filters.raisingMin === r.value}
-                    onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>
-                    {r.label}
-                  </FilterChip>
-                ))}
-                <InfoTip termKey="glossary.filterRaising" />
-              </span>
-              <span style={TIPPED_CLUSTER}>
-                <FilterChip active={(filters.runwayMin ?? 0) > 0}
-                  disabled={!tractionData.runway}
-                  title={tractionData.runway ? undefined : tractionNote ?? undefined}
-                  onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>
-                  {t("startups.runway12")}
-                </FilterChip>
-                <InfoTip termKey="glossary.runway" />
-              </span>
-              <span style={TIPPED_CLUSTER}>
-                <FilterChip active={(filters.growthMin ?? 0) > 0}
-                  disabled={!tractionData.growth}
-                  title={tractionData.growth ? undefined : tractionNote ?? undefined}
-                  onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>
-                  {t("startups.growth20")}
-                </FilterChip>
-                <InfoTip termKey="glossary.filterGrowth" />
-              </span>
-              <span style={TIPPED_CLUSTER}>
-                <FilterChip active={!!filters.closingSoon}
-                  disabled={!tractionData.closing}
-                  title={tractionData.closing ? undefined : dateNote ?? undefined}
-                  onClick={() => patch({ closingSoon: !filters.closingSoon })}>
-                  {t("startups.closingSoon")}
-                </FilterChip>
-                <InfoTip termKey="glossary.filterClosingSoon" />
-              </span>
-              <FilterChip active={!!filters.hasDemo}
-                onClick={() => patch({ hasDemo: !filters.hasDemo })}>
-                {t("startups.hasDemo")}
-              </FilterChip>
-              {/* The reason lives in the panel, not only in a title attribute:
-                  a greyed chip with no explanation is the same dead end. */}
-              {tractionNote && (
-                <p style={{ flexBasis: "100%", margin: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", lineHeight: 1.5, color: "var(--cr-ink-4)" }}>
-                  {tractionNote}
-                </p>
-              )}
-            </FilterGroup>
-            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0} tipKey="glossary.filterRegion"
-              open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
-              {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
-                <FilterChip key={c}
-                  active={filters.country === c}
-                  onClick={() => patch({ country: filters.country === c ? "" : c })}>
-                  {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
-                </FilterChip>
-              ))}
-            </FilterGroup>
-            {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).length > 0 && (
-              <FilterGroup label={t("startups.businessModelGroup")} count={filters.businessModel ? 1 : 0} tipKey="glossary.filterBusinessModel"
-                open={openGroup === "bmodel"} onToggle={() => setOpenGroup(openGroup === "bmodel" ? null : "bmodel")}>
-                {Array.from(new Set(allStartups.map(s => s.business_model).filter((m): m is string => !!m))).sort().map((m) => (
-                  <FilterChip key={m}
-                    active={filters.businessModel === m}
-                    onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>
-                    {m}
-                  </FilterChip>
-                ))}
-              </FilterGroup>
-            )}
-            </div>
-            {/* Shortcuts sit under the groups they are shorthand for, so the
-                relationship reads top-down: pick a preset, see what it set. */}
-            <div style={{ marginTop: "12px" }}>
-              <FilterPresets
-                // A shortcut that sets a threshold the rows cannot answer is
-                // a one-click route to an empty market, so it is not offered.
-                presets={tractionData.mrr ? STARTUP_PRESETS : STARTUP_PRESETS.filter((p) => !("mrrMin" in p.patch))}
-                filters={filters as unknown as Record<string, unknown>}
-                defaults={DEFAULT_FILTERS as unknown as Record<string, unknown>}
-                onApply={(p) => patch(p as Partial<Filters>)}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Applied filters, each individually removable. Rendered only when
-            something is applied, so the bar stays one quiet row by default. */}
-        {activeCount > 0 && (
-          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px", display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
-            {filters.industries.map((ind) => (
-              <AppliedChip key={`i-${ind}`} label={ind}
-                onRemove={() => patch({ industries: filters.industries.filter(i => i !== ind) })} />
-            ))}
-            {filters.stages.map((st) => (
-              <AppliedChip key={`s-${st}`} label={STAGES.find(x => x.value === st)?.label ?? st.replace(/_/g, " ")}
-                onRemove={() => patch({ stages: filters.stages.filter(x => x !== st) })} />
-            ))}
-            {filters.mrrMin > 0 && (
-              <AppliedChip label={MRR_PRESETS.find(m => m.value === filters.mrrMin)?.label ?? `MRR ${filters.mrrMin}+`}
-                onRemove={() => patch({ mrrMin: 0 })} />
-            )}
-            {filters.aiScoreMin > 0 && (
-              <AppliedChip label={SCORE_PRESETS.find(sc => sc.value === filters.aiScoreMin)?.label ?? `Score ${filters.aiScoreMin}+`}
-                onRemove={() => patch({ aiScoreMin: 0 })} />
-            )}
-            {filters.newOnly && (
-              <AppliedChip label={t("startups.newThisWeek")} onRemove={() => patch({ newOnly: false })} />
-            )}
-            {filters.country && (
-              <AppliedChip label={filters.country} onRemove={() => patch({ country: "" })} />
-            )}
-            {(filters.raisingMin ?? 0) > 0 && (
-              <AppliedChip label={RAISING_PRESETS.find(r => r.value === filters.raisingMin)?.label ?? "Raising+"}
-                onRemove={() => patch({ raisingMin: 0 })} />
-            )}
-            {(filters.runwayMin ?? 0) > 0 && (
-              <AppliedChip label={t("startups.runway12")} onRemove={() => patch({ runwayMin: 0 })} />
-            )}
-            {(filters.growthMin ?? 0) > 0 && (
-              <AppliedChip label={t("startups.growth20")} onRemove={() => patch({ growthMin: 0 })} />
-            )}
-            {filters.closingSoon && (
-              <AppliedChip label={t("startups.closingSoon")} onRemove={() => patch({ closingSoon: false })} />
-            )}
-            {filters.businessModel && (
-              <AppliedChip label={filters.businessModel} onRemove={() => patch({ businessModel: "" })} />
-            )}
-            {filters.hasDemo && (
-              <AppliedChip label={t("startups.hasDemo")} onRemove={() => patch({ hasDemo: false })} />
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Click-away closes an open filter group. Sits under the sticky bar
-          (z 40) so the bar's own controls stay directly clickable. */}
-      {openGroup && (
-        <div style={{ position: "fixed", inset: 0, zIndex: 39 }} onClick={() => setOpenGroup(null)} />
+        </FilterPopover>
       )}
+    </div>
+  ) : undefined;
 
-      {/* ── Content ── */}
-      {/* The bar and the results are two sections, so they sit a section apart
-          (48). Inside here the beat drops to 24 between blocks. */}
-      <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: RHYTHM.section, paddingBottom: "64px" }}>
-        {/* The count is this section's headline. The tools that act on it --
-            copy link, export, undo, show hidden, the snooze length -- used to
-            sit inside that same sentence as four copper underlines, which is
-            why the results row shouted louder than the results. Every one of
-            them is still here and still one click away; they step down to
-            quiet ink on their own line, and copper is spent only on the undo,
-            which expires in eight seconds and has to be seen. */}
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: RHYTHM.inner, flexWrap: "wrap", marginBottom: RHYTHM.block }}>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
-            {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
-            {!loading && filtered.length > 0 && (
-              <span style={{ marginLeft: "8px", color: "var(--cr-ink-4)" }}>
-                · {t("startups.sumRaising", { count: filtered.length, sum: formatCurrency(filtered.reduce((a, s) => a + (isValidFundingTarget(s.funding_target) ? s.funding_target : 0), 0), true) })}
-              </span>
-            )}
-          </p>
+  // ── Filter bar controls ─────────────────────────────────────────────────────
 
-          <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.inner, flexWrap: "wrap" }}>
-            {lastHidden && (
-              <button
-                onClick={() => { toggleHide(lastHidden.id); }}
-                style={{ ...QUIET_ACTION, color: "var(--cr-copper)", fontWeight: 500 }}>
-                {lastHidden.name}: {t("startups.hiddenUndo")}
-              </button>
-            )}
-            {activeCount > 0 && (
-              <button
-                onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("startups.linkCopied2")); }}
-                style={QUIET_ACTION}>
-                {t("startups.copyLink")}
-              </button>
-            )}
-            {!loading && filtered.length > 0 && (
-              <button onClick={exportStartupsCsv} style={QUIET_ACTION}>
-                {t("startups.exportCsv")}
-              </button>
-            )}
-            {dismissedIds.size > 0 && (
-              <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
-                style={{ ...QUIET_ACTION, color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>
-                {showHidden ? t("startups.hidden") : t("startups.showHidden", { count: dismissedIds.size })}
-              </button>
-            )}
-            {/* C35: how long the next "not for me" lasts. */}
-            <select value={snoozeChoice ?? ""} onChange={(e) => setSnoozeChoice(e.target.value ? Number(e.target.value) : null)}
-              aria-label={t("startups.snoozeLabel")} title={t("startups.snoozeLabel")}
-              style={{ background: "transparent", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "4px 8px", cursor: "pointer" }}>
-              <option value="">{t("startups.snoozeForever")}</option>
-              <option value="30">{t("startups.snooze30")}</option>
-              <option value="90">{t("startups.snooze90")}</option>
-              <option value="180">{t("startups.snooze180")}</option>
-            </select>
-            {/* Sort used to be repeated here as a second button. It is the one
-                in the page header at every width now, and the filter sheet
-                still carries a full sort section on narrow screens, so the
-                option set is unchanged -- one control instead of two. */}
-          </div>
-        </div>
+  const moreName = t("filters.more");
+  const advancedLabels = advancedParts(filters, t, tf);
+  let moreLabel = moreName;
+  if (advancedLabels.length > 0) {
+    moreLabel = tf("common.ledger.menuSelection", "{label}: {value}", { label: moreName, value: advancedLabels[0] });
+    if (advancedLabels.length > 1) {
+      moreLabel = `${moreLabel} ${tf("common.ledger.moreSelected", "+{count}", { count: advancedLabels.length - 1 })}`;
+    }
+  }
+  const atLeast = (value: string) => tf("startups.ledger.atLeast", "{value}+", { value });
+  const toggleOptions = [
+    ...(advanced.runway ? [{ key: "runway", label: t("startups.runway12"), on: filters.runwayMin > 0, set: (on: boolean) => patch({ runwayMin: on ? RUNWAY_STEP : 0 }) }] : []),
+    ...(advanced.growth ? [{ key: "growth", label: t("startups.growth20"), on: filters.growthMin > 0, set: (on: boolean) => patch({ growthMin: on ? GROWTH_STEP : 0 }) }] : []),
+    // Kept visible only while on, so a link or saved search that sets them can be undone.
+    ...(filters.newOnly ? [{ key: "new", label: t("startups.newThisWeek"), on: true, set: (on: boolean) => patch({ newOnly: on }) }] : []),
+    ...(filters.closingSoon ? [{ key: "closing", label: t("startups.closingSoon"), on: true, set: (on: boolean) => patch({ closingSoon: on }) }] : []),
+    ...(filters.hasDemo ? [{ key: "demo", label: t("startups.hasDemo"), on: true, set: (on: boolean) => patch({ hasDemo: on }) }] : []),
+  ];
+  const showMore = viewer.advancedFilters
+    && (advanced.mrr.length > 0 || advanced.raising.length > 0 || advanced.score.length > 0 || toggleOptions.length > 0);
 
-        {/* One note for the whole column, not one per card. Every card below
-            carries a score, so the sentence that says what the number is has
-            to be on this page -- but nine copies of it is small print nobody
-            reads. It sits above the grid it covers, the way a footnote sits
-            with its table, and it is the same string the detail page shows. */}
-        {!loading && filtered.length > 0 && (
-          <ScoreCaption style={{ marginBottom: RHYTHM.block }} />
-        )}
+  const controls: ReactNode[] = [];
+  if (menuRenders(industryOptions, filters.industries)) {
+    controls.push(
+      <FilterMenu key="industry" label={t("startups.industry")} options={industryOptions}
+        value={filters.industries} onChange={(next) => patch({ industries: next })} />,
+    );
+  }
+  if (menuRenders(stageOptions, filters.stages)) {
+    controls.push(
+      <FilterMenu key="stage" label={t("startups.stageGroup")} options={stageOptions}
+        value={filters.stages} onChange={(next) => patch({ stages: next })} />,
+    );
+  }
+  if (showMore) {
+    controls.push(
+      <FilterPopover key="more" label={moreLabel} sheetLabel={moreName} active={advancedLabels.length > 0}>
+        <>
+          {advanced.mrr.length > 0 && (
+            <ThresholdGroup label={t("listings.mrr")} steps={advanced.mrr} value={filters.mrrMin}
+              format={(n) => atLeast(money(n))} onChange={(n) => patch({ mrrMin: n })} />
+          )}
+          {advanced.raising.length > 0 && (
+            <ThresholdGroup label={t("listings.raising")} steps={advanced.raising} value={filters.raisingMin}
+              format={(n) => atLeast(money(n))} onChange={(n) => patch({ raisingMin: n })} />
+          )}
+          {advanced.score.length > 0 && (
+            <ThresholdGroup label={t("listings.aiScore")} steps={advanced.score} value={filters.aiScoreMin}
+              format={(n) => atLeast(String(n))} onChange={(n) => patch({ aiScoreMin: n })} />
+          )}
+          {toggleOptions.length > 0 && <ToggleGroup label={t("startups.traction")} options={toggleOptions} />}
+        </>
+      </FilterPopover>,
+    );
+  }
+  const regionSelected = filters.country ? [filters.country] : [];
+  if ((pool.length >= SECONDARY_MIN_ROWS || filters.country) && menuRenders(regionOptions, regionSelected)) {
+    controls.push(
+      <FilterMenu key="region" multiple={false} label={t("startups.region")} options={regionOptions}
+        value={filters.country || null} onChange={(next) => patch({ country: next ?? "" })} />,
+    );
+  }
+  const modelSelected = filters.businessModel ? [filters.businessModel] : [];
+  if ((pool.length >= SECONDARY_MIN_ROWS || filters.businessModel) && menuRenders(modelOptions, modelSelected)) {
+    controls.push(
+      <FilterMenu key="bmodel" multiple={false} label={t("startups.businessModelGroup")} options={modelOptions}
+        value={filters.businessModel || null} onChange={(next) => patch({ businessModel: next ?? "" })} />,
+    );
+  }
 
-        {/* Grid */}
-        {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
-            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
-          </div>
-        ) : loadError ? (
-          <div style={{ border: "1px dashed var(--cr-rule-dark)", borderRadius: "6px", background: "var(--cr-paper-2)", padding: "48px 24px", textAlign: "center" }}>
-            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "12px" }}>{t("errorPage.sectionTitle")}</p>
-            <button onClick={() => window.location.reload()}
-              style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 16px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)" }}>
-              {t("errorPage.retry")}
-            </button>
-          </div>
-        ) : filtered.length === 0 ? (
-          <div style={{ display: "grid" }}>
-            <NoResults query={filters.query} hasFilters={activeCount > 0 || !!filters.query} onReset={resetFilters} />
-          </div>
-        ) : (
-          // Same 24 gutter as the skeleton grid above, so the layout does not
-          // tighten by 8px the moment the real rows land -- and cards this
-          // dense need the room between them more than they need the density.
-          <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
-            {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
-            ))}
-          </div>
-        )}
+  const showBar = !loadError && (loading || allStartups.length > 0 || hasCriteria);
 
-        {/* Load more: pages the local window first; when the window is spent
-            but the server holds more of the market, the SAME button fetches
-            the next thousand and keeps going. One control, whole market. */}
-        {(hasMore || allStartups.length < serverTotal) && !loading && (
-          <div style={{ marginTop: RHYTHM.section, display: "flex", justifyContent: "center" }}>
-            <button disabled={loadingMore}
-              onClick={() => { if (hasMore) setPage((p) => p + 1); else void loadMoreRows(); }}
-              style={{ background: "transparent", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", padding: "12px 32px", borderRadius: "4px", border: "1px solid var(--cr-copper-br)", cursor: loadingMore ? "default" : "pointer", opacity: loadingMore ? 0.6 : 1 }}>
-              {loadingMore
-                ? t("common.loading")
-                : t("startups.loadMore", { count: hasMore ? Math.min(PAGE_SIZE, filtered.length - visible.length) : Math.min(1000, serverTotal - allStartups.length) })}
-            </button>
-          </div>
-        )}
-        {!hasMore && allStartups.length >= serverTotal && !loading && filtered.length > 0 && (
-          <p style={{ textAlign: "center", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: RHYTHM.section }}>
-            {t("startups.allLoaded", { count: filtered.length })}
-          </p>
-        )}
-      </div>
+  // ── List body ───────────────────────────────────────────────────────────────
 
-      {/* ── Compare tray + modal ── */}
-      {/* The tray clears the mobile tab bar via --cr-tabbar-h, which is 0
-          wherever no tab bar is on screen (desktop, or signed out). */}
-      {compareIds.length > 0 && (
-        <div style={{ position: "fixed", bottom: "calc(16px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "4px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
-            {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
-          </span>
-          <button onClick={() => setShowCompare(true)} disabled={compareIds.length < 2}
-            style={{ background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: compareIds.length < 2 ? "default" : "pointer", opacity: compareIds.length < 2 ? 0.5 : 1 }}>
-            {t("startups.compare")} ({compareIds.length})
+  const ledgerShown = !loading && !loadError && filtered.length > 0;
+  const scoreColumn = ledgerShown && viewer.canSeeScore && pool.some((s) => s.vaultrise_score != null);
+  const trailingKind: "save" | "unhide" | null = showHidden ? "unhide" : isInvestor ? "save" : null;
+  const columns = [
+    COL_COMPANY,
+    COL_META,
+    COL_FIGURE,
+    scoreColumn ? COL_FIGURE : null,
+    trailingKind === "save" ? COL_SAVE : trailingKind === "unhide" ? COL_UNHIDE : null,
+  ].filter(Boolean).join(" ");
+  const showUpsell = isInvestor && ledgerShown && (!viewer.canSeeFinancials || !viewer.canSeeScore);
+
+  let body: ReactNode;
+  if (loading) {
+    body = <LedgerSkeleton />;
+  } else if (loadError) {
+    body = (
+      <EmptyState
+        title={t("errorPage.sectionTitle")}
+        action={
+          <button type="button" className="cr-btn cr-btn--text cr-su-text-action" onClick={() => window.location.reload()}>
+            {t("errorPage.retry")}
           </button>
-          <button onClick={() => setCompareIds([])} aria-label={t("startups.compareClear")}
-            style={{ background: "none", border: "none", color: "var(--cr-band-ink-dim)", cursor: "pointer", display: "flex", padding: 0 }}>
-            <X style={{ width: 14, height: 14 }} />
-          </button>
-        </div>
-      )}
-      {showCompare && (() => {
-        const rows = compareIds.map(id => allStartups.find(s => s.id === id)).filter((s): s is Startup => !!s);
-        // C34: the comparison a real shortlist needs — terms and team as well
-        // as traction, and your own score/note beside the AI's number.
-        const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
-          { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ") },
-          { label: t("onboarding.su.industry"),  get: (s) => s.industry },
-          { label: t("startups.region"),         get: (s) => s.country ?? "—" },
-          { label: t("startupDetail.founded"),   get: (s) => s.founded_year ? String(s.founded_year) : "—" },
-          { label: t("startupDetail.teamSize"),  get: (s) => (s as unknown as { team_size?: number | null }).team_size ? String((s as unknown as { team_size?: number | null }).team_size) : "—" },
-          { label: t("startupDetail.mrr"),       get: (s) => safeFormatMRR(s.mrr) },
-          { label: t("startupDetail.arr"),       get: (s) => safeFormatMRR(s.arr) },
-          { label: t("startupDetail.growth"),    get: (s) => s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : "—" },
-          { label: t("startups.runwayLabel"),    get: (s) => s.runway_months != null ? `${s.runway_months}mo` : "—" },
-          { label: t("listings.raising"),        get: (s) => safeFormatCurrencyAmount(s.funding_target) },
-          { label: t("startupDetail.equity"),    get: (s) => { const e = (s as unknown as { equity_offered?: number | null }).equity_offered; return e != null ? `${e}%` : "—"; } },
-          { label: t("startupDetail.minCheck"),  get: (s) => { const m = (s as unknown as { min_check_size?: number | null }).min_check_size; return m ? safeFormatCurrencyAmount(m) : "—"; } },
-          { label: t("startups.closingSoon"), get: (s) => s.round_close_date ? new Date(s.round_close_date).toLocaleDateString() : "—" },
-          { label: t("dashboard.aiScore"),       get: (s) => s.vaultrise_score != null ? String(s.vaultrise_score) : "—" },
-          { label: t("scorecard.yourScore"),     get: (s) => { const sc = scorecards[s.id]; return sc?.total != null ? `${sc.total}/100` : "—"; } },
-          { label: t("scorecard.yourNote"),      get: (s) => scorecards[s.id]?.note ?? "—" },
-        ];
-        function exportCompareCsv() {
-          const esc = (v: unknown) => { const x = String(v ?? ""); const g = /^[=+\-@]/.test(x) ? `'${x}` : x; return `"${g.replace(/"/g, '""')}"`; };
-          const lines = [["", ...rows.map(r => r.name)], ...METRICS.map(m => [m.label, ...rows.map(m.get)])];
-          const csv = lines.map(l => l.map(esc).join(",")).join("\n");
-          const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
-          const a = document.createElement("a"); a.href = url; a.download = "capitalreach-compare.csv"; a.click(); URL.revokeObjectURL(url);
         }
-        return (
-          <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
-            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
-            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: RHYTHM.block }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: RHYTHM.block }}>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <button onClick={() => {
-                  const url = `${window.location.origin}/startups?compare=1&cmp=${compareIds.join(",")}`;
-                  navigator.clipboard.writeText(url).then(
-                    () => notify.success(t("toast.linkCopied")),
-                    () => notify.error(t("share.copyFailed")),
-                  );
-                }}
-                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 12px", cursor: "pointer" }}>
-                  {t("common.share")}
-                </button>
-                <button onClick={exportCompareCsv}
-                  style={{ background: "none", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", padding: "4px 12px", cursor: "pointer" }}>
-                  {t("dashboard.exportCsv")}
-                </button>
-                <button onClick={() => setShowCompare(false)} aria-label={t("nav.closeMenu")}
-                  style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", display: "flex" }}>
-                  <X style={{ width: 18, height: 18 }} />
-                </button>
-                </div>
-              </div>
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      <th style={{ width: "120px" }} />
-                      {rows.map(s => (
-                        <th key={s.id} style={{ textAlign: "left", padding: "8px 12px", borderBottom: "2px solid var(--cr-copper)" }}>
-                          <Link href={`/startups/${s.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
-                            {s.name}
-                          </Link>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {METRICS.map(m => (
-                      <tr key={m.label}>
-                        <td style={{ padding: "12px 12px 12px 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", borderBottom: "1px solid var(--cr-rule)" }}>{m.label}</td>
-                        {rows.map(s => {
-                          const isText = m.label === t("scorecard.yourNote");
-                          return (
-                            <td key={s.id} style={{ padding: "12px", fontFamily: isText ? "'DM Sans', sans-serif" : "'JetBrains Mono', monospace", fontWeight: isText ? 300 : 500, fontSize: isText ? "12px" : "13px", color: "var(--cr-ink)", borderBottom: "1px solid var(--cr-rule)", minWidth: isText ? 160 : undefined }}>{m.get(s)}</td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
+      />
+    );
+  } else if (allStartups.length === 0) {
+    body = <EmptyState title={t("startups.noListings")} />;
+  } else if (filtered.length === 0) {
+    if (activeCount > 0) {
+      body = (
+        <EmptyState
+          title={tf("startups.ledger.noMatch", "No rounds match {filters}.", { filters: joinList(describeFilters(filters, t, tf)) })}
+          action={
+            <button type="button" className="cr-btn cr-btn--text cr-su-text-action" onClick={clearFilters}>
+              {t("startups.clearFilters")}
+            </button>
+          }
+        />
+      );
+    } else if (filters.query.trim()) {
+      body = (
+        <EmptyState
+          title={t("startups.noResultsFor", { query: filters.query.trim() })}
+          action={
+            <button type="button" className="cr-btn cr-btn--text cr-su-text-action" onClick={() => patch({ query: "" })}>
+              {tf("common.ledger.clearSearch", "Clear search")}
+            </button>
+          }
+        />
+      );
+    } else {
+      body = (
+        <EmptyState
+          title={tf("startups.ledger.allHidden", "Every open round is hidden.")}
+          action={
+            <button type="button" className="cr-btn cr-btn--text cr-su-text-action" onClick={toggleHiddenView}>
+              {t("startups.showHidden", { count: dismissedIds.size })}
+            </button>
+          }
+        />
+      );
+    }
+  } else {
+    body = (
+      <Ledger
+        columns={columns}
+        busy={searching}
+        aria-label={t("nav.startups")}
+        head={
+          <LedgerHead
+            trailingLabel={trailingKind === "save" ? t("startup.saveWatchlist") : trailingKind === "unhide" ? t("startups.unhide") : undefined}
+          >
+            <LedgerCell>{t("listings.company")}</LedgerCell>
+            <LedgerCell>{tf("startups.ledger.sectorStage", "Sector · Stage")}</LedgerCell>
+            <LedgerCell figure>{t("listings.raising")}</LedgerCell>
+            {scoreColumn && (
+              <LedgerCell figure>
+                {t("listings.score")}
+                <span className="cr-su-tip"><InfoTip termKey="glossary.aiScore" /></span>
+              </LedgerCell>
+            )}
+          </LedgerHead>
+        }
+      >
+        {visible.map((s) => {
+          const viewed = viewedIds.has(s.id);
+          const saved = savedIds.has(s.id);
+          const match = myThesis ? matchById.get(s.id) : undefined;
+          const trailing = trailingKind === "save" ? (
+            <button
+              type="button"
+              className="cr-btn cr-btn--text cr-su-icon-btn cr-su-bookmark"
+              data-saved={saved ? "" : undefined}
+              aria-label={saved ? t("startup.removeWatchlist") : t("startup.saveWatchlist")}
+              onClick={() => void toggleSave(s.id)}
+            >
+              <Bookmark size={16} aria-hidden="true" fill={saved ? "currentColor" : "none"} />
+            </button>
+          ) : trailingKind === "unhide" ? (
+            <button type="button" className="cr-btn cr-btn--text" onClick={() => void unhide(s.id)}>
+              {t("startups.unhide")}
+            </button>
+          ) : undefined;
 
-      {/* ── Mobile filter bottom sheet ── */}
-      {sidebarOpen && (() => {
-        const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" };
-        const ROW: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: RHYTHM.pair };
-        const countries = Array.from(new Set(allStartups.map(x => x.country).filter((c): c is string => !!c))).sort();
-        const bmodels = Array.from(new Set(allStartups.map(x => x.business_model).filter((m): m is string => !!m))).sort();
-        return (
-        <div role="dialog" aria-modal="true" aria-label={t("filters.title")} style={{ position: "fixed", inset: 0, zIndex: 50 }}>
-          <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setSidebarOpen(false)} />
-          {/* Full-height bottom sheet: header pinned, sections scroll, footer pinned. */}
-          <div className="animate-fade-up" style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "var(--cr-paper-2)", borderRadius: "6px 6px 0 0", height: "min(92vh, 100dvh - 24px)", display: "flex", flexDirection: "column", boxShadow: "var(--cr-card-shadow-hover)" }}>
-            <div style={{ padding: "12px 24px", borderBottom: "1px solid var(--cr-rule)", flexShrink: 0 }}>
-              <div style={{ width: 32, height: 4, background: "var(--cr-paper-4)", borderRadius: "2px", margin: "0 auto 12px" }} />
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("filters.title")}{activeCount > 0 ? ` · ${activeCount}` : ""}</p>
-                <button onClick={() => setSidebarOpen(false)} aria-label={t("common.close")} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-ink-4)", display: "flex", padding: 4 }}><X style={{ width: 18, height: 18 }} /></button>
-              </div>
-            </div>
-
-            <div style={{ overflowY: "auto", flex: 1, padding: "24px 24px 8px", display: "grid", gap: RHYTHM.block }}>
-              <div>
-                <p style={SECTION}>{t("filters.industry")}<InfoTip termKey="glossary.filterIndustry" /></p>
-                <div style={ROW}>
-                  {INDUSTRIES.map((ind) => (
-                    <FilterChip key={ind} active={filters.industries.includes(ind)}
-                      onClick={() => patch({ industries: filters.industries.includes(ind) ? filters.industries.filter(i => i !== ind) : [...filters.industries, ind] })}>
-                      {ind}{facets.industry?.[ind] ? ` (${facets.industry[ind]})` : ""}
-                    </FilterChip>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <p style={SECTION}>{t("filters.stage")}<InfoTip termKey="glossary.filterStage" /></p>
-                <div style={ROW}>
-                  {STAGES.map((st) => (
-                    <FilterChip key={st.value} active={filters.stages.includes(st.value)}
-                      onClick={() => patch({ stages: filters.stages.includes(st.value) ? filters.stages.filter(x => x !== st.value) : [...filters.stages, st.value] })}>
-                      {st.label}{facets.stage?.[st.value] ? ` (${facets.stage[st.value]})` : ""}
-                    </FilterChip>
-                  ))}
-                </div>
-              </div>
-              <div>
-                {/* Jargon carries an explanation. "AI score ≥ 70" is
-                    meaningless to a founder who does not know what the number
-                    is or who produced it, and nobody clicks a filter they do
-                    not understand. The group tip covers the section; the
-                    score's own definition (glossary.aiScore) moved down to
-                    sit beside the score chips it describes. */}
-                <p style={SECTION}>
-                  {t("filters.thresholds")}
-                  <InfoTip termKey="glossary.filterTraction" label={t("glossary.whatIsThis")} />
-                </p>
-                <div style={ROW}>
-                  {/* Same cluster tips as the desktop traction panel, so the
-                      two surfaces explain one filter with one string. */}
-                  <span style={TIPPED_CLUSTER}>
-                    {MRR_PRESETS.map((m) => (
-                      <FilterChip key={m.value} active={filters.mrrMin === m.value} disabled={!tractionData.mrr} title={tractionData.mrr ? undefined : tractionNote ?? undefined} onClick={() => patch({ mrrMin: filters.mrrMin === m.value ? 0 : m.value })}>{m.label}</FilterChip>
-                    ))}
-                    <InfoTip termKey="glossary.mrr" />
+          return (
+            <LedgerRow key={s.id} href={`/startups/${s.slug}`} label={s.name} trailing={trailing}>
+              <LedgerCell primary>
+                <span className="cr-su-company">
+                  <span className="cr-su-logo">
+                    <EntityLogo name={s.name} logoUrl={s.logo_url} logoColor={s.logo_color} size={32} />
                   </span>
-                  <span style={TIPPED_CLUSTER}>
-                    {SCORE_PRESETS.map((sc) => (
-                      <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
-                    ))}
-                    <InfoTip termKey="glossary.aiScore" />
+                  <span className="cr-su-company__text">
+                    <span className="cr-su-name">
+                      <span className="cr-row-title" data-viewed={viewed ? "" : undefined}>{s.name}</span>
+                      {viewed && <span className="sr-only">{t("startups.viewed")}</span>}
+                      {s.is_demo && <DemoBadge />}
+                    </span>
+                    {s.tagline && <span className="cr-row-sub">{s.tagline}</span>}
                   </span>
-                  <span style={TIPPED_CLUSTER}>
-                    {RAISING_PRESETS.map((r) => (
-                      <FilterChip key={r.value} active={filters.raisingMin === r.value} onClick={() => patch({ raisingMin: filters.raisingMin === r.value ? 0 : r.value })}>{r.label}</FilterChip>
-                    ))}
-                    <InfoTip termKey="glossary.filterRaising" />
+                </span>
+              </LedgerCell>
+              <LedgerCell>
+                <span className="cr-row-sub cr-su-indent">
+                  {startupMetaBits(s, t).join(" · ")}
+                  {match !== undefined && match >= MATCH_FLOOR && (
+                    <>
+                      {" · "}
+                      <span className="cr-su-match">{t("filters.matchPct", { pct: match })}</span>
+                    </>
+                  )}
+                </span>
+              </LedgerCell>
+              <LedgerCell figure>
+                {isValidFundingTarget(s.funding_target)
+                  ? money(s.funding_target)
+                  : <span className="cr-absent">{notStated}</span>}
+              </LedgerCell>
+              {scoreColumn && (
+                <LedgerCell figure>
+                  <span className="cr-su-indent">
+                    <span className="cr-su-score-label">{t("listings.score")}</span>
+                    {s.vaultrise_score != null
+                      ? s.vaultrise_score
+                      : <span className="cr-absent">{t("startup.scoreNone")}</span>}
                   </span>
-                  <span style={TIPPED_CLUSTER}>
-                    <FilterChip active={(filters.runwayMin ?? 0) > 0} disabled={!tractionData.runway} title={tractionData.runway ? undefined : tractionNote ?? undefined} onClick={() => patch({ runwayMin: filters.runwayMin ? 0 : 12 })}>{t("startups.runway12")}</FilterChip>
-                    <InfoTip termKey="glossary.runway" />
-                  </span>
-                  <span style={TIPPED_CLUSTER}>
-                    <FilterChip active={(filters.growthMin ?? 0) > 0} disabled={!tractionData.growth} title={tractionData.growth ? undefined : tractionNote ?? undefined} onClick={() => patch({ growthMin: filters.growthMin ? 0 : 20 })}>{t("startups.growth20")}</FilterChip>
-                    <InfoTip termKey="glossary.filterGrowth" />
-                  </span>
-                  <FilterChip active={!!filters.newOnly} disabled={!tractionData.newWeek} title={tractionData.newWeek ? undefined : dateNote ?? undefined} onClick={() => patch({ newOnly: !filters.newOnly })}>{t("startups.newThisWeek")}</FilterChip>
-                  <span style={TIPPED_CLUSTER}>
-                    <FilterChip active={!!filters.closingSoon} disabled={!tractionData.closing} title={tractionData.closing ? undefined : dateNote ?? undefined} onClick={() => patch({ closingSoon: !filters.closingSoon })}>{t("startups.closingSoon")}</FilterChip>
-                    <InfoTip termKey="glossary.filterClosingSoon" />
-                  </span>
-                  <FilterChip active={!!filters.hasDemo} onClick={() => patch({ hasDemo: !filters.hasDemo })}>{t("startups.hasDemo")}</FilterChip>
-                </div>
-                {tractionNote && (
-                  <p style={{ margin: "8px 0 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", lineHeight: 1.5, color: "var(--cr-ink-4)" }}>
-                    {tractionNote}
-                  </p>
-                )}
-              </div>
-              {countries.length > 0 && (
-                <div>
-                  <p style={SECTION}>{t("startups.region")}<InfoTip termKey="glossary.filterRegion" /></p>
-                  <div style={ROW}>
-                    {countries.map((c) => (
-                      <FilterChip key={c} active={filters.country === c} onClick={() => patch({ country: filters.country === c ? "" : c })}>
-                        {c}{facets.country?.[c] ? ` (${facets.country[c]})` : ""}
-                      </FilterChip>
-                    ))}
-                  </div>
-                </div>
+                </LedgerCell>
               )}
-              {bmodels.length > 0 && (
-                <div>
-                  <p style={SECTION}>{t("startups.businessModelGroup")}<InfoTip termKey="glossary.filterBusinessModel" /></p>
-                  <div style={ROW}>
-                    {bmodels.map((m) => (
-                      <FilterChip key={m} active={filters.businessModel === m} onClick={() => patch({ businessModel: filters.businessModel === m ? "" : m })}>{m}</FilterChip>
-                    ))}
-                  </div>
-                </div>
-              )}
-              <div>
-                <p style={SECTION}>{t("filters.sort")}<InfoTip termKey="glossary.filterSort" /></p>
-                <div style={ROW}>
-                  {SORT_OPTIONS.map((o) => (
-                    <FilterChip key={o.value} active={filters.sort === o.value} onClick={() => patch({ sort: o.value })}>{t(o.labelKey)}</FilterChip>
-                  ))}
-                </div>
-              </div>
-            </div>
+            </LedgerRow>
+          );
+        })}
+      </Ledger>
+    );
+  }
 
-            <div style={{ flexShrink: 0, background: "var(--cr-paper-2)", borderTop: "1px solid var(--cr-rule)", padding: "12px 24px calc(12px + env(safe-area-inset-bottom, 0px))", display: "flex", gap: "12px" }}>
-              <button onClick={resetFilters}
-                style={{ flex: 1, height: "48px", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-3)", cursor: "pointer" }}>
-                {t("filters.reset")}
-              </button>
-              <button onClick={() => setSidebarOpen(false)}
-                style={{ flex: 1.4, height: "48px", background: "var(--cr-copper)", border: "none", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-on-accent)", cursor: "pointer" }}>
-                {t("filters.applyCount", { count: filtered.length })}
-              </button>
-            </div>
-          </div>
-        </div>
-        );
-      })()}
+  const footItems: ReactNode[] = [];
+  if (!loading && !loadError && (hasMore || canFetchMore)) {
+    const more = hasMore
+      ? Math.min(PAGE_SIZE, filtered.length - visible.length)
+      : Math.min(1000, serverTotal - allStartups.length);
+    footItems.push(
+      <button
+        key="more"
+        type="button"
+        className="cr-btn cr-btn--text cr-su-text-action"
+        aria-busy={loadingMore || undefined}
+        onClick={() => { if (loadingMore) return; if (hasMore) setPage((p) => p + 1); else void loadMoreRows(); }}
+      >
+        {loadingMore ? t("common.loading") : t("startups.loadMore", { count: more })}
+      </button>,
+    );
+  }
+  if (viewer.dataExport && ledgerShown) {
+    footItems.push(
+      <button key="csv" type="button" className={`cr-btn cr-btn--text${footItems.length === 0 ? " cr-su-text-action" : ""}`} onClick={exportCsv}>
+        {t("startups.exportCsv")}
+      </button>,
+    );
+  }
+  if (!loading && dismissedIds.size > 0) {
+    footItems.push(
+      <button key="hidden" type="button" className={`cr-btn cr-btn--text${footItems.length === 0 ? " cr-su-text-action" : ""}`} onClick={toggleHiddenView}>
+        {showHidden
+          ? tf("startups.ledger.showAll", "Show all rounds")
+          : t("startups.showHidden", { count: dismissedIds.size })}
+      </button>,
+    );
+  }
+
+  return (
+    <div style={FRAME}>
+      <style>{LANE_CSS}</style>
+
+      <PageHeader title={t("nav.startups")} count={headerCount} end={headerEnd} />
+
+      {showBar && (
+        <FilterBar
+          aria-label={t("filters.title")}
+          search={
+            <FilterSearch
+              value={filters.query}
+              onChange={(next) => patch({ query: next })}
+              label={t("common.search")}
+              placeholder={t("startups.search")}
+              inputRef={searchRef}
+            />
+          }
+          activeCount={activeCount}
+          onClear={clearFilters}
+          sticky={total > STICKY_ABOVE_ROWS}
+          sheetDoneLabel={filtered.length > 0 ? t("filters.applyCount", { count: filtered.length }) : t("common.done")}
+          sort={pool.length >= 2 ? <SortSelect options={sortOptions} value={sort} onChange={(next) => patch({ sort: next })} /> : undefined}
+        >
+          {controls.length > 0 ? controls : undefined}
+        </FilterBar>
+      )}
+
+      {showUpsell && (
+        <p className="cr-su-upsell">
+          {tf("startups.ledger.upsell", "Financials and AI consistency scores come with a paid investor plan.")}{" "}
+          <Link href="/pricing" className="cr-link">{t("common.upgrade")}</Link>
+        </p>
+      )}
+
+      {body}
+
+      {footItems.length > 0 && <div className="cr-ledger-foot">{footItems}</div>}
+
+      {/* One footnote block under the list. The broker-dealer line is a
+          compliance requirement wherever financial data is shown; the score
+          caption travels with the score column and never without it. */}
+      <div className="cr-footnote">
+        {scoreColumn && <ScoreCaption style={FOOTNOTE_TEXT} />}
+        <p>{t("legal.brokerDisclaimer")}</p>
+      </div>
     </div>
   );
 }

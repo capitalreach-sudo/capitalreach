@@ -39,22 +39,15 @@ export default async function StartupDashboardPage() {
     .maybeSingle()
     .returns<Startup>();
 
-  // Analytics: pageviews over the 30 calendar days the tile's label promises.
-  // The window opens on a day boundary so the headline figure counts exactly
-  // the rows the sparkline under it buckets; a rolling instant pulled part of
-  // a 31st day into the number but not into the shape.
-  const DAY = 24 * 60 * 60 * 1000;
+  // Analytics: pageviews over the 30 calendar days the dashboard's sentence
+  // promises. The window opens on a day boundary, not on a rolling instant,
+  // which pulled part of a 31st day into the number.
   const windowStart = new Date();
   windowStart.setHours(0, 0, 0, 0);
   windowStart.setDate(windowStart.getDate() - 29);
   const thirtyDaysAgo = windowStart.toISOString();
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
-  const viewSeries: number[] = Array(30).fill(0);
-  const saveSeries: number[] = Array(30).fill(0);
-  const dealSeries: number[] = Array(30).fill(0);
   const raise = { softCircled: 0, committed: 0 };
-  // B25: funnel — views → saves → deals → term sheets → closed.
-  const funnel = { views: 0, deals: 0, termSheets: 0, closed: 0 };
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -66,46 +59,25 @@ export default async function StartupDashboardPage() {
     // aggregates are read, never who saved or who viewed.
     const metrics = createAdminClient();
 
-    // Timestamps rather than a head-count: the same rows also feed the
-    // per-day sparkline, so one query serves both numbers.
+    // ONE definition of this figure, and the dashboard words it: visits in the
+    // 30-day window above. startups.pageviews is a lifetime counter and would
+    // contradict that sentence, and an all-time count next to a 30-day one is
+    // what let two earlier versions of this page disagree with each other.
     const { data: viewRows } = await metrics
       .from("pageviews")
       .select("created_at")
       .eq("startup_id", startup.id)
       .gte("created_at", thirtyDaysAgo)
       .limit(10000);
-    // The tile is labelled (30d), so it counts rows inside the window above.
-    // startups.pageviews is a lifetime counter and would contradict that
-    // label; all-time belongs to the funnel step below, which says so.
     viewsCount = viewRows?.length || 0;
-    // The strip's Views tile is a 30-day figure, but every later funnel step
-    // is all-time -- feeding the 30-day number in let Saves "convert" at over
-    // 100%. The funnel reads an all-time head count instead (also immune to
-    // the 10k row cap above); the strip and sparkline keep their window.
-    const { count: allTimeViews } = await metrics
-      .from("pageviews")
-      .select("id", { count: "exact", head: true })
-      .eq("startup_id", startup.id);
-    funnel.views = allTimeViews ?? 0;
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    for (const r of viewRows ?? []) {
-      const idx = 29 - Math.floor((today.getTime() - new Date(r.created_at).setHours(0, 0, 0, 0)) / DAY);
-      if (idx >= 0 && idx < 30) viewSeries[idx] += 1;
-    }
 
-    // Rows rather than a head-count, for the same reason as pageviews above:
-    // the created_at timestamps also feed the per-day sparkline, so one
-    // query serves the number and the trend.
+    // Saves are all-time, and the dashboard says "saves" without a window.
     const { data: saveRows } = await metrics
       .from("watchlists")
       .select("created_at")
       .eq("startup_id", startup.id)
       .limit(10000);
     savesCount = saveRows?.length || 0;
-    for (const r of saveRows ?? []) {
-      const idx = 29 - Math.floor((today.getTime() - new Date(r.created_at).setHours(0, 0, 0, 0)) / DAY);
-      if (idx >= 0 && idx < 30) saveSeries[idx] += 1;
-    }
 
     // Amounts double as the raise tracker: term-sheet deals count as
     // soft-circled, closed deals as committed. One query serves both the
@@ -115,29 +87,15 @@ export default async function StartupDashboardPage() {
       .select("status, amount, created_at, commitment_type")
       .eq("startup_id", startup.id)
       .neq("status", "passed");
-    // The strip's label is "Active Deals" and its tooltip promises "not yet
-    // finalised": closed deals stay in dealRows for the funnel and the raise
-    // tracker, but the STRIP figure excludes them -- matching the investor
-    // dashboard's definition, which this number used to contradict.
+    // "Deals in progress" means not yet finalised, so closed deals stay in
+    // dealRows for the raise figure but are not counted here -- the same
+    // definition the investor dashboard uses, which this number once
+    // contradicted.
     dealsCount = (dealRows ?? []).filter((d) => d.status !== "closed").length;
-    // The funnel's Deals step is all-time non-passed, like every step around
-    // it (the funnelWindow label promises all-time): closed deals stay
-    // counted here, otherwise the funnel narrows to zero at Deals and widens
-    // again at Closed. The strip's active-only figure above is a different
-    // definition and keeps its own variable.
-    funnel.deals = (dealRows ?? []).length;
-    for (const d of dealRows ?? []) {
-      const idx = 29 - Math.floor((today.getTime() - new Date(d.created_at).setHours(0, 0, 0, 0)) / DAY);
-      if (idx >= 0 && idx < 30) dealSeries[idx] += 1;
-    }
-    // B17: the tracker reads commitment levels from day 0 — a soft-circle
-    // or verbal yes at intro counts as soft-circled; a recorded commitment
-    // or a closed deal counts as committed. Term sheets without an explicit
-    // level still count as soft-circled.
-    for (const d of dealRows ?? []) {
-      if (d.status === "term_sheet" || d.status === "closed") funnel.termSheets += 1;
-      if (d.status === "closed") funnel.closed += 1;
-    }
+    // B17: the round figure reads commitment levels from day 0. A soft-circle
+    // or verbal yes at intro counts as soft-circled; a recorded commitment or
+    // a closed deal counts as committed. Term sheets without an explicit level
+    // still count as soft-circled.
     for (const d of dealRows ?? []) {
       const amt = d.amount ?? 0;
       if (d.status === "closed" || d.commitment_type === "committed") raise.committed += amt;
@@ -146,7 +104,7 @@ export default async function StartupDashboardPage() {
   }
 
   // F10: where this round stands against its peers. Cohort = other ACTIVE
-  // listings at the same stage — the comparison a seed investor actually
+  // listings at the same stage, the comparison a seed investor actually
   // makes. Percentiles only; nothing about any individual peer leaves here.
   let benchmarks: BenchmarkResult | null = null;
   if (startup && startup.status === "active" && startup.stage) {
@@ -214,7 +172,7 @@ export default async function StartupDashboardPage() {
       <StartupDashboardClient
         profile={profile}
         startup={startup}
-        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, saveSeries, dealSeries, raise, funnel }}
+        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, raise }}
         isLaunchMode={isLaunch}
         rejectionReason={rejectionReason}
         needsClosureDeclaration={needsClosureDeclaration}
