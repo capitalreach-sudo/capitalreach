@@ -1539,7 +1539,8 @@
     "investorProfileUnfinished": "Your investor profile is not finished yet",
     "finishInvestorProfileToSave": "Finish your investor profile to save startups",
     "saveInvestorsOnly": "Saving startups is for investor accounts",
-    "documentLocked": "Locked"
+    "documentLocked": "Locked",
+    "reqSend": "Send request"
   },
   "investors": {
     "pageTitle": "Investor directory",

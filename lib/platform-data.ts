@@ -197,6 +197,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         supabase
           .from("deals")
           .select("status, amount, currency, closed_at")
+          .eq("is_demo", false)
           .order("id", { ascending: true })
           .range(from, to),
       ),

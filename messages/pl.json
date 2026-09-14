@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "Twój profil inwestora nie jest jeszcze gotowy",
     "finishInvestorProfileToSave": "Dokończ profil inwestora, aby zapisywać startupy",
     "saveInvestorsOnly": "Zapisywanie startupów jest dla kont inwestorów",
-    "documentLocked": "Zablokowane"
+    "documentLocked": "Zablokowane",
+    "reqSend": "Wyślij prośbę"
   },
   "filters": {
     "industry": "Branża",

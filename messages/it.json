@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "Il tuo profilo investitore non è ancora completo",
     "finishInvestorProfileToSave": "Completa il tuo profilo investitore per salvare le startup",
     "saveInvestorsOnly": "Salvare le startup è riservato agli account investitore",
-    "documentLocked": "Bloccato"
+    "documentLocked": "Bloccato",
+    "reqSend": "Invia richiesta"
   },
   "filters": {
     "industry": "Settore",

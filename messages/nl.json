@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "Uw investeerdersprofiel is nog niet af",
     "finishInvestorProfileToSave": "Rond uw investeerdersprofiel af om startups op te slaan",
     "saveInvestorsOnly": "Startups opslaan is voor investeerdersaccounts",
-    "documentLocked": "Vergrendeld"
+    "documentLocked": "Vergrendeld",
+    "reqSend": "Verzoek versturen"
   },
   "filters": {
     "industry": "Industrie",

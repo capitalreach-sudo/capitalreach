@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "Din investerarprofil är inte klar ännu",
     "finishInvestorProfileToSave": "Slutför din investerarprofil för att spara startups",
     "saveInvestorsOnly": "Att spara startups är för investerarkonton",
-    "documentLocked": "Låst"
+    "documentLocked": "Låst",
+    "reqSend": "Skicka begäran"
   },
   "filters": {
     "industry": "Bransch",

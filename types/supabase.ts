@@ -832,6 +832,7 @@ export type Database = {
           instrument_doc_extracted_amount: number | null
           instrument_doc_url: string | null
           investor_id: string
+          is_demo: boolean
           next_follow_up: string | null
           notes: string | null
           ownership_percent: number | null
@@ -900,6 +901,7 @@ export type Database = {
           instrument_doc_extracted_amount?: number | null
           instrument_doc_url?: string | null
           investor_id: string
+          is_demo?: boolean
           next_follow_up?: string | null
           notes?: string | null
           ownership_percent?: number | null
@@ -968,6 +970,7 @@ export type Database = {
           instrument_doc_extracted_amount?: number | null
           instrument_doc_url?: string | null
           investor_id?: string
+          is_demo?: boolean
           next_follow_up?: string | null
           notes?: string | null
           ownership_percent?: number | null

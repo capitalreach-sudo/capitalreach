@@ -1532,7 +1532,8 @@
     "investorProfileUnfinished": "投資家プロフィールはまだ完成していません",
     "finishInvestorProfileToSave": "スタートアップを保存するには投資家プロフィールを完成させてください",
     "saveInvestorsOnly": "スタートアップの保存は投資家アカウント向けの機能です",
-    "documentLocked": "ロック中"
+    "documentLocked": "ロック中",
+    "reqSend": "リクエストを送信"
   },
   "investors": {
     "pageTitle": "投資家一覧",

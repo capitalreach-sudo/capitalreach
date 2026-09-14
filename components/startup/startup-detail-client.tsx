@@ -373,7 +373,7 @@ function DocRequestRow({ startupId }: { startupId: string }) {
           else notifyRefusal(res, await res.json().catch(() => ({})));
         }}
         style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 12px", cursor: "pointer" }}>
-        {busy ? "…" : t("startupDetail.askSend")}
+        {busy ? "…" : t("startupDetail.reqSend")}
       </button>
     </div>
   );

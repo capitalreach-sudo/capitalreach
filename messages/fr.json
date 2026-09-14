@@ -1532,7 +1532,8 @@
     "investorProfileUnfinished": "Votre profil investisseur n'est pas encore terminé",
     "finishInvestorProfileToSave": "Terminez votre profil investisseur pour enregistrer des startups",
     "saveInvestorsOnly": "L'enregistrement de startups est réservé aux comptes investisseur",
-    "documentLocked": "Verrouillé"
+    "documentLocked": "Verrouillé",
+    "reqSend": "Envoyer la demande"
   },
   "investors": {
     "pageTitle": "Annuaire des investisseurs",

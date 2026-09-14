@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "आपकी निवेशक प्रोफ़ाइल अभी पूरी नहीं है",
     "finishInvestorProfileToSave": "स्टार्टअप सहेजने के लिए अपनी निवेशक प्रोफ़ाइल पूरी करें",
     "saveInvestorsOnly": "स्टार्टअप सहेजना निवेशक खातों के लिए है",
-    "documentLocked": "लॉक"
+    "documentLocked": "लॉक",
+    "reqSend": "अनुरोध भेजें"
   },
   "filters": {
     "industry": "उद्योग",

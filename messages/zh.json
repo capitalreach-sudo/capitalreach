@@ -1532,7 +1532,8 @@
     "investorProfileUnfinished": "您的投资者档案尚未完成",
     "finishInvestorProfileToSave": "完成投资者档案后即可收藏初创公司",
     "saveInvestorsOnly": "收藏初创公司仅限投资者账户",
-    "documentLocked": "已锁定"
+    "documentLocked": "已锁定",
+    "reqSend": "发送请求"
   },
   "investors": {
     "pageTitle": "投资者目录",

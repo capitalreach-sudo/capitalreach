@@ -1532,7 +1532,8 @@
     "investorProfileUnfinished": "Tu perfil de inversor aún no está completo",
     "finishInvestorProfileToSave": "Completa tu perfil de inversor para guardar startups",
     "saveInvestorsOnly": "Guardar startups es para cuentas de inversor",
-    "documentLocked": "Bloqueado"
+    "documentLocked": "Bloqueado",
+    "reqSend": "Enviar solicitud"
   },
   "investors": {
     "pageTitle": "Directorio de inversores",

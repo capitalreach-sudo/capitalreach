@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "투자자 프로필이 아직 완성되지 않았습니다",
     "finishInvestorProfileToSave": "스타트업을 저장하려면 투자자 프로필을 완성하세요",
     "saveInvestorsOnly": "스타트업 저장은 투자자 계정 전용입니다",
-    "documentLocked": "잠김"
+    "documentLocked": "잠김",
+    "reqSend": "요청 보내기"
   },
   "filters": {
     "industry": "산업",

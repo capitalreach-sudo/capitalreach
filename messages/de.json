@@ -1539,7 +1539,8 @@
     "investorProfileUnfinished": "Ihr Investorenprofil ist noch nicht fertig",
     "finishInvestorProfileToSave": "Stellen Sie Ihr Investorenprofil fertig, um Startups zu speichern",
     "saveInvestorsOnly": "Das Speichern von Startups ist Investorenkonten vorbehalten",
-    "documentLocked": "Gesperrt"
+    "documentLocked": "Gesperrt",
+    "reqSend": "Anfrage senden"
   },
   "investors": {
     "pageTitle": "Investorenverzeichnis",

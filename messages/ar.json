@@ -1532,7 +1532,8 @@
     "investorProfileUnfinished": "لم يكتمل ملفك كمستثمر بعد",
     "finishInvestorProfileToSave": "أكمل ملفك كمستثمر لحفظ الشركات الناشئة",
     "saveInvestorsOnly": "حفظ الشركات الناشئة متاح لحسابات المستثمرين",
-    "documentLocked": "مقفل"
+    "documentLocked": "مقفل",
+    "reqSend": "إرسال الطلب"
   },
   "investors": {
     "pageTitle": "دليل المستثمرين",

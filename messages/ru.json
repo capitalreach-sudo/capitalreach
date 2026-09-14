@@ -1489,7 +1489,8 @@
     "investorProfileUnfinished": "Ваш профиль инвестора ещё не завершён",
     "finishInvestorProfileToSave": "Завершите профиль инвестора, чтобы сохранять стартапы",
     "saveInvestorsOnly": "Сохранять стартапы могут только инвесторы",
-    "documentLocked": "Закрыто"
+    "documentLocked": "Закрыто",
+    "reqSend": "Отправить запрос"
   },
   "filters": {
     "industry": "Отрасль",
