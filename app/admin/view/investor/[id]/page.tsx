@@ -44,7 +44,7 @@ export default async function AdminViewInvestorPage({
     .from("investors").select("*").eq("id", id).single().returns<Investor>();
   if (!investor) notFound();
 
-  const [{ data: owner }, { data: watchlist }, { data: deals }, { data: aiReports }] = await Promise.all([
+  const [{ data: owner }, { data: watchlistRows }, { data: deals }, { data: aiReports }] = await Promise.all([
     // B18: an off-platform contact has no account, so there is no profile
     // to load — the page renders the investor row on its own.
     investor.owner_id
@@ -66,6 +66,14 @@ export default async function AdminViewInvestorPage({
     target_id: investor.id,
     note: owner?.full_name || owner?.email || investor.slug,
   });
+
+  // A delisted startup's save leaves the investor's own watchlist entirely
+  // (app/dashboard/investor/page.tsx) -- this view claims parity with what
+  // the investor sees, so it drops the same rows rather than showing the
+  // admin a watchlist the member no longer has.
+  const watchlist = (watchlistRows ?? []).filter(
+    (w) => (w.startup as unknown as { status?: string } | null)?.status === "active",
+  );
 
   // Same flag the real dashboard reads (app/dashboard/investor/page.tsx):
   // caps are computed from `profile` (the investor's own tier) crossed with

@@ -12,6 +12,7 @@ import { InfoTip } from "@/components/shared/info-tip";
 import { ShareLinks } from "@/components/startup/share-links";
 import type { BenchmarkResult } from "@/lib/benchmarks";
 import { CapTableCard } from "@/components/dashboard/cap-table-card";
+import { Sparkline } from "@/components/ui/sparkline";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { notify } from "@/components/ui/toast-notify";
@@ -36,11 +37,16 @@ interface Props {
   profile:      Profile;
   startup:      Startup | null;
   /**
-   * The three figures the Investors section words, plus the round's money.
-   * viewSeries is still accepted because app/admin/view/startup/[id] passes
-   * it; nothing draws it any more.
+   * The three figures the Investors section words, the 30-day view trend
+   * behind the headline, the round's money, and the all-time funnel (B25)
+   * that reads views through to a closed deal on one shared definition.
    */
-  analytics:    { views: number; saves: number; deals: number; viewSeries?: number[]; raise?: { softCircled: number; committed: number } };
+  analytics:    {
+    views: number; saves: number; deals: number;
+    viewSeries?: number[];
+    raise?: { softCircled: number; committed: number };
+    funnel?: { views: number; deals: number; termSheets: number; closed: number };
+  };
   isLaunchMode: boolean;
   /**
    * Set when an admin is looking at someone else's dashboard. Carries the
@@ -94,6 +100,19 @@ function withFigure(text: string, value: number | string): ReactNode {
   );
 }
 
+/**
+ * Normalises a raw daily series into the 0..1 points Sparkline draws. A trend
+ * needs 8+ measurements to read as a shape rather than a squiggle, and an
+ * all-zero window has no slope to show -- both render nothing rather than a
+ * flat or near-empty line.
+ */
+function trendPoints(series?: number[]): number[] | null {
+  if (!series || series.length < 8) return null;
+  const max = Math.max(...series);
+  if (max === 0) return null;
+  return series.map((v) => v / max);
+}
+
 /** Locale list punctuation around React nodes ("a, b, c" in English). */
 function joinList(items: ReactNode[], locale: string): ReactNode {
   if (items.length <= 1) return items[0] ?? null;
@@ -107,6 +126,16 @@ function joinList(items: ReactNode[], locale: string): ReactNode {
     return items.map((item, i) => <span key={i}>{i > 0 ? ", " : null}{item}</span>);
   }
 }
+
+// Same labels the directories use for this column. Rendered raw, "vc" reads
+// as "Vc" and "family_office" as "Family office" -- route through the keys
+// instead (components/shared/deal-kanban.tsx hit the same thing first).
+const INVESTOR_TYPE_KEYS: Record<string, string> = {
+  angel: "investors.typeAngel",
+  vc: "investors.typeVc",
+  family_office: "investors.typeFamilyOffice",
+  corporate: "investors.typeCorporate",
+};
 
 const STATUS_KEYS: Record<string, string> = {
   active:         "dashboard.statusActive",
@@ -266,6 +295,38 @@ const STYLES = `
 .sd-bar > span { display: block; block-size: 100%; }
 .sd-bar__committed { background-color: var(--cr-up); }
 .sd-bar__soft { background-color: var(--cr-ink-4); }
+
+/* B25 raise funnel: one row per step, a copper bar for the count and the
+   conversion off the step before it. Only the last step (closed, money that
+   actually landed) reads as --cr-up -- the same "green is landed, copper is
+   in motion" split RoundFigure's bar already uses. */
+.sd-funnel { display: grid; gap: 0.625rem; padding-block: 0.75rem 0.25rem; }
+.sd-funnel__row {
+  display: grid;
+  grid-template-columns: minmax(3.75rem, auto) minmax(0, 1fr) 3rem 2.25rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+.sd-funnel__label {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  font-size: 0.8125rem; font-weight: 400; line-height: 1.4;
+  color: var(--cr-ink-3);
+}
+.sd-funnel__bar {
+  display: block; block-size: 0.375rem; overflow: hidden;
+  border-radius: 999px; background-color: var(--cr-rule);
+}
+.sd-funnel__fill { display: block; block-size: 100%; background-color: var(--cr-copper); opacity: 0.75; }
+.sd-funnel__fill[data-final] { background-color: var(--cr-up); opacity: 1; }
+.sd-funnel__value { font-size: 0.8125rem; text-align: end; }
+.sd-funnel__conv {
+  font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  font-size: 0.75rem; line-height: 1.4;
+  color: var(--cr-ink-4);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
 
 /* Rows that open in place: the trailing control keeps line one, the opened
    content takes a full-width line under it. */
@@ -574,10 +635,59 @@ function RoundControls({ startup, readOnly }: { startup: Startup; readOnly: bool
   );
 }
 
-function RoundSection({ startup, raise, deals, benchmarks, readOnly }: {
+/**
+ * B25: the raise funnel from tables that already exist -- views through to a
+ * closed deal, one all-time definition per step so no step can read over
+ * 100% against the one before it. `views` and `deals` here are the funnel's
+ * own all-time counts, not the 30-day / active-only figures the rest of the
+ * page words -- a mixed definition either overflows a conversion percentage
+ * or narrows the funnel to zero before Closed.
+ */
+function RoundFunnel({ views, saves, deals, termSheets, closed }: {
+  views: number; saves: number; deals: number; termSheets: number; closed: number;
+}) {
+  const { t } = useTf();
+  if (views === 0 && deals === 0) return null;
+  const steps: Array<[string, number]> = [
+    [t("dashboard.funnelViews"), views],
+    [t("dashboard.funnelSaves"), saves],
+    [t("dashboard.funnelDeals"), deals],
+    [t("dashboard.funnelTermSheets"), termSheets],
+    [t("dashboard.funnelClosed"), closed],
+  ];
+  const max = Math.max(1, ...steps.map(([, v]) => v));
+  return (
+    <div className="sd-group">
+      <div className="sd-group__head">
+        <h3 className="sd-group__title">{t("dashboard.funnelTitle")}</h3>
+        <span className="sd-note" style={{ marginInlineStart: "auto" }}>{t("dashboard.funnelWindow")}</span>
+      </div>
+      <div className="sd-funnel">
+        {steps.map(([label, v], i) => {
+          const prev = i > 0 ? steps[i - 1][1] : null;
+          const conv = prev && prev > 0 ? Math.round((v / prev) * 100) : null;
+          return (
+            <div key={label} className="sd-funnel__row">
+              <span className="sd-funnel__label">{label}</span>
+              <span className="sd-funnel__bar">
+                <span className="sd-funnel__fill" data-final={i === steps.length - 1 || undefined} style={{ inlineSize: `${(v / max) * 100}%` }} />
+              </span>
+              <span className="sd-fig sd-funnel__value">{v.toLocaleString()}</span>
+              <span className="sd-funnel__conv">{conv !== null ? `${conv}%` : ""}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function RoundSection({ startup, raise, deals, saves, funnel, benchmarks, readOnly }: {
   startup: Startup;
   raise: { softCircled: number; committed: number };
   deals: number;
+  saves: number;
+  funnel: { views: number; deals: number; termSheets: number; closed: number } | null;
   benchmarks: BenchmarkResult | null;
   readOnly: boolean;
 }) {
@@ -606,6 +716,11 @@ function RoundSection({ startup, raise, deals, benchmarks, readOnly }: {
               </LedgerRow>
             )}
           </Ledger>
+        </ErrorBoundary>
+      )}
+      {funnel && (
+        <ErrorBoundary labelKey="sections.raiseProgress">
+          <RoundFunnel views={funnel.views} saves={saves} deals={funnel.deals} termSheets={funnel.termSheets} closed={funnel.closed} />
         </ErrorBoundary>
       )}
       {!readOnly && (
@@ -982,31 +1097,39 @@ function UpdateComposer() {
   );
 }
 
-function InvestorsSection({ startup, views, saves, showMessages, readOnly }: {
+type Engagement = { events: Record<string, number>; interest: number; waitlist: number };
+type Radar = { count: number; total: number; byType: Record<string, number> };
+
+function InvestorsSection({ startup, views, saves, viewSeries, showMessages, readOnly }: {
   startup: Startup;
   views: number;
   saves: number;
+  viewSeries?: number[];
   showMessages: boolean;
   readOnly: boolean;
 }) {
   const { t, tf, tp, locale } = useTf();
   const [conversations, setConversations] = useState(0);
+  const [engagement, setEngagement] = useState<Engagement | null>(null);
   const [savers, setSavers] = useState<SaversData | null>(null);
   const [viewers, setViewers] = useState<ViewersData | null>(null);
   const [offers, setOffers] = useState(0);
-  const [radar, setRadar] = useState<{ count: number; total: number } | null>(null);
+  const [radar, setRadar] = useState<Radar | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [showAnswered, setShowAnswered] = useState(false);
   const [targets, setTargets] = useState<Target[]>([]);
 
   useEffect(() => {
     const read = (url: string) => fetch(url).then((r) => (r.ok ? r.json() : null)).catch(() => null);
-    void read("/api/startups/engagement").then((j) => setConversations(typeof j?.conversations === "number" ? j.conversations : 0));
+    void read("/api/startups/engagement").then((j) => {
+      setConversations(typeof j?.conversations === "number" ? j.conversations : 0);
+      setEngagement(j && typeof j.events === "object" ? { events: j.events ?? {}, interest: j.interest ?? 0, waitlist: j.waitlist ?? 0 } : null);
+    });
     void read("/api/startups/savers").then((j) => setSavers(j && Array.isArray(j.savers) ? j : null));
     void read("/api/startups/viewers").then((j) => setViewers(j && Array.isArray(j.viewers) ? j : null));
     void read("/api/deals/proposals").then((j) =>
       setOffers(Array.isArray(j?.incoming) ? j.incoming.filter((p: { status?: string }) => p.status === "pending").length : 0));
-    void read("/api/startups/match-radar").then((j) => setRadar(j && typeof j.count === "number" && typeof j.total === "number" ? { count: j.count, total: j.total } : null));
+    void read("/api/startups/match-radar").then((j) => setRadar(j && typeof j.count === "number" && typeof j.total === "number" ? { count: j.count, total: j.total, byType: j.byType ?? {} } : null));
     void read("/api/questions").then((j) => setQuestions(Array.isArray(j?.questions) ? j.questions : []));
     void read("/api/targets").then((j) => setTargets(Array.isArray(j?.targets) ? j.targets : []));
   }, []);
@@ -1049,14 +1172,41 @@ function InvestorsSection({ startup, views, saves, showMessages, readOnly }: {
   const answeredQs = questions.filter((q) => !!q.answer);
   const showOffers = offers > 0 || (startup.status === "active" && !readOnly);
   const showRadar = !!radar && radar.total >= 20 && radar.count > 0;
+  const radarTypes = showRadar && radar ? Object.entries(radar.byType).sort((a, b) => b[1] - a[1]).slice(0, 4) : [];
+  // The engagement ledger (migration 107): what people DID beyond looking,
+  // plus the two signals tracked but never shown on this dashboard before.
+  // Conversations already has its own clause below, so it stays out of this
+  // list rather than appearing twice.
+  const ev = engagement?.events ?? {};
+  const engagementRows: Array<[string, number]> = ([
+    [t("engagement.website"), ev.website_click ?? 0],
+    [t("engagement.video"), ev.video_play ?? 0],
+    [t("engagement.booking"), ev.booking_open ?? 0],
+    [t("engagement.shares"), (ev.share_copy ?? 0) + (ev.share_social ?? 0)],
+    [t("engagement.onepager"), ev.onepager_open ?? 0],
+    [t("engagement.interest"), engagement?.interest ?? 0],
+    [t("engagement.waitlist"), engagement?.waitlist ?? 0],
+  ] as Array<[string, number]>).filter(([, v]) => v > 0);
+  const engagementGroup = engagementRows.length > 0;
   const composer = startup.status === "active" && !readOnly;
   const waiting = showOffers || showMessages || openQs.length > 0 || answeredQs.length > 0;
   const interestGroup = interested.length > 0 || hasLockedLine || unnamedSavers > 0;
-  const hasRows = waiting || interestGroup || showRadar || targets.length > 0 || composer;
+  const hasRows = waiting || interestGroup || showRadar || engagementGroup || targets.length > 0 || composer;
 
   // The same 30-day visits and all-time saves page.tsx counts; zeros are left out.
+  const viewPoints = trendPoints(viewSeries);
   const clauses: ReactNode[] = [];
-  if (views > 0) clauses.push(withFigure(tp("dashboard.startup.visits30d", "{count} visit in 30 days", "{count} visits in 30 days", views), views));
+  if (views > 0) {
+    const visitsClause = withFigure(tp("dashboard.startup.visits30d", "{count} visit in 30 days", "{count} visits in 30 days", views), views);
+    clauses.push(
+      viewPoints ? (
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem" }}>
+          {visitsClause}
+          <Sparkline points={viewPoints} width={40} height={12} />
+        </span>
+      ) : visitsClause,
+    );
+  }
   if (saves > 0) clauses.push(withFigure(tp("dashboard.startup.saves", "{count} save", "{count} saves", saves), saves));
   if (conversations > 0) clauses.push(withFigure(tp("dashboard.startup.conversations", "{count} conversation", "{count} conversations", conversations), conversations));
   const prose = clauses.length > 0 ? joinList(clauses, locale) : null;
@@ -1165,6 +1315,33 @@ function InvestorsSection({ startup, views, saves, showMessages, readOnly }: {
                 </LedgerCell>
                 <LedgerCell figure>{radar.count}</LedgerCell>
               </LedgerRow>
+            </Ledger>
+            {/* The shape of that demand: live investor fit broken out by type,
+                the identity-free breakdown behind the headline count. */}
+            {radarTypes.length > 1 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", paddingBlock: "0.75rem 0" }}>
+                {radarTypes.map(([type, n]) => (
+                  <span key={type} className="cr-chip">{n} {INVESTOR_TYPE_KEYS[type] ? t(INVESTOR_TYPE_KEYS[type]) : sentenceCase(type)}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </ErrorBoundary>
+      )}
+
+      {engagementGroup && (
+        <ErrorBoundary labelKey="sections.investorInterest">
+          <div className="sd-group">
+            <div className="sd-group__head">
+              <h3 className="sd-group__title">{t("engagement.title")}</h3>
+            </div>
+            <Ledger columns="minmax(0,1fr) auto">
+              {engagementRows.map(([label, value]) => (
+                <LedgerRow key={label}>
+                  <LedgerCell primary><span className="cr-row-title">{label}</span></LedgerCell>
+                  <LedgerCell figure>{value}</LedgerCell>
+                </LedgerRow>
+              ))}
             </Ledger>
           </div>
         </ErrorBoundary>
@@ -1545,6 +1722,8 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               startup={startup}
               raise={analytics.raise ?? { softCircled: 0, committed: 0 }}
               deals={analytics.deals}
+              saves={analytics.saves}
+              funnel={analytics.funnel ?? null}
               benchmarks={benchmarks}
               readOnly={readOnly}
             />
@@ -1553,6 +1732,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               startup={startup}
               views={analytics.views}
               saves={analytics.saves}
+              viewSeries={analytics.viewSeries}
               showMessages={messagingAvailable === true}
               readOnly={readOnly}
             />

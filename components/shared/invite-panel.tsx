@@ -31,6 +31,10 @@ type Invite = {
  */
 export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investor" }) {
   const { t } = useTranslation();
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
   const readOnly = useReadOnly();
   const [open, setOpen] = useState(false);
   const [invites, setInvites] = useState<Invite[] | null>(null);
@@ -131,8 +135,12 @@ export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investo
               value={role}
               onChange={(e) => setRole(e.target.value as "startup" | "investor")}
             >
-              <option value="investor">{t("invite.roleInvestor")}</option>
-              <option value="startup">{t("invite.roleFounder")}</option>
+              {/* The trigger above already reads "Invite an investor" / "Invite
+                  a founder"; echoing that same imperative phrase as the first
+                  (pre-selected) option here read as a stutter. Plain nouns
+                  name the choice without repeating the sentence that opened it. */}
+              <option value="investor">{tf("invite.optInvestor", "Investor")}</option>
+              <option value="startup">{tf("invite.optFounder", "Founder")}</option>
             </select>
             <label htmlFor={`${panelId}note`} className="sr-only">{t("invite.notePh")}</label>
             <input

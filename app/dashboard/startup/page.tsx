@@ -42,12 +42,20 @@ export default async function StartupDashboardPage() {
   // Analytics: pageviews over the 30 calendar days the dashboard's sentence
   // promises. The window opens on a day boundary, not on a rolling instant,
   // which pulled part of a 31st day into the number.
+  const DAY = 24 * 60 * 60 * 1000;
   const windowStart = new Date();
   windowStart.setHours(0, 0, 0, 0);
   windowStart.setDate(windowStart.getDate() - 29);
   const thirtyDaysAgo = windowStart.toISOString();
   let viewsCount = 0, savesCount = 0, dealsCount = 0;
+  // The 30-day shape behind the views headline -- one bucket per day, oldest
+  // first, so the sparkline and the headline count the same rows.
+  const viewSeries: number[] = Array(30).fill(0);
   const raise = { softCircled: 0, committed: 0 };
+  // B25: views -> saves -> deals -> term sheets -> closed, every step on one
+  // all-time definition so a step can never convert over 100% against the
+  // one before it.
+  const funnel = { views: 0, deals: 0, termSheets: 0, closed: 0 };
 
   if (startup) {
     // These three counts are about the founder's own listing, but two of them
@@ -63,6 +71,7 @@ export default async function StartupDashboardPage() {
     // 30-day window above. startups.pageviews is a lifetime counter and would
     // contradict that sentence, and an all-time count next to a 30-day one is
     // what let two earlier versions of this page disagree with each other.
+    // The same rows also feed the per-day sparkline, so one query serves both.
     const { data: viewRows } = await metrics
       .from("pageviews")
       .select("created_at")
@@ -70,6 +79,19 @@ export default async function StartupDashboardPage() {
       .gte("created_at", thirtyDaysAgo)
       .limit(10000);
     viewsCount = viewRows?.length || 0;
+    // The funnel's Views step is all-time (its own label says so), immune to
+    // the 10k-row cap above; the 30-day figure and its sparkline keep their
+    // own window.
+    const { count: allTimeViews } = await metrics
+      .from("pageviews")
+      .select("id", { count: "exact", head: true })
+      .eq("startup_id", startup.id);
+    funnel.views = allTimeViews ?? 0;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    for (const r of viewRows ?? []) {
+      const idx = 29 - Math.floor((today.getTime() - new Date(r.created_at).setHours(0, 0, 0, 0)) / DAY);
+      if (idx >= 0 && idx < 30) viewSeries[idx] += 1;
+    }
 
     // Saves are all-time, and the dashboard says "saves" without a window.
     const { data: saveRows } = await metrics
@@ -84,7 +106,7 @@ export default async function StartupDashboardPage() {
     // active-deal count and the progress bar.
     const { data: dealRows } = await supabase
       .from("deals")
-      .select("status, amount, created_at, commitment_type")
+      .select("status, amount, commitment_type")
       .eq("startup_id", startup.id)
       .neq("status", "passed");
     // "Deals in progress" means not yet finalised, so closed deals stay in
@@ -92,6 +114,15 @@ export default async function StartupDashboardPage() {
     // definition the investor dashboard uses, which this number once
     // contradicted.
     dealsCount = (dealRows ?? []).filter((d) => d.status !== "closed").length;
+    // The funnel's Deals step is all-time non-passed, like every step around
+    // it: closed deals stay counted here, otherwise the funnel narrows to
+    // zero at Deals and widens again at Closed. The line above is a
+    // different, active-only definition and keeps its own variable.
+    funnel.deals = (dealRows ?? []).length;
+    for (const d of dealRows ?? []) {
+      if (d.status === "term_sheet" || d.status === "closed") funnel.termSheets += 1;
+      if (d.status === "closed") funnel.closed += 1;
+    }
     // B17: the round figure reads commitment levels from day 0. A soft-circle
     // or verbal yes at intro counts as soft-circled; a recorded commitment or
     // a closed deal counts as committed. Term sheets without an explicit level
@@ -172,7 +203,7 @@ export default async function StartupDashboardPage() {
       <StartupDashboardClient
         profile={profile}
         startup={startup}
-        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, raise }}
+        analytics={{ views: viewsCount, saves: savesCount, deals: dealsCount, viewSeries, raise, funnel }}
         isLaunchMode={isLaunch}
         rejectionReason={rejectionReason}
         needsClosureDeclaration={needsClosureDeclaration}

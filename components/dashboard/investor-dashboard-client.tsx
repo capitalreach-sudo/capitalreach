@@ -1,8 +1,9 @@
 "use client";
 
 /* Hallmark · genre: modern-minimal · surface: investor dashboard
- * One column of sections in job order: waiting on you, what moved, the
- * watchlist, positions, reports. A section renders only with rows.
+ * One column of sections in job order: waiting on you, what moved, who
+ * viewed you, recently viewed, the watchlist, positions, reports. A section
+ * renders only with rows.
  * states: default · hover · focus · active · disabled · loading · error
  */
 
@@ -18,6 +19,7 @@ import { allocationSummary } from "@/lib/round-math";
 import { safeFormatCurrencyAmount } from "@/lib/validators";
 import { STAGE_LABELS } from "@/lib/utils";
 import { displayLocale } from "@/lib/display-locale";
+import { createClient } from "@/lib/supabase";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
@@ -66,6 +68,10 @@ const DASH_CSS = `
 .crd-note{margin:0.25rem 0 0;max-width:60ch;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;font-weight:400;line-height:1.4;color:var(--cr-ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
 .crd-note-field{display:block;margin-block-start:0.5rem;max-width:60ch}
 .crd-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:0.5rem}
+.crd-priority{display:inline-flex;align-items:center;gap:0.25rem}
+.crd-priority-dot{inline-size:0.75rem;block-size:0.75rem;padding:0;border-radius:50%;border:1px solid var(--cr-rule-dark);background:transparent;cursor:pointer}
+.crd-priority-dot[data-on]{border-color:var(--cr-copper);background-color:var(--cr-copper)}
+.crd-priority-dot:disabled{cursor:default}
 .crd-toggle-cell{align-self:center;justify-self:end}
 .crd-expand{grid-column:1 / -1;grid-row-start:2}
 .crd-report{margin:0.5rem 0 0;max-width:72ch;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.9375rem;font-weight:400;line-height:1.55;color:var(--cr-ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
@@ -449,6 +455,133 @@ function SavedSearchesLink({ enabled }: { enabled: boolean }) {
   );
 }
 
+// ── Who viewed you ──────────────────────────────────────────────────────────
+
+type EngagementViewer = { name: string; kind: "investor" | "founder"; slug: string | null; lastAt: string };
+type EngagementData = {
+  views: number; viewers: EngagementViewer[];
+  interest: number; conversations: number; locked: boolean;
+};
+
+/**
+ * Migration 107's engagement layer -- the investor-side mirror of the
+ * founder's own "Investors" section (startup-dashboard-client.tsx): counts
+ * for every plan, names for paid tiers (and everyone during launch), a
+ * private viewer counted but never named. The API (/api/investors/engagement)
+ * was built and shipped in the 09-05 "wow features" round and stayed live
+ * through the redesign; only the panel reading it was dropped. Mounted only
+ * outside view-as -- the endpoint answers as the CALLER, and in view-as the
+ * caller is the admin, not the investor being viewed.
+ */
+function ProfileViewersSection() {
+  const { t, tf, tfn } = useStrings();
+  const [data, setData] = useState<EngagementData | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetch("/api/investors/engagement")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j: EngagementData | null) => { if (alive) setData(j); })
+      .catch(() => { if (alive) setData(null); });
+    return () => { alive = false; };
+  }, []);
+
+  if (!data || (data.views === 0 && data.interest === 0 && data.conversations === 0)) return null;
+
+  // The dictionary's "engagement.*" strings are bare labels meant to sit
+  // beside a separately rendered figure (the pre-redesign shape); this meta
+  // line is one sentence, so it uses its own {count}-carrying fallbacks
+  // rather than an interpolation the old keys were never written for.
+  const clauses: string[] = [];
+  if (data.views > 0) clauses.push(tfn("dashboard.investor.viewsCount", data.views, "{count} view in 30 days", "{count} views in 30 days"));
+  if (data.interest > 0) clauses.push(tfn("dashboard.investor.interestCount", data.interest, "{count} interested", "{count} interested"));
+  if (data.conversations > 0) clauses.push(tfn("dashboard.investor.conversationsCount", data.conversations, "{count} conversation", "{count} conversations"));
+
+  return (
+    <Section id="viewers" title={t("engagement.whoViewedYou")} meta={clauses.join(" · ")}>
+      {data.locked && data.views > 0 ? (
+        <p className="crd-note" style={{ paddingBlock: "0.75rem" }}>
+          {tf("dashboard.investor.viewersLocked", "Names are a paid feature.")}{" "}
+          <Link href="/pricing" className="cr-link">{t("dashboard.upgradeSeeWho")}</Link>
+        </p>
+      ) : data.viewers.length > 0 ? (
+        <Ledger columns="minmax(0,1fr) auto">
+          {data.viewers.slice(0, 8).map((v, i) => {
+            const href = v.slug ? (v.kind === "investor" ? `/investors/${v.slug}` : `/startups/${v.slug}`) : undefined;
+            const row = (
+              <>
+                <LedgerCell primary>
+                  <span className="cr-row-title">{v.name}</span>
+                </LedgerCell>
+                <LedgerCell align="end">
+                  <time className="cr-row-sub" dateTime={v.lastAt} style={{ fontVariantNumeric: "tabular-nums" }}>{formatDate(v.lastAt)}</time>
+                </LedgerCell>
+              </>
+            );
+            return href
+              ? <LedgerRow key={`${v.slug}-${i}`} href={href} label={v.name}>{row}</LedgerRow>
+              : <LedgerRow key={`${v.slug}-${i}`}>{row}</LedgerRow>;
+          })}
+        </Ledger>
+      ) : null}
+    </Section>
+  );
+}
+
+// ── Recently viewed ──────────────────────────────────────────────────────────
+
+type RecentView = { slug: string; name: string; viewedAt: string };
+
+/**
+ * The last listings this investor opened, from their own startup_views
+ * history (RLS scopes the read to the caller's own rows). Deal-flow triage
+ * starts where it left off instead of from a cold directory. Mounted only
+ * outside view-as: in view-as this would read the ADMIN's own trail, not the
+ * member's.
+ */
+function JumpBackInSection() {
+  const { t } = useStrings();
+  const supabase = useRef(createClient()).current;
+  const [rows, setRows] = useState<RecentView[] | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    supabase
+      .from("startup_views")
+      .select("viewed_at, startup:startups(slug, name, status)")
+      .order("viewed_at", { ascending: false })
+      .limit(30)
+      .then(({ data }: { data: any[] | null }) => {
+        if (!alive) return;
+        const seen = new Map<string, RecentView>();
+        for (const r of (data ?? []) as any[]) {
+          const s = r.startup;
+          if (!s?.slug || s.status !== "active" || seen.has(s.slug)) continue;
+          seen.set(s.slug, { slug: s.slug, name: s.name, viewedAt: r.viewed_at });
+        }
+        setRows(Array.from(seen.values()).slice(0, 6));
+      });
+    return () => { alive = false; };
+  }, [supabase]);
+
+  if (!rows || rows.length === 0) return null;
+
+  return (
+    <Section id="recently-viewed" title={t("dashboard.jumpBackIn")}>
+      <Ledger columns="minmax(0,1fr) auto">
+        {rows.map((r) => (
+          <LedgerRow key={r.slug} href={`/startups/${r.slug}`} label={r.name}>
+            <LedgerCell primary><span className="cr-row-title">{r.name}</span></LedgerCell>
+            <LedgerCell align="end">
+              <time className="cr-row-sub" dateTime={r.viewedAt} style={{ fontVariantNumeric: "tabular-nums" }}>{formatDate(r.viewedAt)}</time>
+            </LedgerCell>
+          </LedgerRow>
+        ))}
+      </Ledger>
+    </Section>
+  );
+}
+
 // ── Watchlist ───────────────────────────────────────────────────────────────
 
 /**
@@ -466,19 +599,22 @@ type SavedStartup = NonNullable<Watchlist["startup"]>;
 
 /**
  * One saved company: the row opens the listing (a real link, so the detail
- * page counts the visit), the status select and the note sit above the link.
+ * page counts the visit), priority, the status select and the note sit above
+ * the link.
  *
  * The note says why the company was saved. It saves on blur rather than
  * behind a button: this is a scratchpad, and a Save press on a one-line
  * thought is how the field goes unused. Every write is gated on the ReadOnly
  * context, because in view-as these APIs authenticate as the admin.
  */
-function WatchlistRow({ startup, note, status, onStatus }: {
-  startup: SavedStartup; note: string | null; status: WlStatus; onStatus: (next: WlStatus) => void;
+function WatchlistRow({ startup, note, status, priority, onStatus, onPriority }: {
+  startup: SavedStartup; note: string | null; status: WlStatus; priority: number;
+  onStatus: (next: WlStatus) => void; onPriority: (next: number) => void;
 }) {
   const { t, tf } = useStrings();
   const readOnly = useReadOnly();
   const [statusBusy, setStatusBusy] = useState(false);
+  const [priorityBusy, setPriorityBusy] = useState(false);
   const [saved, setSaved] = useState(note ?? "");
   const [draft, setDraft] = useState(note ?? "");
   const [editing, setEditing] = useState(false);
@@ -486,6 +622,7 @@ function WatchlistRow({ startup, note, status, onStatus }: {
   const toggleRef = useRef<HTMLButtonElement>(null);
   const fieldRef = useRef<HTMLTextAreaElement>(null);
   const fieldId = useId();
+  const priorityLabel = tf("watchlist.priorityLabel", "Priority");
 
   async function patchStatus(next: WlStatus) {
     if (readOnly || statusBusy) return;
@@ -497,6 +634,19 @@ function WatchlistRow({ startup, note, status, onStatus }: {
     }).catch(() => null);
     setStatusBusy(false);
     if (!res?.ok) { onStatus(prev); notify.error(t("errors.generic")); }
+  }
+
+  // Three dots, click to set, click the current one to clear (0-3, C26).
+  async function patchPriority(next: number) {
+    if (readOnly || priorityBusy) return;
+    const prev = priority;
+    onPriority(next);
+    setPriorityBusy(true);
+    const res = await fetch("/api/watchlist", {
+      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id, priority: next }),
+    }).catch(() => null);
+    setPriorityBusy(false);
+    if (!res?.ok) { onPriority(prev); notify.error(t("errors.generic")); }
   }
 
   async function persist() {
@@ -562,6 +712,20 @@ function WatchlistRow({ startup, note, status, onStatus }: {
               {saved ? tf("dashboard.investor.editNote", "Edit note") : t("dashboard.addNote")}
             </button>
           )}
+          <div className="crd-priority cr-row__raised" role="group" aria-label={priorityLabel}>
+            {[1, 2, 3].map((n) => (
+              <button
+                key={n}
+                type="button"
+                className="crd-priority-dot"
+                disabled={readOnly}
+                aria-pressed={priority >= n}
+                aria-label={`${priorityLabel} ${n}`}
+                data-on={priority >= n || undefined}
+                onClick={() => void patchPriority(priority === n ? 0 : n)}
+              />
+            ))}
+          </div>
           <select
             className="cr-select cr-row__raised"
             value={status}
@@ -582,9 +746,13 @@ function WatchlistSection({ watchlist, canExport, showBrowse }: { watchlist: Wat
   const [statusById, setStatusById] = useState<Record<string, WlStatus>>(() =>
     Object.fromEntries(watchlist.map((w) => [w.id, (w.status ?? "watching") as WlStatus])),
   );
+  const [priorityById, setPriorityById] = useState<Record<string, number>>(() =>
+    Object.fromEntries(watchlist.map((w) => [w.id, w.priority ?? 0])),
+  );
   const [filter, setFilter] = useState<WlStatus | null>(null);
   const saved = watchlist.filter((w): w is Watchlist & { startup: SavedStartup } => Boolean(w.startup));
   const statusOf = (w: Watchlist): WlStatus => statusById[w.id] ?? "watching";
+  const priorityOf = (w: Watchlist): number => priorityById[w.id] ?? w.priority ?? 0;
 
   function exportCsv() {
     if (saved.length === 0) return;
@@ -597,7 +765,7 @@ function WatchlistSection({ watchlist, canExport, showBrowse }: { watchlist: Wat
       tf("dashboard.investor.csvTarget", "Funding target"), t("startupDetail.mrr"),
     ];
     const lines = saved.map((w) => [
-      t(WL_KEY[statusOf(w)]), w.priority ?? 0, w.startup.name, w.startup.tagline, w.startup.industry,
+      t(WL_KEY[statusOf(w)]), priorityOf(w), w.startup.name, w.startup.tagline, w.startup.industry,
       stageLabel(w.startup.stage), w.startup.funding_target, w.startup.mrr,
     ].map(esc).join(","));
     const csv = [header.map(esc).join(","), ...lines].join("\n");
@@ -669,7 +837,9 @@ function WatchlistSection({ watchlist, canExport, showBrowse }: { watchlist: Wat
               startup={w.startup}
               note={w.note ?? null}
               status={statusOf(w)}
+              priority={priorityOf(w)}
               onStatus={(next) => setStatusById((prev) => ({ ...prev, [w.id]: next }))}
+              onPriority={(next) => setPriorityById((prev) => ({ ...prev, [w.id]: next }))}
             />
           ))}
         </Ledger>
@@ -986,7 +1156,6 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   const searchParams = useSearchParams();
   const { t, tf, tfn } = useStrings();
   const messagingAvailable = useMessagingAvailable();
-  const [inviteOpen, setInviteOpen] = useState(false);
   const live = !viewingAs;
 
   // Arrival notices: async outcomes the investor cannot otherwise see.
@@ -1050,6 +1219,11 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
         {/* Reads the caller's own watch history; in view-as that is the admin's. */}
         {live && <ErrorBoundary labelKey="sections.recentlyViewed"><WatchlistChanges /></ErrorBoundary>}
 
+        {/* Reads the caller's own engagement/view history; in view-as both
+            would answer as the admin, not the member being viewed. */}
+        {live && <ErrorBoundary labelKey="sections.profileViewers"><ProfileViewersSection /></ErrorBoundary>}
+        {live && <ErrorBoundary labelKey="sections.recentlyViewed"><JumpBackInSection /></ErrorBoundary>}
+
         <WatchlistSection watchlist={watchlist} canExport={caps.dataExport} showBrowse={live} />
 
         {caps.portfolio && portfolio.length > 0 && (
@@ -1062,23 +1236,21 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
 
         {live && (
           <div className="crd-foot">
+            {/* InvitePanel owns its own trigger and its own expand/collapse
+                (see invite-panel.tsx) -- both dashboards mount it directly,
+                per its own doc comment. This surface used to wrap it in a
+                SECOND "Invite a founder" toggle that only revealed the
+                panel's own identical "Invite a founder" trigger underneath,
+                which read as one button leading nowhere but to another copy
+                of itself. Removing the outer wrapper leaves exactly one
+                trigger, exactly like the founder dashboard's InvitePanel
+                mount (components/dashboard/startup-dashboard-client.tsx). */}
             <div className="crd-foot-links">
               <SavedSearchesLink enabled={caps.savedSearches} />
-              <button
-                type="button"
-                className="cr-btn cr-btn--text"
-                aria-expanded={inviteOpen}
-                aria-controls={inviteOpen ? "investor-invite" : undefined}
-                onClick={() => setInviteOpen((o) => !o)}
-              >
-                {tf("dashboard.investor.inviteFounder", "Invite a founder")}
-              </button>
             </div>
-            {inviteOpen && (
-              <div id="investor-invite" className="crd-foot-panel">
-                <InvitePanel defaultRole="startup" />
-              </div>
-            )}
+            <div className="crd-foot-panel">
+              <InvitePanel defaultRole="startup" />
+            </div>
           </div>
         )}
       </div>

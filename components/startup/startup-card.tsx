@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Bookmark, GitCompareArrows } from "lucide-react";
+import { Bookmark, GitCompareArrows, Lock } from "lucide-react";
 import { DemoBadge } from "@/components/shared/demo-badge";
-import { STAGE_LABELS, formatCurrency } from "@/lib/utils";
+import { STAGE_LABELS } from "@/lib/utils";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { roundCloseState } from "@/lib/round-close";
-import { isValidFundingTarget } from "@/lib/validators";
+import { safeFormatCurrencyAmount } from "@/lib/validators";
+import { getInvestorPlan } from "@/lib/plans";
 import type { Startup, SubscriptionTier } from "@/types";
+import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 
 
@@ -19,9 +21,9 @@ import { useTranslation } from "@/hooks/useTranslation";
  * satisfies it too. Fields missing from a query fail the build now instead of
  * silently blanking parts of the card.
  *
- * The card does not DRAW every field here (growth, runway and the revenue pair
- * belong to the detail page), but the projection stays whole so no caller's
- * select list has to churn with the card's layout.
+ * The card no longer DRAWS every field here (the diet moved growth, runway and
+ * the revenue pair to the detail page), but the projection stays whole so no
+ * caller's select list has to churn with the card's layout.
  */
 export type StartupCardData = Pick<Startup,
   "id" | "slug" | "name" | "tagline" | "industry" | "stage" | "funding_target" |
@@ -29,229 +31,53 @@ export type StartupCardData = Pick<Startup,
 
 interface StartupCardProps {
   startup:     StartupCardData;
-  /** Governs whether the score figure shows. Free and unknown plans see none;
-   *  the listing surface says so once, above its cards. */
   investorTier?: SubscriptionTier | null;
   isSaved?:    boolean;
   onSave?:     (startupId: string) => void;
-  /** Optional compare toggle; the card's contract is otherwise unchanged. */
+  /** Optional compare toggle -- surfaces with a compare tray pass it; the
+   *  card's contract is otherwise unchanged. */
   onCompare?:  (startupId: string) => void;
   isComparing?: boolean;
 }
 
-type Translate = (key: string, vars?: Record<string, string | number>) => string;
-
-/**
- * The one meta line: sector, stage and, when the round is not simply open, its
- * state or deadline. Shared with the /startups ledger so a card and a row
- * describe a listing in the same words.
- */
-export function startupMetaBits(
-  startup: { industry: string; stage: string; round_state?: string | null; round_close_date?: string | null },
-  t: Translate,
-): string[] {
-  const bits: string[] = [
-    startup.industry,
-    STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " "),
-  ];
-  const closing = roundCloseState(startup.round_close_date);
-  if (startup.round_state === "oversubscribed" || startup.round_state === "closed") {
-    bits.push(t(`startupDetail.round_${startup.round_state}`));
-  } else if (closing) {
-    bits.push(closing.kind === "closingSoon" ? t("startup.closingSoon") : t("startup.closesIn", { count: closing.days }));
-  }
-  return bits;
-}
-
-/*
- * Hover changes the background only. Actions reserve room only where they can
- * be seen: on hover-capable pointers (revealed on hover or focus), or when one
- * is on. A touch pointer shows only the actions that are on.
- */
-const CARD_CSS = `
-.cr-startup-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  padding: 1rem;
-  border: 1px solid var(--cr-rule-dark);
-  border-radius: 6px;
-  background-color: var(--cr-paper-2);
-  transition: background-color 120ms var(--ease-out);
-}
-@media (hover: hover) {
-  .cr-startup-card:hover { background-color: var(--cr-paper-3); }
-}
-.cr-startup-card:has(.cr-startup-card__link:active) {
-  background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4));
-  transition-duration: 100ms;
-}
-.cr-startup-card__link {
-  position: absolute;
-  inset: 0;
-  z-index: var(--z-raised);
-  border-radius: inherit;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.cr-startup-card__link:focus-visible {
-  outline: 2px solid var(--cr-copper) !important;
-  outline-offset: 2px;
-  box-shadow: none !important;
-}
-.cr-startup-card__head {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  min-width: 0;
-  margin-block-end: 0.75rem;
-}
-.cr-startup-card__id { flex: 1 1 auto; min-width: 0; }
-.cr-startup-card__name {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-  min-width: 0;
-  margin: 0;
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: 0;
-  color: var(--cr-ink);
-  white-space: nowrap;
-}
-.cr-startup-card__name > span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.cr-startup-card__tagline {
-  margin: 0.125rem 0 0;
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: 1.4;
-  color: var(--cr-ink-3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.cr-startup-card__meta {
-  margin: 0 0 0.75rem;
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  line-height: 1.4;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cr-ink-3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.cr-startup-card__foot {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding-block-start: 0.75rem;
-  border-block-start: 1px solid var(--cr-rule);
-}
-.cr-startup-card__figure {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--cr-ink);
-  font-variant-numeric: tabular-nums;
-}
-.cr-startup-card__absent {
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--cr-ink-3);
-}
-.cr-startup-card__score {
-  flex: none;
-  display: inline-flex;
-  align-items: baseline;
-  gap: 0.5rem;
-}
-.cr-startup-card__score-label {
-  font-family: var(--font-dm-sans), system-ui, sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--cr-ink-3);
-}
-.cr-startup-card__rail {
-  position: relative;
-  z-index: calc(var(--z-raised) + 1);
-  flex: none;
-  display: flex;
-  margin-block: -0.5rem;
-  margin-inline-end: -0.5rem;
-}
-.cr-startup-card__act {
-  display: inline-grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  padding: 0;
-  border: 0;
-  border-radius: var(--cr-radius-control);
-  background-color: transparent;
-  color: var(--cr-ink-3);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 120ms var(--ease-out), background-color 120ms var(--ease-out), color 120ms var(--ease-out);
-}
-.cr-startup-card__act[aria-pressed="true"] { color: var(--cr-copper); }
-.cr-startup-card__act:active { background-color: color-mix(in oklab, var(--cr-paper-3) 50%, var(--cr-paper-4)); }
-.cr-startup-card__act:focus-visible {
-  outline: 2px solid var(--cr-copper) !important;
-  outline-offset: -2px;
-  box-shadow: none !important;
-}
-@media (hover: hover) {
-  .cr-startup-card__act:hover { color: var(--cr-ink); }
-  .cr-startup-card__act[aria-pressed="true"]:hover { color: var(--cr-copper); }
-  .cr-startup-card__act:not([aria-pressed="true"]) { opacity: 0; }
-  .cr-startup-card:hover .cr-startup-card__act,
-  .cr-startup-card:focus-within .cr-startup-card__act { opacity: 1; }
-}
-@media (hover: none) {
-  .cr-startup-card:not([data-on]) .cr-startup-card__rail { display: none; }
-  .cr-startup-card__act:not([aria-pressed="true"]) { display: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cr-startup-card, .cr-startup-card__act { transition: none; }
-}
-`;
-
 // ── Card ──────────────────────────────────────────────────────────────────────
 
 /**
- * The specimen card, after the diet. It answers what a browse decision needs:
- * who (name, tagline), where it sits (sector-stage meta line), the ask (the
- * raising figure, in ink) and, for plans that carry it, the score. Growth,
- * runway and revenue belong to the detail page. The paywall is never repeated
- * per card; the surface renders one upgrade line above its list.
+ * The specimen card, after the diet. It answers exactly what a browse decision
+ * needs: who (name, tagline), what drawer it sits in (sector-stage meta line),
+ * the ask (raising figure -- the card's ONE accent), and the score. Everything
+ * else -- growth, runway, revenue, the serial number -- belongs to the detail
+ * page. Action icons reveal on hover/focus-within; a coarse pointer has no
+ * hover, so there they are always visible.
  */
 export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare, isComparing }: StartupCardProps) {
   const { t } = useTranslation();
-  const score = startup.vaultrise_score ?? null;
-  const scoreVisible = score != null && !!investorTier && investorTier !== "free";
-  const hasActions = Boolean(onSave || onCompare);
-  const anyOn = Boolean((onSave && isSaved) || (onCompare && isComparing));
-  const metaBits = startupMetaBits(startup, t);
-  const notStated = t("common.ledger.notStated");
+  const canSeeFinancials = getInvestorPlan(investorTier ?? null).features.viewFinancials;
+  const closing          = roundCloseState(startup.round_close_date);
+  const score            = startup.vaultrise_score ?? null;
+  // The score is a paid signal on some plans: free investors are shown that
+  // it exists, not what it is.
+  const scoreLocked      = !investorTier || investorTier === "free";
+  const hasActions       = Boolean(onSave || onCompare);
+
+  // One meta line instead of a chip row: drawer (sector), shelf (stage), and
+  // -- when the round is not simply open -- its state or deadline. Time and
+  // status ride the same quiet line; the raise figure below keeps the accent.
+  const metaBits: string[] = [
+    startup.industry,
+    STAGE_LABELS[startup.stage] ?? startup.stage.replace(/_/g, " "),
+  ];
+  if (startup.round_state === "oversubscribed" || startup.round_state === "closed") {
+    metaBits.push(t(`startupDetail.round_${startup.round_state}`));
+  } else if (closing) {
+    metaBits.push(closing.kind === "closingSoon" ? t("startup.closingSoon") : t("startup.closesIn", { count: closing.days }));
+  }
 
   function handleSave(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     onSave?.(startup.id);
+    notify[isSaved ? "info" : "success"](isSaved ? t("toast.unsaved") : t("toast.saved"));
   }
 
   function handleCompare(e: React.MouseEvent) {
@@ -260,67 +86,174 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
     onCompare?.(startup.id);
   }
 
+  const iconButton: React.CSSProperties = {
+    background: "none",
+    border:     "none",
+    cursor:     "pointer",
+    padding:    "4px",
+    display:    "flex",
+    alignItems: "center",
+  };
+
   return (
-    // The link is a stretched overlay, never a wrapper: an anchor that wraps
-    // the card cannot hold the action buttons without nesting interactives.
-    <div className="cr-startup-card" data-on={anyOn ? "" : undefined}>
-      <style>{CARD_CSS}</style>
+    // The card used to BE the link, with the upgrade hint nested inside it --
+    // an <a> inside an <a>, which is invalid HTML. The browser parser closes
+    // the outer anchor early, so the DOM stops matching what the server sent
+    // and React fails to hydrate this subtree (three warnings per card).
+    //
+    // The link is now a stretched overlay covering the card instead of
+    // wrapping it. The whole surface is still clickable and still a real
+    // anchor -- middle-click and "open in new tab" keep working -- but it
+    // contains nothing, so nothing can nest inside it.
+    <div className="cr-startup-card" style={{ position: "relative" }}>
+      {/* Hover reveal cannot live in inline styles: it needs :hover,
+          :focus-within and a hover-capability media query. An icon whose state
+          is ON (saved, comparing) stays visible -- hiding it would hide the
+          state, not just the control. */}
+      <style>{`
+        .cr-startup-card .cr-card-act { opacity: 0; transition: opacity 120ms ease; }
+        .cr-startup-card:hover .cr-card-act,
+        .cr-startup-card:focus-within .cr-card-act,
+        .cr-startup-card .cr-card-act.cr-on { opacity: 1; }
+        @media (hover: none) { .cr-startup-card .cr-card-act { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .cr-startup-card .cr-card-act { transition: none; } }
+      `}</style>
       <Link
         href={`/startups/${startup.slug}`}
         aria-label={startup.name}
-        className="cr-startup-card__link"
+        style={{ position: "absolute", inset: 0, zIndex: 1, textDecoration: "none" }}
       />
-
-      <div className="cr-startup-card__head">
-        <EntityLogo name={startup.name} logoUrl={startup.logo_url} logoColor={startup.logo_color} size={40} />
-        <div className="cr-startup-card__id">
-          <p className="cr-startup-card__name">
-            <span>{startup.name}</span>
-            {startup.is_demo && <DemoBadge />}
-          </p>
-          {startup.tagline && <p className="cr-startup-card__tagline">{startup.tagline}</p>}
-        </div>
+      <div
+        style={{
+          position:     "relative",
+          display:      "flex",
+          flexDirection: "column",
+          background:   "var(--cr-paper-2)",
+          border:       "1px solid var(--cr-rule-dark)",
+          // 6px: the card/panel radius; 4px stays with controls.
+          borderRadius: "6px",
+          padding:      "16px",
+          transition:   "background 120ms ease, border-color 120ms ease",
+          cursor:       "pointer",
+        }}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)";
+          (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)";
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)";
+          (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)";
+        }}
+      >
+        {/* Action rail: save and compare, above the stretched card link (or
+            the overlay swallows the click). Revealed by the stylesheet above. */}
         {hasActions && (
-          <div className="cr-startup-card__rail">
+          <div style={{ position: "absolute", top: "12px", right: "12px", zIndex: 2, display: "flex", gap: "4px" }}>
             {onCompare && (
               <button
-                type="button"
                 onClick={handleCompare}
-                className="cr-startup-card__act"
+                className={`cr-card-act${isComparing ? " cr-on" : ""}`}
+                style={iconButton}
                 aria-pressed={!!isComparing}
                 aria-label={t("startups.compare")}
+                title={t("startups.compare")}
               >
-                <GitCompareArrows size={16} aria-hidden="true" />
+                <GitCompareArrows style={{ width: 16, height: 16, color: isComparing ? "var(--cr-copper)" : "var(--cr-ink-4)" }} />
               </button>
             )}
             {onSave && (
               <button
-                type="button"
                 onClick={handleSave}
-                className="cr-startup-card__act"
+                className={`cr-card-act${isSaved ? " cr-on" : ""}`}
+                style={iconButton}
                 aria-pressed={!!isSaved}
-                aria-label={t("startup.saveWatchlist")}
+                aria-label={isSaved ? t("startup.removeWatchlist") : t("startup.saveWatchlist")}
               >
-                <Bookmark size={16} aria-hidden="true" fill={isSaved ? "currentColor" : "none"} />
+                <Bookmark style={{
+                  width:  16,
+                  height: 16,
+                  color:  isSaved ? "var(--cr-copper)" : "var(--cr-ink-4)",
+                  fill:   isSaved ? "var(--cr-copper)" : "transparent",
+                }} />
               </button>
             )}
           </div>
         )}
-      </div>
 
-      <p className="cr-startup-card__meta">{metaBits.join(" · ")}</p>
+        {/* Row 1 — Logo + name + tagline. The name wins truncation: the badge
+            cannot shrink, the name ellipsizes. */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "12px", paddingRight: hasActions ? (onSave && onCompare ? "52px" : "28px") : 0 }}>
+          <EntityLogo name={startup.name} logoUrl={startup.logo_url} logoColor={startup.logo_color} size={40} />
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ display: "flex", alignItems: "center", gap: "8px", fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em", overflow: "hidden", whiteSpace: "nowrap" }}>
+              <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{startup.name}</span>
+              {startup.is_demo && <DemoBadge />}
+            </p>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {startup.tagline}
+            </p>
+          </div>
+        </div>
 
-      <div className="cr-startup-card__foot">
-        <span className="cr-startup-card__figure">
-          {isValidFundingTarget(startup.funding_target)
-            ? formatCurrency(startup.funding_target, true)
-            : <span className="cr-startup-card__absent">{notStated === "common.ledger.notStated" ? "Not stated" : notStated}</span>}
-        </span>
-        {scoreVisible && (
-          <span className="cr-startup-card__score" title={t("startup.scoreTitle", { score: score as number })}>
-            <span className="cr-startup-card__score-label">{t("listings.score")}</span>
-            <span className="cr-startup-card__figure">{score}</span>
-          </span>
+        {/* Sector-stage meta line. The one caps voice: 11px/500/0.08em ink-3. */}
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "12px" }}>
+          {metaBits.join(" · ")}
+        </p>
+
+        {/* Raise strip + score. One hairline above; the raising figure is the
+            card's single accent, so the score sits in ink beside it. */}
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
+              {t("startupDetail.raising")}
+            </div>
+            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {safeFormatCurrencyAmount(startup.funding_target)}
+            </div>
+          </div>
+          {/* Ink rather than ui/score-badge's copper: the accent budget is one
+              per card and the raise figure holds it. Same keys, same lock. */}
+          {scoreLocked ? (
+            <span title={t("startup.scoreLocked")} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
+              <Lock style={{ width: 12, height: 12, color: "var(--cr-ink-4)" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", maxWidth: "96px", textAlign: "right", lineHeight: 1.25 }}>{t("startup.scoreLabel")}</span>
+            </span>
+          ) : score != null ? (
+            <span title={t("startup.scoreTitle", { score })} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
+                {score}
+                <span style={{ fontSize: "0.6em", color: "var(--cr-ink-4)", fontWeight: 500 }}>/100</span>
+              </span>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--cr-ink-3)", maxWidth: "96px", textAlign: "right", lineHeight: 1.25 }}>{t("startup.scoreLabel")}</span>
+            </span>
+          ) : null}
+        </div>
+
+        {/* Upgrade hint: a link, so it keeps the link color. */}
+        {!canSeeFinancials && investorTier !== undefined && (
+          <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)" }}>
+            <Link
+              href="/pricing"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                display:        "flex",
+                alignItems:     "center",
+                justifyContent: "center",
+                gap:            "4px",
+                fontFamily:     "'DM Sans', sans-serif",
+                fontWeight:     400,
+                fontSize:       "11px",
+                color:          "var(--cr-copper)",
+                textDecoration: "none",
+                // Same reason as the action rail: sit above the card-wide link.
+                position:       "relative",
+                zIndex:         2,
+              }}
+            >
+              <Lock style={{ width: 10, height: 10 }} />
+              {t("startup.unlockScores")}
+            </Link>
+          </div>
         )}
       </div>
     </div>

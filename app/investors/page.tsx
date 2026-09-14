@@ -21,30 +21,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-/**
- * The viewer's own round: it drives "Fits your raise" and the founders'
- * default Best fit order, so resolving it here puts the first paint in its
- * final order. Service role, scoped to rows the signed-in user owns, and only
- * stage and industry leave this function. null means no round; undefined
- * means the lookup failed and the client asks for itself.
- */
-async function loadOwnRaise(userId: string): Promise<{ stage: string; industry: string } | null | undefined> {
-  try {
-    const { data, error } = await createAdminClient()
-      .from("startups")
-      .select("stage, industry")
-      .eq("owner_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (error) return undefined;
-    const row = data as { stage?: string | null; industry?: string | null } | null;
-    return row?.stage && row?.industry ? { stage: row.stage, industry: row.industry } : null;
-  } catch {
-    return undefined;
-  }
-}
-
 export default async function InvestorsPage() {
   // The directory names real people and their check sizes. Jack's call:
   // signed-in users only -- anonymous visitors browse startups, not backers.
@@ -69,7 +45,7 @@ export default async function InvestorsPage() {
 
   // Server-fetched so the directory is in the HTML on first paint (no
   // "Loading investors…"); the client only fetches if this returns null.
-  const [initial, initialRaise] = await Promise.all([loadPublicInvestors(), loadOwnRaise(user.id)]);
+  const initial = await loadPublicInvestors();
   return (
     <>
       <Navbar />
@@ -80,7 +56,6 @@ export default async function InvestorsPage() {
       <InvestorsClient
         initialInvestors={initial ? initial.slice(0, 60) : undefined}
         initialIsPartial={(initial?.length ?? 0) > 60}
-        initialRaise={initialRaise}
       />
       <Footer />
     </>

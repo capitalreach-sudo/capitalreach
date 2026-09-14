@@ -7,23 +7,6 @@ import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { Navbar } from "@/components/shared/navbar";
 import { postMoney } from "@/lib/round-math";
 
-/**
- * A save whose listing is no longer active (draft, pending review, suspended):
- * the save's own identity and nothing read from the listing. No status is
- * carried, so a missing status is what marks the save as no longer listed.
- * stage is an empty string rather than absent because StartupCard calls string
- * methods on it; every financial is null, which the card and the CSV export
- * already render as empty.
- */
-function unlistedSave(s: { id: string; name: string; slug: string }): NonNullable<Watchlist["startup"]> {
-  return {
-    id: s.id, name: s.name, slug: s.slug,
-    stage: "", tagline: null, industry: null,
-    funding_target: null, mrr: null, arr: null, growth_rate: null, runway_months: null,
-    vaultrise_score: null, round_close_date: null, round_state: null,
-  } as unknown as NonNullable<Watchlist["startup"]>;
-}
-
 export default async function InvestorDashboardPage() {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -64,8 +47,9 @@ export default async function InvestorDashboardPage() {
   // (investor.id belongs to this user); financials are stripped per viewer
   // below, exactly as the browse API does. This read bypasses the status gate
   // the directory applies, and everything returned here lands in the RSC
-  // payload, so only an active listing keeps its row; any other save is
-  // reduced to unlistedSave() before it leaves the server.
+  // payload, so only an active listing's save is kept below; a startup that
+  // is no longer listed is filtered out of safeWatchlist before it ever
+  // reaches the client.
   const adminForJoin = createAdminClient();
   const { data: watchlist, error: watchlistError } = await adminForJoin
     .from("watchlists")
@@ -79,14 +63,20 @@ export default async function InvestorDashboardPage() {
   // A grant regression must be VISIBLE, not an empty state.
   if (watchlistError) console.error("[dashboard/investor] watchlist read failed:", watchlistError.message);
   const canSeeFinancials = await viewerCanSeeFinancials();
-  const safeWatchlist = (watchlist ?? []).map((w) => {
-    if (!w.startup) return w;
-    if (w.startup.status !== "active") return { ...w, startup: unlistedSave(w.startup) };
-    return {
+  // A save whose listing is no longer active (draft, pending review,
+  // suspended, archived) drops off the watchlist entirely rather than
+  // rendering as a stripped row: "leaves the listing, leaves the
+  // watchlist" per Jack. This is a query-time filter, not a delete -- the
+  // watchlists row itself is untouched, so re-publishing the listing
+  // brings the save straight back. It also trivially keeps the privacy
+  // fix's intent (never leak financials for a non-active listing), since
+  // nothing about the row renders at all.
+  const safeWatchlist = (watchlist ?? [])
+    .filter((w) => w.startup && w.startup.status === "active")
+    .map((w) => ({
       ...w,
       startup: stripBrowseFinancials([w.startup as never], canSeeFinancials)[0] as typeof w.startup,
-    };
-  });
+    }));
 
   // Deals
   const { data: deals } = await supabase
