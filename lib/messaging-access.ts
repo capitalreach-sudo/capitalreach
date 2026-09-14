@@ -25,10 +25,17 @@ export interface SealedPair {
   investorId: string;
 }
 
+export interface MemberEntities {
+  startupIds: string[];
+  investorIds: string[];
+}
+
 export interface MessagingAccess {
   admin: boolean;
   /** Resolved for non-admins only: it limits their view, and an admin's view is not limited. */
   pairs: SealedPair[];
+  /** Every startup and investor the user owns or holds a seat on. Empty for admins. */
+  entities: MemberEntities;
 }
 
 export function pairKey(startupId: string, investorId: string): string {
@@ -43,12 +50,39 @@ export interface ThreadParties {
   recipient_investor_id?: string | null;
 }
 
+export interface ViewerEntities {
+  startupIds: ReadonlySet<string>;
+  investorIds: ReadonlySet<string>;
+}
+
 /**
- * A thread a member may use: one startup, one investor, no second party of
- * either kind, and a sealed deal between exactly those two.
+ * A thread a member may use.
+ *
+ * Two shapes. A pair thread (one startup, one investor, no second party)
+ * opens on a sealed deal between exactly those two. A thread carrying a
+ * recipient_* column is the other shape: only an admin can create one (both
+ * producers -- deals/share and messages/start's peer branches -- refuse a
+ * non-admin sender before the insert), so that column marks staff-to-member
+ * outreach, never the founder-to-founder or investor-to-investor channel the
+ * sealed-deal rule withholds. It opens for whichever entity of the viewer's
+ * own sits in one of the thread's four party columns, which is either the
+ * outreach's addressee or, for an admin's own member entity, the admin
+ * themself signed in as a regular user of it.
  */
-export function threadOpenFor(thread: ThreadParties, sealed: SealedPair[] | ReadonlySet<string>): boolean {
-  if (thread.recipient_startup_id || thread.recipient_investor_id) return false;
+export function threadOpenFor(
+  thread: ThreadParties,
+  sealed: SealedPair[] | ReadonlySet<string>,
+  viewer?: ViewerEntities,
+): boolean {
+  if (thread.recipient_startup_id || thread.recipient_investor_id) {
+    if (!viewer) return false;
+    return (
+      (!!thread.startup_id && viewer.startupIds.has(thread.startup_id)) ||
+      (!!thread.recipient_startup_id && viewer.startupIds.has(thread.recipient_startup_id)) ||
+      (!!thread.investor_id && viewer.investorIds.has(thread.investor_id)) ||
+      (!!thread.recipient_investor_id && viewer.investorIds.has(thread.recipient_investor_id))
+    );
+  }
   if (!thread.startup_id || !thread.investor_id) return false;
   const keys = sealed instanceof Set
     ? sealed
@@ -107,26 +141,40 @@ export async function sealedCounterpartPairs(userId: string): Promise<SealedPair
   }
 }
 
+const EMPTY_ENTITIES: MemberEntities = { startupIds: [], investorIds: [] };
+
 export async function messagingAccess(userId: string): Promise<MessagingAccess> {
   try {
-    if (await isAdminUser(userId)) return { admin: true, pairs: [] };
-    return { admin: false, pairs: await sealedCounterpartPairs(userId) };
+    if (await isAdminUser(userId)) return { admin: true, pairs: [], entities: EMPTY_ENTITIES };
+    const [pairs, entities] = await Promise.all([sealedCounterpartPairs(userId), entitiesOf(userId)]);
+    return { admin: false, pairs, entities };
   } catch {
-    return { admin: false, pairs: [] };
+    return { admin: false, pairs: [], entities: EMPTY_ENTITIES };
   }
 }
 
 export async function messagingAvailable(userId: string): Promise<boolean> {
   const access = await messagingAccess(userId);
-  return access.admin || access.pairs.length > 0;
+  if (access.admin || access.pairs.length > 0) return true;
+  // No sealed deal, but the member may still hold an admin-authored thread
+  // (support outreach, a shared listing with a note): check the same set
+  // usableThreadIds would return rather than declaring Messages off twice.
+  // myThreadIds (inside usableThreadIds) has no fail-closed of its own, so
+  // this call needs its own -- the module's rule is every read failure
+  // answers "not available".
+  try {
+    return (await usableThreadIds(userId, access)).length > 0;
+  } catch {
+    return false;
+  }
 }
 
 /**
  * The thread ids this user may still use: every thread they belong to for an
- * admin, and only sealed-pair threads for a member.
+ * admin, and for a member every sealed-pair thread plus any admin-authored
+ * thread that names one of their own entities.
  */
 export async function usableThreadIds(userId: string, access: MessagingAccess): Promise<string[]> {
-  if (!access.admin && !access.pairs.length) return [];
   const ids = await myThreadIds(userId);
   if (access.admin || !ids.length) return ids;
   const admin = createAdminClient();
@@ -135,5 +183,9 @@ export async function usableThreadIds(userId: string, access: MessagingAccess): 
     .select("id, startup_id, investor_id, recipient_startup_id, recipient_investor_id")
     .in("id", ids);
   const keys = new Set(access.pairs.map((p) => pairKey(p.startupId, p.investorId)));
-  return (data ?? []).filter((t) => threadOpenFor(t, keys)).map((t) => t.id as string);
+  const viewer: ViewerEntities = {
+    startupIds: new Set(access.entities.startupIds),
+    investorIds: new Set(access.entities.investorIds),
+  };
+  return (data ?? []).filter((t) => threadOpenFor(t, keys, viewer)).map((t) => t.id as string);
 }

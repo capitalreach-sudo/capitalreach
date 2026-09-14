@@ -2,7 +2,7 @@ import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-se
 import { MessagesClient } from "@/components/dashboard/messages-client";
 import { Navbar } from "@/components/shared/navbar";
 import { redirect } from "next/navigation";
-import { messagingAccess, pairKey, threadOpenFor } from "@/lib/messaging-access";
+import { messagingAccess, pairKey, threadOpenFor, type ViewerEntities } from "@/lib/messaging-access";
 import { isUuid } from "@/lib/utils";
 
 /**
@@ -69,10 +69,16 @@ export default async function MessagesPage({ searchParams = {} }: { searchParams
     const access = await messagingAccess(user.id);
     const isAdmin = access.admin || profile.role === "admin";
     const sealed = new Set(access.pairs.map((pair) => pairKey(pair.startupId, pair.investorId)));
+    // An admin-authored thread (support outreach, a shared listing with a
+    // note) has no sealed pair behind it, so a member can have Messages
+    // through this alone -- the emptiness check below waits for the thread
+    // fetch instead of deciding on `sealed` alone.
+    const viewer: ViewerEntities = {
+      startupIds: new Set(access.entities.startupIds),
+      investorIds: new Set(access.entities.investorIds),
+    };
 
-    if (!isAdmin && sealed.size === 0) {
-      sendTo = "/deals";
-    } else if (!isAdmin) {
+    if (!isAdmin) {
       // ?startupId=&investorId= opens a sealed pair's conversation from its
       // deal, creating the thread on first use. For a member it must name a
       // pair they sealed, or it opens nothing.
@@ -110,7 +116,13 @@ export default async function MessagesPage({ searchParams = {} }: { searchParams
           .order("updated_at", { ascending: false });
         threads = data || [];
       }
-      if (!isAdmin) threads = threads.filter((th) => threadOpenFor(th, sealed));
+      if (!isAdmin) threads = threads.filter((th) => threadOpenFor(th, sealed, viewer));
+    }
+
+    // Nothing sealed and nothing an admin sent them: a member here has no
+    // reason to be, whether they arrived by a link or the nav item.
+    if (!sendTo && !isAdmin && sealed.size === 0 && threads.length === 0) {
+      sendTo = "/deals";
     }
   } catch {
     // DB not connected: redirect to login

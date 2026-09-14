@@ -78,9 +78,17 @@ const PARTNER = "00000000-0000-4000-8000-000000000002";
 const ASSOCIATE = "00000000-0000-4000-8000-000000000003";
 const ADMIN = "00000000-0000-4000-8000-000000000004";
 const STRANGER = "00000000-0000-4000-8000-000000000005";
+/** Names the addressee of the admin-authored thread fixture (T_F2F), kept
+ *  distinct from STRANGER so the "has genuinely nothing" tests stay clean. */
+const RECIPIENT = "00000000-0000-4000-8000-000000000006";
 
 const S = "11111111-1111-4111-8111-111111111111";
 const S2 = "11111111-1111-4111-8111-222222222222";
+const S3 = "11111111-1111-4111-8111-333333333333";
+/** The admin's own entity: real admin-authored threads always carry the
+ *  admin's own entity in the non-recipient slot (deals/share inserts
+ *  investor_id: me.id, the sender), never an unrelated member's. */
+const SA = "11111111-1111-4111-8111-444444444444";
 const I = "22222222-2222-4222-8222-222222222222";
 const I2 = "22222222-2222-4222-8222-333333333333";
 
@@ -97,10 +105,13 @@ function seed(over: Partial<Db> = {}) {
       { id: ASSOCIATE, role: "investor" },
       { id: ADMIN, role: "admin" },
       { id: STRANGER, role: "startup" },
+      { id: RECIPIENT, role: "startup" },
     ],
     startups: [
       { id: S, owner_id: FOUNDER },
       { id: S2, owner_id: STRANGER },
+      { id: S3, owner_id: RECIPIENT },
+      { id: SA, owner_id: ADMIN },
     ],
     investors: [
       { id: I, owner_id: PARTNER },
@@ -115,7 +126,11 @@ function seed(over: Partial<Db> = {}) {
       { id: T_PAIR, startup_id: S, investor_id: I, recipient_startup_id: null, recipient_investor_id: null },
       { id: T_UNSEALED, startup_id: S, investor_id: I2, recipient_startup_id: null, recipient_investor_id: null },
       { id: T_PEER, startup_id: null, investor_id: I, recipient_startup_id: null, recipient_investor_id: I2 },
-      { id: T_F2F, startup_id: S, investor_id: null, recipient_startup_id: S2, recipient_investor_id: null },
+      // Only ever reachable through the admin-only branches of deals/share and
+      // messages/start, so a real row of this shape always carries the
+      // admin's OWN entity (SA) in the non-recipient slot and the member it
+      // is addressed to (S3, owned by RECIPIENT) in the recipient slot.
+      { id: T_F2F, startup_id: SA, investor_id: null, recipient_startup_id: S3, recipient_investor_id: null },
     ],
     ...over,
   };
@@ -154,6 +169,10 @@ describe("messagingAvailable", () => {
     expect(await messagingAvailable(ASSOCIATE)).toBe(false);
   });
 
+  it("is true for a member with no sealed deal but an admin-authored thread naming them", async () => {
+    expect(await messagingAvailable(RECIPIENT)).toBe(true);
+  });
+
   it("is false when nothing can be read", async () => {
     h.state.clientFails = true;
     expect(await messagingAvailable(FOUNDER)).toBe(false);
@@ -188,10 +207,23 @@ describe("threadOpenFor", () => {
     expect(threadOpenFor({ startup_id: S, investor_id: I2 }, sealed)).toBe(false);
   });
 
-  it("never opens a thread with a second party of either kind", () => {
+  it("keeps a thread with a second party closed with no viewer given", () => {
     expect(threadOpenFor({ startup_id: S, investor_id: I, recipient_investor_id: I2 }, sealed)).toBe(false);
     expect(threadOpenFor({ startup_id: S, investor_id: I, recipient_startup_id: S2 }, sealed)).toBe(false);
     expect(threadOpenFor({ startup_id: null, investor_id: I, recipient_investor_id: I2 }, sealed)).toBe(false);
+  });
+
+  it("keeps a thread with a second party closed for a viewer named on neither side", () => {
+    const stranger = { startupIds: new Set([S2]), investorIds: new Set<string>() };
+    expect(threadOpenFor({ startup_id: SA, investor_id: null, recipient_startup_id: S3 }, sealed, stranger)).toBe(false);
+  });
+
+  it("opens a thread with a second party for the entity it names, on either side", () => {
+    const admin = { startupIds: new Set([SA]), investorIds: new Set<string>() };
+    const recipient = { startupIds: new Set([S3]), investorIds: new Set<string>() };
+    const thread = { startup_id: SA, investor_id: null, recipient_startup_id: S3 };
+    expect(threadOpenFor(thread, sealed, admin)).toBe(true);
+    expect(threadOpenFor(thread, sealed, recipient)).toBe(true);
   });
 });
 
@@ -201,13 +233,19 @@ describe("usableThreadIds", () => {
     expect(await usableThreadIds(FOUNDER, access)).toEqual([T_PAIR]);
   });
 
-  it("gives a member with nothing sealed no threads", async () => {
+  it("gives a member with nothing sealed and no admin thread no threads", async () => {
     const access = await messagingAccess(STRANGER);
     expect(await usableThreadIds(STRANGER, access)).toEqual([]);
   });
 
+  it("gives a member with no sealed deal the admin-authored thread addressed to them", async () => {
+    const access = await messagingAccess(RECIPIENT);
+    expect(access.pairs).toEqual([]);
+    expect(await usableThreadIds(RECIPIENT, access)).toEqual([T_F2F]);
+  });
+
   it("leaves an admin's own threads unfiltered", async () => {
-    h.state.db.startups = [{ id: S, owner_id: ADMIN }];
+    h.state.db.startups = [{ id: S, owner_id: ADMIN }, { id: SA, owner_id: ADMIN }];
     const access = await messagingAccess(ADMIN);
     expect(access.admin).toBe(true);
     expect((await usableThreadIds(ADMIN, access)).sort()).toEqual([T_PAIR, T_UNSEALED, T_F2F].sort());
