@@ -380,10 +380,42 @@ function PairedColumns({ labels, series, ariaLabel }: {
               {/* Cells sit flush (no flex gap) so each cell's bottom border
                   joins its neighbours' into one continuous baseline. */}
               <div style={{
+                position: "relative",
                 display: "flex", alignItems: "flex-end", justifyContent: "center", gap: "4px",
                 height: `${PLOT_H + 22}px`, padding: "0 4px",
                 borderBottom: "1px solid var(--cr-rule-dark)",
               }}>
+                {/* The floating callout: every figure here already sits on the
+                    bar as a permanent label, so this isn't revealing hidden
+                    data -- it's reading the month back as one sentence
+                    instead of two stacked numbers, and giving the hover/scrub
+                    interaction something that visibly answers it. */}
+                {active === i && (
+                  <div
+                    role="status"
+                    style={{
+                      position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
+                      transform: "translateX(-50%)", zIndex: 5,
+                      background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
+                      borderRadius: "4px", padding: "8px 10px", whiteSpace: "nowrap",
+                      boxShadow: "var(--cr-card-shadow-hover, 0 4px 12px rgba(0,0,0,0.08))",
+                      pointerEvents: "none",
+                    }}
+                  >
+                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink)", margin: 0, marginBottom: series.length > 1 ? "4px" : 0 }}>
+                      {label}
+                    </p>
+                    {series.map((s) => {
+                      const v = Number.isFinite(s.values[i]) ? s.values[i] : 0;
+                      return (
+                        <p key={s.key} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", margin: 0 }}>
+                          <span style={{ width: "8px", height: "5px", borderRadius: "1px", background: s.color, display: "inline-block", flexShrink: 0 }} />
+                          {s.label}: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "var(--cr-ink)" }}>{fmt(s, v)}</span>
+                        </p>
+                      );
+                    })}
+                  </div>
+                )}
                 {series.map((s) => {
                   const v = Number.isFinite(s.values[i]) ? s.values[i] : 0;
                   const h = Math.round((v / max) * PLOT_H);
