@@ -38,6 +38,7 @@ async function saveInvestorWatch(
   supabase: any,
   userId: string,
   targetInvestorId: string,
+  note?: string | null,
 ) {
   const investorId = await resolveInvestorId(supabase, userId);
   if (!investorId) {
@@ -49,12 +50,20 @@ async function saveInvestorWatch(
   if (investorId === targetInvestorId) {
     return NextResponse.json({ error: "You can't watch yourself" }, { status: 400 });
   }
+  // `note` is a generic watchlists column (migration 020), not startup-only --
+  // the target-investor path just never wrote it before. Only set the key
+  // when the caller actually sent one, same reason as the startup path below:
+  // upsert's ON CONFLICT SET only touches columns present in the object, so
+  // re-watching (e.g. after an unwatch/rewatch) without a note doesn't wipe
+  // one already saved.
+  const row: { investor_id: string; target_investor_id: string; changes_seen_at: string; note?: string | null } =
+    { investor_id: investorId, target_investor_id: targetInvestorId, changes_seen_at: new Date().toISOString() };
+  if (note !== undefined) {
+    row.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
+  }
   const { error } = await supabase
     .from("watchlists")
-    .upsert(
-      { investor_id: investorId, target_investor_id: targetInvestorId, changes_seen_at: new Date().toISOString() },
-      { onConflict: "investor_id,target_investor_id" },
-    );
+    .upsert(row, { onConflict: "investor_id,target_investor_id" });
   if (error) {
     console.error("investor watchlist upsert failed:", error);
     return NextResponse.json({ error: "Could not save" }, { status: 500 });
@@ -94,9 +103,10 @@ export async function POST(req: NextRequest) {
 
   // Two kinds of save share this route (migration 139): a startup, or --
   // new -- a fellow investor. targetInvestorId, when present, is the whole
-  // request; it never carries a note or the startup cap below.
+  // request; note travels with it (optional, same as the startup path), but
+  // the startup cap below never applies to it.
   if (isUuid(body.targetInvestorId)) {
-    return saveInvestorWatch(supabase, user.id, body.targetInvestorId as string);
+    return saveInvestorWatch(supabase, user.id, body.targetInvestorId as string, body.note);
   }
 
   const { startupId, note } = body;
@@ -141,7 +151,12 @@ export async function POST(req: NextRequest) {
     const cap = investorCan(buildAccessContext(prof, isLaunch)).watchlistLimit;
     if (Number.isFinite(cap)) {
       const { count } = await supabase
-        .from("watchlists").select("*", { count: "exact", head: true }).eq("investor_id", investorId);
+        .from("watchlists").select("*", { count: "exact", head: true }).eq("investor_id", investorId)
+        // Investor-target rows (migration 139) share this table and have no
+        // cap of their own -- without this filter they counted toward the
+        // free tier's STARTUP watchlist limit, so bookmarking a few fellow
+        // investors could block every startup save even at zero of them.
+        .not("startup_id", "is", null);
       if ((count ?? 0) >= cap) {
         return NextResponse.json(
           { error: `Free plan saves up to ${cap} startups. Upgrade for unlimited.` },
@@ -200,6 +215,12 @@ export async function DELETE(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  // Normalizes with POST/PATCH above -- not a security hole either way (the
+  // row is already scoped to the caller's own investorId below), just an
+  // inconsistency: a suspended account could still un-save through this verb.
+  if (await isAccountSuspended(user.id)) {
+    return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
+  }
 
   const body = (await req.json().catch(() => ({}))) as { startupId?: string; targetInvestorId?: string };
   if (isUuid(body.targetInvestorId)) {
@@ -230,6 +251,10 @@ export async function DELETE(req: NextRequest) {
  * PATCH { startupId, status?, priority?, note? } — C26: the watchlist as a
  * pipeline. Status (watching / reviewing / contacted / passed) and priority
  * (0–3) on an existing save. Investor's own row only (RLS).
+ *
+ * PATCH { targetInvestorId, note? }, the investor-target mirror. Bookmark
+ * only (migration 139): status/priority are startup-only triage fields and
+ * are rejected here, same restriction the read side already documents.
  */
 export async function PATCH(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
@@ -238,8 +263,30 @@ export async function PATCH(req: NextRequest) {
   if (await isAccountSuspended(user.id)) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
-  const { startupId, status, priority, note } = (await req.json().catch(() => ({}))) as { startupId?: string; status?: string; priority?: number; note?: string | null };
-  if (!isUuid(startupId ?? "")) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+  const { startupId, targetInvestorId, status, priority, note } = (await req.json().catch(() => ({}))) as { startupId?: string; targetInvestorId?: string; status?: string; priority?: number; note?: string | null };
+
+  // Note length: aligned with the POST path's 1000-char cap (and the
+  // textarea's own maxLength) -- this used to slice to 2000 while nothing
+  // that actually calls PATCH-note sent more than 1000, a dead mismatch
+  // that would have silently surprised the first caller that did.
+  const noteValue = typeof note === "string" && note.trim() ? note.trim().slice(0, 1000) : null;
+
+  if (isUuid(targetInvestorId ?? "")) {
+    if (status !== undefined || priority !== undefined) {
+      return NextResponse.json({ error: "status/priority are startup-only" }, { status: 400 });
+    }
+    const investorId = await resolveInvestorId(supabase, user.id);
+    if (!investorId) return NextResponse.json({ error: "Complete your investor profile first." }, { status: 403 });
+    const patch: { note?: string | null; updated_at: string } = { updated_at: new Date().toISOString() };
+    if (note !== undefined) patch.note = noteValue;
+    const { data, error } = await supabase.from("watchlists").update(patch)
+      .match({ investor_id: investorId, target_investor_id: targetInvestorId }).select("id, note").maybeSingle();
+    if (error) return NextResponse.json({ error: "Could not update" }, { status: 500 });
+    if (!data) return NextResponse.json({ error: "Not on your watchlist" }, { status: 404 });
+    return NextResponse.json({ saved: true, item: data });
+  }
+
+  if (!isUuid(startupId ?? "")) return NextResponse.json({ error: "startupId or targetInvestorId required" }, { status: 400 });
   const investorId = await resolveInvestorId(supabase, user.id);
   if (!investorId) return NextResponse.json({ error: "Complete your investor profile first." }, { status: 403 });
   const patch: { status?: string; priority?: number; note?: string | null; updated_at: string } = { updated_at: new Date().toISOString() };
@@ -251,7 +298,7 @@ export async function PATCH(req: NextRequest) {
     if (typeof priority !== "number" || !Number.isInteger(priority) || priority < 0 || priority > 3) return NextResponse.json({ error: "priority must be 0–3" }, { status: 400 });
     patch.priority = priority;
   }
-  if (note !== undefined) patch.note = typeof note === "string" && note.trim() ? note.trim().slice(0, 2000) : null;
+  if (note !== undefined) patch.note = noteValue;
   const { data, error } = await supabase.from("watchlists").update(patch).match({ investor_id: investorId, startup_id: startupId }).select("id, status, priority, note").maybeSingle();
   if (error) return NextResponse.json({ error: "Could not update" }, { status: 500 });
   if (!data) return NextResponse.json({ error: "Not on your watchlist" }, { status: 404 });

@@ -91,11 +91,12 @@ export default async function InvestorDashboardPage() {
 
   // Migration 139: an investor can watchlist a fellow investor. Same shape
   // as the startup watchlist read above -- service-role, ownership already
-  // established, a bookmark and nothing more (no note/status/priority; those
-  // are startup-only triage fields the target-investor rows never use).
+  // established, a bookmark plus an optional note (status/priority stay
+  // startup-only triage fields; note is a generic column on this table and
+  // is now written by the target-investor path too, same as the startup one).
   const { data: watchedInvestors, error: watchedInvestorsError } = await adminForJoin
     .from("watchlists")
-    .select("id, created_at, target_investor:investors!watchlists_target_investor_id_fkey(id, slug, display_name, firm_name, type, bio, verified_at, trust_level)")
+    .select("id, created_at, note, target_investor:investors!watchlists_target_investor_id_fkey(id, slug, display_name, firm_name, type, bio, verified_at, trust_level)")
     .eq("investor_id", investor.id)
     .not("target_investor_id", "is", null)
     .order("created_at", { ascending: false })

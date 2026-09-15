@@ -31,6 +31,10 @@ import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 export interface WatchedInvestorRow {
   id: string;
   created_at: string;
+  /** Why you're watching them. Same `watchlists.note` column the startup
+   *  side uses (migration 020) -- generic on the table, not startup-only;
+   *  the target-investor path just never wrote it until now. */
+  note?: string | null;
   target_investor: {
     id: string; slug: string; display_name: string | null; firm_name: string | null;
     type: string | null; bio: string | null; verified_at: string | null; trust_level: number | null;
@@ -406,29 +410,60 @@ function SharedWithYou() {
 /**
  * "Investors I'm watching" (migration 139) -- the saved-companies grid's
  * mirror for a fellow investor instead of a startup. A bookmark list, same
- * spirit as the grid above it: no triage, no note, no status -- this is a
- * SAVE/TRACK feature only, not the startup watchlist's pipeline.
+ * spirit as the grid above it: no status, no triage pipeline -- this is a
+ * SAVE/TRACK feature, not the startup watchlist's pipeline. It does carry an
+ * optional note (InvestorWatchNote, below) -- the same generic watchlists.note
+ * column the startup side writes, now used on both sides of migration 139.
  *
  * The unwatch button drops the card from this list the moment it fires
  * (onToggle, below) rather than leaving a stale "still watching" card on
- * screen until the next load -- the companies grid above has no equivalent
- * live-remove because StartupCard isn't wired with onSave on this page; this
- * section gets one because InvestorWatchButton already carries the callback.
+ * screen until the next load. The companies grid above now has the same
+ * live-remove via StartupCard's onSave (removeFromWatchlist, in the main
+ * component below) -- it didn't when this comment was first written.
  */
-function WatchedInvestorsSection({ items }: { items: WatchedInvestorRow[] }) {
+function WatchedInvestorsSection({ items, canExport }: { items: WatchedInvestorRow[]; canExport: boolean }) {
   const { t } = useTranslation();
   const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const [removed, setRemoved] = useState<Set<string>>(new Set());
   const visible = items.filter((w) => w.target_investor && !removed.has(w.id));
   if (visible.length === 0) return null;
 
+  // Mirrors exportWatchlist/exportPortfolio below (same esc/CSV-join pattern):
+  // the note and saved-date are the two things worth taking out of this list,
+  // same reasoning as the startup watchlist's own export.
+  function exportWatched() {
+    const rows = visible.map((w) => ({
+      name: w.target_investor!.display_name || w.target_investor!.firm_name || t("investors.anonymousInvestor"),
+      firm: w.target_investor!.firm_name ?? "",
+      note: w.note ?? "",
+      saved_at: w.created_at,
+    }));
+    if (!rows.length) return;
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = [
+      Object.keys(rows[0]).map(esc).join(","),
+      ...rows.map((r) => Object.values(r).map(esc).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "capitalreach-watched-investors.csv"; a.click();
+  }
+
   return (
     <div>
-      <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap", margin: `${RHYTHM.section} 0 ${RHYTHM.block}` }}>
-        <div className="ruled-label">{tf("watchlist.investorsWatching", "Investors I'm watching")}</div>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-          {visible.length}
-        </span>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", margin: `${RHYTHM.section} 0 ${RHYTHM.block}` }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+          <div className="ruled-label">{tf("watchlist.investorsWatching", "Investors I'm watching")}</div>
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+            {visible.length}
+          </span>
+        </div>
+        {canExport && (
+          <button onClick={exportWatched} style={outlineBtn}>
+            <Download style={{ width: 12, height: 12 }} /> {t("dashboard.exportCsv")}
+          </button>
+        )}
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: RHYTHM.block }}>
         {visible.map((w) => {
@@ -462,6 +497,9 @@ function WatchedInvestorsSection({ items }: { items: WatchedInvestorRow[] }) {
                   {inv.bio}
                 </p>
               )}
+              {/* Why you're watching them -- the same context WatchlistNote
+                  gives a saved startup, now here too. */}
+              <InvestorWatchNote targetInvestorId={inv.id} initial={w.note ?? null} />
               <Link href={`/investors/${inv.slug}`} style={{ marginTop: "auto", display: "block", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
                 {t("investors.viewProfile")} →
               </Link>
@@ -491,9 +529,10 @@ const WL_COLOR: Record<WlStatus, string> = {
   contacted: "var(--verdigris)", passed: "var(--cr-ink-3)",
 };
 
-function WatchlistTriage({ startupId, status, priority, onChange }: { startupId: string; status: WlStatus; priority: number; onChange: (patch: { status?: WlStatus; priority?: number }) => void }) {
+function WatchlistTriage({ startupId, status, priority, onChange, updatedAt }: { startupId: string; status: WlStatus; priority: number; onChange: (patch: { status?: WlStatus; priority?: number }) => void; /** Set only when the row has actually been triaged (updated_at differs from created_at) -- a freshly saved, untouched row shows nothing. */ updatedAt?: string }) {
   const { t } = useTranslation();
   const readOnly = useReadOnly();
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const [busy, setBusy] = useState(false);
 
   async function patch(body: { status?: WlStatus; priority?: number }) {
@@ -507,22 +546,34 @@ function WatchlistTriage({ startupId, status, priority, onChange }: { startupId:
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap", marginTop: "12px" }}>
-      <select value={status} onChange={(e) => patch({ status: e.target.value as WlStatus })} disabled={readOnly}
-        aria-label={t("watchlist.statusLabel")}
-        style={{ background: "var(--cr-paper-2)", border: `1px solid ${WL_COLOR[status]}`, color: WL_COLOR[status], borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em", cursor: readOnly ? "default" : "pointer", outline: "none" }}>
-        {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
-      </select>
-      {/* Priority: three dots, click to set, click the current one to clear. */}
-      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
-      <div style={{ display: "inline-flex", gap: "4px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
-        {[1, 2, 3].map((n) => (
-          <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
-            aria-label={`${t("watchlist.priorityLabel")} ${n}`} aria-pressed={priority >= n}
-            style={{ width: 12, height: 12, borderRadius: "50%", padding: 0, cursor: readOnly ? "default" : "pointer", border: `1px solid ${priority >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: priority >= n ? "var(--cr-copper)" : "transparent" }} />
-        ))}
+    <>
+      <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap", marginTop: "12px" }}>
+        <select value={status} onChange={(e) => patch({ status: e.target.value as WlStatus })} disabled={readOnly}
+          aria-label={t("watchlist.statusLabel")}
+          style={{ background: "var(--cr-paper-2)", border: `1px solid ${WL_COLOR[status]}`, color: WL_COLOR[status], borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em", cursor: readOnly ? "default" : "pointer", outline: "none" }}>
+          {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
+        </select>
+        {/* Priority: three dots, click to set, click the current one to clear. */}
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
+        <div style={{ display: "inline-flex", gap: "4px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
+          {[1, 2, 3].map((n) => (
+            <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
+              aria-label={`${t("watchlist.priorityLabel")} ${n}`} aria-pressed={priority >= n}
+              style={{ width: 12, height: 12, borderRadius: "50%", padding: 0, cursor: readOnly ? "default" : "pointer", border: `1px solid ${priority >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: priority >= n ? "var(--cr-copper)" : "transparent" }} />
+          ))}
+        </div>
       </div>
-    </div>
+      {/* updated_at is written on every PATCH already; it just never surfaced
+          anywhere. A real, honest signal for a pipeline -- when this was last
+          moved, not a guess. Only shown once the row has actually been
+          triaged (the caller passes updatedAt only when it differs from
+          created_at), so a freshly saved card stays quiet. */}
+      {updatedAt && (
+        <p style={{ margin: "4px 0 0", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "10px", color: "var(--cr-ink-4)" }}>
+          {tf("watchlist.updatedOn", "Updated")} {formatDate(updatedAt)}
+        </p>
+      )}
+    </>
   );
 }
 
@@ -584,6 +635,83 @@ function WatchlistNote({ startupId, initial }: { startupId: string; initial: str
         if (e.key === "Escape") { setValue(saved); setEditing(false); }
         // Enter commits; Shift+Enter keeps the newline, since these run to a
         // couple of lines often enough to be worth allowing.
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); (e.target as HTMLTextAreaElement).blur(); }
+      }}
+      maxLength={1000}
+      rows={2}
+      placeholder={t("dashboard.notePlaceholder")}
+      style={{ width: "100%", marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+    />
+  );
+}
+
+/**
+ * The "Investors I'm watching" mirror of WatchlistNote, above. Same idiom
+ * (click to add, click to edit, blur/Enter to save, Escape to cancel), a
+ * different endpoint param: PATCH { targetInvestorId, note } instead of
+ * POST { startupId, note } -- the row already exists by the time this
+ * renders (only saved investors get a card here), so PATCH is the right
+ * verb. `note` is a generic watchlists column (migration 020), not a
+ * startup-only field; this is the one place that hadn't written to it yet,
+ * despite the brief asking exactly this ("no context about WHY you're
+ * watching them").
+ */
+function InvestorWatchNote({ targetInvestorId, initial }: { targetInvestorId: string; initial: string | null }) {
+  const { t } = useTranslation();
+  const readOnly = useReadOnly();
+  const [value, setValue]     = useState(initial ?? "");
+  const [saved, setSaved]     = useState(initial ?? "");
+  const [busy, setBusy]       = useState(false);
+  const [editing, setEditing] = useState(false);
+
+  async function persist() {
+    if (readOnly) { setEditing(false); return; }
+    const next = value.trim();
+    setEditing(false);
+    if (next === saved) return;          // nothing changed -- don't write
+    setBusy(true);
+    const res = await fetch("/api/watchlist", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ targetInvestorId, note: next || null }),
+    });
+    setBusy(false);
+    if (!res.ok) { notify.error(t("dashboard.noteSaveFailed")); setValue(saved); return; }
+    setSaved(next);
+  }
+
+  if (!editing && !saved) {
+    return (
+      <button
+        onClick={() => setEditing(true)}
+        style={{ background: "none", border: "none", padding: "8px 0 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}
+      >
+        + {t("dashboard.addNote")}
+      </button>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <p
+        onClick={() => setEditing(true)}
+        title={t("dashboard.editNote")}
+        style={{ margin: "8px 0 0", cursor: "text", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", lineHeight: 1.5, color: "var(--cr-ink-3)", whiteSpace: "pre-wrap" }}
+      >
+        {saved}
+      </p>
+    );
+  }
+
+  return (
+    <textarea
+      autoFocus
+      value={value}
+      disabled={busy}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={persist}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") { setValue(saved); setEditing(false); }
         if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); (e.target as HTMLTextAreaElement).blur(); }
       }}
       maxLength={1000}
@@ -881,6 +1009,25 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
     Object.fromEntries(watchlist.map((w) => [w.id, { status: (w.status ?? "watching") as WlStatus, priority: w.priority ?? 0 }])),
   );
   const [wlFilter, setWlFilter] = useState<"all" | WlStatus>("all");
+  // A startup could be triaged into "Passed" but never actually removed from
+  // this tab -- DELETE /api/watchlist already supported it, nothing called
+  // it from here. Local set so the grid updates the instant a row is
+  // unsaved, same pattern as WatchedInvestorsSection's `removed` below.
+  const [wlRemoved, setWlRemoved] = useState<Set<string>>(new Set());
+  async function removeFromWatchlist(startupId: string) {
+    if (viewingAs) return;
+    setWlRemoved((prev) => new Set(prev).add(startupId));
+    const res = await fetch("/api/watchlist", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId }),
+    });
+    if (!res.ok) {
+      setWlRemoved((prev) => { const next = new Set(prev); next.delete(startupId); return next; });
+      notify.error(t("errors.generic"));
+    }
+  }
+  const liveWatchlist = watchlist.filter((w) => !w.startup || !wlRemoved.has(w.startup.id));
   // C36: reports were capped at 10 and inert. Full list, delete, export,
   // and a link to the deal they belong to.
   const [reports, setReports] = useState<Array<{ id: string; type: string; content: string; created_at: string; startup?: { name: string; slug: string } | null; dealId?: string | null }>>(aiReports as never[]);
@@ -941,13 +1088,17 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
     : investor.subscription_tier.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   async function exportWatchlist() {
-    if (!watchlist.length) return;
-    const rows = watchlist.map((w) => ({
+    const live = watchlist.filter((w) => !w.startup || !wlRemoved.has(w.startup.id));
+    if (!live.length) return;
+    const rows = live.map((w) => ({
       status: wlState[w.id]?.status ?? "watching",
       priority: wlState[w.id]?.priority ?? 0,
       name: w.startup?.name, tagline: w.startup?.tagline,
       industry: w.startup?.industry, stage: w.startup?.stage,
       funding_target: w.startup?.funding_target, mrr: w.startup?.mrr,
+      // The two things a real user most wants out of an export and the two
+      // things the export was missing: why it was saved, and when.
+      note: w.note ?? "", saved_at: w.created_at,
     }));
     // Every cell quoted: a tagline is free text, and one comma in it shifts
     // every later column of that row. Same escaping as the NDA roster export.
@@ -1211,20 +1362,20 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
               <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
                 <div className="ruled-label">{t("dashboard.watchlist")}</div>
                 <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
-                  {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}
+                  {liveWatchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: liveWatchlist.length })}
                 </span>
               </div>
-              {canExport && watchlist.length > 0 && (
+              {canExport && liveWatchlist.length > 0 && (
                 <button onClick={exportWatchlist} style={outlineBtn}>
                   <Download style={{ width: 12, height: 12 }} /> {t("dashboard.exportCsv")}
                 </button>
               )}
             </div>
             {/* Triage filter -- counts come from live local state. */}
-            {watchlist.length > 0 && (
+            {liveWatchlist.length > 0 && (
               <div style={{ display: "flex", flexWrap: "wrap", gap: RHYTHM.pair, marginBottom: RHYTHM.block }}>
                 {(["all", ...WL_STATUSES] as const).map((f) => {
-                  const n = f === "all" ? watchlist.length : watchlist.filter((w) => (wlState[w.id]?.status ?? "watching") === f).length;
+                  const n = f === "all" ? liveWatchlist.length : liveWatchlist.filter((w) => (wlState[w.id]?.status ?? "watching") === f).length;
                   const active = wlFilter === f;
                   return (
                     <button key={f} onClick={() => setWlFilter(f)} aria-pressed={active}
@@ -1238,7 +1389,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
                 })}
               </div>
             )}
-            {watchlist.length === 0 ? (
+            {liveWatchlist.length === 0 ? (
               <EmptyState
                 title={t("dashboard.noSavedYet")}
                 body={t("dashboard.noSavedYetSub")}
@@ -1246,16 +1397,22 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
               />
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: RHYTHM.block }}>
-                {watchlist
+                {liveWatchlist
                   .filter((w) => wlFilter === "all" || (wlState[w.id]?.status ?? "watching") === wlFilter)
                   .map((w) => w.startup && (
                   <div key={w.id} style={{ opacity: (wlState[w.id]?.status ?? "watching") === "passed" ? 0.6 : 1 }}>
-                    <StartupCard startup={w.startup} investorTier={investor.subscription_tier} />
+                    <StartupCard
+                      startup={w.startup}
+                      investorTier={investor.subscription_tier}
+                      isSaved
+                      onSave={viewingAs ? undefined : removeFromWatchlist}
+                    />
                     <WatchlistTriage
                       startupId={w.startup.id}
                       status={wlState[w.id]?.status ?? "watching"}
                       priority={wlState[w.id]?.priority ?? 0}
                       onChange={(patch) => setWlState((p) => ({ ...p, [w.id]: { ...(p[w.id] ?? { status: "watching", priority: 0 }), ...patch } }))}
+                      updatedAt={w.updated_at !== w.created_at ? w.updated_at : undefined}
                     />
                     <WatchlistNote startupId={w.startup.id} initial={w.note ?? null} />
                   </div>
@@ -1265,7 +1422,7 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
             {/* Investors I'm watching -- migration 139's save/track feature.
                 Its own section below the companies grid, same rhythm as
                 everything else in this tab; empty renders nothing. */}
-            <ErrorBoundary><WatchedInvestorsSection items={watchedInvestors} /></ErrorBoundary>
+            <ErrorBoundary><WatchedInvestorsSection items={watchedInvestors} canExport={canExport} /></ErrorBoundary>
           </div>
         )}
 

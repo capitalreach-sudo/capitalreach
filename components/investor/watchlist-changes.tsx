@@ -72,7 +72,12 @@ export function WatchlistChanges() {
     void load();
   }
 
-  if (changes === null || watching === 0 || changes.length === 0) return null;
+  // Documents render unconditionally below alongside changes (the design
+  // comment above explains why they're a count, not a dated entry) -- but
+  // this guard used to bail on changes.length alone, so a quiet week with a
+  // populated data room hid the whole panel, docRooms included. Gate on both
+  // being empty instead.
+  if (changes === null || watching === 0 || (changes.length === 0 && docRooms.length === 0)) return null;
 
   return (
     <section style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "24px", marginBottom: "24px" }}>

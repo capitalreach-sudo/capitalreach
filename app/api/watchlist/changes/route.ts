@@ -164,7 +164,13 @@ export async function POST() {
   const { error } = await admin
     .from("watchlists")
     .update({ changes_seen_at: new Date().toISOString() })
-    .eq("investor_id", investor.id);
+    .eq("investor_id", investor.id)
+    // Matches GET's own scope (line ~61): this panel only ever shows
+    // startup rows, so only startup rows should be marked seen by it.
+    // Investor-target rows don't read this field today, so this was
+    // harmless, but touching rows outside what the caller could see was
+    // imprecise and worth tightening before anything relies on it.
+    .not("startup_id", "is", null);
   if (error) return NextResponse.json({ error: "Could not update" }, { status: 500 });
 
   return NextResponse.json({ success: true });

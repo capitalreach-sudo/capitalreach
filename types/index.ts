@@ -210,6 +210,9 @@ export interface Watchlist {
   status?: "watching" | "reviewing" | "contacted" | "passed";
   priority?: number;
   created_at: string;
+  /** Set on every PATCH (status/priority/note). Selected via `*` already;
+   *  typed here so the triage trail can read it without a schema change. */
+  updated_at?: string;
   startup?: Startup;
   /** An investor watching a fellow investor (migration 139) -- a bookmark, nothing more. */
   target_investor_id?: string | null;
