@@ -4,7 +4,6 @@ import { useCallback, useEffect, useId, useState } from "react";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useReadOnly } from "@/components/dashboard/read-only";
-import { Ledger, LedgerCell, LedgerRow } from "@/components/ui/ledger";
 import { TractionChart, type MetricPoint } from "@/components/startup/traction-chart";
 
 /**
@@ -24,6 +23,11 @@ import { TractionChart, type MetricPoint } from "@/components/startup/traction-c
  *
  * Success is silent: the saved month appears in the chart, which is the
  * confirmation. Only a failure speaks.
+ *
+ * Inline-styled to match the founder dashboard it mounts in
+ * (components/dashboard/startup-dashboard-client.tsx): this used to render
+ * through Ledger, the Apple Design component system the dashboard itself was
+ * reverted away from.
  */
 export function MetricsRecorder({ openOnHash }: { openOnHash?: string }) {
   const { t } = useTranslation();
@@ -99,84 +103,82 @@ export function MetricsRecorder({ openOnHash }: { openOnHash?: string }) {
 
   const labelStyle: React.CSSProperties = {
     display: "block",
-    marginBlockEnd: "0.25rem",
-    fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-    fontSize: "0.8125rem",
+    marginBottom: "4px",
+    fontFamily: "'DM Sans', sans-serif",
+    fontSize: "13px",
     lineHeight: 1.4,
     color: "var(--cr-ink-3)",
   };
 
   return (
-    <div className="sd-group">
-      <Ledger columns="minmax(0,1fr) auto auto">
-        <LedgerRow
-          className="sd-expandable"
-          trailing={readOnly ? undefined : (
-            <button
-              type="button"
-              className="cr-btn cr-btn--text"
-              aria-expanded={open}
-              aria-controls={open ? formId : undefined}
-              onClick={() => setOpen((o) => !o)}
-            >
-              {open ? t("common.cancel") : t("traction.record")}
-            </button>
-          )}
+    <div>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "8px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{tf("dashboard.startup.recordMonth", "Record this month's numbers")}</h3>
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-controls={open ? formId : undefined}
+            style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", flexShrink: 0 }}
+          >
+            {open ? t("common.cancel") : t("traction.record")}
+          </button>
+        )}
+      </div>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: open ? "16px" : 0 }}>
+        {t("traction.sub")}
+      </p>
+      {open && !readOnly && (
+        <form
+          id={formId}
+          onSubmit={(e) => { e.preventDefault(); void save(); }}
+          style={{ display: "flex", flexDirection: "column", gap: "12px", paddingTop: "16px", borderTop: "1px solid var(--cr-rule)" }}
         >
-          <LedgerCell primary>
-            <span className="cr-row-title">{tf("dashboard.startup.recordMonth", "Record this month’s numbers")}</span>
-            <span className="cr-row-sub sd-wrap">{t("traction.sub")}</span>
-          </LedgerCell>
-          <LedgerCell className={open ? "sd-span" : undefined}>
-            {open && !readOnly && (
-              <form id={formId} className="sd-form" onSubmit={(e) => { e.preventDefault(); void save(); }}>
-                <div>
-                  <label style={labelStyle} htmlFor={`${formId}month`}>{t("traction.month")}</label>
-                  <input
-                    id={`${formId}month`}
-                    type="month"
-                    className="cr-input"
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                  />
-                </div>
-                {fields.map((f) => {
-                  const invalid = badFields.includes(f.key);
-                  return (
-                    <div key={f.key}>
-                      <label style={labelStyle} htmlFor={`${formId}${f.key}`}>{f.label}</label>
-                      <input
-                        id={`${formId}${f.key}`}
-                        inputMode="numeric"
-                        className="cr-input"
-                        value={form[f.key]}
-                        aria-invalid={invalid || undefined}
-                        aria-describedby={invalid ? `${formId}${f.key}err` : undefined}
-                        onChange={(e) => setForm((prev) => ({ ...prev, [f.key]: e.target.value }))}
-                      />
-                      {invalid && (
-                        <p id={`${formId}${f.key}err`} className="sd-note" data-tone="down" role="alert" style={{ marginBlockStart: "0.25rem" }}>
-                          {tf("dashboard.startup.figureRange", "Enter a plain number, or leave it blank.")}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-                <div className="sd-form__actions">
-                  <button
-                    type="submit"
-                    className="cr-btn cr-btn--primary"
-                    disabled={busy || badFields.length > 0}
-                    aria-busy={busy || undefined}
-                  >
-                    {busy ? t("common.saving") : t("traction.record")}
-                  </button>
-                </div>
-              </form>
-            )}
-          </LedgerCell>
-        </LedgerRow>
-      </Ledger>
+          <div>
+            <label style={labelStyle} htmlFor={`${formId}month`}>{t("traction.month")}</label>
+            <input
+              id={`${formId}month`}
+              type="month"
+              className="cr-input"
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+            />
+          </div>
+          {fields.map((f) => {
+            const invalid = badFields.includes(f.key);
+            return (
+              <div key={f.key}>
+                <label style={labelStyle} htmlFor={`${formId}${f.key}`}>{f.label}</label>
+                <input
+                  id={`${formId}${f.key}`}
+                  inputMode="numeric"
+                  className="cr-input"
+                  value={form[f.key]}
+                  aria-invalid={invalid || undefined}
+                  aria-describedby={invalid ? `${formId}${f.key}err` : undefined}
+                  onChange={(e) => setForm((prev) => ({ ...prev, [f.key]: e.target.value }))}
+                />
+                {invalid && (
+                  <p id={`${formId}${f.key}err`} role="alert" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-down)", marginTop: "4px" }}>
+                    {tf("dashboard.startup.figureRange", "Enter a plain number, or leave it blank.")}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+          <div>
+            <button
+              type="submit"
+              className="cr-btn cr-btn--primary"
+              disabled={busy || badFields.length > 0}
+              aria-busy={busy || undefined}
+            >
+              {busy ? t("common.saving") : t("traction.record")}
+            </button>
+          </div>
+        </form>
+      )}
       {/* Two months or more, or nothing: one bar is a number, not a curve. */}
       <TractionChart points={points} />
     </div>

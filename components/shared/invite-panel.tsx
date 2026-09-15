@@ -4,7 +4,6 @@ import { useCallback, useEffect, useId, useState } from "react";
 import { notify } from "@/components/ui/toast-notify";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useReadOnly } from "@/components/dashboard/read-only";
-import { Ledger, LedgerCell, LedgerRow } from "@/components/ui/ledger";
 
 type Invite = {
   id: string; code: string; invite_role: string; note: string | null;
@@ -157,28 +156,34 @@ export function InvitePanel({ defaultRole }: { defaultRole: "startup" | "investo
           </form>
 
           {live.length > 0 && (
-            <Ledger columns="minmax(0,1fr) auto">
-              {live.map((i) => (
-                <LedgerRow
+            <div style={{ display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule)" }}>
+              {live.map((i, idx) => (
+                <div
                   key={i.id}
-                  trailing={
-                    <>
-                      <button type="button" className="cr-btn cr-btn--text" onClick={() => void copy(i.url)}>
-                        {copied === i.url ? t("invite.copied") : t("invite.copy")}
-                      </button>
-                      <button type="button" className="cr-btn cr-btn--text" onClick={() => void revoke(i.id)}>
-                        {t("invite.revoke")}
-                      </button>
-                    </>
-                  }
+                  style={{
+                    display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px",
+                    padding: "12px 0", borderTop: idx > 0 ? "1px solid var(--cr-rule)" : "none", flexWrap: "wrap",
+                  }}
                 >
-                  <LedgerCell primary>
+                  <div style={{ minWidth: 0 }}>
                     <span style={urlStyle}>{i.url}</span>
-                    {i.note && <span className="cr-row-sub">{i.note}</span>}
-                  </LedgerCell>
-                </LedgerRow>
+                    {i.note && (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                        {i.note}
+                      </p>
+                    )}
+                  </div>
+                  <div style={{ display: "flex", gap: "8px", flexShrink: 0 }}>
+                    <button type="button" className="cr-btn cr-btn--text" onClick={() => void copy(i.url)}>
+                      {copied === i.url ? t("invite.copied") : t("invite.copy")}
+                    </button>
+                    <button type="button" className="cr-btn cr-btn--text" onClick={() => void revoke(i.id)}>
+                      {t("invite.revoke")}
+                    </button>
+                  </div>
+                </div>
               ))}
-            </Ledger>
+            </div>
           )}
 
           {used.length > 0 && (

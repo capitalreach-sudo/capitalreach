@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
-import { Ledger, LedgerCell, LedgerRow, Section } from "@/components/ui/ledger";
 import type { Startup } from "@/types";
 
 /**
@@ -18,6 +18,11 @@ import type { Startup } from "@/types";
  * Finished steps are not rows. They collapse to a count beside the heading,
  * and when nothing is left the section renders nothing at all. Each row is
  * one link to the place where that step gets done.
+ *
+ * Inline-styled hairline rows to match the founder dashboard it mounts in
+ * (components/dashboard/startup-dashboard-client.tsx), the same house idiom
+ * as WatchlistChanges -- this used to render through Ledger/Section, the
+ * Apple Design component system the dashboard itself was reverted away from.
  *
  *   <FundraiseChecklist
  *     startup={startup}
@@ -103,57 +108,68 @@ export function FundraiseChecklist({
 
   if (shown.length === 0 && !attestation) return null;
 
-  const goHint: ReactNode = (
-    <span style={{
-      fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
-      fontSize: "0.8125rem",
-      lineHeight: 1.4,
-      color: "var(--cr-ink-3)",
-      whiteSpace: "nowrap",
-    }}>
-      {t("fundraise.go")}
-    </span>
-  );
+  const titleStyle: React.CSSProperties = {
+    fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)",
+  };
+  const subStyle: React.CSSProperties = {
+    display: "block", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px",
+  };
 
   return (
-    <Section
-      id="next-steps"
-      title={tf("dashboard.startup.nextSteps", "Next steps")}
-      meta={doneCount > 0 ? tf("dashboard.startup.stepsDone", "{count} done", { count: doneCount }) : null}
-    >
-      <Ledger columns="minmax(0,1fr) auto auto">
+    <section id="next-steps" style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "24px" }}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "16px" }}>
+        <h3 className="ruled-label" data-cr-visible="1">{tf("dashboard.startup.nextSteps", "Next steps")}</h3>
+        {doneCount > 0 && (
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+            {tf("dashboard.startup.stepsDone", "{count} done", { count: doneCount })}
+          </span>
+        )}
+      </div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
         {attestation && (
-          <LedgerRow
-            trailing={attestation.onSign ? (
-              <button type="button" className="cr-btn cr-btn--text" onClick={attestation.onSign}>
+          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "12px 0", flexWrap: "wrap" }}>
+            <div style={{ minWidth: 0 }}>
+              <span style={titleStyle}>{t("attest.dashTitle")}</span>
+              <span style={subStyle}>{t("attest.dashBody")}</span>
+            </div>
+            {attestation.onSign && (
+              <button type="button" className="cr-btn cr-btn--text" onClick={attestation.onSign} style={{ flexShrink: 0 }}>
                 {t("attest.dashCta")}
               </button>
-            ) : undefined}
-          >
-            <LedgerCell primary>
-              <span className="cr-row-title">{t("attest.dashTitle")}</span>
-              {/* sd-wrap comes from the founder dashboard, the only page that
-                  mounts this: a sentence is not a one-line meta string. */}
-              <span className="cr-row-sub sd-wrap">{t("attest.dashBody")}</span>
-            </LedgerCell>
-            <LedgerCell />
-          </LedgerRow>
+            )}
+          </div>
         )}
-        {shown.map((s) => {
+        {shown.map((s, i) => {
           const label = t(`fundraise.step_${s.key}`);
           return (
-            <LedgerRow key={s.key} href={s.href} label={label}>
-              <LedgerCell primary>
-                <span className="cr-row-title">{label}</span>
-                {s.sub && <span className="cr-row-sub">{s.sub}</span>}
-              </LedgerCell>
-              {/* A zero is never a figure: the cell simply stays empty. */}
-              <LedgerCell figure>{s.figure ?? null}</LedgerCell>
-              <LedgerCell align="end" desktopOnly>{goHint}</LedgerCell>
-            </LedgerRow>
+            <Link
+              key={s.key}
+              href={s.href}
+              style={{
+                display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px",
+                padding: "12px 0", borderTop: (attestation || i > 0) ? "1px solid var(--cr-rule)" : "none",
+                textDecoration: "none", flexWrap: "wrap",
+              }}
+            >
+              <div style={{ minWidth: 0 }}>
+                <span style={titleStyle}>{label}</span>
+                {s.sub && <span style={subStyle}>{s.sub}</span>}
+              </div>
+              <span style={{ display: "inline-flex", alignItems: "baseline", gap: "12px", flexShrink: 0 }}>
+                {/* A zero is never a figure: nothing renders instead. */}
+                {s.figure && (
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>
+                    {s.figure}
+                  </span>
+                )}
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "13px", color: "var(--cr-ink-3)", whiteSpace: "nowrap" }}>
+                  {t("fundraise.go")}
+                </span>
+              </span>
+            </Link>
           );
         })}
-      </Ledger>
-    </Section>
+      </div>
+    </section>
   );
 }
