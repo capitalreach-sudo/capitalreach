@@ -43,6 +43,10 @@ interface PlatformData {
   closedCurrencies: string[];
   byIndustry: Record<string, number>;
   byStage: Record<string, number>;
+  byBusinessModel?: Record<string, number>;
+  byCountry?: Record<string, number>;
+  byTeamSize?: Record<string, number>;
+  verifiedCount?: number;
   topStartups: TopStartup[];
   recentStartups: TopStartup[];
   monthly?: Array<{ month: string; listings: number; closed: number; sought: number }>;
@@ -59,6 +63,21 @@ interface PlatformData {
   dailyPageviews?: Array<{ date: string; count: number }>;
   /** Investor-attributed startup views, all time. */
   investorViewCount?: number;
+  /** Distinct pageviews.session_id count over the same 42-day window. */
+  uniqueVisitors42d?: number;
+  /** Median days from created_at to closed_at over real closed deals; null
+   *  when none have closed. */
+  medianDaysToClose?: number | null;
+  medianDaysToCloseCount?: number;
+  investorDemand?: {
+    count: number;
+    byType: Record<string, number>;
+    byIndustry: Record<string, number>;
+    byStage: Record<string, number>;
+    byGeography: Record<string, number>;
+    checkMedianMin: number | null;
+    checkMedianMax: number | null;
+  };
   lastUpdated: string;
 }
 
@@ -202,9 +221,19 @@ function exportPlatformCsv(d: PlatformData) {
     // lib/platform-data already rounds this to whole percent; multiplying by
     // 100 again exported a 42% close rate as "4200%".
     ["headline", "Close rate", d.closeRate == null ? "" : `${d.closeRate}%`],
+    ["headline", "Verified listings", `${d.verifiedCount ?? 0} of ${d.startupCount}`],
+    ["headline", "Median days to close", d.medianDaysToClose == null ? "" : d.medianDaysToClose],
+    ["headline", "Unique visitors (42d)", d.uniqueVisitors42d ?? 0],
     ...Object.entries(d.byDealStage).map(([k, v]) => ["deal_stage", k, v] as [string, string, number]),
     ...Object.entries(d.byIndustry).map(([k, v]) => ["industry", k, v] as [string, string, number]),
     ...Object.entries(d.byStage).map(([k, v]) => ["startup_stage", k, v] as [string, string, number]),
+    ...Object.entries(d.byBusinessModel ?? {}).map(([k, v]) => ["business_model", k, v] as [string, string, number]),
+    ...Object.entries(d.byCountry ?? {}).map(([k, v]) => ["country", k, v] as [string, string, number]),
+    ...Object.entries(d.byTeamSize ?? {}).map(([k, v]) => ["team_size", k, v] as [string, string, number]),
+    ...Object.entries(d.investorDemand?.byType ?? {}).map(([k, v]) => ["investor_type", k, v] as [string, string, number]),
+    ...Object.entries(d.investorDemand?.byIndustry ?? {}).map(([k, v]) => ["investor_industry", k, v] as [string, string, number]),
+    ...Object.entries(d.investorDemand?.byStage ?? {}).map(([k, v]) => ["investor_stage", k, v] as [string, string, number]),
+    ...Object.entries(d.investorDemand?.byGeography ?? {}).map(([k, v]) => ["investor_geography", k, v] as [string, string, number]),
     // The medians land in the export too, so the table on screen can be
     // checked against the file rather than retyped out of it.
     ...Object.entries(d.report?.medianByStage ?? {}).map(([k, v]) => ["median_target", k, v] as [string, string, number]),
@@ -239,6 +268,18 @@ const DEAL_STAGES = [
   { key: "closed",        color: "var(--cr-up)" },
   { key: "passed",        color: "var(--cr-down)" },
 ] as const;
+
+// Shared by every ranked breakdown this file renders as either a donut or a
+// bar list (industry, business model, geography, team size, investor cuts):
+// a ring answers "share of the whole" only while its named slices carry most
+// of the whole. Once the tail past `maxNamed` would outweigh everything
+// named, a ranked list answers the question better than a mostly-grey ring.
+function tailOutweighsNamed(entries: Array<[string, number]>, maxNamed = 5): boolean {
+  const total = entries.reduce((s, [, v]) => s + v, 0);
+  if (total === 0) return false;
+  const named = entries.slice(0, maxNamed).reduce((s, [, v]) => s + v, 0);
+  return total - named > total / 2;
+}
 
 // The canonical map lives in lib/utils. A local copy here had the wrong
 // keys (pre_seed / series_b vs the DB's pre-seed / series_b_plus), so the
@@ -752,7 +793,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   // Either way this is a one-time guess made before anyone could have
   // clicked a tab, never a correction that overrides a later click.
   const breakdownDefaulted = useRef(!!initialData);
-  const [breakdown, setBreakdown] = useState<"deals" | "industry" | "stage" | "medians">(() => {
+  const [breakdown, setBreakdown] = useState<"deals" | "industry" | "stage" | "bmodel" | "geography" | "teamsize" | "medians">(() => {
     const industryTotalAtMount = initialData
       ? Object.values(initialData.byIndustry).reduce((s, v) => s + v, 0)
       : 0;
@@ -763,9 +804,16 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   // check -- leading with it invites it to be read as a recommendation.
   const [ledger, setLedger] = useState<"scores" | "recent">("recent");
 
+  // Investor demand's own sub-tabs, same one-panel-at-a-time device as the
+  // startup breakdowns above. Opens on Type: it is the single figure every
+  // investor row always has, unlike industries/stages/geography, which an
+  // investor can leave blank.
+  const [investorCut, setInvestorCut] = useState<"type" | "industry" | "stage" | "geography">("type");
+
   const growthId = useId();
   const breakdownId = useId();
   const ledgerId = useId();
+  const investorId = useId();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -853,6 +901,64 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   const stageEntries = data
     ? Object.entries(data.byStage).sort((a, b) => b[1] - a[1])
     : [];
+  // Business model, geography and team size: three more cuts of the same
+  // startup rows, tallied the identical way industry and stage already are.
+  const bmodelEntries = data
+    ? Object.entries(data.byBusinessModel ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const bmodelAsBars = tailOutweighsNamed(bmodelEntries);
+  const countryEntries = data
+    ? Object.entries(data.byCountry ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const countryAsBars = tailOutweighsNamed(countryEntries);
+  const teamSizeEntries = data
+    ? Object.entries(data.byTeamSize ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const teamSizeAsBars = tailOutweighsNamed(teamSizeEntries);
+
+  // Investor demand: the demand-side mirror of the breakdowns above. Ranked
+  // the same way, folded to bars past the same majority-tail threshold.
+  const investorTypeEntries = data
+    ? Object.entries(data.investorDemand?.byType ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const investorIndustryEntries = data
+    ? Object.entries(data.investorDemand?.byIndustry ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const investorStageEntries = data
+    ? Object.entries(data.investorDemand?.byStage ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const investorGeoEntries = data
+    ? Object.entries(data.investorDemand?.byGeography ?? {}).sort((a, b) => b[1] - a[1])
+    : [];
+  const investorTypeAsBars = tailOutweighsNamed(investorTypeEntries);
+  const investorIndustryAsBars = tailOutweighsNamed(investorIndustryEntries);
+  const investorStageAsBars = tailOutweighsNamed(investorStageEntries);
+  const investorGeoAsBars = tailOutweighsNamed(investorGeoEntries);
+  const investorCount = data?.investorDemand?.count ?? 0;
+  // Same low-N threshold the deal funnel already uses (dealStageLowN below):
+  // under 5 subjects, a breakdown is a thin sample, not yet a distribution.
+  const investorLowN = investorCount > 0 && investorCount < 5;
+  const investorCuts = [
+    ...(investorTypeEntries.length > 0 ? [{ key: "type" as const, label: tf("data.investorCutType", "Type") }] : []),
+    ...(investorIndustryEntries.length > 0 ? [{ key: "industry" as const, label: tf("data.investorCutIndustry", "Industry") }] : []),
+    ...(investorStageEntries.length > 0 ? [{ key: "stage" as const, label: tf("data.investorCutStage", "Stage") }] : []),
+    ...(investorGeoEntries.length > 0 ? [{ key: "geography" as const, label: tf("data.investorCutGeography", "Geography") }] : []),
+  ];
+  const activeInvestorCut = investorCuts.some(c => c.key === investorCut) ? investorCut : (investorCuts[0]?.key ?? "type");
+  const checkMedianMin = data?.investorDemand?.checkMedianMin ?? null;
+  const checkMedianMax = data?.investorDemand?.checkMedianMax ?? null;
+  // Item 8: capital sought vs. capital available, entirely from figures
+  // already computed elsewhere on this page -- no new query. "Sought" is
+  // the same monthly.sought the capital chart already plots, summed across
+  // its own 12-month window; it is deliberately not the same claim as "every
+  // active listing's target ever", which the window does not cover.
+  const totalSought12mo = monthly.reduce((s, m) => s + m.sought, 0);
+  const capitalComparisonLine = (totalSought12mo > 0 && checkMedianMin != null && checkMedianMax != null)
+    ? tf("data.capitalComparison", "{sought} sought across listings from the past 12 months vs. an investor check size of {min} to {max}.")
+        .replace("{sought}", safeFormatTotal(totalSought12mo))
+        .replace("{min}", medianMoney(checkMedianMin))
+        .replace("{max}", medianMoney(checkMedianMax))
+    : "";
   const medianEntries = data
     ? Object.entries(data.report?.medianByStage ?? {}).sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
     : [];
@@ -871,6 +977,9 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
       ? [{ key: "deals" as const, label: t("data.dealFlow") }] : []),
     ...(industryTotal > 0 ? [{ key: "industry" as const, label: tf("data.tabIndustry", "Industry") }] : []),
     ...(stageEntries.length > 0 ? [{ key: "stage" as const, label: t("listings.stage") }] : []),
+    ...(bmodelEntries.length > 0 ? [{ key: "bmodel" as const, label: tf("data.tabBusinessModel", "Business model") }] : []),
+    ...(countryEntries.length > 0 ? [{ key: "geography" as const, label: tf("data.tabGeography", "Geography") }] : []),
+    ...(teamSizeEntries.length > 0 ? [{ key: "teamsize" as const, label: tf("data.tabTeamSize", "Team size") }] : []),
     ...(medianEntries.length > 0 ? [{ key: "medians" as const, label: tf("data.tabMedians", "Medians") }] : []),
   ];
   const activeBreakdown = breakdownTabs.some(b => b.key === breakdown)
@@ -1135,6 +1244,28 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   </div>
                 </div>
               </div>
+              {/* Verified listings: a real admin action (verified_at set),
+                  not a self-report and not the AI consistency score the
+                  ledger tab shows further down this page -- that score
+                  measures whether a submission is complete and internally
+                  consistent, and already disclaims itself as no verification
+                  at all. This is the other, narrower claim: has anyone here
+                  actually confirmed the listing. Always shown while there is
+                  at least one active listing, because 0 of N verified is
+                  still the true count, not an empty state to hide. */}
+              {data.startupCount > 0 && (
+                <div style={{ marginTop: BLOCK_GAP }}>
+                  <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
+                    {tf("data.verifiedListingsLabel", "Verified listings")}
+                    <InfoTip termKey={tipKey(t, "glossary.verifiedListing", "Confirmed by the CapitalReach team, not self-reported. Distinct from the AI consistency score shown further down this page, which checks a submission for completeness and internal consistency but verifies nothing.")} />
+                  </p>
+                  <p style={{ ...monoFigure, fontSize: FIG_2 }}>
+                    {tf("data.verifiedListingsFigure", "{verified} of {total}")
+                      .replace("{verified}", String(data.verifiedCount ?? 0))
+                      .replace("{total}", String(data.startupCount))}
+                  </p>
+                </div>
+              )}
               {/* The sample-data disclosure lives with the figures it
                   qualifies, as a labelled caption -- in the masthead it was
                   a disclaimer on the page's name rather than on its numbers.
@@ -1329,6 +1460,15 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                         {(data.dailyPageviews ?? []).reduce((s, d) => s + d.count, 0).toLocaleString()}
                       </Figure>
                     </div>
+                    {/* Distinct sessions over the same window, beside the
+                        raw view count: one visitor returning six times is
+                        six views and one visitor, and the page only said
+                        the first of those two true things until now. */}
+                    <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                      <Figure label={tf("data.uniqueVisitors", "Unique visitors (42d)")}>
+                        {(data.uniqueVisitors42d ?? 0).toLocaleString()}
+                      </Figure>
+                    </div>
                     <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
                       <Figure label={tf("data.investorViews", "Investor views")}>
                         {(data.investorViewCount ?? 0).toLocaleString()}
@@ -1386,6 +1526,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                               unqualified figure reads as the share of all
                               deals here that close, which it is not. */}
                           <span style={{ color: "var(--cr-ink-4)" }}> {tf("data.closeRateBasis", "of deals that ended")}</span>
+                        </span>
+                      )}
+                      {/* Median time to close: real closed deals only, and
+                          null renders nothing here rather than a "0 days" or
+                          "NaN days" -- the same graceful-hide closeRate above
+                          already uses when there is nothing to divide. */}
+                      {data.medianDaysToClose != null && (
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                          {tf("data.medianDaysToClose", "Median time to close")}
+                          <InfoTip termKey={tipKey(t, "glossary.medianDaysToClose", "The middle value of days from a deal's start to its close, among deals that have actually closed. A median rather than an average, so one unusually slow or fast round cannot move the figure.")} />{" "}
+                          <strong style={{ fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums", fontSize: "13px", color: "var(--cr-ink)" }}>
+                            {tf("data.daysCount", "{days} days").replace("{days}", String(data.medianDaysToClose))}
+                          </strong>
                         </span>
                       )}
                     </div>
@@ -1565,6 +1718,70 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   />
                 )}
 
+                {/* Business model: the same fold-to-Other question as
+                    industry, using the same threshold. bmodel is the
+                    directory's own single-select query param (confirmed in
+                    startups-search.tsx). */}
+                {activeBreakdown === "bmodel" && (
+                  bmodelAsBars ? (
+                    <div style={{ maxWidth: "560px" }}>
+                      <BarChart
+                        bars={bmodelEntries.map(([label, count]) => ({ key: label, label, value: count, colorIndex: 1 }))}
+                        hrefFor={(model) => `/startups?bmodel=${encodeURIComponent(model)}`}
+                      />
+                    </div>
+                  ) : (
+                    <DonutChart
+                      slices={bmodelEntries.map(([label, count]) => ({ key: label, label, value: count }))}
+                      otherLabel={tf("data.otherBusinessModels", "Other")}
+                      hrefFor={(model) => `/startups?bmodel=${encodeURIComponent(model)}`}
+                    />
+                  )
+                )}
+
+                {/* Geography: countries normalised (lib/countries), same
+                    values the directory's own region facet counts by, linking
+                    to "countries" -- the current multi-select param (see the
+                    "country" vs "countries" note in startups-search.tsx). A
+                    real country list is exactly the case the fold-to-bars
+                    threshold exists for, so it renders as a ring only while
+                    a handful of countries still carry most of the platform. */}
+                {activeBreakdown === "geography" && (
+                  countryAsBars ? (
+                    <div style={{ maxWidth: "560px" }}>
+                      <BarChart
+                        bars={countryEntries.map(([label, count]) => ({ key: label, label, value: count, colorIndex: 2 }))}
+                        hrefFor={(country) => `/startups?countries=${encodeURIComponent(country)}`}
+                      />
+                    </div>
+                  ) : (
+                    <DonutChart
+                      slices={countryEntries.map(([label, count]) => ({ key: label, label, value: count }))}
+                      otherLabel={tf("data.otherCountries", "Other countries")}
+                      hrefFor={(country) => `/startups?countries=${encodeURIComponent(country)}`}
+                    />
+                  )
+                )}
+
+                {/* Team size: the column is already a handful of fixed
+                    buckets, no directory filter exists for it (unlike the
+                    three cuts above), so it renders plain -- ranked, not
+                    linked. */}
+                {activeBreakdown === "teamsize" && (
+                  teamSizeAsBars ? (
+                    <div style={{ maxWidth: "560px" }}>
+                      <BarChart
+                        bars={teamSizeEntries.map(([label, count]) => ({ key: label, label, value: count, colorIndex: 3 }))}
+                      />
+                    </div>
+                  ) : (
+                    <DonutChart
+                      slices={teamSizeEntries.map(([label, count]) => ({ key: label, label, value: count }))}
+                      otherLabel={tf("data.otherTeamSizes", "Other")}
+                    />
+                  )
+                )}
+
                 {/* Medians, not means: one mega-round must not move what the
                     market calls a typical raise. This was a slab of 52px
                     copper figures competing with the page's lead total; as a
@@ -1608,6 +1825,135 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   </>
                 )}
               </TabPanel>
+            </section>
+            )}
+
+            {/* ── Investor demand ────────────────────────────────────────────
+                The other half of a two-sided marketplace's own state-of-the-
+                platform page: everything above is what startups brought,
+                nothing until now said what investors are looking for.
+                Structurally the same device as the startup breakdowns above
+                -- ranked cuts, folded to bars past the same majority-tail
+                threshold -- over investors instead of startups, filtered the
+                identical way investorCount already is. Renders nothing while
+                there are zero public investors; the moment there is even one,
+                the low-N caption below carries the honesty the deal funnel
+                already established this page's voice for. */}
+            {investorCount > 0 && (
+            <section style={{ marginBottom: SECTION_GAP }}>
+              <div className="ruled-label" style={{ marginBottom: ROW_GAP }}>{tf("data.investorDemandLabel", "Investor demand")}</div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", margin: `0 0 ${BLOCK_GAP}`, maxWidth: "560px", lineHeight: 1.6 }}>
+                {tf("data.investorDemandLead", "What the investors on this platform say they are looking for.")}
+              </p>
+
+              {/* Two headline figures: how many investors this is built
+                  from, and the typical check size either side of them --
+                  median of each side (see the code comment on
+                  checkMedianMin/Max in lib/platform-data.ts), not a
+                  min-to-max span two data points would inflate. */}
+              <div style={{ overflow: "hidden", marginBottom: BLOCK_GAP }}>
+                <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
+                  <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                    <StatCard label={tf("data.publicInvestors", "Public investors")} value={investorCount} />
+                  </div>
+                  {checkMedianMin != null && checkMedianMax != null && (
+                    <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                      <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
+                        {tf("data.typicalCheckSize", "Typical check size")}
+                        <InfoTip termKey={tipKey(t, "glossary.typicalCheckSize", "The median of investors' own minimum, and separately the median of their own maximum check size -- not the lowest minimum to the highest maximum, which a handful of investors could stretch far past what either one actually writes.")} />
+                      </p>
+                      <p style={{ ...monoFigure, fontSize: FIG_2 }}>
+                        {medianMoney(checkMedianMin)}{"–"}{medianMoney(checkMedianMax)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {investorCuts.length > 0 && (
+                <>
+                  <TabStrip
+                    tabs={investorCuts}
+                    active={activeInvestorCut}
+                    onSelect={setInvestorCut}
+                    idBase={investorId}
+                    label={tf("data.investorDemandLabel", "Investor demand")}
+                    style={{ marginBottom: BLOCK_GAP }}
+                  />
+                  <TabPanel idBase={investorId} active={activeInvestorCut}>
+                    {activeInvestorCut === "type" && (
+                      investorTypeAsBars ? (
+                        <div style={{ maxWidth: "560px" }}>
+                          <BarChart bars={investorTypeEntries.map(([label, count]) => ({ key: label, label, value: count, colorIndex: 1 }))} />
+                        </div>
+                      ) : (
+                        <DonutChart
+                          slices={investorTypeEntries.map(([label, count]) => ({ key: label, label, value: count }))}
+                          otherLabel={tf("data.otherInvestorTypes", "Other")}
+                        />
+                      )
+                    )}
+                    {activeInvestorCut === "industry" && (
+                      investorIndustryAsBars ? (
+                        <div style={{ maxWidth: "560px" }}>
+                          <BarChart bars={investorIndustryEntries.map(([label, count]) => ({ key: label, label, value: count, colorIndex: 2 }))} />
+                        </div>
+                      ) : (
+                        <DonutChart
+                          slices={investorIndustryEntries.map(([label, count]) => ({ key: label, label, value: count }))}
+                          otherLabel={tf("data.otherIndustries", "Other industries")}
+                        />
+                      )
+                    )}
+                    {activeInvestorCut === "stage" && (
+                      investorStageAsBars ? (
+                        <div style={{ maxWidth: "560px" }}>
+                          <BarChart bars={investorStageEntries.map(([label, count]) => ({ key: label, label: STAGE_LABELS[label] ?? label, value: count, colorIndex: 3 }))} />
+                        </div>
+                      ) : (
+                        <DonutChart
+                          slices={investorStageEntries.map(([label, count]) => ({ key: label, label: STAGE_LABELS[label] ?? label, value: count }))}
+                          otherLabel={tf("data.otherStages", "Other")}
+                        />
+                      )
+                    )}
+                    {activeInvestorCut === "geography" && (
+                      investorGeoAsBars ? (
+                        <div style={{ maxWidth: "560px" }}>
+                          <BarChart bars={investorGeoEntries.map(([label, count]) => ({ key: label, label, value: count, colorIndex: 4 }))} />
+                        </div>
+                      ) : (
+                        <DonutChart
+                          slices={investorGeoEntries.map(([label, count]) => ({ key: label, label, value: count }))}
+                          otherLabel={tf("data.otherCountries", "Other countries")}
+                        />
+                      )
+                    )}
+                  </TabPanel>
+                </>
+              )}
+
+              {/* The same honesty-caption device the deal funnel established
+                  for a thin sample (dealFlowLowN below), reused verbatim in
+                  voice rather than invented fresh: a real count, said
+                  plainly, with an explicit warning against reading it as a
+                  distribution. */}
+              {investorLowN && (
+                <p style={{ ...honestyCaption, marginTop: BLOCK_GAP }}>
+                  {(investorCount === 1
+                    ? tf("data.investorDemandLowNOne", "Only 1 investor is public on the platform so far, so this is a single investor's own preferences, not a market distribution.")
+                    : tf("data.investorDemandLowN", "Only {count} investors are public on the platform so far, so this is a thin sample, not a market distribution.").replace("{count}", String(investorCount)))}
+                </p>
+              )}
+
+              {/* Item 8: capital sought vs. capital available, entirely from
+                  figures already on this page. Only appears once this
+                  section itself has rendered something to compare against. */}
+              {capitalComparisonLine && (
+                <p style={{ ...honestyCaption, marginTop: investorLowN ? LABEL_GAP : BLOCK_GAP }}>
+                  {capitalComparisonLine}
+                </p>
+              )}
             </section>
             )}
 

@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase-server";
 import { MAX_PLAUSIBLE_AMOUNT } from "@/lib/format";
+import { normalizeCountry } from "@/lib/countries";
 
 export interface PlatformTopStartup {
   name: string; slug: string; industry: string; stage: string;
@@ -33,6 +34,23 @@ export interface PlatformData {
   closedCurrencies: string[];
   byIndustry: Record<string, number>;
   byStage: Record<string, number>;
+  /** Startups by declared business model (e.g. "B2B", "Direct-to-Consumer").
+   *  Same tally pattern as byIndustry: raw column value, no bucketing. */
+  byBusinessModel: Record<string, number>;
+  /** Startups by country, normalised through lib/countries so "Germany" and
+   *  "germany" count as one place -- the same normalisation the startups
+   *  directory's own region facet applies, so this total and that filter
+   *  agree on what a "country" is. */
+  byCountry: Record<string, number>;
+  /** Startups by team-size bucket, exactly as stored (the column is already
+   *  a small set of fixed strings, e.g. "1-2 (Solo / Co-founder)"). */
+  byTeamSize: Record<string, number>;
+  /** Active listings with verified_at set -- the same column admin's own
+   *  verify/unverify control reads (components/admin/admin-client.tsx) --
+   *  out of all active listings (startupCount). Distinct from vaultrise_score
+   *  (topStartups' AI consistency score), which is a completeness check, not
+   *  a verification. */
+  verifiedCount: number;
   topStartups: PlatformTopStartup[];
   recentStartups: PlatformTopStartup[];
   /** Twelve months to now, oldest first. Always twelve entries, zeros included. */
@@ -72,6 +90,37 @@ export interface PlatformData {
    *  deliberately reported apart from the anonymous pageviews above rather
    *  than blended into one number that would hide which is which. */
   investorViewCount: number;
+  /** Distinct pageviews.session_id values within the same 42-day, same-scope
+   *  window as dailyPageviews -- "how many different visitors", where
+   *  dailyPageviews' own sum is "how many visits" and can double-count one
+   *  visitor across several days. */
+  uniqueVisitors42d: number;
+  /** Median days from a deal's created_at to its closed_at, over real
+   *  (non-demo) closed deals only. Null with nothing to report -- currently
+   *  every production deal, since none has closed yet -- rather than a
+   *  fabricated or divide-by-zero figure. */
+  medianDaysToClose: number | null;
+  /** How many closed deals sit behind medianDaysToClose, so a caller can
+   *  apply the same low-N honesty threshold the deal funnel already uses. */
+  medianDaysToCloseCount: number;
+  /** The demand side of the marketplace: aggregates over public, real
+   *  investors, filtered exactly as investorCount above (is_public,
+   *  !is_external, !is_demo). */
+  investorDemand: {
+    count: number;
+    byType: Record<string, number>;
+    byIndustry: Record<string, number>;
+    byStage: Record<string, number>;
+    byGeography: Record<string, number>;
+    /** Median of investors' own min_check, and separately of their own
+     *  max_check -- not the span from the lowest min to the highest max.
+     *  At n=2 a min-to-max span is two people's numbers dressed as the
+     *  platform's appetite; a median stays honest about being "typical of
+     *  today's few investors" rather than "the platform's real range". Null
+     *  when no investor has stated a check size on that side. */
+    checkMedianMin: number | null;
+    checkMedianMax: number | null;
+  };
   lastUpdated: string;
 }
 
@@ -83,10 +132,16 @@ export const EMPTY_PLATFORM_DATA: PlatformData = {
   byDealStage: { intro: 0, due_diligence: 0, term_sheet: 0, closed: 0, passed: 0 },
   activeDeals: 0, closeRate: null, closedCurrencies: [],
   byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [], monthly: [],
+  byBusinessModel: {}, byCountry: {}, byTeamSize: {}, verifiedCount: 0,
   report: { medianByStage: {}, medianCountByStage: {}, newThisMonth: 0 },
   capitalInMotion: 0, capitalInMotionCurrencies: [],
   activeDealStage: null, activeDealDaysInStage: null,
-  dailyPageviews: [], investorViewCount: 0,
+  dailyPageviews: [], investorViewCount: 0, uniqueVisitors42d: 0,
+  medianDaysToClose: null, medianDaysToCloseCount: 0,
+  investorDemand: {
+    count: 0, byType: {}, byIndustry: {}, byStage: {}, byGeography: {},
+    checkMedianMin: null, checkMedianMax: null,
+  },
   lastUpdated: new Date(0).toISOString(),
 };
 
@@ -197,11 +252,11 @@ async function fetchAll<T>(
 export async function computePlatformData(): Promise<PlatformData | null> {
   try {
     const supabase = createAdminClient();
-    const [startupData, investors, allDeals] = await Promise.all([
+    const [startupData, investors, investorRows, allDeals] = await Promise.all([
       fetchAll((from, to) =>
         supabase
           .from("startups")
-          .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at, is_demo")
+          .select("id, name, industry, stage, vaultrise_score, funding_target, status, slug, created_at, is_demo, business_model, country, team_size, verified_at")
           .eq("status", "active")
           .order("id", { ascending: true })
           .range(from, to),
@@ -215,6 +270,21 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         .eq("is_public", true)
         .eq("is_external", false)
         .eq("is_demo", false),
+      // The demand side, same filter as the count above (kept as a separate
+      // query rather than dropping head:true from it, so the existing count
+      // path is untouched) -- what these investors actually want, for the
+      // investor-demand section. No party-identifying column beyond what the
+      // public /investors directory already shows.
+      fetchAll((from, to) =>
+        supabase
+          .from("investors")
+          .select("type, industries, stages, geography, min_check, max_check")
+          .eq("is_public", true)
+          .eq("is_external", false)
+          .eq("is_demo", false)
+          .order("id", { ascending: true })
+          .range(from, to),
+      ),
       // Every deal, not just closed ones -- the pipeline breakdown below needs
       // the open stages too. Deliberately selects nothing that identifies a
       // party: no startup_id, no investor_id, no names. Deals are private
@@ -280,6 +350,56 @@ export async function computePlatformData(): Promise<PlatformData | null> {
         ))
       : null;
 
+    // Time to close: median days from a deal's created_at to its closed_at,
+    // over real closed deals only (is_demo is already filtered on the whole
+    // deals query above). Median, not mean, same reasoning as medianByStage
+    // below -- one long negotiation must not define "typical". Currently
+    // null on production: zero real deals have closed, and median() already
+    // expresses "nothing to report" as null rather than NaN or zero.
+    const DAY_MS = 86_400_000;
+    const closeDurationsDays = closedDeals
+      .filter((d) => d.closed_at)
+      .map((d) => Math.round((new Date(d.closed_at!).getTime() - new Date(d.created_at).getTime()) / DAY_MS))
+      .filter((n) => Number.isFinite(n) && n >= 0);
+    const medianDaysToClose = median(closeDurationsDays);
+    const medianDaysToCloseCount = closeDurationsDays.length;
+
+    // Investor demand: same public filter as investorCount above, tallied
+    // the same way byIndustry/byStage tally startups. stages come off the
+    // investor's own array column, through the same normaliseStage the
+    // startup side uses, so "pre_seed" and "pre-seed" are one bucket on
+    // both sides of the marketplace.
+    const investorByType: Record<string, number> = {};
+    const investorByIndustry: Record<string, number> = {};
+    const investorByStage: Record<string, number> = {};
+    const investorByGeography: Record<string, number> = {};
+    const investorMinChecks: number[] = [];
+    const investorMaxChecks: number[] = [];
+    for (const inv of investorRows) {
+      if (inv.type) investorByType[inv.type] = (investorByType[inv.type] ?? 0) + 1;
+      for (const ind of inv.industries ?? []) {
+        if (ind) investorByIndustry[ind] = (investorByIndustry[ind] ?? 0) + 1;
+      }
+      for (const st of inv.stages ?? []) {
+        const stage = normaliseStage(st);
+        if (stage) investorByStage[stage] = (investorByStage[stage] ?? 0) + 1;
+      }
+      for (const geo of inv.geography ?? []) {
+        if (geo) investorByGeography[geo] = (investorByGeography[geo] ?? 0) + 1;
+      }
+      if (typeof inv.min_check === "number" && inv.min_check > 0) investorMinChecks.push(inv.min_check);
+      if (typeof inv.max_check === "number" && inv.max_check > 0) investorMaxChecks.push(inv.max_check);
+    }
+    const investorDemand = {
+      count: investorRows.length,
+      byType: investorByType,
+      byIndustry: investorByIndustry,
+      byStage: investorByStage,
+      byGeography: investorByGeography,
+      checkMedianMin: median(investorMinChecks),
+      checkMedianMax: median(investorMaxChecks),
+    };
+
     const monthly = buildMonthlySeries(new Date(), startupData, closedDeals);
 
     // Real activity: anonymous pageviews and investor-attributed startup
@@ -295,10 +415,10 @@ export async function computePlatformData(): Promise<PlatformData | null> {
 
     const [pageviewRows, startupViewRows] = realStartupIds.length > 0
       ? await Promise.all([
-          fetchAll<{ created_at: string }>((from, to) =>
+          fetchAll<{ created_at: string; session_id: string | null }>((from, to) =>
             supabase
               .from("pageviews")
-              .select("created_at")
+              .select("created_at, session_id")
               .in("startup_id", realStartupIds)
               .gte("created_at", pulseStart.toISOString())
               .order("created_at", { ascending: true })
@@ -330,6 +450,13 @@ export async function computePlatformData(): Promise<PlatformData | null> {
     }
     const dailyPageviews = dayKeys.map((date) => ({ date, count: dayCounts.get(date) ?? 0 }));
     const investorViewCount = startupViewRows.length;
+    // How many different visitors, not how many visits: the same 42-day,
+    // same-scope rows dailyPageviews already sums, distinct on session_id so
+    // one visitor returning on three days counts once here and three times
+    // in the pulse above -- both are real, and this is the other question.
+    const uniqueVisitors42d = new Set(
+      pageviewRows.map((pv) => pv.session_id).filter((id): id is string => !!id)
+    ).size;
 
     // Industry breakdown
     const byIndustry: Record<string, number> = {};
@@ -343,6 +470,43 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       const stage = normaliseStage(s.stage);
       if (stage) byStage[stage] = (byStage[stage] ?? 0) + 1;
     });
+
+    // Business-model breakdown. Same tally as byIndustry above: raw column
+    // value, no bucketing beyond what founders themselves picked.
+    const byBusinessModel: Record<string, number> = {};
+    startupData.forEach((s) => {
+      const bm = (s as { business_model?: string | null }).business_model;
+      if (bm) byBusinessModel[bm] = (byBusinessModel[bm] ?? 0) + 1;
+    });
+
+    // Geography breakdown, normalised so "Germany" and "germany" are one
+    // country -- the startups directory's own region facet (startups-search.
+    // tsx) applies the same normaliseCountry before it counts or filters, so
+    // this total and that filter link (?countries=) agree on what a country is.
+    const byCountry: Record<string, number> = {};
+    startupData.forEach((s) => {
+      const country = normalizeCountry((s as { country?: string | null }).country);
+      if (country) byCountry[country] = (byCountry[country] ?? 0) + 1;
+    });
+
+    // Team-size breakdown. The column is already a small set of fixed
+    // strings the onboarding/edit forms offer, so this is a tally, not a
+    // bucketing exercise.
+    const byTeamSize: Record<string, number> = {};
+    startupData.forEach((s) => {
+      const size = (s as { team_size?: string | null }).team_size;
+      if (size) byTeamSize[size] = (byTeamSize[size] ?? 0) + 1;
+    });
+
+    // Verified listings: verified_at set is the same convention admin's own
+    // verify/unverify control reads (components/admin/admin-client.tsx) and
+    // the public startup/investor profile pages read ("Identity verified by
+    // CapitalReach", lib/assistant-context.ts) -- not trust_level, which is
+    // a separate, wider ladder used for NDA gating elsewhere. Distinct from
+    // the AI consistency score (vaultrise_score): that measures whether a
+    // submission is complete and internally consistent, never whether a
+    // human confirmed it.
+    const verifiedCount = startupData.filter((s) => !!(s as { verified_at?: string | null }).verified_at).length;
 
     // Top by AI score (vaultrise_score column)
     const topStartups = [...startupData]
@@ -413,6 +577,10 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       closedCurrencies: currencies,
       byIndustry,
       byStage,
+      byBusinessModel,
+      byCountry,
+      byTeamSize,
+      verifiedCount,
       topStartups,
       recentStartups,
       monthly,
@@ -423,6 +591,10 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       activeDealDaysInStage,
       dailyPageviews,
       investorViewCount,
+      uniqueVisitors42d,
+      medianDaysToClose,
+      medianDaysToCloseCount,
+      investorDemand,
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {
