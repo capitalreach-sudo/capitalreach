@@ -202,14 +202,18 @@ export interface AiReport {
 export interface Watchlist {
   id: string;
   investor_id: string;
-  startup_id: string;
+  /** Exactly one of startup_id / target_investor_id is set -- see migration 139. */
+  startup_id: string | null;
   /** Why this was saved. Added in migration 020. */
   note: string | null;
-  /** C26 (migration 068): the watchlist as a pipeline. */
+  /** C26 (migration 068): the watchlist as a pipeline. Startup saves only. */
   status?: "watching" | "reviewing" | "contacted" | "passed";
   priority?: number;
   created_at: string;
   startup?: Startup;
+  /** An investor watching a fellow investor (migration 139) -- a bookmark, nothing more. */
+  target_investor_id?: string | null;
+  target_investor?: Investor;
 }
 
 // Utility types

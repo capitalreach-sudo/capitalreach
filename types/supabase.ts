@@ -3594,8 +3594,9 @@ export type Database = {
           investor_id: string
           note: string | null
           priority: number
-          startup_id: string
+          startup_id: string | null
           status: string
+          target_investor_id: string | null
           updated_at: string | null
         }
         Insert: {
@@ -3605,8 +3606,9 @@ export type Database = {
           investor_id: string
           note?: string | null
           priority?: number
-          startup_id: string
+          startup_id?: string | null
           status?: string
+          target_investor_id?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -3616,8 +3618,9 @@ export type Database = {
           investor_id?: string
           note?: string | null
           priority?: number
-          startup_id?: string
+          startup_id?: string | null
           status?: string
+          target_investor_id?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -3633,6 +3636,13 @@ export type Database = {
             columns: ["startup_id"]
             isOneToOne: false
             referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "watchlists_target_investor_id_fkey"
+            columns: ["target_investor_id"]
+            isOneToOne: false
+            referencedRelation: "investors"
             referencedColumns: ["id"]
           },
         ]

@@ -20,14 +20,29 @@ import { InvitePanel } from "@/components/shared/invite-panel";
 import { Sparkline } from "@/components/ui/sparkline";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { WatchlistChanges } from "@/components/investor/watchlist-changes";
+import { InvestorWatchButton } from "@/components/investors/investor-watch-button";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
 import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
+
+/** A watchlists row that points at a fellow investor rather than a startup
+ *  (migration 139) -- the shape app/dashboard/investor/page.tsx's
+ *  watchedInvestors query returns. */
+export interface WatchedInvestorRow {
+  id: string;
+  created_at: string;
+  target_investor: {
+    id: string; slug: string; display_name: string | null; firm_name: string | null;
+    type: string | null; bio: string | null; verified_at: string | null; trust_level: number | null;
+  } | null;
+}
 
 interface Props {
   profile:    Profile;
   investor:   Investor;
   watchlist:  Watchlist[];
+  /** Fellow investors this investor has saved (migration 139). */
+  watchedInvestors?: WatchedInvestorRow[];
   deals:      Deal[];
   aiReports:  AiReport[];
   /** Set when an admin is viewing this investor's dashboard. See read-only.tsx. */
@@ -389,6 +404,76 @@ function SharedWithYou() {
 }
 
 /**
+ * "Investors I'm watching" (migration 139) -- the saved-companies grid's
+ * mirror for a fellow investor instead of a startup. A bookmark list, same
+ * spirit as the grid above it: no triage, no note, no status -- this is a
+ * SAVE/TRACK feature only, not the startup watchlist's pipeline.
+ *
+ * The unwatch button drops the card from this list the moment it fires
+ * (onToggle, below) rather than leaving a stale "still watching" card on
+ * screen until the next load -- the companies grid above has no equivalent
+ * live-remove because StartupCard isn't wired with onSave on this page; this
+ * section gets one because InvestorWatchButton already carries the callback.
+ */
+function WatchedInvestorsSection({ items }: { items: WatchedInvestorRow[] }) {
+  const { t } = useTranslation();
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
+  const [removed, setRemoved] = useState<Set<string>>(new Set());
+  const visible = items.filter((w) => w.target_investor && !removed.has(w.id));
+  if (visible.length === 0) return null;
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap", margin: `${RHYTHM.section} 0 ${RHYTHM.block}` }}>
+        <div className="ruled-label">{tf("watchlist.investorsWatching", "Investors I'm watching")}</div>
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+          {visible.length}
+        </span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: RHYTHM.block }}>
+        {visible.map((w) => {
+          const inv = w.target_investor!;
+          const displayName = inv.display_name || inv.firm_name || t("investors.anonymousInvestor");
+          return (
+            <div key={w.id} style={{ position: "relative", display: "flex", flexDirection: "column", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px" }}>
+              <div style={{ position: "absolute", top: "12px", right: "12px" }}>
+                <InvestorWatchButton
+                  investorId={inv.id}
+                  initiallySaved
+                  variant="icon"
+                  onToggle={(saved) => { if (!saved) setRemoved((prev) => new Set(prev).add(w.id)); }}
+                />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px", paddingRight: "40px" }}>
+                <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
+                  {displayName[0]?.toUpperCase()}
+                </div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <Link href={`/investors/${inv.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", display: "block" }}>
+                    {displayName}
+                  </Link>
+                  {inv.firm_name && inv.display_name && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{inv.firm_name}</p>
+                  )}
+                </div>
+              </div>
+              {inv.bio && (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.6, marginBottom: "12px", overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
+                  {inv.bio}
+                </p>
+              )}
+              <Link href={`/investors/${inv.slug}`} style={{ marginTop: "auto", display: "block", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                {t("investors.viewProfile")} →
+              </Link>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/**
  * C26: the watchlist is a pipeline, not a pile. Status moves a save through
  * triage; priority stars it. Both persist through PATCH /api/watchlist.
  */
@@ -681,7 +766,7 @@ function NeedsAttention({ deals }: { deals: Deal[] }) {
   );
 }
 
-export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation, portfolio = [], isLaunchMode = false }: Props) {
+export function InvestorDashboardClient({ profile, investor, watchlist, watchedInvestors = [], deals, aiReports, viewingAs, allocation, portfolio = [], isLaunchMode = false }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
   const { t }        = useTranslation();
@@ -1040,6 +1125,10 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
                 ))}
               </div>
             )}
+            {/* Investors I'm watching -- migration 139's save/track feature.
+                Its own section below the companies grid, same rhythm as
+                everything else in this tab; empty renders nothing. */}
+            <ErrorBoundary><WatchedInvestorsSection items={watchedInvestors} /></ErrorBoundary>
           </div>
         )}
 

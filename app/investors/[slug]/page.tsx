@@ -8,6 +8,7 @@ import Link from "next/link";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 import { Navbar } from "@/components/shared/navbar";
 import { TargetButton } from "@/components/investors/target-button";
+import { InvestorWatchButton } from "@/components/investors/investor-watch-button";
 import { InterestedButton } from "@/components/shared/interested-button";
 import { FounderOutreach } from "@/components/investors/founder-outreach";
 import { resolveEntity } from "@/lib/membership";
@@ -213,11 +214,23 @@ export default async function InvestorProfilePage({ params }: Props) {
   let viewerMayMessage = false;
   let viewerIsInvestor = false;
   let viewerTargeted = false;
+  // Migration 139: an investor can watchlist a fellow investor. A bookmark
+  // only -- see the migration's note on why this stays separate from the
+  // (removed) investor-to-investor messaging above.
+  let viewerWatching = false;
   if (user && !isOwnProfile) {
     // Fellow investors get direct outreach (098): co-investing starts with
     // a conversation, and small-cheque investors hunt in packs.
     const invMembership = await resolveEntity(user.id, "investor");
-    if (invMembership && invMembership.entityId !== investor.id) viewerIsInvestor = true;
+    if (invMembership && invMembership.entityId !== investor.id) {
+      viewerIsInvestor = true;
+      const { data: watch } = await supabase
+        .from("watchlists")
+        .select("id")
+        .match({ investor_id: invMembership.entityId, target_investor_id: investor.id })
+        .maybeSingle();
+      viewerWatching = !!watch;
+    }
     // resolveEntity rather than an owner_id lookup: team members managing the
     // raise get the same button and the same initial state as the owner --
     // /api/targets already treats them alike, and an owner-only check here
@@ -471,6 +484,13 @@ export default async function InvestorProfilePage({ params }: Props) {
               )}
               {viewerIsFounder && !viewerDeal && (
                 <InterestedButton targetType="investor" targetId={investor.id} />
+              )}
+              {/* An investor can watchlist another investor (migration 139).
+                  A bookmark, deliberately: no thread opens from this button,
+                  and the watched investor is never told -- see the
+                  comment below on why I2I messaging itself is gone. */}
+              {viewerIsInvestor && (
+                <InvestorWatchButton investorId={investor.id} initiallySaved={viewerWatching} variant="pill" />
               )}
               {investor.booking_url && user && (
                 <a href={investor.booking_url} target="_blank" rel="noopener noreferrer" style={BADGE_ACTION}>

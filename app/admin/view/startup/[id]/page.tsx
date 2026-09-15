@@ -78,7 +78,10 @@ export default async function AdminViewStartupPage({
 
   const [{ data: viewRows }, { data: saverRows }, { data: dealRows }] = await Promise.all([
     admin.from("pageviews").select("created_at").eq("startup_id", startup.id).gte("created_at", thirtyDaysAgo).limit(10000),
-    admin.from("watchlists").select("id, created_at, investor:investors(id, slug, display_name, firm_name)").eq("startup_id", startup.id).order("created_at", { ascending: false }),
+    // investors!watchlists_investor_id_fkey: migration 139 added a second
+    // watchlists→investors relationship (target_investor_id), so the bare
+    // embed is now ambiguous.
+    admin.from("watchlists").select("id, created_at, investor:investors!watchlists_investor_id_fkey(id, slug, display_name, firm_name)").eq("startup_id", startup.id).order("created_at", { ascending: false }),
     admin.from("deals").select("status, amount").eq("startup_id", startup.id).neq("status", "passed"),
   ]);
 

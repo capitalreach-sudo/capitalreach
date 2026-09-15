@@ -23,14 +23,28 @@ interface Props {
 
 export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equityOffered = null, ownProfile, canExport = false, myEntityIds = [] }: Props) {
   const { t } = useTranslation();
+  // English until the key exists in messages/*.json.
+  const tf = (key: string, english: string) => { const v = t(key); return v === key ? english : v; };
   const router = useRouter();
+
+  // Real deals only by default, same rule the admin startup/investor lists
+  // already apply -- demo deals currently outnumber real ones on this
+  // platform roughly 100 to 1, and without this an operator's "All deals"
+  // is almost entirely seeded test data. The server already orders real
+  // rows first within the 250-row cap, so this toggle never has to worry
+  // about a real deal having been pushed off the page.
+  const [showDemo, setShowDemo] = useState(false);
+  const demoCount = deals.filter(d => d.is_demo).length;
+  const realOrAllDeals = viewAs === "admin" && !showDemo
+    ? deals.filter(d => !d.is_demo)
+    : deals;
 
   // Two lenses for the operator-participant: the platform ledger, and their
   // own pipeline inside it. Pure client-side cut of the same rows.
   const [scope, setScope] = useState<"all" | "mine">("all");
   const scopedDeals = viewAs === "admin" && scope === "mine" && myEntityIds.length
-    ? deals.filter(d => myEntityIds.includes(d.startup_id) || myEntityIds.includes(d.investor_id))
-    : deals;
+    ? realOrAllDeals.filter(d => myEntityIds.includes(d.startup_id) || myEntityIds.includes(d.investor_id))
+    : realOrAllDeals;
 
   // Phase 1: an investor's first stage move on a founder-opened deal must be
   // preceded by the non-circumvention acknowledgment. The server answers 428
@@ -149,26 +163,37 @@ export function DealsPortalClient({ deals, viewAs, revealIdentity = true, equity
     />
     {/* The consent step, above the board it gates. Admin sees every deal
         anyway and answers for neither side, so the strip is participant-only. */}
-    {viewAs === "admin" && myEntityIds.length > 0 && (() => {
-      const mineCount = deals.filter(d => myEntityIds.includes(d.startup_id) || myEntityIds.includes(d.investor_id)).length;
+    {viewAs === "admin" && (myEntityIds.length > 0 || demoCount > 0) && (() => {
+      const mineCount = realOrAllDeals.filter(d => myEntityIds.includes(d.startup_id) || myEntityIds.includes(d.investor_id)).length;
       // Two SECTIONS, not a widget: the platform ledger and your own
       // pipeline inside it, underlined like the tabs they are.
       return (
-        <div style={{ display: "flex", gap: 4, borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: 24 }}>
-          {([["all", t("deals.scopeAll"), deals.length], ["mine", t("deals.scopeMine"), mineCount]] as const).map(([v, label, n]) => (
-            <button key={v} onClick={() => setScope(v)}
-              style={{
-                background: "none", border: "none", cursor: "pointer",
-                borderBottom: scope === v ? "2px solid var(--cr-copper)" : "2px solid transparent",
-                marginBottom: -1, padding: "8px 16px", minHeight: 40,
-                fontFamily: "'DM Sans', sans-serif", fontWeight: scope === v ? 700 : 400, fontSize: 13,
-                color: scope === v ? "var(--cr-ink)" : "var(--cr-ink-4)",
-                display: "inline-flex", alignItems: "center", gap: 8,
-              }}>
-              {label}
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 11, color: scope === v ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{n}</span>
-            </button>
-          ))}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: 24 }}>
+          {myEntityIds.length > 0 ? (
+            <div style={{ display: "flex", gap: 4 }}>
+              {([["all", t("deals.scopeAll"), realOrAllDeals.length], ["mine", t("deals.scopeMine"), mineCount]] as const).map(([v, label, n]) => (
+                <button key={v} onClick={() => setScope(v)}
+                  style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    borderBottom: scope === v ? "2px solid var(--cr-copper)" : "2px solid transparent",
+                    marginBottom: -1, padding: "8px 16px", minHeight: 40,
+                    fontFamily: "'DM Sans', sans-serif", fontWeight: scope === v ? 700 : 400, fontSize: 13,
+                    color: scope === v ? "var(--cr-ink)" : "var(--cr-ink-4)",
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                  }}>
+                  {label}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 11, color: scope === v ? "var(--cr-copper)" : "var(--cr-ink-4)" }}>{n}</span>
+                </button>
+              ))}
+            </div>
+          ) : <div />}
+          {demoCount > 0 && (
+            <label style={{ display: "flex", alignItems: "center", gap: 6, fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "var(--cr-ink-3)", cursor: "pointer", paddingBottom: 8, userSelect: "none" }}>
+              <input type="checkbox" checked={showDemo} onChange={(e) => setShowDemo(e.target.checked)} />
+              {tf("deals.showDemo", "Show demo deals")}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: 11, color: "var(--cr-ink-4)" }}>{demoCount}</span>
+            </label>
+          )}
         </div>
       );
     })()}

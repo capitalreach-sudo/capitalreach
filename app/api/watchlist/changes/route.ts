@@ -55,6 +55,10 @@ export async function GET(req: NextRequest) {
     .from("watchlists")
     .select("startup_id, changes_seen_at, startup:startups(id, name, slug, status, round_state, round_state_changed_at)")
     .eq("investor_id", investor.id)
+    // Migration 139 added investor-target rows (startup_id null) to this same
+    // table; excluded here so they don't spend this query's row cap and
+    // starve out real startup watches for an investor who also watches peers.
+    .not("startup_id", "is", null)
     .limit(200);
 
   const rows = (watched ?? []).filter(w => {

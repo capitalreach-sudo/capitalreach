@@ -21,6 +21,7 @@ import { notify } from "@/components/ui/toast-notify";
 import { INVESTOR_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { InvestorWatchButton } from "@/components/investors/investor-watch-button";
 
 // Labels only. The per-type palette tints (blue/amber/rose) were off-token;
 // in the house register the type is a quiet hairline badge like every other
@@ -193,6 +194,12 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
   // If a founder is browsing, their own stage and industry mark which
   // investors actually fit the raise -- the directory as a targeting tool.
   const [myRaise, setMyRaise] = useState<{ stage: string; industry: string } | null>(null);
+  // Watchlisting a fellow investor (migration 139) is investor-only: the
+  // button is gated on the viewer owning an investor entity, and hidden on
+  // that investor's own card. savedInvestorTargetIds mirrors startups-search's
+  // savedIds -- read straight off watchlists, scoped by RLS to the caller.
+  const [viewerInvestorId, setViewerInvestorId] = useState<string | null>(null);
+  const [savedInvestorTargetIds, setSavedInvestorTargetIds] = useState<Set<string>>(new Set());
 
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
@@ -256,6 +263,16 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
       const { data: st } = await supabase
         .from("startups").select("stage, industry").eq("owner_id", user.id).maybeSingle();
       if (st) setMyRaise({ stage: st.stage, industry: st.industry });
+      const { data: inv } = await supabase
+        .from("investors").select("id").eq("owner_id", user.id).maybeSingle();
+      if (inv) {
+        setViewerInvestorId(inv.id);
+        // The filled bookmarks, read back from the watchlist the save button
+        // writes to -- same pattern as startups-search's saved-startup read.
+        const { data: watched } = await supabase
+          .from("watchlists").select("target_investor_id").not("target_investor_id", "is", null).limit(1000);
+        setSavedInvestorTargetIds(new Set((watched ?? []).map((w: { target_investor_id: string | null }) => w.target_investor_id as string)));
+      }
     })();
     // "/" jumps to search from anywhere on the page, unless already typing.
     function onKey(e: KeyboardEvent) {
@@ -918,6 +935,12 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                               style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}>
                               <GitCompareArrows className="h-4 w-4" />
                             </button>
+                            {/* An investor can watchlist another investor (migration 139) --
+                                a bookmark, gated on the viewer owning an investor entity and
+                                hidden on their own card. */}
+                            {viewerInvestorId && viewerInvestorId !== inv.id && (
+                              <InvestorWatchButton investorId={inv.id} initiallySaved={savedInvestorTargetIds.has(inv.id)} variant="icon" />
+                            )}
                           </div>
                           <div className="flex items-center gap-3" style={{ paddingRight: "72px" }}>
                             <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>

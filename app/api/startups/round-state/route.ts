@@ -80,9 +80,13 @@ export async function POST(req: NextRequest) {
     const waitlisted = new Set(waitlistIds);
 
     try {
+      // Disambiguated FK hint: migration 139 gave watchlists a second
+      // relationship to investors (target_investor_id, for the
+      // investor-watching-investor path), so a bare `investors(...)` embed
+      // is now ambiguous between that and investor_id.
       const { data: savers } = await admin
         .from("watchlists")
-        .select("investor:investors(owner_id)")
+        .select("investor:investors!watchlists_investor_id_fkey(owner_id)")
         .eq("startup_id", mine.entityId)
         .limit(500);
       const ids = Array.from(new Set(

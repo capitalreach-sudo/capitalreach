@@ -24,6 +24,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { notify } from "@/components/ui/toast-notify";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { InfoTip } from "@/components/shared/info-tip";
+import { DemoBadge } from "@/components/shared/demo-badge";
 import type { Deal, DealStatus, Contract, ContractType, DealActivity } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { WaxSeal } from "@/components/ui/WaxSeal";
@@ -2010,6 +2011,10 @@ function DealCard({ deal, viewAs, onStatusChange, onDealClose, revealIdentity = 
             {t("external.badge")}
           </span>
         )}
+        {/* Only the admin toggling "Show demo deals" ever sees this card at
+            all -- the badge says why it's here, same as the admin startup/
+            investor lists. */}
+        {viewAs === "admin" && (deal as unknown as { is_demo?: boolean }).is_demo && <DemoBadge />}
       </p>
       {masked && (
         <a href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-copper)", textDecoration: "none" }}>

@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { DemoBadge } from "@/components/shared/demo-badge";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, EyeOff, GitCompareArrows, Clock } from "lucide-react";
+import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, GitCompareArrows, Clock } from "lucide-react";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
 import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget } from "@/lib/validators";
 import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
@@ -119,7 +119,7 @@ interface Startup {
 
 interface Filters {
   query: string; industries: string[]; stages: string[];
-  mrrMin: number; aiScoreMin: number; sort: string; country: string;
+  mrrMin: number; aiScoreMin: number; sort: string; countries: string[];
   newOnly?: boolean;
   raisingMin?: number; runwayMin?: number; growthMin?: number;
   closingSoon?: boolean; businessModel?: string; hasDemo?: boolean;
@@ -127,7 +127,7 @@ interface Filters {
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
-  mrrMin: 0, aiScoreMin: 0, sort: "recent", country: "", newOnly: false,
+  mrrMin: 0, aiScoreMin: 0, sort: "recent", countries: [], newOnly: false,
   raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
 };
 
@@ -148,7 +148,7 @@ function tractionActive(f: Filters) {
  * screen by default, and nothing is more than one click away.
  */
 function advancedActive(f: Filters) {
-  return tractionActive(f) + (f.country ? 1 : 0) + (f.businessModel ? 1 : 0);
+  return tractionActive(f) + (f.countries.length ? 1 : 0) + (f.businessModel ? 1 : 0);
 }
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -529,7 +529,7 @@ function Sparkline({ values }: { values: number[] }) {
   );
 }
 
-function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -554,10 +554,8 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
         {/* The serial number is gone with the card diet: a catalogue number
             answers no browse decision, and its 9px type sat below the platform
             floor. The specimen keeps its number on the detail page. */}
-        {/* Save / hide / compare, stacked in ONE rail rather than three loose
-            absolute offsets (14 / 38 / 60). One anchor, one 4px beat, and
-            8px touch padding on each -- all three controls stay, they simply
-            stop being three separate decisions about where the eye goes. */}
+        {/* Save / compare, stacked in ONE rail rather than loose absolute
+            offsets. One anchor, one 4px beat, and 8px touch padding on each. */}
         <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", zIndex: 1 }}>
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); onSave(s.id); }}
@@ -566,16 +564,6 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave,
           >
             <Bookmark style={{ width: 16, height: 16, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
           </button>
-          {onHide && (
-            <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onHide(s.id); }}
-              style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
-              aria-label={hidden ? t("startups.unhide") : t("startups.hide")}
-              title={hidden ? t("startups.unhide") : t("startups.hide")}
-            >
-              <EyeOff style={{ width: 16, height: 16, color: hidden ? "var(--cr-copper)" : "var(--cr-paper-4)" }} />
-            </button>
-          )}
           {onCompare && (
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); onCompare(s.id); }}
@@ -727,7 +715,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     stages:     searchParams.get("stages")?.split(",").filter(Boolean) ?? [],
     mrrMin:     Number(searchParams.get("mrr")) || 0,
     aiScoreMin: Number(searchParams.get("score")) || 0,
-    country:    searchParams.get("country") ?? "",
+    // "countries" is the current, multi-select param (mirrors the investor
+    // directory's "geo"); "country" is the old single-select one, still
+    // honoured so a bookmarked or shared link from before this change keeps
+    // filtering exactly as it did.
+    countries:  searchParams.get("countries")?.split(",").filter(Boolean)
+                  ?? (searchParams.get("country") ? [searchParams.get("country")!] : []),
     newOnly:    searchParams.get("new") === "1",
     raisingMin: Number(searchParams.get("raising")) || 0,
     runwayMin:  Number(searchParams.get("runway")) || 0,
@@ -781,20 +774,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
   // scoped to the viewing investor, so the bare select returns only their own
   // history; anonymous and founder sessions just get an empty set.
   const [viewedIds, setViewedIds]     = useState<Set<string>>(new Set());
-  // "Not for me" (migration 033). RLS scopes rows to the signed-in investor,
-  // so reads and writes go straight through the client. Hidden listings drop
-  // out of browse behind a show-hidden escape hatch.
-  const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
-  const [showHidden, setShowHidden]     = useState(false);
   // C27: the viewer's own scorecards, keyed by startup — shown in compare.
   const [scorecards, setScorecards] = useState<Record<string, { total: number | null; note: string | null }>>({});
-  // C35: how long "not for me" lasts. A pre-seed pass is not a Series A pass.
-  const [snoozeChoice, setSnoozeChoice] = useState<number | null>(null); // days, null = forever
   const myInvestorId = useRef<string | null>(null);
   // The viewer's own thesis powers the fit sort. Absent for founders and
   // anonymous visitors, which is exactly when the sort option is hidden.
   const [myThesis, setMyThesis] = useState<InvestorThesis | null>(null);
-  const [lastHidden, setLastHidden] = useState<{ id: string; name: string } | null>(null);
   // Compare tray: up to three listings side by side. Pure client state.
   const [loadError, setLoadError] = useState(false);
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -925,16 +910,11 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     // writes to. watchlists RLS is scoped to the viewing investor, so the bare
     // select returns their own saves and nobody else's; a founder or anonymous
     // session simply gets none.
-    supabase.from("watchlists").select("startup_id").limit(1000)
-      .then(({ data }) => { if (data) setSavedIds(new Set(data.map(w => w.startup_id))); });
-    // Snoozed dismissals expire on their own: a row whose snooze_until has
-    // passed no longer hides the listing (C35).
-    supabase.from("startup_dismissals").select("startup_id, snooze_until").limit(1000)
-      .then(({ data }) => {
-        if (!data) return;
-        const today = new Date().toISOString().slice(0, 10);
-        setDismissedIds(new Set(data.filter(v => !v.snooze_until || v.snooze_until > today).map(v => v.startup_id)));
-      });
+    // Migration 139 added investor-target rows (startup_id null) to this same
+    // table; exclude them here so they don't spend this query's row cap and
+    // starve out real startup saves for an investor who also watches peers.
+    supabase.from("watchlists").select("startup_id").not("startup_id", "is", null).limit(1000)
+      .then(({ data }) => { if (data) setSavedIds(new Set(data.map(w => w.startup_id as string))); });
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -1000,11 +980,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
   // set. Counts ignore the dimension they belong to (picking a second
   // industry should widen, not zero out) but respect the visible universe.
   const facets = useMemo(() => {
-    const pool = allStartups.filter((s) => showHidden ? dismissedIds.has(s.id) : !dismissedIds.has(s.id));
     const industry: Record<string, number> = {};
     const stage: Record<string, number> = {};
     const country: Record<string, number> = {};
-    for (const s of pool) {
+    for (const s of allStartups) {
       industry[s.industry] = (industry[s.industry] ?? 0) + 1;
       stage[s.stage] = (stage[s.stage] ?? 0) + 1;
       // Keyed on the canonical name, so "germany", "Germany" and
@@ -1014,7 +993,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       if (c) country[c] = (country[c] ?? 0) + 1;
     }
     return { industry, stage, country };
-  }, [allStartups, dismissedIds, showHidden]);
+  }, [allStartups]);
 
   /**
    * Which traction thresholds the loaded rows can actually answer.
@@ -1060,12 +1039,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     let res = allStartups.filter((s) => {
       // The saved-search matcher is the single source of truth (lib/search-
       // match) — the alert cron uses the same function, so an alert fires
-      // iff this page would show the listing. newOnly and hidden are
-      // browse-only concerns layered on top.
+      // iff this page would show the listing. newOnly is a browse-only
+      // concern layered on top.
       if (!matchesSavedSearch(filters, s)) return false;
       if (filters.newOnly && (Date.now() - new Date(s.created_at).getTime()) / 86400000 > 7) return false;
-      if (!showHidden && dismissedIds.has(s.id)) return false;
-      if (showHidden && !dismissedIds.has(s.id)) return false;
       return true;
     });
 
@@ -1084,14 +1061,14 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       case "fit":     res = myThesis ? [...res].sort((a, b) => computeMatchScore(myThesis, b).score - computeMatchScore(myThesis, a).score) : res; break;
     }
     return res;
-  }, [filters, allStartups, dismissedIds, showHidden, myThesis]);
+  }, [filters, allStartups, myThesis]);
 
   const visible    = filtered.slice(0, page * PAGE_SIZE);
   const hasMore    = visible.length < filtered.length;
   const activeCount = [
     filters.industries.length, filters.stages.length,
     filters.mrrMin > 0 ? 1 : 0, filters.aiScoreMin > 0 ? 1 : 0,
-    filters.country ? 1 : 0,
+    filters.countries.length,
     filters.newOnly ? 1 : 0,
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
     filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0, filters.hasDemo ? 1 : 0,
@@ -1129,7 +1106,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       if (filters.stages.length)      p.set("stages", filters.stages.join(","));
       if (filters.mrrMin > 0)         p.set("mrr", String(filters.mrrMin));
       if (filters.aiScoreMin > 0)     p.set("score", String(filters.aiScoreMin));
-      if (filters.country)            p.set("country", filters.country);
+      if (filters.countries.length)   p.set("countries", filters.countries.join(","));
       if (filters.newOnly)            p.set("new", "1");
       if (filters.raisingMin)         p.set("raising", String(filters.raisingMin));
       if (filters.runwayMin)          p.set("runway", String(filters.runwayMin));
@@ -1182,49 +1159,6 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       return;
     }
     if (wasSaved) notify.info(t("toast.unsaved")); else notify.success(t("toast.saved"));
-  }
-
-  async function toggleHide(id: string) {
-    const inv = myInvestorId.current;
-    if (!inv) { notify.info(t("startups.hideNeedsAccount")); return; }
-    const hidden = dismissedIds.has(id);
-    // Optimistic; RLS enforces ownership server-side either way.
-    setDismissedIds((prev) => {
-      const next = new Set(prev);
-      if (hidden) next.delete(id); else next.add(id);
-      // Unhiding the LAST hidden listing while viewing hidden used to strand
-      // the page: the toggle (gated on size > 0) vanished with showHidden
-      // still true, and the filter then rejected every listing -- "0 of 0"
-      // on a live market, recoverable only by reload.
-      if (next.size === 0) setShowHidden(false);
-      return next;
-    });
-    if (!hidden) {
-      const name = allStartups.find(x => x.id === id)?.name ?? "";
-      setLastHidden({ id, name });
-      setTimeout(() => setLastHidden((cur) => (cur?.id === id ? null : cur)), 8000);
-    } else if (lastHidden?.id === id) {
-      setLastHidden(null);
-    }
-    const { error } = hidden
-      ? await supabase.from("startup_dismissals").delete().eq("investor_id", inv).eq("startup_id", id)
-      : await supabase.from("startup_dismissals").upsert(
-          {
-            investor_id: inv, startup_id: id,
-            snooze_until: snoozeChoice ? new Date(Date.now() + snoozeChoice * 86400000).toISOString().slice(0, 10) : null,
-          },
-          { onConflict: "investor_id,startup_id" });
-    if (error) {
-      // Put the set back the way it was and say so. Also drop the undo toast,
-      // which otherwise lingers over an item that was never actually hidden.
-      setDismissedIds((prev) => {
-        const next = new Set(prev);
-        if (hidden) next.add(id); else next.delete(id);
-        return next;
-      });
-      if (!hidden) setLastHidden((cur) => (cur?.id === id ? null : cur));
-      notify.error(t("errors.generic"));
-    }
   }
 
   // "Best match for me" only exists for a viewer with a thesis to match on.
@@ -1550,12 +1484,18 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </p>
               )}
             </FilterGroup>
-            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0} tipKey="glossary.filterRegion"
+            <FilterGroup label={t("startups.region")} count={filters.countries.length} tipKey="glossary.filterRegion"
               open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
-              {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
+              {/* Multi-select, like industry and stage above: a founder raising
+                  in more than one market should be able to pick every region
+                  they cover in one pass instead of re-opening the group per
+                  country. Options are normalised (lib/countries.ts) so "Germany",
+                  "germany" and "Deutschland" collapse into one chip with one
+                  combined count, matching the keys facets.country already uses. */}
+              {Array.from(new Set(allStartups.map(s => normalizeCountry(s.country)).filter(Boolean))).sort().map((c) => (
                 <FilterChip key={c}
-                  active={filters.country === c}
-                  onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                  active={filters.countries.includes(c)}
+                  onClick={() => patch({ countries: filters.countries.includes(c) ? filters.countries.filter(x => x !== c) : [...filters.countries, c] })}>
                   {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
                 </FilterChip>
               ))}
@@ -1611,9 +1551,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {filters.newOnly && (
               <AppliedChip label={t("startups.newThisWeek")} onRemove={() => patch({ newOnly: false })} />
             )}
-            {filters.country && (
-              <AppliedChip label={filters.country} onRemove={() => patch({ country: "" })} />
-            )}
+            {filters.countries.map((c) => (
+              <AppliedChip key={`c-${c}`} label={c}
+                onRemove={() => patch({ countries: filters.countries.filter(x => x !== c) })} />
+            ))}
             {(filters.raisingMin ?? 0) > 0 && (
               <AppliedChip label={RAISING_PRESETS.find(r => r.value === filters.raisingMin)?.label ?? "Raising+"}
                 onRemove={() => patch({ raisingMin: 0 })} />
@@ -1648,12 +1589,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           (48). Inside here the beat drops to 24 between blocks. */}
       <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: RHYTHM.section, paddingBottom: "64px" }}>
         {/* The count is this section's headline. The tools that act on it --
-            copy link, export, undo, show hidden, the snooze length -- used to
-            sit inside that same sentence as four copper underlines, which is
-            why the results row shouted louder than the results. Every one of
-            them is still here and still one click away; they step down to
-            quiet ink on their own line, and copper is spent only on the undo,
-            which expires in eight seconds and has to be seen. */}
+            copy link, export -- used to sit inside that same sentence as
+            copper underlines, which is why the results row shouted louder
+            than the results. They step down to quiet ink on their own line
+            instead. */}
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: RHYTHM.inner, flexWrap: "wrap", marginBottom: RHYTHM.block }}>
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)" }}>
             {loading ? t("common.loading") : t("listings.showing", { current: visible.length, total: filtered.length })}
@@ -1665,13 +1604,6 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           </p>
 
           <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.inner, flexWrap: "wrap" }}>
-            {lastHidden && (
-              <button
-                onClick={() => { toggleHide(lastHidden.id); }}
-                style={{ ...QUIET_ACTION, color: "var(--cr-copper)", fontWeight: 500 }}>
-                {lastHidden.name}: {t("startups.hiddenUndo")}
-              </button>
-            )}
             {activeCount > 0 && (
               <button
                 onClick={() => { navigator.clipboard.writeText(window.location.href); notify.success(t("startups.linkCopied2")); }}
@@ -1684,21 +1616,6 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 {t("startups.exportCsv")}
               </button>
             )}
-            {dismissedIds.size > 0 && (
-              <button onClick={() => { setShowHidden(v => !v); setPage(1); }}
-                style={{ ...QUIET_ACTION, color: showHidden ? "var(--cr-copper)" : "var(--cr-ink-3)" }}>
-                {showHidden ? t("startups.hidden") : t("startups.showHidden", { count: dismissedIds.size })}
-              </button>
-            )}
-            {/* C35: how long the next "not for me" lasts. */}
-            <select value={snoozeChoice ?? ""} onChange={(e) => setSnoozeChoice(e.target.value ? Number(e.target.value) : null)}
-              aria-label={t("startups.snoozeLabel")} title={t("startups.snoozeLabel")}
-              style={{ background: "transparent", border: "1px solid var(--cr-rule)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-4)", padding: "4px 8px", cursor: "pointer" }}>
-              <option value="">{t("startups.snoozeForever")}</option>
-              <option value="30">{t("startups.snooze30")}</option>
-              <option value="90">{t("startups.snooze90")}</option>
-              <option value="180">{t("startups.snooze180")}</option>
-            </select>
             {/* Sort used to be repeated here as a second button. It is the one
                 in the page header at every width now, and the filter sheet
                 still carries a full sort section on narrow screens, so the
@@ -1738,7 +1655,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           // dense need the room between them more than they need the density.
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
             {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onCompare={toggleCompare} />
+              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onCompare={toggleCompare} />
             ))}
           </div>
         )}
@@ -1876,7 +1793,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       {sidebarOpen && (() => {
         const SECTION: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "12px" };
         const ROW: React.CSSProperties = { display: "flex", flexWrap: "wrap", gap: RHYTHM.pair };
-        const countries = Array.from(new Set(allStartups.map(x => x.country).filter((c): c is string => !!c))).sort();
+        const countries = Array.from(new Set(allStartups.map(x => normalizeCountry(x.country)).filter(Boolean))).sort();
         const bmodels = Array.from(new Set(allStartups.map(x => x.business_model).filter((m): m is string => !!m))).sort();
         return (
         <div role="dialog" aria-modal="true" aria-label={t("filters.title")} style={{ position: "fixed", inset: 0, zIndex: 50 }}>
@@ -1972,7 +1889,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                   <p style={SECTION}>{t("startups.region")}<InfoTip termKey="glossary.filterRegion" /></p>
                   <div style={ROW}>
                     {countries.map((c) => (
-                      <FilterChip key={c} active={filters.country === c} onClick={() => patch({ country: filters.country === c ? "" : c })}>
+                      <FilterChip key={c} active={filters.countries.includes(c)}
+                        onClick={() => patch({ countries: filters.countries.includes(c) ? filters.countries.filter(x => x !== c) : [...filters.countries, c] })}>
                         {c}{facets.country?.[c] ? ` (${facets.country[c]})` : ""}
                       </FilterChip>
                     ))}

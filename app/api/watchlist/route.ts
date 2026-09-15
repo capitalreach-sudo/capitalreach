@@ -26,6 +26,62 @@ async function resolveInvestorId(
   return data?.id ?? null;
 }
 
+// investor_id, target_investor_id -- the mirror of watchlists_own for the
+// investor-watching-investor path (migration 139). A bookmark only: no
+// notification, no thread, nothing the watched investor can see. That is
+// deliberate, not an oversight -- see the migration's note on scope. Kept
+// separate from the startupId path below because the two kinds have
+// genuinely different rules (plan cap + founder ping vs. neither here), not
+// because the columns forced it.
+async function saveInvestorWatch(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  userId: string,
+  targetInvestorId: string,
+) {
+  const investorId = await resolveInvestorId(supabase, userId);
+  if (!investorId) {
+    return NextResponse.json(
+      { error: "Complete your investor profile before saving investors." },
+      { status: 403 }
+    );
+  }
+  if (investorId === targetInvestorId) {
+    return NextResponse.json({ error: "You can't watch yourself" }, { status: 400 });
+  }
+  const { error } = await supabase
+    .from("watchlists")
+    .upsert(
+      { investor_id: investorId, target_investor_id: targetInvestorId, changes_seen_at: new Date().toISOString() },
+      { onConflict: "investor_id,target_investor_id" },
+    );
+  if (error) {
+    console.error("investor watchlist upsert failed:", error);
+    return NextResponse.json({ error: "Could not save" }, { status: 500 });
+  }
+  return NextResponse.json({ saved: true });
+}
+
+async function removeInvestorWatch(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
+  userId: string,
+  targetInvestorId: string,
+) {
+  const investorId = await resolveInvestorId(supabase, userId);
+  if (!investorId) return NextResponse.json({ saved: false });
+  const { error } = await supabase
+    .from("watchlists")
+    .delete()
+    .eq("investor_id", investorId)
+    .eq("target_investor_id", targetInvestorId);
+  if (error) {
+    console.error("investor watchlist delete failed:", error);
+    return NextResponse.json({ error: "Could not remove" }, { status: 500 });
+  }
+  return NextResponse.json({ saved: false });
+}
+
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -34,8 +90,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Your account is suspended" }, { status: 403 });
   }
 
-  const { startupId, note } = (await req.json().catch(() => ({}))) as { startupId: string; note?: string | null };
-  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+  const body = (await req.json().catch(() => ({}))) as { startupId?: string; note?: string | null; targetInvestorId?: string };
+
+  // Two kinds of save share this route (migration 139): a startup, or --
+  // new -- a fellow investor. targetInvestorId, when present, is the whole
+  // request; it never carries a note or the startup cap below.
+  if (isUuid(body.targetInvestorId)) {
+    return saveInvestorWatch(supabase, user.id, body.targetInvestorId as string);
+  }
+
+  const { startupId, note } = body;
+  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId or targetInvestorId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);
   if (!investorId) {
@@ -136,8 +201,13 @@ export async function DELETE(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { startupId } = (await req.json().catch(() => ({}))) as { startupId: string };
-  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId required" }, { status: 400 });
+  const body = (await req.json().catch(() => ({}))) as { startupId?: string; targetInvestorId?: string };
+  if (isUuid(body.targetInvestorId)) {
+    return removeInvestorWatch(supabase, user.id, body.targetInvestorId as string);
+  }
+
+  const { startupId } = body;
+  if (!isUuid(startupId)) return NextResponse.json({ error: "startupId or targetInvestorId required" }, { status: 400 });
 
   const investorId = await resolveInvestorId(supabase, user.id);
   if (!investorId) return NextResponse.json({ saved: false });

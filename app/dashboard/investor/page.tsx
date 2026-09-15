@@ -62,6 +62,10 @@ export default async function InvestorDashboardPage() {
     .from("watchlists")
     .select(`*, startup:startups(${STARTUP_LIST_COLUMNS},status)`)
     .eq("investor_id", investor.id)
+    // Migration 139 added investor-target rows (startup_id null) to this same
+    // table; excluded here so they don't spend this query's row cap and
+    // starve out real startup saves for an investor who also watches peers.
+    .not("startup_id", "is", null)
     // C26: was capped at 20 — a real shortlist outgrows that in a week.
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
@@ -84,6 +88,20 @@ export default async function InvestorDashboardPage() {
       ...w,
       startup: stripBrowseFinancials([w.startup as never], canSeeFinancials)[0] as typeof w.startup,
     }));
+
+  // Migration 139: an investor can watchlist a fellow investor. Same shape
+  // as the startup watchlist read above -- service-role, ownership already
+  // established, a bookmark and nothing more (no note/status/priority; those
+  // are startup-only triage fields the target-investor rows never use).
+  const { data: watchedInvestors, error: watchedInvestorsError } = await adminForJoin
+    .from("watchlists")
+    .select("id, created_at, target_investor:investors!watchlists_target_investor_id_fkey(id, slug, display_name, firm_name, type, bio, verified_at, trust_level)")
+    .eq("investor_id", investor.id)
+    .not("target_investor_id", "is", null)
+    .order("created_at", { ascending: false })
+    .limit(300);
+  if (watchedInvestorsError) console.error("[dashboard/investor] watched-investors read failed:", watchedInvestorsError.message);
+  const safeWatchedInvestors = (watchedInvestors ?? []).filter((w) => w.target_investor);
 
   // Deals
   const { data: deals } = await supabase
@@ -174,6 +192,7 @@ export default async function InvestorDashboardPage() {
         profile={profile}
         investor={investor}
         watchlist={safeWatchlist}
+        watchedInvestors={safeWatchedInvestors}
         deals={deals ?? []}
         aiReports={aiReports ?? []}
       />

@@ -179,11 +179,14 @@ export default async function DealsPage() {
       .from("deals")
       .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name, is_external)")
       // Demo deals outnumber real ones roughly 100 to 1 on this platform right
-      // now, and they update_at-sort to the top like anything else -- "All
-      // deals" without this filter is a pipeline of almost entirely seeded
-      // test data with the one real deal buried in it. Same default-real-rows
-      // rule the admin startup/investor lists already apply.
-      .eq("is_demo", false)
+      // now, and they update_at-sort to the top like anything else -- real
+      // rows first, then most-recent, so the 250-row cap below can never push
+      // a real deal out in favour of demo ones. The client defaults to
+      // real-only (DealsPortalClient's showDemo state) with an admin toggle
+      // to see the rest, same default-real-rows rule the admin startup/
+      // investor lists already apply -- fetched here in one round trip
+      // rather than gated at the query, so switching the toggle is instant.
+      .order("is_demo", { ascending: true })
       .order("updated_at", { ascending: false })
       // 250 most-recent: the board previews columns and the list paginates
       // visually anyway -- 500 rows of joined JSON was pure transfer weight.
