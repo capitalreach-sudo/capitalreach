@@ -505,29 +505,102 @@ function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: 
  * API's own floor for "a trend, not a squiggle," so nothing below that
  * renders here either.
  */
-function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onCompare?: (id: string) => void }) {
+function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompare, revealIndex }: { s: Startup; saved: boolean; viewed?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onCompare?: (id: string) => void; /** Position within its reveal batch (initial load, or a load-more page) -- drives the .card-reveal stagger. */ revealIndex?: number }) {
   const { t } = useTranslation();
   // Renders the fallback until the key lands in every locale (see data-centre.tsx).
   const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
 
+  // The save icon pops to its new state instead of an instant fill swap.
+  // Fires on an actual flip of `saved`, not on every render.
+  const [savePop, setSavePop] = useState(false);
+  const prevSaved = useRef(saved);
+  useEffect(() => {
+    if (prevSaved.current !== saved) {
+      setSavePop(true);
+      const id = setTimeout(() => setSavePop(false), 420);
+      prevSaved.current = saved;
+      return () => clearTimeout(id);
+    }
+    prevSaved.current = saved;
+  }, [saved]);
+
+  // Live viewer presence, read-only and opt-in: subscribing to a Presence
+  // channel per VISIBLE card for the whole grid is the N-simultaneous-
+  // connections the plan warned against, so this only joins the one channel
+  // for the one card under the pointer (or keyboard focus), and only to
+  // LISTEN -- it never calls track(), so hovering a card in the grid never
+  // inflates the count the detail page shows. Same channel name as the
+  // detail page's own presence (startup-detail-client.tsx), so a real
+  // concurrent reader of the profile page is reflected here too.
+  const [liveViewers, setLiveViewers] = useState<number | null>(null);
+  const liveChannelRef = useRef<ReturnType<ReturnType<typeof createClient>["channel"]> | null>(null);
+  function startLivePresence() {
+    if (liveChannelRef.current) return;
+    const supabase = createClient();
+    const channel = supabase.channel(`startup:${s.id}`, { config: { presence: { key: `grid-${Math.random()}` } } });
+    channel.on("presence", { event: "sync" }, () => {
+      setLiveViewers(Object.keys(channel.presenceState()).length);
+    }).subscribe();
+    liveChannelRef.current = channel;
+  }
+  function stopLivePresence() {
+    if (liveChannelRef.current) {
+      createClient().removeChannel(liveChannelRef.current);
+      liveChannelRef.current = null;
+    }
+    setLiveViewers(null);
+  }
+  useEffect(() => () => stopLivePresence(), []);
+
   return (
-    <Link href={`/startups/${s.slug}`} style={{ display: "block", textDecoration: "none", minWidth: 0, overflow: "hidden" }}>
+    <Link
+      href={`/startups/${s.slug}`}
+      className="card-reveal"
+      style={{ display: "block", textDecoration: "none", minWidth: 0, overflow: "hidden", "--reveal-i": (revealIndex ?? 0) % 12 } as React.CSSProperties}
+      onMouseEnter={startLivePresence}
+      onMouseLeave={stopLivePresence}
+      onFocus={startLivePresence}
+      // React's onBlur bubbles (focusout), so tabbing from the card link to
+      // its own nested Save/Compare button fires this before that button's
+      // focus -- relatedTarget is where focus is going, and contains() keeps
+      // the channel open when it's still somewhere inside this card.
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) stopLivePresence(); }}
+    >
       {/* A card answers the pointer with ONE signal, and it is the paper-3
           shift the ledger rows use -- so a card and a table row behave
-          alike. The shadow is a resting property of the card, not a hover
-          reward, which is why it sits inline rather than on .cr-lift. */}
+          alike. cr-lift now supplies the resting/hover shadow pair (it
+          matches the values this div set inline before), and cr-tilt the
+          pointer-follow lean -- both hover:hover-gated, so a coarse pointer
+          still gets exactly the paper-3 background shift it had. */}
       <div
+        className="cr-lift cr-spot cr-tilt"
         style={{
           position: "relative", display: "flex", flexDirection: "column",
           background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)",
           borderRadius: "6px", padding: RHYTHM.block,
-          boxShadow: "var(--cr-card-shadow), var(--cr-card-edge)",
-          transition: "background 120ms var(--ease-out)", cursor: "pointer",
+          // Inline transition wins over the class's own, so cr-tilt/cr-lift's
+          // transform and box-shadow timings are repeated here.
+          transition: "background 120ms var(--ease-out), border-color 120ms ease, transform 160ms var(--ease-out), box-shadow 180ms var(--ease-out)",
+          cursor: "pointer",
         }}
         onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)"; }}
+        onMouseMove={e => {
+          const r = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - r.left, y = e.clientY - r.top;
+          e.currentTarget.style.setProperty("--mx", `${x}px`);
+          e.currentTarget.style.setProperty("--my", `${y}px`);
+          e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
+          e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
+          e.currentTarget.style.borderColor = "var(--cr-paper-4)";
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.setProperty("--rx", "0deg");
+          e.currentTarget.style.setProperty("--ry", "0deg");
+          (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)";
+          e.currentTarget.style.borderColor = "var(--cr-rule-dark)";
+        }}
       >
         {/* The serial number is gone with the card diet: a catalogue number
             answers no browse decision, and its 9px type sat below the platform
@@ -540,7 +613,7 @@ function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompa
             style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", display: "flex" }}
             aria-label={saved ? "Remove" : "Save"}
           >
-            <Bookmark style={{ width: 16, height: 16, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
+            <Bookmark className={savePop ? "cr-badge-pop" : undefined} style={{ width: 16, height: 16, color: saved ? "var(--cr-copper)" : "var(--cr-ink-4)", fill: saved ? "var(--cr-copper)" : "transparent" }} />
           </button>
           {onCompare && (
             <button
@@ -597,6 +670,17 @@ function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompa
           {viewed && (
             <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }} title={t("startups.viewed")}>
               <Eye style={{ width: 12, height: 12 }} /> {t("startups.viewed")}
+            </span>
+          )}
+          {/* Live viewer count: the same signal startup-detail-client.tsx
+              shows on the profile page itself (Supabase Presence on a
+              `startup:${id}` channel), read here rather than tracked --
+              this card only subscribes while hovered/focused (see
+              startLivePresence above), so the grid never holds one
+              connection per row, only ever the one under the pointer. */}
+          {liveViewers !== null && liveViewers > 0 && (
+            <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }} title={tf("startups.liveViewingHint", "People viewing this listing's profile right now")}>
+              <Eye style={{ width: 12, height: 12 }} /> <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, color: "var(--cr-ink-3)" }}>{liveViewers}</span> {tf("startups.liveViewing", "viewing")}
             </span>
           )}
           {match !== undefined && match >= 40 && (
@@ -663,6 +747,8 @@ function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompa
           <div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("listings.raising")}</div>
             <div
+              key={s.funding_target}
+              className="animate-count-up"
               title={isImplausibleFundingTarget(s.funding_target) ? tf("startup.raiseAmountInvalid", "This listing's raise amount didn't pass our checks and is hidden") : undefined}
               style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: isImplausibleFundingTarget(s.funding_target) ? "var(--cr-ink-4)" : "var(--cr-copper)" }}>
               {safeFormatCurrencyAmount(s.funding_target)}
@@ -1082,6 +1168,14 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
   }, []);
 
   const resetFilters = useCallback(() => { setFilters(DEFAULT_FILTERS); setPage(1); }, []);
+
+  // Bumped on every filter change so cards keyed on it remount and their
+  // .card-reveal entrance plays again for the whole grid -- not just once on
+  // first paint. A "load more" page bump does not touch this: cards already
+  // on screen keep their key, only the newly appended rows are new elements
+  // and get the stagger.
+  const [revealGen, setRevealGen] = useState(0);
+  useEffect(() => { setRevealGen((g) => g + 1); }, [filters]);
 
   // Write the filter set back to the address bar. replaceState rather than the
   // router: no server round trip, no history spam -- back/forward still works
@@ -1644,8 +1738,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           // tighten by 8px the moment the real rows land -- and cards this
           // dense need the room between them more than they need the density.
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
-            {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onCompare={toggleCompare} />
+            {visible.map((s, i) => (
+              <ResultCard key={`${revealGen}-${s.id}`} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onCompare={toggleCompare} revealIndex={i} />
             ))}
           </div>
         )}

@@ -413,6 +413,14 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
   const [page, setPage] = useState(1);
   useEffect(() => { setPage(1); }, [f]);
 
+  // Bumped on every filter/sort change, so a card keyed on it remounts and
+  // its .card-reveal entrance plays again for the WHOLE grid, not just once
+  // on first paint. A "load more" page bump does not touch this -- already
+  // -rendered cards keep their key and stay put; only the newly appended
+  // rows are new elements, so only they play the entrance.
+  const [revealGen, setRevealGen] = useState(0);
+  useEffect(() => { setRevealGen((g) => g + 1); }, [f]);
+
   const results = useMemo(() => {
     let list = investors.filter(inv => {
       const name = inv.full_name || "";
@@ -983,145 +991,198 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                 )
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                  {results.slice(0, page * INV_PAGE_SIZE).map((inv) => {
+                  {results.slice(0, page * INV_PAGE_SIZE).map((inv, i) => {
                     const meta = TYPE_META[inv.type] ?? TYPE_META.angel;
                     const displayName = inv.full_name || t("investors.anonymousInvestor");
                     return (
-                      <div key={inv.id} className="cr-lift cr-spot cr-tilt group relative flex flex-col"
-                        style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px", transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease" }}
-                        onMouseMove={e => {
-                          const r = e.currentTarget.getBoundingClientRect();
-                          const x = e.clientX - r.left, y = e.clientY - r.top;
-                          e.currentTarget.style.setProperty("--mx", `${x}px`);
-                          e.currentTarget.style.setProperty("--my", `${y}px`);
-                          e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
-                          e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
-                          e.currentTarget.style.borderColor = "var(--cr-paper-4)";
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.setProperty("--rx", "0deg");
-                          e.currentTarget.style.setProperty("--ry", "0deg");
-                          e.currentTarget.style.borderColor = "var(--cr-rule-dark)";
-                        }}>
-                        {/* Top */}
-                        <div className="flex items-start justify-between" style={{ marginBottom: "16px" }}>
-                          {/* 12px padding gives each icon a 40px tap target. */}
-                          <div className="absolute top-1 right-1 flex items-center">
-                            {myRaise && (
+                      // Outer wrapper carries the entrance (fades the whole
+                      // card, overlay link included, as one unit) and hosts
+                      // the stretched link under everything else. Keyed on
+                      // revealGen so a filter/sort change remounts every card
+                      // and the stagger plays again; a page bump below leaves
+                      // already-rendered cards' keys untouched, so only the
+                      // freshly appended rows animate in.
+                      <div key={`${revealGen}-${inv.id}`} className="card-reveal relative"
+                        style={{ "--reveal-i": i % 12 } as React.CSSProperties}>
+                        <div className="cr-lift cr-spot cr-tilt group relative flex flex-col"
+                          style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: "16px", transition: "border-color 120ms ease, transform 180ms ease, box-shadow 180ms ease" }}
+                          onMouseMove={e => {
+                            const r = e.currentTarget.getBoundingClientRect();
+                            const x = e.clientX - r.left, y = e.clientY - r.top;
+                            e.currentTarget.style.setProperty("--mx", `${x}px`);
+                            e.currentTarget.style.setProperty("--my", `${y}px`);
+                            e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
+                            e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
+                            e.currentTarget.style.borderColor = "var(--cr-paper-4)";
+                          }}
+                          onMouseLeave={e => {
+                            e.currentTarget.style.setProperty("--rx", "0deg");
+                            e.currentTarget.style.setProperty("--ry", "0deg");
+                            e.currentTarget.style.borderColor = "var(--cr-rule-dark)";
+                          }}>
+                          {/* Full-surface click target, same pattern as
+                              StartupCard: a stretched anchor under the card,
+                              with every interactive control lifted to z-index
+                              2 so its own click lands on it, not the link. It
+                              has to live INSIDE this tilting div, not beside
+                              it: .cr-tilt's `transform` (present at rest, not
+                              just on hover) makes this div its own stacking
+                              context, and a z-index inside a stacking context
+                              can never out-rank an element placed OUTSIDE it,
+                              however high that z-index is set -- nested here,
+                              the link and every zIndex:2 control below are
+                              compared within the SAME context, so 2 genuinely
+                              beats this link's 1 again. */}
+                          <Link
+                            href={`/investors/${inv.slug}`}
+                            aria-label={displayName}
+                            style={{ position: "absolute", inset: 0, zIndex: 1, textDecoration: "none" }}
+                          />
+                          {/* Top */}
+                          <div className="flex items-start justify-between" style={{ marginBottom: "16px" }}>
+                            {/* 12px padding gives each icon a 40px tap target.
+                                zIndex above the stretched link so these clicks
+                                reach the buttons, not the card-wide anchor. */}
+                            <div className="absolute top-1 right-1 flex items-center" style={{ zIndex: 2 }}>
+                              {myRaise && (
+                                <button
+                                  onClick={async (e) => {
+                                    e.preventDefault(); e.stopPropagation();
+                                    const res = await fetch("/api/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: inv.id }) });
+                                    if (res.ok) notify.success(t("targets.added")); else notify.error(t("targets.failed"));
+                                  }}
+                                  aria-label={t("investors.target2")} title={t("investors.target2")}
+                                  className="text-cr-p4 hover:text-cr-copper transition-colors"
+                                  style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}>
+                                  <Crosshair className="h-4 w-4" />
+                                </button>
+                              )}
                               <button
-                                onClick={async (e) => {
-                                  e.preventDefault(); e.stopPropagation();
-                                  const res = await fetch("/api/targets", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ investorId: inv.id }) });
-                                  if (res.ok) notify.success(t("targets.added")); else notify.error(t("targets.failed"));
-                                }}
-                                aria-label={t("investors.target2")} title={t("investors.target2")}
-                                className="text-cr-p4 hover:text-cr-copper transition-colors"
+                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(inv.id); }}
+                                aria-label={t("investors.compare2")} title={t("investors.compare2")}
+                                className={cn("transition-colors", compareIds.includes(inv.id) ? "text-cr-copper" : "text-cr-p4 hover:text-cr-copper")}
                                 style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}>
-                                <Crosshair className="h-4 w-4" />
+                                <GitCompareArrows className="h-4 w-4" />
                               </button>
-                            )}
-                            <button
-                              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleCompare(inv.id); }}
-                              aria-label={t("investors.compare2")} title={t("investors.compare2")}
-                              className={cn("transition-colors", compareIds.includes(inv.id) ? "text-cr-copper" : "text-cr-p4 hover:text-cr-copper")}
-                              style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}>
-                              <GitCompareArrows className="h-4 w-4" />
-                            </button>
-                            {/* An investor can watchlist another investor (migration 139) --
-                                a bookmark, gated on the viewer owning an investor entity and
-                                hidden on their own card. */}
-                            {viewerInvestorId && viewerInvestorId !== inv.id && (
-                              <InvestorWatchButton investorId={inv.id} initiallySaved={savedInvestorTargetIds.has(inv.id)} variant="icon" />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3" style={{ paddingRight: "72px" }}>
-                            <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
-                              {displayName[0].toUpperCase()}
+                              {/* An investor can watchlist another investor (migration 139) --
+                                  a bookmark, gated on the viewer owning an investor entity and
+                                  hidden on their own card. */}
+                              {viewerInvestorId && viewerInvestorId !== inv.id && (
+                                <InvestorWatchButton investorId={inv.id} initiallySaved={savedInvestorTargetIds.has(inv.id)} variant="icon" />
+                              )}
                             </div>
-                            <div>
-                              <p className="leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>
-                                {displayName}
-                                {(inv as { is_demo?: boolean }).is_demo && <span className="ml-1.5 align-middle inline-flex"><DemoBadge /></span>}
-                              </p>
-                              {inv.firm && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{inv.firm}</p>}
-                              <div className="flex items-center flex-wrap gap-1.5" style={{ marginTop: "8px" }}>
-                                <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                  {t(meta.labelKey)}
-                                </span>
-                                {inv.lead_rounds && (
-                                  <span title={tf("investors.leadOnlyHint", "Self-reported by the investor -- not a verified track record")}
-                                    style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                    {t("investors.leadsRounds")}
+                            <div className="flex items-center gap-3" style={{ paddingRight: "72px" }}>
+                              <div style={{ width: 40, height: 40, borderRadius: "4px", background: "var(--cr-paper-3)", border: "1px solid var(--cr-paper-4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-copper)" }}>
+                                {displayName[0].toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="leading-tight group-hover:text-cr-copper transition-colors" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", letterSpacing: "-0.01em" }}>
+                                  {displayName}
+                                  {(inv as { is_demo?: boolean }).is_demo && <span className="ml-1.5 align-middle inline-flex"><DemoBadge /></span>}
+                                </p>
+                                {inv.firm && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginTop: "2px" }}>{inv.firm}</p>}
+                                <div className="flex items-center flex-wrap gap-1.5" style={{ marginTop: "8px" }}>
+                                  <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                    {t(meta.labelKey)}
                                   </span>
-                                )}
-                                {/* Outlined copper, not a filled pill: the
-                                    card's one accent is the check-size figure,
-                                    and this chip matches its siblings' 4px. */}
-                                {myRaise && (inv.stages || []).includes(myRaise.stage) && (inv.industries || []).includes(myRaise.industry) && (
-                                  <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                    {t("investors.fitsYourRaise")}
-                                  </span>
-                                )}
+                                  {inv.lead_rounds && (
+                                    <span title={tf("investors.leadOnlyHint", "Self-reported by the investor -- not a verified track record")}
+                                      style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                      {t("investors.leadsRounds")}
+                                    </span>
+                                  )}
+                                  {/* Outlined copper, not a filled pill: the
+                                      card's one accent is the check-size figure,
+                                      and this chip matches its siblings' 4px. */}
+                                  {myRaise && (inv.stages || []).includes(myRaise.stage) && (inv.industries || []).includes(myRaise.industry) && (
+                                    <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                      {t("investors.fitsYourRaise")}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
+
+                          {/* Bio */}
+                          {inv.bio && (
+                            <p className="line-clamp-2 flex-1" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "16px" }}>{inv.bio}</p>
+                          )}
+
+                          {/* Check size -- the card's number, on its own ruled strip. */}
+                          {(inv.min_check || inv.max_check) && (
+                            <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "8px 0 0", marginBottom: "12px" }}>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("investors.checkSize")}</p>
+                              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
+                                {inv.min_check ? formatCheck(inv.min_check) : t("investors.any")} – {inv.max_check ? formatCheck(inv.max_check) : t("investors.any")}
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Stages */}
+                          {inv.stages && inv.stages.length > 0 && (
+                            <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
+                              {inv.stages.map(s => (
+                                <span key={s} style={{ border: "1px solid var(--cr-paper-4)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                  {STAGE_LABELS[s] ?? s}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Industries -- a dead static "+N" used to sit here;
+                              it now opens inline via <details>, the same
+                              progressive-disclosure convention the profile
+                              page's portfolio list already uses. Elevated
+                              above the stretched link (zIndex 2) so a click
+                              toggles it instead of navigating away. */}
+                          {inv.industries && inv.industries.length > 0 && (
+                            <div className="flex flex-wrap gap-1 items-start" style={{ marginBottom: "12px" }}>
+                              {inv.industries.slice(0, 3).map(ind => (
+                                <span key={ind} style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{ind}</span>
+                              ))}
+                              {inv.industries.length > 3 && (
+                                <details data-cr-expander style={{ position: "relative", zIndex: 2 }}>
+                                  <summary
+                                    style={{
+                                      listStyle: "none", cursor: "pointer",
+                                      border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px",
+                                      fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)",
+                                    }}
+                                  >
+                                    +{inv.industries.length - 3}
+                                  </summary>
+                                  <div className="flex flex-wrap gap-1" style={{ marginTop: "4px" }}>
+                                    {inv.industries.slice(3).map(ind => (
+                                      <span key={ind} style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{ind}</span>
+                                    ))}
+                                  </div>
+                                </details>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Geography */}
+                          {inv.geography && inv.geography.length > 0 && (
+                            <div className="flex items-center gap-1.5" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
+                              <Globe className="h-3 w-3" />
+                              {inv.geography.slice(0, 2).map(g => countryLabel(t, g)).join(" · ")}
+                              {inv.geography.length > 2 && ` +${inv.geography.length - 2}`}
+                            </div>
+                          )}
+
+                          {/* CTA -- quiet tertiary; the page keeps one primary.
+                              Above the stretched link (zIndex 2): the whole
+                              card already navigates here, this just keeps its
+                              own visible target working exactly as before. */}
+                          <Link
+                            href={`/investors/${inv.slug}`}
+                            className="mt-auto w-full flex items-center gap-2"
+                            style={{ position: "relative", zIndex: 2, minHeight: "40px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}
+                          >
+                            {t("investors.viewProfile")} →
+                          </Link>
                         </div>
-
-                        {/* Bio */}
-                        {inv.bio && (
-                          <p className="line-clamp-2 flex-1" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, marginBottom: "16px" }}>{inv.bio}</p>
-                        )}
-
-                        {/* Check size -- the card's number, on its own ruled strip. */}
-                        {(inv.min_check || inv.max_check) && (
-                          <div style={{ borderTop: "1px solid var(--cr-rule)", padding: "8px 0 0", marginBottom: "12px" }}>
-                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("investors.checkSize")}</p>
-                            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
-                              {inv.min_check ? formatCheck(inv.min_check) : t("investors.any")} – {inv.max_check ? formatCheck(inv.max_check) : t("investors.any")}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Stages */}
-                        {inv.stages && inv.stages.length > 0 && (
-                          <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
-                            {inv.stages.map(s => (
-                              <span key={s} style={{ border: "1px solid var(--cr-paper-4)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                                {STAGE_LABELS[s] ?? s}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Industries */}
-                        {inv.industries && inv.industries.length > 0 && (
-                          <div className="flex flex-wrap gap-1" style={{ marginBottom: "12px" }}>
-                            {inv.industries.slice(0, 3).map(ind => (
-                              <span key={ind} style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)" }}>{ind}</span>
-                            ))}
-                            {inv.industries.length > 3 && (
-                              <span style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>+{inv.industries.length - 3}</span>
-                            )}
-                          </div>
-                        )}
-
-                        {/* Geography */}
-                        {inv.geography && inv.geography.length > 0 && (
-                          <div className="flex items-center gap-1.5" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
-                            <Globe className="h-3 w-3" />
-                            {inv.geography.slice(0, 2).map(g => countryLabel(t, g)).join(" · ")}
-                            {inv.geography.length > 2 && ` +${inv.geography.length - 2}`}
-                          </div>
-                        )}
-
-                        {/* CTA -- quiet tertiary; the page keeps one primary. */}
-                        <Link
-                          href={`/investors/${inv.slug}`}
-                          className="mt-auto w-full flex items-center gap-2"
-                          style={{ minHeight: "40px", paddingTop: "12px", borderTop: "1px solid var(--cr-rule)", textDecoration: "none", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}
-                        >
-                          {t("investors.viewProfile")} →
-                        </Link>
                       </div>
                     );
                   })}

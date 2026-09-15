@@ -1167,6 +1167,14 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
   from { transform: scale(1.6); }
   to   { transform: scale(1); }
 }
+/* A save/watch icon popping to its new state instead of an instant color/fill
+   swap -- reuses badgePop rather than a bespoke keyframe. Applied transiently
+   (added on toggle, removed after it plays) by the icon's own component, not
+   left on permanently. */
+.cr-badge-pop { animation: badgePop 420ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) {
+  .cr-badge-pop { animation: none !important; }
+}
 .animate-fade-in       { animation: fadeIn 500ms ease both; }
 /* Investor filter block reused inside the mobile bottom sheet: fill the
    sheet instead of being a sticky 16rem desktop column. */

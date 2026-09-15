@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Bookmark, GitCompareArrows, Lock } from "lucide-react";
 import { DemoBadge } from "@/components/shared/demo-badge";
@@ -62,6 +63,22 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
   const scoreLocked      = !investorTier || investorTier === "free";
   const hasActions       = Boolean(onSave || onCompare);
 
+  // The save icon pops to its new state instead of an instant fill swap.
+  // Fires on an actual flip of isSaved, not on every render -- a ref holds
+  // the previous value so a parent re-render that leaves isSaved unchanged
+  // (a sibling card saving, a filter re-run) never replays it.
+  const [savePop, setSavePop] = useState(false);
+  const prevSaved = useRef(isSaved);
+  useEffect(() => {
+    if (prevSaved.current !== isSaved) {
+      setSavePop(true);
+      const id = setTimeout(() => setSavePop(false), 420);
+      prevSaved.current = isSaved;
+      return () => clearTimeout(id);
+    }
+    prevSaved.current = isSaved;
+  }, [isSaved]);
+
   // One meta line instead of a chip row: drawer (sector), shelf (stage), and
   // -- when the round is not simply open -- its state or deadline. Time and
   // status ride the same quiet line; the raise figure below keeps the accent.
@@ -120,12 +137,8 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
         @media (hover: none) { .cr-startup-card .cr-card-act { opacity: 1; } }
         @media (prefers-reduced-motion: reduce) { .cr-startup-card .cr-card-act { transition: none; } }
       `}</style>
-      <Link
-        href={`/startups/${startup.slug}`}
-        aria-label={startup.name}
-        style={{ position: "absolute", inset: 0, zIndex: 1, textDecoration: "none" }}
-      />
       <div
+        className="cr-lift cr-spot cr-tilt"
         style={{
           position:     "relative",
           display:      "flex",
@@ -135,18 +148,44 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
           // 6px: the card/panel radius; 4px stays with controls.
           borderRadius: "6px",
           padding:      "16px",
-          transition:   "background 120ms ease, border-color 120ms ease",
+          // border-color/background stay on their own 120ms beat; transform and
+          // box-shadow are declared to match .cr-tilt/.cr-lift's own timings --
+          // an inline transition wins over the class's, so it has to repeat them.
+          transition:   "background 120ms ease, border-color 120ms ease, transform 160ms var(--ease-out), box-shadow 180ms var(--ease-out)",
           cursor:       "pointer",
         }}
         onMouseEnter={e => {
           (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)";
-          (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-paper-4)";
+        }}
+        onMouseMove={e => {
+          const r = e.currentTarget.getBoundingClientRect();
+          const x = e.clientX - r.left, y = e.clientY - r.top;
+          e.currentTarget.style.setProperty("--mx", `${x}px`);
+          e.currentTarget.style.setProperty("--my", `${y}px`);
+          e.currentTarget.style.setProperty("--ry", `${((x / r.width) - 0.5) * 5}deg`);
+          e.currentTarget.style.setProperty("--rx", `${(0.5 - (y / r.height)) * 4}deg`);
+          e.currentTarget.style.borderColor = "var(--cr-paper-4)";
         }}
         onMouseLeave={e => {
+          e.currentTarget.style.setProperty("--rx", "0deg");
+          e.currentTarget.style.setProperty("--ry", "0deg");
           (e.currentTarget as HTMLElement).style.background = "var(--cr-paper-2)";
-          (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)";
+          e.currentTarget.style.borderColor = "var(--cr-rule-dark)";
         }}
       >
+        {/* The stretched card-wide link. It has to live INSIDE the tilting
+            div, not beside it: .cr-tilt's `transform` (present at rest, not
+            just on hover, whenever the device has a real pointer) makes this
+            div its own stacking context, and a z-index inside a stacking
+            context can never out-rank an element OUTSIDE it no matter how
+            high that z-index is set. Nested here, the link and the action
+            rail/upgrade link below are compared within the SAME context, so
+            z-index 2 genuinely wins over this link's z-index 1 again. */}
+        <Link
+          href={`/startups/${startup.slug}`}
+          aria-label={startup.name}
+          style={{ position: "absolute", inset: 0, zIndex: 1, textDecoration: "none" }}
+        />
         {/* Action rail: save and compare, above the stretched card link (or
             the overlay swallows the click). Revealed by the stylesheet above. */}
         {hasActions && (
@@ -171,7 +210,7 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
                 aria-pressed={!!isSaved}
                 aria-label={isSaved ? t("startup.removeWatchlist") : t("startup.saveWatchlist")}
               >
-                <Bookmark style={{
+                <Bookmark className={savePop ? "cr-badge-pop" : undefined} style={{
                   width:  16,
                   height: 16,
                   color:  isSaved ? "var(--cr-copper)" : "var(--cr-ink-4)",
@@ -224,7 +263,11 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
             </span>
           ) : score != null ? (
             <span title={t("startup.scoreTitle", { score })} style={{ display: "inline-flex", flexDirection: "column", alignItems: "flex-end", gap: "2px", flexShrink: 0, lineHeight: 1 }}>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
+              {/* Keyed on the score itself: a genuine value change (a re-sort
+                  pulling in fresh data, a re-fetch) remounts the span, which
+                  is what makes the CSS animation play again -- it never fires
+                  from an unrelated re-render at the same value. */}
+              <span key={score} className="animate-count-up" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
                 {score}
                 <span style={{ fontSize: "0.6em", color: "var(--cr-ink-4)", fontWeight: 500 }}>/100</span>
               </span>

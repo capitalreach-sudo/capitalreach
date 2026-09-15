@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bookmark } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { notify } from "@/components/ui/toast-notify";
@@ -40,6 +40,20 @@ export function InvestorWatchButton({
   };
   const [saved, setSaved] = useState(initiallySaved);
   const [busy, setBusy] = useState(false);
+  // Icon pops to its new state instead of an instant fill swap, on an actual
+  // flip of `saved` only -- not on the initial mount, where prevSaved already
+  // matches initiallySaved.
+  const [pop, setPop] = useState(false);
+  const prevSaved = useRef(saved);
+  useEffect(() => {
+    if (prevSaved.current !== saved) {
+      setPop(true);
+      const id = setTimeout(() => setPop(false), 420);
+      prevSaved.current = saved;
+      return () => clearTimeout(id);
+    }
+    prevSaved.current = saved;
+  }, [saved]);
 
   async function toggle(e?: React.MouseEvent) {
     e?.preventDefault();
@@ -96,7 +110,7 @@ export function InvestorWatchButton({
         }`}
         style={{ minHeight: "40px", padding: "0 12px" }}
       >
-        <Bookmark className="h-3 w-3" style={{ fill: saved ? "currentColor" : "transparent" }} />
+        <Bookmark className={`h-3 w-3${pop ? " cr-badge-pop" : ""}`} style={{ fill: saved ? "currentColor" : "transparent" }} />
         {saved ? tf("watchlist.investorWatching", "Watching") : tf("watchlist.investorWatch", "Watch")}
       </button>
     );
@@ -115,7 +129,7 @@ export function InvestorWatchButton({
       className={`transition-colors ${saved ? "text-cr-copper" : "text-cr-p4 hover:text-cr-copper"}`}
       style={{ background: "none", border: "none", cursor: "pointer", padding: "12px", display: "flex" }}
     >
-      <Bookmark className="h-4 w-4" style={{ fill: saved ? "currentColor" : "transparent" }} />
+      <Bookmark className={`h-4 w-4${pop ? " cr-badge-pop" : ""}`} style={{ fill: saved ? "currentColor" : "transparent" }} />
     </button>
   );
 }
