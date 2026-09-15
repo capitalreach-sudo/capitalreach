@@ -54,7 +54,12 @@ export function DonutChart({ slices, maxSlices = 5, otherLabel = "Other", total:
     const a0 = start + gap / 2, a1 = start + sweep - gap / 2;
     angle += sweep;
     const large = sweep > Math.PI ? 1 : 0;
-    const p = (rad: number, ang: number) => `${C + rad * Math.cos(ang)},${C + rad * Math.sin(ang)}`;
+    // Rounded to 3 decimals: Math.cos/Math.sin can differ in their very last
+    // bit between the server's Node/V8 and the browser's V8, which is far
+    // below any precision an SVG path needs but was enough for React to flag
+    // a server/client mismatch here once this chart could render on first
+    // paint (data-centre.tsx's Industry tab, once behind a click).
+    const p = (rad: number, ang: number) => `${(C + rad * Math.cos(ang)).toFixed(3)},${(C + rad * Math.sin(ang)).toFixed(3)}`;
     return `M${p(R, a0)} A${R},${R} 0 ${large} 1 ${p(R, a1)} L${p(r, a1)} A${r},${r} 0 ${large} 0 ${p(r, a0)} Z`;
   };
 

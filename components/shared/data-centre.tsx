@@ -435,8 +435,21 @@ function PairedColumns({ labels, series, ariaLabel }: {
   const n = labels.length;
   const max = Math.max(1, ...series.flatMap(s => s.values.filter(Number.isFinite)));
   const PLOT_H = 148;
+  const rowRef = useRef<HTMLDivElement>(null);
 
   const fmt = (s: ColumnSeries, v: number) => (s.format ? s.format(v) : String(v));
+
+  // Mirrors line-chart.tsx's own indexFromClientX: the whole row is one
+  // continuous scrub surface rather than n separate hover targets, so a
+  // pointer aims at a month by position, the same contract the line chart
+  // gives an 8+ month view. Floor (not round) because a column's hit area is
+  // the flex cell itself, not a point at its centre.
+  const indexFromClientX = (clientX: number): number => {
+    const rect = rowRef.current?.getBoundingClientRect();
+    if (!rect || rect.width === 0 || n === 0) return 0;
+    const t = (clientX - rect.left) / rect.width;
+    return Math.min(n - 1, Math.max(0, Math.floor(t * n)));
+  };
 
   return (
     <div
@@ -455,7 +468,24 @@ function PairedColumns({ labels, series, ariaLabel }: {
       }}
       onBlur={() => setActive(null)}
     >
-      <div style={{ display: "flex", alignItems: "stretch", position: "relative" }}>
+      <div
+        ref={rowRef}
+        style={{ display: "flex", alignItems: "stretch", position: "relative", touchAction: "pan-y" }}
+        // One handler for the whole row, not one per column: a mouse move or
+        // a touch drag anywhere across the row scrubs through every month,
+        // the same free-form contract line-chart.tsx gives its own scrub
+        // surface, rather than requiring the pointer to land inside one
+        // column's own narrow box.
+        onPointerMove={(e) => {
+          if (e.pointerType === "touch" && !e.buttons) return;
+          setActive(indexFromClientX(e.clientX));
+        }}
+        onPointerDown={(e) => {
+          const i = indexFromClientX(e.clientX);
+          setActive(a => (e.pointerType === "touch" && a === i ? null : i));
+        }}
+        onPointerLeave={(e) => { if (e.pointerType !== "touch") setActive(null); }}
+      >
         {/* One dotted gridline at the 50%-of-max mark, mirroring the line
             chart's own tick treatment (line-chart.tsx). At low bar counts the
             frame used to be a solid baseline plus a void -- this single rule
@@ -467,6 +497,44 @@ function PairedColumns({ labels, series, ariaLabel }: {
           borderTop: "1px dashed var(--cr-rule-dark)",
           pointerEvents: "none",
         }} />
+        {/* The floating callout, positioned once against the row rather than
+            once per column: anchored to the active month's own x-position
+            and flipped to whichever side keeps it inside the frame, the same
+            edge-aware placement line-chart.tsx uses for its tooltip. Centring
+            it on the column instead (the earlier approach) ran the callout
+            off the left or right edge of the viewport for the first or last
+            month on a narrow phone screen. Every figure it shows already
+            sits on the bar as a permanent label, so this isn't revealing
+            hidden data -- it's reading the month back as one sentence
+            instead of two stacked numbers. */}
+        {active !== null && (
+          <div
+            role="status"
+            style={{
+              position: "absolute", top: 0,
+              left: `${((active + 0.5) / n) * 100}%`,
+              transform: `translate(${active > (n - 1) / 2 ? "calc(-100% - 8px)" : "8px"}, calc(-100% - 8px))`,
+              zIndex: 5,
+              background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
+              borderRadius: "4px", padding: "8px 10px", whiteSpace: "nowrap",
+              boxShadow: "var(--cr-card-shadow-hover, 0 4px 12px rgba(0,0,0,0.08))",
+              pointerEvents: "none",
+            }}
+          >
+            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink)", margin: 0, marginBottom: series.length > 1 ? "4px" : 0 }}>
+              {labels[active]}
+            </p>
+            {series.map((s) => {
+              const v = Number.isFinite(s.values[active]) ? s.values[active] : 0;
+              return (
+                <p key={s.key} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", margin: 0 }}>
+                  <span style={{ width: "8px", height: "5px", borderRadius: "1px", background: s.color, display: "inline-block", flexShrink: 0 }} />
+                  {s.label}: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "var(--cr-ink)" }}>{fmt(s, v)}</span>
+                </p>
+              );
+            })}
+          </div>
+        )}
         {labels.map((label, i) => {
           const dim = active !== null && active !== i;
           // A month with nothing in ANY series is a genuine absence, not a
@@ -477,10 +545,6 @@ function PairedColumns({ labels, series, ariaLabel }: {
           return (
             <div
               key={label + i}
-              // Mouse only: on touch, pointerenter fires on tap with no
-              // matching leave, which would leave the other months dimmed.
-              onPointerEnter={(e) => { if (e.pointerType !== "touch") setActive(i); }}
-              onPointerLeave={(e) => { if (e.pointerType !== "touch") setActive(null); }}
               style={{ flex: "1 1 0", minWidth: 0, opacity: dim ? 0.45 : 1, transition: "opacity 120ms" }}
             >
               {/* Cells sit flush (no flex gap) so each cell's bottom border
@@ -491,37 +555,6 @@ function PairedColumns({ labels, series, ariaLabel }: {
                 height: `${PLOT_H + 22}px`, padding: "0 4px",
                 borderBottom: "1px solid var(--cr-rule-dark)",
               }}>
-                {/* The floating callout: every figure here already sits on the
-                    bar as a permanent label, so this isn't revealing hidden
-                    data -- it's reading the month back as one sentence
-                    instead of two stacked numbers, and giving the hover/scrub
-                    interaction something that visibly answers it. */}
-                {active === i && (
-                  <div
-                    role="status"
-                    style={{
-                      position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
-                      transform: "translateX(-50%)", zIndex: 5,
-                      background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)",
-                      borderRadius: "4px", padding: "8px 10px", whiteSpace: "nowrap",
-                      boxShadow: "var(--cr-card-shadow-hover, 0 4px 12px rgba(0,0,0,0.08))",
-                      pointerEvents: "none",
-                    }}
-                  >
-                    <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "11px", color: "var(--cr-ink)", margin: 0, marginBottom: series.length > 1 ? "4px" : 0 }}>
-                      {label}
-                    </p>
-                    {series.map((s) => {
-                      const v = Number.isFinite(s.values[i]) ? s.values[i] : 0;
-                      return (
-                        <p key={s.key} style={{ display: "flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink-3)", margin: 0 }}>
-                          <span style={{ width: "8px", height: "5px", borderRadius: "1px", background: s.color, display: "inline-block", flexShrink: 0 }} />
-                          {s.label}: <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "var(--cr-ink)" }}>{fmt(s, v)}</span>
-                        </p>
-                      );
-                    })}
-                  </div>
-                )}
                 {monthEmpty ? (
                   <div aria-hidden style={{
                     width: "clamp(10px, 3vw, 24px)", height: `${Math.round(PLOT_H * 0.16)}px`,
@@ -709,7 +742,22 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   // page's single primary chart); the numbers behind it are the third tab, so
   // every chart still has a table for anyone the colours fail.
   const [growthView, setGrowthView] = useState<"activity" | "capital" | "numbers">("activity");
-  const [breakdown, setBreakdown] = useState<"deals" | "industry" | "stage" | "medians">("deals");
+  // Opens on Industry, not Deal Flow, whenever there is real industry data to
+  // show. The industry ring is a genuine, already-built breakdown that sat
+  // one tab-click behind the funnel and was easy for a first-time visitor to
+  // never find. The lazy initializer reads initialData directly (the
+  // server-rendered payload, present on a real page load) so the very first
+  // paint already opens on the right tab; breakdownDefaulted below covers
+  // the client-only fetch path, where initialData is still null at mount.
+  // Either way this is a one-time guess made before anyone could have
+  // clicked a tab, never a correction that overrides a later click.
+  const breakdownDefaulted = useRef(!!initialData);
+  const [breakdown, setBreakdown] = useState<"deals" | "industry" | "stage" | "medians">(() => {
+    const industryTotalAtMount = initialData
+      ? Object.values(initialData.byIndustry).reduce((s, v) => s + v, 0)
+      : 0;
+    return industryTotalAtMount > 0 ? "industry" : "deals";
+  });
   // Opens on what was listed, not on what scored highest. A ranking is the
   // default reading of whatever sits first, and this one ranks a completeness
   // check -- leading with it invites it to be read as a recommendation.
@@ -788,6 +836,14 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     ? Object.entries(data.byIndustry).sort((a, b) => b[1] - a[1])
     : [];
   const industryTotal = industryEntries.reduce((s, [, v]) => s + v, 0);
+  // The client-only path: the lazy initializer above could not see real data
+  // yet, so this fires once, the instant it arrives, and never again -- a
+  // tab a viewer has since clicked must never be overridden back to Industry.
+  useEffect(() => {
+    if (breakdownDefaulted.current || !data) return;
+    breakdownDefaulted.current = true;
+    if (industryTotal > 0) setBreakdown("industry");
+  }, [data, industryTotal]);
   // A ring answers "what share of the whole" only while named slices carry
   // the whole. The donut folds everything past its five named slices into a
   // grey "Other"; once that fold holds more than half the platform, the ring
