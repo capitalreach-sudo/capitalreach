@@ -355,7 +355,7 @@
       "q1": "Wanneer wordt de fee in rekening gebracht?",
       "a1": "De 2% fee wordt alleen in rekening gebracht nadat de ronde is gesloten en het kapitaal daadwerkelijk is ontvangen. Geen kosten vóór closing.",
       "q2": "Kan ik het platform gratis gebruiken?",
-      "a2": "Ja. Tijdens de lancering is het platform volledig gratis voor de eerste 150 leden. Daarna starten abonnementen.",
+      "a2": "Ja. Tijdens de lancering is het platform volledig gratis voor de eerste {target} leden. Daarna starten abonnementen.",
       "q3": "Betalen investeerders fees?",
       "a3": "Nee. Investeerders betalen geen fees. De 2% succesfee geldt alleen voor oprichters die kapitaal ontvangen.",
       "q4": "Welke betaalmethoden accepteren jullie?",

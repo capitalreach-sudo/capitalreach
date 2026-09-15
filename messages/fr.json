@@ -364,7 +364,7 @@
       "q1": "Comment fonctionne la commission de réussite de 2% ?",
       "a1": "Quand un investisseur marque un deal comme clôturé, nous facturons à la startup 2% du montant levé — après la clôture. Fenêtre de paiement de 14 jours via Stripe. Zéro frais initiaux.",
       "q2": "Que signifie « Gratuit jusqu'à 150 membres » ?",
-      "a2": "Nous exonérons entièrement les frais d'abonnement pour nos 150 premiers membres. Tous bénéficient d'un accès complet au niveau supérieur sans frais. Une fois 150 membres atteints, les tarifs réguliers s'appliquent aux nouvelles inscriptions.",
+      "a2": "Nous exonérons entièrement les frais d'abonnement pour nos {target} premiers membres. Tous bénéficient d'un accès complet au niveau supérieur sans frais. Une fois {target} membres atteints, les tarifs réguliers s'appliquent aux nouvelles inscriptions.",
       "q3": "Puis-je annuler mon abonnement à tout moment ?",
       "a3": "Oui. Annulez depuis votre tableau de bord via le portail client Stripe à tout moment. Vous conservez l'accès jusqu'à la fin de votre période de facturation.",
       "q4": "Qu'est-ce qui compte comme « deal clôturé » pour la commission de 2% ?",

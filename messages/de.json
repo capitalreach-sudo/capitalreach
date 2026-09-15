@@ -371,7 +371,7 @@
       "q1": "Wie funktioniert die 2%-Erfolgsgebühr?",
       "a1": "Wenn ein Investor einen Deal als abgeschlossen markiert, stellen wir dem Startup 2% des eingesammelten Betrags in Rechnung — nach dem Abschluss. 14-tägiges Zahlungsfenster über Stripe. Keine Vorabgebühren.",
       "q2": "Was bedeutet 'Kostenlos bis 150 Mitglieder'?",
-      "a2": "Wir verzichten auf Abonnementgebühren für unsere ersten 150 Mitglieder. Alle erhalten kostenlosen Vollzugang zur höchsten Stufe. Sobald wir 150 Mitglieder erreichen, gelten reguläre Preise für neue Anmeldungen.",
+      "a2": "Wir verzichten auf Abonnementgebühren für unsere ersten {target} Mitglieder. Alle erhalten kostenlosen Vollzugang zur höchsten Stufe. Sobald wir {target} Mitglieder erreichen, gelten reguläre Preise für neue Anmeldungen.",
       "q3": "Kann ich mein Abonnement jederzeit kündigen?",
       "a3": "Ja. Kündigung jederzeit über das Stripe-Kundenportal in Ihrem Dashboard. Sie behalten den Zugang bis zum Ende Ihrer Abrechnungsperiode.",
       "q4": "Was gilt als 'abgeschlossener Deal' für die 2%-Gebühr?",

@@ -371,7 +371,7 @@
       "q1": "How does the 2% success fee work?",
       "a1": "When an investor marks a deal as closed, we invoice the startup for 2% of the amount raised — after closing. 14-day payment window via Stripe. Zero upfront fees.",
       "q2": "What does 'Free until 150 members' mean?",
-      "a2": "We're waiving subscription fees entirely for our first 150 members. Everyone gets full access to the top tier at no cost. Once we hit 150 members, regular pricing kicks in for new signups.",
+      "a2": "We're waiving subscription fees entirely for our first {target} members. Everyone gets full access to the top tier at no cost. Once we hit {target} members, regular pricing kicks in for new signups.",
       "q3": "Can I cancel my subscription anytime?",
       "a3": "Yes. Cancel from your dashboard via the Stripe Customer Portal at any time. You retain access until the end of your billing period.",
       "q4": "What counts as a 'closed deal' for the 2% fee?",

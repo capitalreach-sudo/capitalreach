@@ -355,7 +355,7 @@
       "q1": "Quando viene addebitata la commissione?",
       "a1": "La commissione del 2% viene addebitata solo dopo la chiusura del round e l'effettivo ricevimento del capitale. Nessun costo prima della chiusura.",
       "q2": "Posso usare la piattaforma gratuitamente?",
-      "a2": "Sì. Durante il lancio, la piattaforma è completamente gratuita per i primi 150 membri. Dopodiché inizieranno gli abbonamenti.",
+      "a2": "Sì. Durante il lancio, la piattaforma è completamente gratuita per i primi {target} membri. Dopodiché inizieranno gli abbonamenti.",
       "q3": "Gli investitori pagano commissioni?",
       "a3": "No. Gli investitori non pagano alcuna commissione. Il 2% di successo si applica solo ai fondatori che ricevono il capitale.",
       "q4": "Quali metodi di pagamento accettate?",

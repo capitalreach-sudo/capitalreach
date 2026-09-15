@@ -364,7 +364,7 @@
       "q1": "¿Cómo funciona la comisión de éxito del 2%?",
       "a1": "Cuando un inversor marca un deal como cerrado, facturamos a la startup el 2% del importe recaudado — después del cierre. Ventana de pago de 14 días a través de Stripe. Sin comisiones iniciales.",
       "q2": "¿Qué significa 'Gratis hasta 150 miembros'?",
-      "a2": "Estamos exonerado totalmente las cuotas de suscripción para nuestros primeros 150 miembros. Todos obtienen acceso completo al nivel superior sin coste. Una vez alcanzados los 150 miembros, los precios regulares se aplican a los nuevos registros.",
+      "a2": "Estamos exonerado totalmente las cuotas de suscripción para nuestros primeros {target} miembros. Todos obtienen acceso completo al nivel superior sin coste. Una vez alcanzados los {target} miembros, los precios regulares se aplican a los nuevos registros.",
       "q3": "¿Puedo cancelar mi suscripción en cualquier momento?",
       "a3": "Sí. Cancela desde tu panel a través del Portal de Clientes de Stripe en cualquier momento. Conservas el acceso hasta el final de tu período de facturación.",
       "q4": "¿Qué cuenta como 'deal cerrado' para la comisión del 2%?",

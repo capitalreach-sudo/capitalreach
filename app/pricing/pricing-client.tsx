@@ -218,57 +218,86 @@ function PlanCard({
   // A member on their own side whose plan was granted (no Stripe customer) has
   // no billing portal to open, so the Free card is not a downgrade they can make.
   const grantedFree = signedIn && viewerSide === userType && free && !viewer?.hasBillingAccount;
+  // The same gap on the OTHER free card: a grandfathered member (moved onto a
+  // paid tier by an admin grant, e.g. lib/pricing-stage.ts's
+  // grandfatherFoundingCohort, never via Stripe) has no billing portal for
+  // THEIR OWN card either. isCurrent already skips the free/grantedFree
+  // branches entirely, so without this it would call openPortal() and land on
+  // portal/route.ts's 400 "No billing account found."
+  const isCurrentUnbilled = isCurrent && !free && !viewer?.hasBillingAccount;
   const inert      = !isCurrent && (otherSide || included || grantedFree);
   const fill       = hi && !inert;
+  const [pending, setPending] = useState(false);
 
   async function openPortal() {
     const res = await fetch("/api/checkout/portal", { method: "POST" });
+    if (res.status === 401) {
+      window.location.href = "/auth/signup";
+      return;
+    }
     const data = await res.json().catch(() => null);
     if (data?.url) window.location.href = data.url;
-    else notify.error(t("errors.generic"));
+    else notify.error(data?.error || t("errors.generic"));
   }
 
   async function handleClick() {
-    // The viewer already has this plan: the only sensible action is managing
-    // it, not buying it again. Free current plans have nothing to manage.
-    if (isCurrent) {
-      if (free) return;
-      await openPortal();
-      return;
+    if (pending) return;
+    setPending(true);
+    try {
+      // The viewer already has this plan: the only sensible action is managing
+      // it, not buying it again. Free current plans have nothing to manage,
+      // and neither does a paid plan that was granted rather than bought.
+      if (isCurrent) {
+        if (free) return;
+        if (isCurrentUnbilled) {
+          notify.info(tf("pricing.grantedNoBillingNotice", "This plan was granted directly, there's no billing to manage. Contact support if you have questions."));
+          return;
+        }
+        await openPortal();
+        return;
+      }
+      if (inert) return;
+      if (noSide) { window.location.href = dashboardHref(viewer?.role ?? null); return; }
+      if (isInstitution) { window.location.href = "/contact?type=institutional"; return; }
+      // A member on their own side who does not hold the free plan holds a paid
+      // one, so the free card is a change to that subscription, not a sign-up.
+      if (signedIn && free) { await openPortal(); return; }
+
+      // Carry the chosen plan into signup. It used to be dropped entirely --
+      // clicking a plan landed you on a bare signup form with no sign that a
+      // choice had been made, which reads as the click not having worked.
+      //
+      // The founding stage is routed here too: nothing is for sale while it
+      // runs, and /api/checkout refuses to open a session, so sending someone to
+      // Stripe would be sending them to an error.
+      const signupUrl = `/auth/signup?plan=${encodeURIComponent(plan.id)}&role=${userType === "founder" ? "startup" : "investor"}`;
+      if (free || isFounding) { window.location.href = signupUrl; return; }
+
+      await startCheckout(plan.id, userType, t("errors.generic"), annual ? "year" : "month");
+    } finally {
+      setPending(false);
     }
-    if (inert) return;
-    if (noSide) { window.location.href = dashboardHref(viewer?.role ?? null); return; }
-    if (isInstitution) { window.location.href = "/contact?type=institutional"; return; }
-    // A member on their own side who does not hold the free plan holds a paid
-    // one, so the free card is a change to that subscription, not a sign-up.
-    if (signedIn && free) { await openPortal(); return; }
-
-    // Carry the chosen plan into signup. It used to be dropped entirely --
-    // clicking a plan landed you on a bare signup form with no sign that a
-    // choice had been made, which reads as the click not having worked.
-    //
-    // The founding stage is routed here too: nothing is for sale while it
-    // runs, and /api/checkout refuses to open a session, so sending someone to
-    // Stripe would be sending them to an error.
-    const signupUrl = `/auth/signup?plan=${encodeURIComponent(plan.id)}&role=${userType === "founder" ? "startup" : "investor"}`;
-    if (free || isFounding) { window.location.href = signupUrl; return; }
-
-    startCheckout(plan.id, userType, t("errors.generic"), annual ? "year" : "month");
   }
 
-  const ctaLabel = isCurrent
-    ? (free ? t("dashboard.currentPlan") : t("dashboard.manageBilling"))
+  const ctaLabel = pending
+    ? tf("pricing.redirecting", "Redirecting...")
+    : isCurrent
+    ? (free ? t("dashboard.currentPlan") : isCurrentUnbilled ? tf("pricing.grantedNoBilling", "Included, no billing") : t("dashboard.manageBilling"))
     : otherSide
     ? (userType === "founder" ? tf("pricing.forFounderAccounts", "For founder accounts") : tf("pricing.forInvestorAccounts", "For investor accounts"))
-    : included || grantedFree
+    : included
     ? tf("pricing.fullAccessIncluded", "Full access included")
+    : grantedFree
+    ? tf("pricing.higherPlanGranted", "You're already on a higher plan")
     : noSide
     ? t("hero.ctaDashboard")
     : isInstitution
     ? t("pricing.contactSales")
     : free
       ? (signedIn ? t("dashboard.manageBilling") : t("pricing.getStartedFree"))
-      : `${t("pricing.getStarted")} · ${plan.name}`; // house separator, no dash
+      : signedIn
+        ? tf("pricing.switchToPlan", `Switch to ${plan.name}`)
+        : `${t("pricing.getStarted")} · ${plan.name}`; // house separator, no dash
 
   return (
     <div className={hi ? "plan-card featured" : "plan-card"}
@@ -366,13 +395,15 @@ function PlanCard({
             button that states a fact rather than acting never fills and
             never answers hover. */}
         <button onClick={handleClick}
-          disabled={inert}
+          disabled={inert || pending}
+          aria-busy={pending}
           className={fill ? "btn-copper-shimmer" : ""}
           style={{
             display: "flex", alignItems: "center", justifyContent: "center",
             width: "100%", height: "42px", borderRadius: "4px",
             fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px",
-            textDecoration: "none", transition: "opacity 150ms", border: "none", cursor: inert ? "default" : "pointer",
+            textDecoration: "none", transition: "opacity 150ms", border: "none", cursor: inert || pending ? "default" : "pointer",
+            opacity: pending ? 0.7 : 1,
             background: fill ? "var(--cr-copper)" : "transparent",
             color: fill ? "var(--cr-on-accent)" : "var(--cr-ink-3)",
             borderColor: fill ? "transparent" : "var(--cr-rule-dark)",
@@ -380,12 +411,12 @@ function PlanCard({
             borderStyle: "solid",
           }}
           onMouseEnter={e => {
-            if (inert) return;
+            if (inert || pending) return;
             if (fill) e.currentTarget.style.opacity = "0.88";
             else { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-copper)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-copper)"; }
           }}
           onMouseLeave={e => {
-            if (inert) return;
+            if (inert || pending) return;
             if (fill) e.currentTarget.style.opacity = "1";
             else { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; (e.currentTarget as HTMLElement).style.color = "var(--cr-ink-3)"; }
           }}>
@@ -525,7 +556,12 @@ export function PricingClient({ pricing, viewer }: { pricing: StagePricing; view
 
   const faqItems = [
     { q: t("pricing.faq.q1"), a: t("pricing.faq.a1") },
-    { q: t("pricing.faq.q2"), a: t("pricing.faq.a2") },
+    // "Free until N members" only means something while the founding stage
+    // is still the live offer, and the answer's number is the live target
+    // (lib/pricing-stage.ts calls it "editable in /admin"), never a literal
+    // 150 baked into the page -- so this item is dropped once founding ends
+    // rather than keep asserting a member cap that no longer applies.
+    ...(isFounding ? [{ q: t("pricing.faq.q2"), a: t("pricing.faq.a2", { target }) }] : []),
     { q: t("pricing.faq.q3"), a: t("pricing.faq.a3") },
     { q: t("pricing.faq.q4"), a: t("pricing.faq.a4") },
     { q: t("pricing.faq.q5"), a: t("pricing.faq.a5") },
@@ -885,11 +921,22 @@ export function PricingClient({ pricing, viewer }: { pricing: StagePricing; view
                 <Brain style={{ width: 22, height: 22, color: "var(--cr-copper)" }} />
               </div>
               <div style={{ flex: 1, minWidth: "220px" }}>
-                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>{t("pricing.aiReportTitle")}</h3>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>{t("pricing.aiReportDesc")}</p>
+                {/* This used to render the investor-only "AI Due Diligence"
+                    copy on the founder tab too -- a founder reading the page
+                    saw a promo for a feature that isn't theirs. Each side now
+                    gets its own AI callout, the same way the 2% fee panel
+                    above already switches copy on activeTab. */}
+                <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", marginBottom: "4px" }}>
+                  {activeTab === "investor" ? t("pricing.aiReportTitle") : tf("pricing.aiPitchCalloutTitle", "AI Pitch Feedback")}
+                </h3>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
+                  {activeTab === "investor" ? t("pricing.aiReportDesc") : tf("pricing.aiPitchCalloutDesc", "An AI consistency score and written feedback on your pitch, before it ever reaches an investor.")}
+                </p>
               </div>
               <div style={{ textAlign: "center", flexShrink: 0 }}>
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>{t("pricing.aiReportIncluded")}</p>
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)" }}>
+                  {activeTab === "investor" ? t("pricing.aiReportIncluded") : tf("pricing.aiPitchCalloutIncluded", "Included with Starter and Growth")}
+                </p>
               </div>
             </div>
           </div>

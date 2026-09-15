@@ -355,7 +355,7 @@
       "q1": "Quando a taxa é cobrada?",
       "a1": "A taxa de 2% é cobrada apenas após o fechamento do round e o recebimento efetivo do capital. Nenhum custo antes do fechamento.",
       "q2": "Posso usar a plataforma gratuitamente?",
-      "a2": "Sim. Durante o lançamento, a plataforma é completamente gratuita para os primeiros 150 membros. Depois disso, as assinaturas começam.",
+      "a2": "Sim. Durante o lançamento, a plataforma é completamente gratuita para os primeiros {target} membros. Depois disso, as assinaturas começam.",
       "q3": "Os investidores pagam taxas?",
       "a3": "Não. Os investidores não pagam nenhuma taxa. O sucesso de 2% se aplica apenas aos fundadores que recebem capital.",
       "q4": "Quais métodos de pagamento vocês aceitam?",

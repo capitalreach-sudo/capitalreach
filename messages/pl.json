@@ -355,7 +355,7 @@
       "q1": "Kiedy pobierana jest prowizja?",
       "a1": "Prowizja 2% jest pobierana wyłącznie po zamknięciu rundy i faktycznym otrzymaniu kapitału. Brak kosztów przed zamknięciem.",
       "q2": "Czy mogę używać platformy za darmo?",
-      "a2": "Tak. Podczas startu platforma jest całkowicie bezpłatna dla pierwszych 150 członków. Następnie zaczynają się subskrypcje.",
+      "a2": "Tak. Podczas startu platforma jest całkowicie bezpłatna dla pierwszych {target} członków. Następnie zaczynają się subskrypcje.",
       "q3": "Czy inwestorzy płacą prowizje?",
       "a3": "Nie. Inwestorzy nie płacą żadnych prowizji. 2% prowizja od sukcesu dotyczy wyłącznie założycieli otrzymujących kapitał.",
       "q4": "Jakie metody płatności akceptujecie?",

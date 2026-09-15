@@ -355,7 +355,7 @@
       "q1": "När debiteras avgiften?",
       "a1": "2%-avgiften debiteras bara efter att rundan stängts och kapital faktiskt mottagits. Inga kostnader före stängning.",
       "q2": "Kan jag använda plattformen gratis?",
-      "a2": "Ja. Under lanseringen är plattformen helt gratis för de första 150 medlemmarna. Därefter börjar prenumerationer.",
+      "a2": "Ja. Under lanseringen är plattformen helt gratis för de första {target} medlemmarna. Därefter börjar prenumerationer.",
       "q3": "Betalar investerare avgifter?",
       "a3": "Nej. Investerare betalar inga avgifter. 2% framgångsavgiften gäller bara grundare som tar emot kapital.",
       "q4": "Vilka betalningsmetoder accepterar ni?",
