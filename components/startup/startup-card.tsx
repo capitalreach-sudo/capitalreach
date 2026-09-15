@@ -6,7 +6,7 @@ import { DemoBadge } from "@/components/shared/demo-badge";
 import { STAGE_LABELS } from "@/lib/utils";
 import { EntityLogo } from "@/components/shared/entity-logo";
 import { roundCloseState } from "@/lib/round-close";
-import { safeFormatCurrencyAmount } from "@/lib/validators";
+import { safeFormatCurrencyAmount, isImplausibleFundingTarget } from "@/lib/validators";
 import { getInvestorPlan } from "@/lib/plans";
 import type { Startup, SubscriptionTier } from "@/types";
 import { notify } from "@/components/ui/toast-notify";
@@ -52,6 +52,8 @@ interface StartupCardProps {
  */
 export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare, isComparing }: StartupCardProps) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale (see data-centre.tsx).
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const canSeeFinancials = getInvestorPlan(investorTier ?? null).features.viewFinancials;
   const closing          = roundCloseState(startup.round_close_date);
   const score            = startup.vaultrise_score ?? null;
@@ -207,7 +209,9 @@ export function StartupCard({ startup, investorTier, isSaved, onSave, onCompare,
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>
               {t("startupDetail.raising")}
             </div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <div
+              title={isImplausibleFundingTarget(startup.funding_target) ? tf("startup.raiseAmountInvalid", "This listing's raise amount didn't pass our checks and is hidden") : undefined}
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: isImplausibleFundingTarget(startup.funding_target) ? "var(--cr-ink-4)" : "var(--cr-copper)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {safeFormatCurrencyAmount(startup.funding_target)}
             </div>
           </div>

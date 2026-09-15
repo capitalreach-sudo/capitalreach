@@ -2,6 +2,7 @@ import { unstable_cache } from "next/cache";
 import { createAdminClient, createServerSupabaseClient } from "@/lib/supabase-server";
 import { investorCan } from "@/lib/access";
 import { getLaunchStatus } from "@/lib/launchMode";
+import { DIRECTORY_MIN_BIO, normaliseInvestorStages, plausibleCheck } from "@/lib/investor-directory-rules";
 
 /**
  * Server-side loaders for the two public directories and the data centre.
@@ -190,43 +191,10 @@ export type BrowseInvestor = {
  * directory: a bio of at least DIRECTORY_MIN_BIO characters, a plausible
  * check size, and at least one recognised stage. The client fallback fetch
  * in components/investors/investors-client.tsx applies the same bar and the
- * same stage spellings; the two must agree, or the fallback would admit rows
- * this loader withholds.
+ * same stage spellings -- both now import DIRECTORY_MIN_BIO, plausibleCheck
+ * and normaliseInvestorStages from lib/investor-directory-rules rather than
+ * carrying their own copy, so the two cannot drift apart again.
  */
-const DIRECTORY_MIN_BIO = 40;
-// Above this a stored check size is a typo, not a mandate.
-const DIRECTORY_MAX_CHECK = 10_000_000_000;
-
-function plausibleCheck(n: number | null | undefined): number | null {
-  return typeof n === "number" && Number.isFinite(n) && n > 0 && n <= DIRECTORY_MAX_CHECK ? n : null;
-}
-
-// STAGE_LABELS, the stage filter and fit matching all key on the canonical
-// startup stages, so every stored spelling maps onto one of them. Anything
-// unrecognised is dropped: a raw enum never renders.
-const INVESTOR_STAGE_ALIASES: Record<string, string> = {
-  "pre-seed": "pre-seed",
-  pre_seed: "pre-seed",
-  preseed: "pre-seed",
-  seed: "seed",
-  series_a: "series_a",
-  "series-a": "series_a",
-  series_b_plus: "series_b_plus",
-  series_b: "series_b_plus",
-  "series-b": "series_b_plus",
-  series_c: "series_b_plus",
-  growth: "series_b_plus",
-};
-const INVESTOR_STAGE_ORDER = ["pre-seed", "seed", "series_a", "series_b_plus"];
-
-function normaliseInvestorStages(stages: ReadonlyArray<unknown> | null | undefined): string[] {
-  const found = new Set<string>();
-  for (const raw of stages ?? []) {
-    const key = String(raw).trim().toLowerCase();
-    if (Object.prototype.hasOwnProperty.call(INVESTOR_STAGE_ALIASES, key)) found.add(INVESTOR_STAGE_ALIASES[key]);
-  }
-  return INVESTOR_STAGE_ORDER.filter((stage) => found.has(stage));
-}
 
 /**
  * Directory rows. Names come from investors.display_name: the profiles

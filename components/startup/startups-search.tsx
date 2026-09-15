@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { Search, SlidersHorizontal, X, LayoutGrid, List, ChevronDown, Bookmark, Eye, GitCompareArrows, Clock } from "lucide-react";
 import { formatCurrency, STAGE_LABELS } from "@/lib/utils";
-import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget } from "@/lib/validators";
+import { safeFormatMRR, safeFormatCurrencyAmount, isValidFundingTarget, isImplausibleFundingTarget, isValidRunwayMonths } from "@/lib/validators";
 import { computeMatchScore, type InvestorThesis } from "@/lib/match-score";
 import { STARTUP_PRESETS } from "@/lib/search-presets";
 import { FilterPresets } from "@/components/search/filter-presets";
@@ -531,6 +531,8 @@ function Sparkline({ values }: { values: number[] }) {
 
 function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale (see data-centre.tsx).
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
 
@@ -684,11 +686,13 @@ function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompa
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
           <div>
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{t("listings.raising")}</div>
-            <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: "var(--cr-copper)" }}>
+            <div
+              title={isImplausibleFundingTarget(s.funding_target) ? tf("startup.raiseAmountInvalid", "This listing's raise amount didn't pass our checks and is hidden") : undefined}
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", color: isImplausibleFundingTarget(s.funding_target) ? "var(--cr-ink-4)" : "var(--cr-copper)" }}>
               {safeFormatCurrencyAmount(s.funding_target)}
             </div>
           </div>
-          {s.runway_months != null && (
+          {isValidRunwayMonths(s.runway_months) && (
             <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
               {t("startups.runway", { months: s.runway_months ?? 0 })}
             </div>
@@ -1012,8 +1016,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     return {
       known,
       mrr:    !known || allStartups.some((s) => s.mrr != null),
-      runway: !known || allStartups.some((s) => s.runway_months != null),
+      runway: !known || allStartups.some((s) => isValidRunwayMonths(s.runway_months)),
       growth: !known || allStartups.some((s) => s.growth_rate != null),
+      // Not plan-gated like mrr/runway/growth -- vaultrise_score is computed
+      // for every listing eventually, it just hasn't run yet on some. Same
+      // "no data in view" dead end for the filter either way.
+      score:  !known || allStartups.some((s) => s.vaultrise_score != null),
       // The date chips are the same dead end through a different door: no
       // column is gated, but a market where nothing listed this week (the
       // newOnly cutoff below) or no round carries an in-window close date
@@ -1034,6 +1042,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     : !tractionData.mrr || !tractionData.runway || !tractionData.growth
       ? t("startups.tractionFilterNoData")
       : dateNote;
+  // Score is never plan-gated (financialsFilterLocked's wording is
+  // specifically about revenue/growth/runway), so it always gets the plain
+  // "nobody has one yet" note rather than borrowing tractionNote's copy.
+  const scoreNote = !tractionData.score ? t("startups.tractionFilterNoData") : null;
 
   const filtered = useMemo(() => {
     let res = allStartups.filter((s) => {
@@ -1423,6 +1435,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 {SCORE_PRESETS.map((sc) => (
                   <FilterChip key={sc.value}
                     active={filters.aiScoreMin === sc.value}
+                    disabled={!tractionData.score}
+                    title={tractionData.score ? undefined : scoreNote ?? undefined}
                     onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>
                     {sc.label}
                   </FilterChip>
@@ -1712,7 +1726,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           { label: t("startupDetail.mrr"),       get: (s) => safeFormatMRR(s.mrr) },
           { label: t("startupDetail.arr"),       get: (s) => safeFormatMRR(s.arr) },
           { label: t("startupDetail.growth"),    get: (s) => s.growth_rate ? `${s.growth_rate > 0 ? "+" : ""}${s.growth_rate}%` : "—" },
-          { label: t("startups.runwayLabel"),    get: (s) => s.runway_months != null ? `${s.runway_months}mo` : "—" },
+          { label: t("startups.runwayLabel"),    get: (s) => isValidRunwayMonths(s.runway_months) ? `${s.runway_months}mo` : "—" },
           { label: t("listings.raising"),        get: (s) => safeFormatCurrencyAmount(s.funding_target) },
           { label: t("startupDetail.equity"),    get: (s) => { const e = (s as unknown as { equity_offered?: number | null }).equity_offered; return e != null ? `${e}%` : "—"; } },
           { label: t("startupDetail.minCheck"),  get: (s) => { const m = (s as unknown as { min_check_size?: number | null }).min_check_size; return m ? safeFormatCurrencyAmount(m) : "—"; } },
@@ -1853,7 +1867,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                   </span>
                   <span style={TIPPED_CLUSTER}>
                     {SCORE_PRESETS.map((sc) => (
-                      <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
+                      <FilterChip key={sc.value} active={filters.aiScoreMin === sc.value} disabled={!tractionData.score} title={tractionData.score ? undefined : scoreNote ?? undefined} onClick={() => patch({ aiScoreMin: filters.aiScoreMin === sc.value ? 0 : sc.value })}>{sc.label}</FilterChip>
                     ))}
                     <InfoTip termKey="glossary.aiScore" />
                   </span>

@@ -9,10 +9,11 @@ import { createClient } from "@/lib/supabase";
 import { announce } from "@/lib/announce";
 import {
   Search, SlidersHorizontal, X, ChevronDown, ChevronUp,
-  Users, Globe, Loader2, Crosshair, GitCompareArrows, Clock,
+  Users, Globe, Loader2, Crosshair, GitCompareArrows, Clock, Bookmark,
 } from "lucide-react";
 import { INDUSTRIES, STAGES } from "@/types";
 import { cn, STAGE_LABELS } from "@/lib/utils";
+import { meetsDirectoryBar, normaliseInvestorStages, plausibleCheck } from "@/lib/investor-directory-rules";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -139,6 +140,10 @@ const DEFAULT: InvestorFilters = {
 
 export function InvestorsClient({ initialInvestors, initialIsPartial }: { initialInvestors?: Investor[]; initialIsPartial?: boolean } = {}) {
   const { t } = useTranslation();
+  // Same guard the profile page and InvestorWatchButton already use: renders
+  // before the dictionary carries a newer key, and a missing key must not put
+  // a dot-path where copy belongs.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   // /investors?q= mirrors /startups?q= so the global search's "see all" can
   // land on either directory pre-filtered.
   const sp = useSearchParams();
@@ -200,6 +205,20 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
   // savedIds -- read straight off watchlists, scoped by RLS to the caller.
   const [viewerInvestorId, setViewerInvestorId] = useState<string | null>(null);
   const [savedInvestorTargetIds, setSavedInvestorTargetIds] = useState<Set<string>>(new Set());
+  // Nothing on this surface told an investor the watch/bookmark icon was a
+  // brand-new capability (migration 139) -- it's one of three unlabeled icons
+  // in a card corner, with only a title/aria-label tooltip, next to the much
+  // more legible "Watch" pill on the profile page. A one-time, dismissible
+  // callout, shown once per browser and never again once dismissed or read.
+  const WATCH_HINT_KEY = "cr_seen_investor_watch_hint";
+  const [showWatchHint, setShowWatchHint] = useState(false);
+  useEffect(() => {
+    try { if (!localStorage.getItem(WATCH_HINT_KEY)) setShowWatchHint(true); } catch { /* private mode: skip the hint, not the feature */ }
+  }, []);
+  function dismissWatchHint() {
+    setShowWatchHint(false);
+    try { localStorage.setItem(WATCH_HINT_KEY, "1"); } catch { /* private mode */ }
+  }
 
   const supabaseRef = useRef(createClient());
   const supabase = supabaseRef.current;
@@ -226,25 +245,45 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
           .order("created_at", { ascending: false });
 
         if (data) {
-          const mapped = data.map((inv: any) => ({
-            id: inv.id,
-            slug: inv.slug,
-            is_demo: !!inv.is_demo,
-            type: inv.type || "angel",
-            bio: inv.bio,
-            industries: inv.industries || [],
-            stages: inv.stages || [],
-            min_check: inv.min_check,
-            lead_rounds: !!inv.lead_rounds,
-            created_at: inv.created_at,
-            max_check: inv.max_check,
-            geography: inv.geography || [],
-            subscription_tier: inv.subscription_tier,
-            verified_at: inv.verified_at ?? null,
-            number_of_investments: inv.number_of_investments ?? null,
-            full_name: inv.display_name || null,
-            firm: inv.firm_name || null,
-          }));
+          // The same completeness bar loadPublicInvestors() applies server
+          // side (lib/browse-data.ts): a bio under DIRECTORY_MIN_BIO chars, no
+          // plausible check size, or no recognised stage, and the row never
+          // reaches the directory. This client path only ever ran once the
+          // directory passed 60 investors (initialIsPartial) or the SSR
+          // loader errored -- invisible with today's 2 real rows, but without
+          // this bar the top-up would admit junk/incomplete rows the server
+          // loader deliberately withholds, with raw un-normalised stage
+          // strings that would not match STAGE_LABELS or the filter chips.
+          // normaliseInvestorStages/plausibleCheck/meetsDirectoryBar are the
+          // SAME functions the server loader calls (lib/investor-directory-
+          // rules.ts), so the two paths cannot drift apart again.
+          const mapped = data
+            .map((inv: any) => {
+              const stages = normaliseInvestorStages(inv.stages);
+              const min_check = plausibleCheck(inv.min_check);
+              const max_check = plausibleCheck(inv.max_check);
+              const bio = typeof inv.bio === "string" ? inv.bio.trim() : "";
+              return {
+                id: inv.id,
+                slug: inv.slug,
+                is_demo: !!inv.is_demo,
+                type: inv.type || "angel",
+                bio,
+                industries: inv.industries || [],
+                stages,
+                min_check,
+                lead_rounds: !!inv.lead_rounds,
+                created_at: inv.created_at,
+                max_check,
+                geography: inv.geography || [],
+                subscription_tier: inv.subscription_tier,
+                verified_at: inv.verified_at ?? null,
+                number_of_investments: inv.number_of_investments ?? null,
+                full_name: inv.display_name || null,
+                firm: inv.firm_name || null,
+              };
+            })
+            .filter((inv) => meetsDirectoryBar(inv));
           setInvestors(mapped);
           setLoadError(false);
         }
@@ -337,6 +376,13 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
     for (const inv of investors) counts[inv.type] = (counts[inv.type] ?? 0) + 1;
     return counts;
   }, [investors]);
+
+  // Whether "Documents on file" could ever match anyone in the loaded set.
+  // Distinguishes "your filters were too narrow" (clearing them helps) from
+  // "nobody here is verified yet" (clearing them would not help at all) --
+  // today, with both real investors unverified, checking this box always
+  // lands on the honest-but-unhelpful case.
+  const anyVerifiedLoaded = useMemo(() => investors.some((i) => !!i.verified_at), [investors]);
 
   // Compare tray, mirroring the startups directory.
   const [compareIds, setCompareIds] = useState<string[]>([]);
@@ -452,11 +498,19 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
         </div>
       </Section>
 
-      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}>
+      {/* Both checkboxes name a real thing (a self-reported claim vs. an
+          admin-run review), and neither said so anywhere on this surface --
+          a founder had to already have found a verified badge on a profile
+          page to learn what "Documents on file" even tracks. The title
+          attribute reuses the same distinction WhatWeChecked spells out in
+          full on the profile page, compressed to a native tooltip here. */}
+      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}
+        title={tf("investors.leadOnlyHint", "Self-reported by the investor -- not a verified track record")}>
         <Checkbox checked={f.leadOnly} onCheckedChange={(v) => setF(p => ({ ...p, leadOnly: v === true }))} />
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t("investors.leadOnly")}</span>
       </label>
-      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}>
+      <label className="flex items-center gap-2 cursor-pointer select-none" style={{ minHeight: "36px" }}
+        title={tf("investors.verifiedOnlyHint", "Investors who completed CapitalReach's admin-run document verification -- not the same as a paid plan")}>
         <Checkbox checked={f.verifiedOnly} onCheckedChange={(v) => setF(p => ({ ...p, verifiedOnly: v === true }))} />
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{t("investors.verifiedOnly")}</span>
       </label>
@@ -838,6 +892,25 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
             </div>
           ) : (
             <>
+              {/* First-use callout for the watch/bookmark icon (migration 139).
+                  Only investor viewers ever see the icon at all (it's hidden
+                  on a viewer's own card and absent for founders), so the hint
+                  is gated the same way. Dismissed for good the first time it's
+                  closed or read -- not re-shown per visit. */}
+              {viewerInvestorId && showWatchHint && (
+                <div className="flex items-center justify-between gap-3 flex-wrap"
+                  style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px", padding: "10px 14px", marginBottom: "16px" }}>
+                  <p className="flex items-center gap-2" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-copper)", margin: 0 }}>
+                    <Bookmark className="h-3.5 w-3.5 flex-shrink-0" />
+                    {tf("investors.watchHint", "New: save fellow investors to a private watchlist. Look for the bookmark icon on each card.")}
+                  </p>
+                  <button onClick={dismissWatchHint} aria-label={t("common.close")}
+                    style={{ background: "none", border: "none", cursor: "pointer", color: "var(--cr-copper)", padding: "8px", display: "flex", flexShrink: 0 }}>
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              )}
+
               {/* Result count */}
               <div className="flex items-center justify-between flex-wrap gap-2" style={{ marginBottom: "24px" }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
@@ -876,19 +949,38 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
 
               {/* Investor grid */}
               {results.length === 0 ? (
-                /* The shared shell, same as the startups browse -- every list
-                   surface's dead end should look like the same product. */
-                <EmptyState
-                  Icon={Users}
-                  title={t("investors.noMatch")}
-                  body={t("investors.noMatchSub")}
-                  action={
-                    <button onClick={() => setF(DEFAULT)}
-                      style={{ background: "transparent", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "8px 16px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", cursor: "pointer" }}>
-                      {t("investors.clearAllFilters")}
-                    </button>
-                  }
-                />
+                f.verifiedOnly && !anyVerifiedLoaded ? (
+                  /* "Clear filters" is not the honest answer here: no amount
+                     of filter-clearing produces a verified investor when
+                     nobody in the directory has been through review yet. Say
+                     the real reason, and offer to drop only THIS filter
+                     rather than the whole search. */
+                  <EmptyState
+                    Icon={Users}
+                    title={tf("investors.noneVerifiedYet", "No investors have documents on file yet")}
+                    body={tf("investors.noneVerifiedYetSub", "Nobody in the directory has completed CapitalReach's verification review yet -- this isn't about your other filters.")}
+                    action={
+                      <button onClick={() => setF(p => ({ ...p, verifiedOnly: false }))}
+                        style={{ background: "transparent", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "8px 16px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", cursor: "pointer" }}>
+                        {tf("investors.showUnverifiedToo", "Show all investors")}
+                      </button>
+                    }
+                  />
+                ) : (
+                  /* The shared shell, same as the startups browse -- every list
+                     surface's dead end should look like the same product. */
+                  <EmptyState
+                    Icon={Users}
+                    title={t("investors.noMatch")}
+                    body={t("investors.noMatchSub")}
+                    action={
+                      <button onClick={() => setF(DEFAULT)}
+                        style={{ background: "transparent", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", minHeight: "40px", padding: "8px 16px", borderRadius: "4px", border: "1px solid var(--cr-rule-dark)", cursor: "pointer" }}>
+                        {t("investors.clearAllFilters")}
+                      </button>
+                    }
+                  />
+                )
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   {results.slice(0, page * INV_PAGE_SIZE).map((inv) => {
@@ -957,7 +1049,8 @@ export function InvestorsClient({ initialInvestors, initialIsPartial }: { initia
                                   {t(meta.labelKey)}
                                 </span>
                                 {inv.lead_rounds && (
-                                  <span style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                                  <span title={tf("investors.leadOnlyHint", "Self-reported by the investor -- not a verified track record")}
+                                    style={{ border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "2px 8px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                                     {t("investors.leadsRounds")}
                                   </span>
                                 )}

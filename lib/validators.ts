@@ -1,5 +1,5 @@
 import { formatCurrency } from "@/lib/utils";
-import { MAX_PLAUSIBLE_AMOUNT, safeFormatCurrency } from "@/lib/format";
+import { MAX_PLAUSIBLE_AMOUNT, MAX_PLAUSIBLE_RUNWAY_MONTHS, safeFormatCurrency } from "@/lib/format";
 
 /**
  * Display-time bounds for startup metrics.
@@ -27,6 +27,29 @@ export function safeFormatMRR(n: number | null | undefined): string {
 
 export function safeFormatCurrencyAmount(n: number | null | undefined): string {
   return isValidFundingTarget(n) ? formatCurrency(n, true) : "—";
+}
+
+/**
+ * A funding target that made it past onboarding but exceeds
+ * MAX_PLAUSIBLE_AMOUNT (a 17-digit test value, for instance) collapses to
+ * the exact same "—" that safeFormatCurrencyAmount prints for a founder who
+ * never set a target at all. A viewer can't tell "not disclosed" from "bad
+ * data" from the dash alone -- callers that want to say so (and stop
+ * dressing a refused number in the page's one loud accent color) check this
+ * first, before the value is gone.
+ */
+export function isImplausibleFundingTarget(n: number | null | undefined): boolean {
+  return typeof n === "number" && Number.isFinite(n) && n > MAX_PLAUSIBLE_AMOUNT;
+}
+
+/**
+ * Same refuse-don't-render rule as the funding/MRR bounds above, for the one
+ * traction figure that never had a ceiling: a 567-month runway is leftover
+ * test data, not a real 47-year cash position. Every surface that prints
+ * "Nmo runway" checks this first instead of the bare `!= null` it used to.
+ */
+export function isValidRunwayMonths(n: number | null | undefined): n is number {
+  return typeof n === "number" && Number.isFinite(n) && n >= 0 && n <= MAX_PLAUSIBLE_RUNWAY_MONTHS;
 }
 
 /**

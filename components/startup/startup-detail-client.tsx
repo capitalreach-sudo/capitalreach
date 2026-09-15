@@ -16,7 +16,7 @@ import { getInvestorPlan } from "@/lib/plans";
 import { AiReportDisclaimer } from "@/components/shared/legal-disclaimer";
 import { GateBlur } from "@/components/ui/GateBlur";
 import type { Startup, SubscriptionTier } from "@/types";
-import { safeFormatMRR, safeFormatCurrencyAmount } from "@/lib/validators";
+import { safeFormatMRR, safeFormatCurrencyAmount, isImplausibleFundingTarget, isValidRunwayMonths } from "@/lib/validators";
 import type { StartupCardData } from "@/components/startup/startup-card";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import { NdaAgreementDialog } from "@/components/startup/nda-agreement-dialog";
@@ -1174,11 +1174,18 @@ export function StartupDetailClient({
             })()}
 
             {/* Key metrics strip: the stat idiom -- one hairline above, then
-                caps labels over left-aligned figures, no boxed cells. */}
-            <div className="grid grid-cols-2 md:grid-cols-4" style={METRIC_STRIP}>
-              <MetricCell label={t("startupDetail.raising")}  value={safeFormatCurrencyAmount(startup.funding_target)} copper />
+                caps labels over left-aligned figures, no boxed cells. Raising
+                is the page's one loud copper figure -- EXCEPT when the target
+                on file didn't pass the plausibility check, in which case the
+                dash is bad data, not a founder's genuine blank, and it says
+                so instead of sitting in the accent color unexplained. */}
+            <div className="grid grid-cols-2 md:grid-cols-5" style={METRIC_STRIP}>
+              <MetricCell label={t("startupDetail.raising")}  value={safeFormatCurrencyAmount(startup.funding_target)}
+                copper={!isImplausibleFundingTarget(startup.funding_target)}
+                note={isImplausibleFundingTarget(startup.funding_target) ? tf("startup.raiseAmountInvalid", "Amount on file didn't pass our checks") : undefined} />
               <MetricCell label={t("startupDetail.equity")}   value={startup.equity_offered != null ? `${startup.equity_offered}%` : null} />
               <MetricCell label={t("startupDetail.minCheck")} value={startup.min_check_size ? formatCurrency(startup.min_check_size, true) : t("startupDetail.minCheckNone")} />
+              <MetricCell label={t("startupDetail.runway")} value={isValidRunwayMonths(startup.runway_months) ? tf("startup.runwayMonths", "{n}mo runway").replace("{n}", String(startup.runway_months)) : null} termKey="glossary.runway" />
               <MetricCell label={t("startupDetail.pageViews")} value={formatNumber(startup.pageviews ?? 0)} />
             </div>
 
@@ -1276,6 +1283,21 @@ export function StartupDetailClient({
           /* One SECTION step (48) between sections, and every section opens
              the same way: ruled label, 16px, content. */
           <div style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
+            {/* No written pitch at all reads identically to a broken page --
+                every section below degrades to nothing rather than an empty
+                box, which is correct per-section but leaves the whole tab
+                silent about why. Milestones/updates/Q&A don't count toward
+                this check: a founder who has logged one milestone and
+                nothing else still hasn't written a pitch. */}
+            {!(startup.problem || startup.solution || startup.market || startup.competitive_advantage
+              || startup.use_of_funds || startup.tam || startup.sam || startup.som
+              || (Array.isArray(startup.competitors_json) && startup.competitors_json.length > 0)) && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)", lineHeight: 1.75, maxWidth: "65ch" }}>
+                {isOwner
+                  ? tf("startupDetail.overviewEmptyOwner", "You haven't added a written pitch yet -- problem, solution, market, and use of funds all show up here once filled in.")
+                  : tf("startupDetail.overviewEmpty", "This founder hasn't added a written pitch yet -- check the data room or ask a question below.")}
+              </p>
+            )}
             {/* The prose sections read from the translation when one is
                 showing, and from the founder's own text otherwise. */}
             {startup.problem             && <Section title={t("startupDetail.problem")}><T field="problem">{startup.problem}</T></Section>}
@@ -1347,17 +1369,6 @@ export function StartupDetailClient({
                 <div style={{ aspectRatio: "16/9", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)" }}>
                   <TrackedVideo startupId={startup.id} url={startup.video_pitch_url as string} />
                 </div>
-              </div>
-            )}
-
-            {/* Metric history: rendered only when the server sent it — the
-                same financial gate as the single MRR figure, enforced where
-                the data lives rather than here. A ruled section like every
-                other; the chart's own caption rides beneath the label. */}
-            {metricHistory.length >= 2 && (
-              <div>
-                <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.traction")}</h3>
-                <TractionChart points={metricHistory} />
               </div>
             )}
 
@@ -1731,16 +1742,29 @@ export function StartupDetailClient({
         )}
 
         {/* ── Tab: Traction ── */}
+        {/* This tab used to show the same MRR/ARR/users/growth four-up as
+            Financials, just in a different ink color -- the trend chart that
+            actually belongs under a tab named "Traction" lived in Overview
+            instead. Financials keeps the point-in-time figures; this tab now
+            owns the two numbers that answer "is this still going" (growth,
+            runway) and the curve itself. */}
         {activeTab === "traction" && (
           canFinancials ? (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", ...METRIC_STRIP }}>
-              {/* Ink, not copper: the financials tab shows the same figure in
-                  ink, and in the business register a copper revenue figure
-                  reads green, which this house reserves for direction. */}
-              <MetricCell label={t("startupDetail.monthlyRevenue")} value={startup.mrr        ? safeFormatMRR(startup.mrr)        : null} />
-              <MetricCell label={t("startupDetail.annualRevenue")}  value={startup.arr        ? safeFormatMRR(startup.arr)        : null} />
-              <MetricCell label={t("startupDetail.totalUsers")}     value={startup.user_count ? formatNumber(startup.user_count)   : null} />
-              <MetricCell label={t("startupDetail.momGrowth")}      value={startup.growth_rate ? formatPercent(startup.growth_rate) : null} />
+            <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", ...METRIC_STRIP }}>
+                <MetricCell label={t("startupDetail.momGrowth")} value={startup.growth_rate != null ? formatPercent(startup.growth_rate) : null} termKey="glossary.filterGrowth" />
+                <MetricCell label={t("startupDetail.runway")} value={isValidRunwayMonths(startup.runway_months) ? tf("startup.runwayMonths", "{n}mo runway").replace("{n}", String(startup.runway_months)) : null} termKey="glossary.runway" />
+              </div>
+              {metricHistory.length >= 2 ? (
+                <div>
+                  <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{tf("startupDetail.tractionTrend", "Trend")}</h3>
+                  <TractionChart points={metricHistory} />
+                </div>
+              ) : (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
+                  {tf("startupDetail.tractionNoHistory", "Not enough recorded history yet to chart a trend -- check back once a few months of metrics are in.")}
+                </p>
+              )}
             </div>
           ) : (
             <GateBlur
@@ -1748,11 +1772,9 @@ export function StartupDetailClient({
               description={t("startupDetail.upgradeTractionDesc")}
               ctaLabel={t("dashboard.viewPlans")}
             >
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", ...METRIC_STRIP }}>
-                <MetricCell label={t("startupDetail.monthlyRevenue")} value={null} />
-                <MetricCell label={t("startupDetail.annualRevenue")} value={null} />
-                <MetricCell label={t("startupDetail.totalUsers")} value={null} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", ...METRIC_STRIP }}>
                 <MetricCell label={t("startupDetail.momGrowth")} value={null} />
+                <MetricCell label={t("startupDetail.runway")} value={null} />
               </div>
             </GateBlur>
           )

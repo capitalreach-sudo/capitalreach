@@ -24,6 +24,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Linkedin, Globe, Twitter, Eye, Pencil, Handshake } from "lucide-react";
 import { formatCurrency, getInitials, STAGE_LABELS } from "@/lib/utils";
+import { normaliseInvestorStages, stageAliasVariants } from "@/lib/investor-directory-rules";
 import { getLocale, getTranslator } from "@/lib/locale-server";
 import { detectLanguage } from "@/lib/detect-language";
 import { TRANSLATABLE, collectFields, readCachedTranslation, translationAvailable } from "@/lib/translate";
@@ -158,6 +159,28 @@ export default async function InvestorProfilePage({ params }: Props) {
   // The DB stores lowercase snake_case; older rows may carry other casings.
   const typeLabel = (raw: string | null | undefined) =>
     raw ? (INVESTOR_TYPE_LABELS[raw.toLowerCase().replace(/ /g, "_")] ?? raw) : "";
+
+  // board_seat_pref and follow_on_policy are BOTH a controlled enum (chosen
+  // from app/onboarding/investor/page.tsx's BOARD_OPTIONS / FOLLOW_ON_OPTIONS)
+  // and free text (app/dashboard/investor/settings/page.tsx renders the same
+  // column as a plain <Input>, e.g. "Observer seat preferred"). Rendering the
+  // raw column value put the literal enum key -- "no_preference" -- straight
+  // on a live profile. Known enum values resolve to their onboarding label;
+  // anything else (free prose from settings) renders as the investor wrote
+  // it, unmodified.
+  const BOARD_LABELS: Record<string, string> = {
+    actively_seek: t("onboarding.inv.boardSeek"),
+    open: t("onboarding.inv.boardOpen"),
+    no_preference: t("onboarding.inv.boardNoPref"),
+    no: t("onboarding.inv.boardNo"),
+  };
+  const boardSeatLabel = (raw: string) => BOARD_LABELS[raw] ?? raw;
+  const FOLLOW_ON_LABELS: Record<string, string> = {
+    yes: t("onboarding.inv.followOnYes"),
+    sometimes: t("onboarding.inv.followOnSometimes"),
+    no: t("onboarding.inv.followOnNo"),
+  };
+  const followOnLabel = (raw: string) => FOLLOW_ON_LABELS[raw] ?? raw;
 
   // Reads `investors` only. This page is public, and `profiles` is not: it
   // holds emails, subscription tiers and Stripe ids, and is now restricted to
@@ -311,17 +334,19 @@ export default async function InvestorProfilePage({ params }: Props) {
       : [];
 
   // The mandate strip's derived figures. Stages resolve through the same
-  // labels the startup surfaces use and sort into ladder order, so the span
-  // reads "Pre-Seed – Series A" whatever order the settings form saved them.
-  const STAGE_ORDER = ["pre-seed", "seed", "series_a", "series_b_plus"];
-  const stageName = (s: string) => STAGE_LABELS[s] ?? s.replace(/_/g, " ");
-  const stagesSorted = [...((investor.stages ?? []) as string[])].sort(
-    (a, b) => ((STAGE_ORDER.indexOf(a) + 1) || 99) - ((STAGE_ORDER.indexOf(b) + 1) || 99),
-  );
+  // normalizer the directory loader uses (lib/investor-directory-rules) before
+  // labelling or sorting -- a raw "pre_seed" (underscore) used to sort last
+  // instead of first (STAGE_ORDER.indexOf returns -1, and -1+1=0 is falsy, so
+  // `0 || 99` fell through to 99) and render as "pre seed" instead of
+  // "Pre-Seed", because STAGE_LABELS only ever recognised the hyphenated
+  // spelling. normaliseInvestorStages already drops anything unrecognised and
+  // returns the survivors in ladder order, so the span reads "Pre-Seed –
+  // Series A" whatever order or spelling the settings form saved them in.
+  const stagesSorted = normaliseInvestorStages(investor.stages);
   const stageSpan =
     stagesSorted.length > 1
-      ? `${stageName(stagesSorted[0])} – ${stageName(stagesSorted[stagesSorted.length - 1])}`
-      : stagesSorted.length === 1 ? stageName(stagesSorted[0]) : null;
+      ? `${STAGE_LABELS[stagesSorted[0]]} – ${STAGE_LABELS[stagesSorted[stagesSorted.length - 1]]}`
+      : stagesSorted.length === 1 ? STAGE_LABELS[stagesSorted[0]] : null;
   const industries = (investor.industries ?? []) as string[];
   const geographies = (investor.geography ?? []) as string[];
   const thesis: string | null = investor.investment_thesis || null;
@@ -332,7 +357,17 @@ export default async function InvestorProfilePage({ params }: Props) {
   // Similar investors — others who overlap on industry or stage, so a founder
   // browsing one lead can find the rest of the shortlist without going back.
   const overlapIndustries = (investor.industries ?? []).slice(0, 6);
-  const overlapStages = (investor.stages ?? []).slice(0, 6);
+  // Stage overlap must match on MEANING, not on literal stored spelling.
+  // stagesSorted is this investor's own stages already normalised to the
+  // canonical spelling; stageAliasVariants expands that back out to every raw
+  // spelling (including underscored and hyphenated forms) that means the same
+  // stage, because the query below matches literal strings against OTHER
+  // rows' raw `stages` column -- rows this loader never normalises. Comparing
+  // only the canonical spelling against an un-normalised column would miss
+  // any row stored under a different-but-equivalent spelling (the same drift
+  // finding #2 found on this investor's own stage span), silently degrading
+  // to the industries-only match.
+  const overlapStages = stageAliasVariants(stagesSorted).slice(0, 12);
   let similar: Array<{ slug: string; display_name: string | null; firm_name: string | null; type: string; industries: string[] | null }> = [];
   if (overlapIndustries.length || overlapStages.length) {
     const admin = createAdminClient();
@@ -510,7 +545,9 @@ export default async function InvestorProfilePage({ params }: Props) {
                   rendering the raw enum ("family_office") directly beneath the
                   label-mapped version above. */}
               {investor.lead_rounds && (
-                <span style={BADGE}>{t("investors.leadsRounds")}</span>
+                <span style={BADGE} title={tf("investorProfile.leadRoundsHint", "Self-reported by the investor, not an audited track record")}>
+                  {t("investors.leadsRounds")}
+                </span>
               )}
             </div>
             {/* B23: founder outbound — message / add to pipeline, right here. */}
@@ -600,10 +637,10 @@ export default async function InvestorProfilePage({ params }: Props) {
                 />
               )}
               {investor.board_seat_pref && (
-                <Cell label={t("investorProfile.boardSeat")} value={investor.board_seat_pref} valueStyle={CELL_TEXT} />
+                <Cell label={t("investorProfile.boardSeat")} value={boardSeatLabel(investor.board_seat_pref)} valueStyle={CELL_TEXT} />
               )}
               {investor.follow_on_policy && (
-                <Cell label={t("investorProfile.followOn")} value={investor.follow_on_policy} valueStyle={CELL_TEXT} />
+                <Cell label={t("investorProfile.followOn")} value={followOnLabel(investor.follow_on_policy)} valueStyle={CELL_TEXT} />
               )}
               {(investor.languages ?? []).length > 0 && (
                 <Cell label={t("investorProfile.languagesLabel")} value={(investor.languages ?? []).join(", ")} valueStyle={CELL_TEXT} />

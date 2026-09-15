@@ -393,16 +393,46 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
       .limit(20),
   ]);
 
-  // Related startups
-  const { data: related } = await createAdminClient()
+  // Related startups. Same industry is the sharpest match, newest first so
+  // the four shown don't just come back in whatever order Postgres feels
+  // like once an industry has more than four listings. With a young
+  // catalogue that exact match is often empty, though, and an empty "Similar
+  // startups" section reads as broken rather than "nothing else like this
+  // yet" -- so an empty industry match falls back to same-stage, then to
+  // simply the newest other active listings, each still excluding this one.
+  const RELATED_SELECT = "id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score, round_close_date";
+  const relatedAdmin = createAdminClient();
+  // stage's narrowing from string to the union is licensed by the DB CHECK.
+  let { data: related } = await relatedAdmin
     .from("startups")
-    .select("id, slug, name, tagline, industry, stage, funding_target, mrr, arr, growth_rate, runway_months, created_at, vaultrise_score, round_close_date")
+    .select(RELATED_SELECT)
     .eq("status", "active")
     .eq("industry", startup.industry)
     .neq("id", startup.id)
+    .order("created_at", { ascending: false })
     .limit(4)
-    // stage's narrowing from string to the union is licensed by the DB CHECK.
     .returns<StartupCardData[]>();
+  if (!related || related.length === 0) {
+    ({ data: related } = await relatedAdmin
+      .from("startups")
+      .select(RELATED_SELECT)
+      .eq("status", "active")
+      .eq("stage", startup.stage)
+      .neq("id", startup.id)
+      .order("created_at", { ascending: false })
+      .limit(4)
+      .returns<StartupCardData[]>());
+  }
+  if (!related || related.length === 0) {
+    ({ data: related } = await relatedAdmin
+      .from("startups")
+      .select(RELATED_SELECT)
+      .eq("status", "active")
+      .neq("id", startup.id)
+      .order("created_at", { ascending: false })
+      .limit(4)
+      .returns<StartupCardData[]>());
+  }
 
   // Live viewer count placeholder (handled client-side via Supabase Presence)
   const isOwner = !!user && user.id === startup.owner_id;

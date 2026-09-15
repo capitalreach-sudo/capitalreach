@@ -13,6 +13,14 @@ import { displayLocale } from "@/lib/display-locale";
 export const MAX_PLAUSIBLE_AMOUNT = 9_999_999_999; // < $10B
 /** MRR above this is not a real MRR either. */
 export const MAX_PLAUSIBLE_MRR = 100_000_000; // < $100M / month
+/**
+ * Runway beyond this many months is not a real runway either -- unlike
+ * funding amounts, nothing capped this before: a 567-month (47-year) runway
+ * from leftover test data printed as "567mo runway" right beside the other
+ * numbers on the page, with nothing to say it was any less real than they
+ * were.
+ */
+export const MAX_PLAUSIBLE_RUNWAY_MONTHS = 120; // < 10 years
 
 function isFiniteNumber(n: unknown): n is number {
   return typeof n === "number" && Number.isFinite(n);
