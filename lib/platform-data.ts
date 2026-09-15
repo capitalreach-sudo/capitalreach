@@ -48,6 +48,30 @@ export interface PlatformData {
     medianCountByStage: Record<string, number>;
     newThisMonth: number;
   };
+  /** Sum of amounts on deals that are open (neither closed nor passed) --
+   *  capital genuinely in motion, distinct from totalRaised, which only
+   *  counts money that actually closed. Real, not fabricated: the same
+   *  amount field the closed-deal total sums, filtered to the other rows. */
+  capitalInMotion: number;
+  /** Currencies behind capitalInMotion, same mixed-currency disclosure
+   *  convention as closedCurrencies. */
+  capitalInMotionCurrencies: string[];
+  /** The pipeline stage of the platform's sole open deal, only when exactly
+   *  one is open -- a days-in-stage figure is an honest single-subject stat
+   *  at n=1 and a meaningless average at n>1, so it is null otherwise. */
+  activeDealStage: string | null;
+  /** Days since that one open deal entered its current stage. Null unless
+   *  activeDealStage is set. */
+  activeDealDaysInStage: number | null;
+  /** Real anonymous pageviews across every active, non-demo startup, one
+   *  entry per day for a trailing 42-day window (oldest first), zeros
+   *  included so a quiet day is a real zero rather than a missing point. */
+  dailyPageviews: Array<{ date: string; count: number }>;
+  /** Investor-attributed startup views (startup_views rows) across the same
+   *  real startups, all time -- the other half of "who is looking",
+   *  deliberately reported apart from the anonymous pageviews above rather
+   *  than blended into one number that would hide which is which. */
+  investorViewCount: number;
   lastUpdated: string;
 }
 
@@ -60,6 +84,9 @@ export const EMPTY_PLATFORM_DATA: PlatformData = {
   activeDeals: 0, closeRate: null, closedCurrencies: [],
   byIndustry: {}, byStage: {}, topStartups: [], recentStartups: [], monthly: [],
   report: { medianByStage: {}, medianCountByStage: {}, newThisMonth: 0 },
+  capitalInMotion: 0, capitalInMotionCurrencies: [],
+  activeDealStage: null, activeDealDaysInStage: null,
+  dailyPageviews: [], investorViewCount: 0,
   lastUpdated: new Date(0).toISOString(),
 };
 
@@ -196,7 +223,7 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       fetchAll((from, to) =>
         supabase
           .from("deals")
-          .select("status, amount, currency, closed_at")
+          .select("status, amount, currency, closed_at, stage_entered_at, created_at")
           .eq("is_demo", false)
           .order("id", { ascending: true })
           .range(from, to),
@@ -230,7 +257,79 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       new Set(closedDeals.map((d) => d.currency).filter(Boolean))
     );
 
+    // Capital in motion: what is being negotiated right now, as distinct
+    // from totalRaised (what has actually closed). Same mixed-currency
+    // disclosure as the closed total, computed over the open rows instead.
+    const openDeals = allDeals.filter((d) => d.status !== "closed" && d.status !== "passed");
+    const capitalInMotion = openDeals.reduce((sum, d) => sum + (d.amount ?? 0), 0);
+    const capitalInMotionCurrencies = Array.from(
+      new Set(openDeals.map((d) => d.currency).filter(Boolean))
+    );
+
+    // Days in the current stage, but only when there is exactly one open
+    // deal -- a single subject's own trend is an honest stat; an average
+    // over several stands in for a distribution the platform does not yet
+    // have. stage_entered_at is null for a deal that has never moved off
+    // its opening stage, so created_at is the fallback start of the clock.
+    const singleOpenDeal = openDeals.length === 1 ? openDeals[0] : null;
+    const activeDealStage = singleOpenDeal?.status ?? null;
+    const activeDealDaysInStage = singleOpenDeal
+      ? Math.max(0, Math.floor(
+          (Date.now() - new Date(singleOpenDeal.stage_entered_at ?? singleOpenDeal.created_at).getTime())
+          / 86_400_000,
+        ))
+      : null;
+
     const monthly = buildMonthlySeries(new Date(), startupData, closedDeals);
+
+    // Real activity: anonymous pageviews and investor-attributed startup
+    // views, scoped to real (non-demo, active) startups only -- pageviews
+    // carries no is_demo flag of its own, so the scope has to travel in as
+    // the id list rather than as a filter on the table itself.
+    const realStartupIds = startupData
+      .filter((s) => !(s as { is_demo?: boolean }).is_demo)
+      .map((s) => s.id);
+    const now = new Date();
+    const PULSE_DAYS = 42;
+    const pulseStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - (PULSE_DAYS - 1)));
+
+    const [pageviewRows, startupViewRows] = realStartupIds.length > 0
+      ? await Promise.all([
+          fetchAll<{ created_at: string }>((from, to) =>
+            supabase
+              .from("pageviews")
+              .select("created_at")
+              .in("startup_id", realStartupIds)
+              .gte("created_at", pulseStart.toISOString())
+              .order("created_at", { ascending: true })
+              .range(from, to),
+          ),
+          fetchAll<{ id: string }>((from, to) =>
+            supabase
+              .from("startup_views")
+              .select("id")
+              .in("startup_id", realStartupIds)
+              .order("id", { ascending: true })
+              .range(from, to),
+          ),
+        ])
+      : [[], []];
+
+    // Every day in the window gets an entry, zeros included -- the same
+    // "a quiet day is a real zero" principle buildMonthlySeries already
+    // applies to months, extended to days.
+    const dayKeys: string[] = [];
+    for (let i = PULSE_DAYS - 1; i >= 0; i--) {
+      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - i));
+      dayKeys.push(d.toISOString().slice(0, 10));
+    }
+    const dayCounts = new Map(dayKeys.map((k) => [k, 0]));
+    for (const pv of pageviewRows) {
+      const day = pv.created_at.slice(0, 10);
+      if (dayCounts.has(day)) dayCounts.set(day, (dayCounts.get(day) ?? 0) + 1);
+    }
+    const dailyPageviews = dayKeys.map((date) => ({ date, count: dayCounts.get(date) ?? 0 }));
+    const investorViewCount = startupViewRows.length;
 
     // Industry breakdown
     const byIndustry: Record<string, number> = {};
@@ -318,6 +417,12 @@ export async function computePlatformData(): Promise<PlatformData | null> {
       recentStartups,
       monthly,
       report: { medianByStage, medianCountByStage, newThisMonth },
+      capitalInMotion,
+      capitalInMotionCurrencies,
+      activeDealStage,
+      activeDealDaysInStage,
+      dailyPageviews,
+      investorViewCount,
       lastUpdated: new Date().toISOString(),
     };
   } catch (error) {

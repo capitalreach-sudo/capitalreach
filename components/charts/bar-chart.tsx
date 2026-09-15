@@ -39,7 +39,7 @@ export function BarChart({ bars, format, hrefFor, caption }: {
           const href = hrefFor?.(b.key) ?? null;
           const fill = b.colorIndex === undefined ? "var(--cr-ink-3)" : seriesColor(b.colorIndex);
           return (
-            <tr key={b.key}>
+            <tr key={b.key} className="cr-bar-row">
               <th scope="row" style={{
                 fontFamily: SANS, fontSize: "0.8125rem", fontWeight: 400, lineHeight: 1.4,
                 color: "var(--cr-ink-2)", textAlign: "start", whiteSpace: "nowrap",
@@ -52,7 +52,7 @@ export function BarChart({ bars, format, hrefFor, caption }: {
                 ) : b.label}
               </th>
               <td style={{ padding: 0, width: "100%" }}>
-                <div aria-hidden style={{
+                <div aria-hidden className="cr-grow-w" style={{
                   height: "0.5rem",
                   width: `${Math.max(pct, b.value > 0 ? 2 : 0)}%`,
                   background: fill,

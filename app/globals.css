@@ -973,6 +973,43 @@ a:active > .cr-diamond-live { transform: scale(0.94); }
   a:hover > .cr-diamond-live .cr-mark-inner { opacity: 0; }
 }
 
+/* Data Centre motion, added for the design pass that gave the page its own
+   life instead of borrowing none of the vocabulary above. Grouped here so
+   they read next to the primitives they extend rather than scattered through
+   the file. */
+
+/* The freshness dot beside "Updated {time}": a small, literally true claim
+   -- the data really does refresh on the interval this animates against --
+   reusing the existing @keyframes pulse rather than a new decorative loop. */
+.cr-live-dot { animation: pulse 2s ease-in-out infinite; }
+
+/* The CTA band's closing glyph: a slow ambient glint rather than a static
+   character, independent of hover -- the diamond mark glints on greeting,
+   this glints at rest, because nothing here is waiting for a pointer. */
+@keyframes cr-glint {
+  0%, 100% { opacity: 0.75; filter: none; transform: scale(1); }
+  50% { opacity: 1; filter: drop-shadow(0 0 5px color-mix(in srgb, var(--cr-copper) 45%, transparent)); transform: scale(1.08); }
+}
+.cr-glint { animation: cr-glint 3.4s ease-in-out infinite; display: inline-block; }
+
+/* A bar or column's size tracks its own value with real easing whenever that
+   value changes after first paint -- a CSS transition never runs on the
+   value an element first renders with, so this costs nothing on load and
+   only fires on a genuine later change (a tab switch, a live refresh). */
+.cr-grow-h { transition: height 500ms cubic-bezier(0.16, 1, 0.3, 1); }
+.cr-grow-w { transition: width 400ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Stage breakdown table row: the bar-chart primitive was the one chart with
+   no hover state at all. */
+.cr-bar-row { transition: background 150ms var(--ease-out); }
+.cr-bar-row:hover { background: var(--cr-paper-3); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-live-dot { animation: none; }
+  .cr-glint { animation: none; }
+  .cr-grow-h, .cr-grow-w { transition: none; }
+}
+
 /* Machined card: soft depth at rest, a real lift on hover. Opt-in class so
    nothing shifts that didn't ask to. */
 .cr-lift {

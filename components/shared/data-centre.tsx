@@ -1,11 +1,12 @@
 "use client";
 
 import { displayLocale } from "@/lib/display-locale";
-import { useState, useEffect, useCallback, useId } from "react";
+import { useState, useEffect, useCallback, useId, useRef } from "react";
 import { STAGE_LABELS } from "@/lib/utils";
 import { RefreshCw, AlertTriangle, Download, Building2 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useReveal } from "@/hooks/useReveal";
 import { getCurrency } from "@/lib/currency";
 import { InfoTip } from "@/components/shared/info-tip";
 import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
@@ -46,6 +47,18 @@ interface PlatformData {
   recentStartups: TopStartup[];
   monthly?: Array<{ month: string; listings: number; closed: number; sought: number }>;
   report?: { medianByStage: Record<string, number>; newThisMonth: number };
+  /** Sum of amounts on deals still open (neither closed nor passed) -- real
+   *  capital in motion, distinct from totalRaised. */
+  capitalInMotion?: number;
+  capitalInMotionCurrencies?: string[];
+  /** Set only when exactly one deal is open on the platform. */
+  activeDealStage?: string | null;
+  activeDealDaysInStage?: number | null;
+  /** Real anonymous pageviews across active, non-demo startups, oldest
+   *  first, one entry per day for a trailing window. */
+  dailyPageviews?: Array<{ date: string; count: number }>;
+  /** Investor-attributed startup views, all time. */
+  investorViewCount?: number;
   lastUpdated: string;
 }
 
@@ -117,6 +130,20 @@ const cellThNumLast: React.CSSProperties = { ...cellThNum, paddingRight: 0 };
 const cellTdFirst: React.CSSProperties = { ...cellTd, paddingLeft: 0 };
 const cellTdNumLast: React.CSSProperties = { ...cellTdNum, paddingRight: 0 };
 
+// The page carries fifteen-plus instances of quiet 11px grey text, and most
+// of it is incidental (a currency note, a basis note). A handful of those
+// lines are doing real interpretive work -- explaining a genuine constraint
+// of a thin dataset, the exact honesty the founder's platform stage asks
+// for -- and nothing on the page told a reader's eye the difference. This is
+// that one device: the same left-rule .ruled-label already uses, turned
+// into a caption style, reserved for captions that explain thinness rather
+// than merely annotate a figure.
+const honestyCaption: React.CSSProperties = {
+  fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px",
+  color: "var(--cr-ink-4)", lineHeight: 1.6, maxWidth: "560px",
+  borderLeft: "2px solid var(--cr-copper)", paddingLeft: "10px",
+};
+
 /** Axis money: "$100M", never "100000000". Tiers to $T, as the totals in the
  *  table do -- an axis stopping at "$2000B" would not read as the same ladder. */
 function compactMoney(n: number): string {
@@ -143,6 +170,12 @@ function monthLabel(key: string): string {
 function monthLong(key: string): string {
   const [y, m] = key.split("-");
   return new Date(Date.UTC(Number(y), Number(m) - 1, 1)).toLocaleString(displayLocale(), { month: "short", year: "numeric", timeZone: "UTC" });
+}
+
+/** "2026-09-14" → "Sep 14", for the daily pulse's hover readout. */
+function dayLabel(iso: string): string {
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleString(displayLocale(), { month: "short", day: "numeric", timeZone: "UTC" });
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
@@ -258,6 +291,51 @@ function timeAgo(iso: string, nowMs: number) {
   }
 }
 
+// ── A number that follows its own value ─────────────────────────────────────
+
+// The SSR-settled rule stays exactly as strict as it was: the value shown on
+// the very first render IS the real value, with nothing to flash past and
+// nothing to wait on. What changes is what happens AFTER that first paint --
+// the quiet 60s refresh (below) or a tab switching to a different month's
+// data used to swap the number with no visual acknowledgement at all. This
+// hook forks count-up.tsx's own from-to interpolation (see that file) rather
+// than importing it, because CountUp always mounts at 0 and waits on an
+// IntersectionObserver before its first reveal -- exactly the flash this
+// page's figures are not allowed to have. Starting `shown` at `value` itself
+// means the first render needs no observer and performs nothing; only a
+// later change to `value` ever animates, from the number already on screen
+// to the new one, which is a real event (the data changed) rather than a
+// decoration.
+function useSettledNumber(value: number, duration = 500): number {
+  const [shown, setShown] = useState(value);
+  const from = useRef(value);
+  const raf = useRef(0);
+  const first = useRef(true);
+
+  useEffect(() => {
+    if (first.current) { first.current = false; from.current = value; return; }
+    if (from.current === value) return;
+    cancelAnimationFrame(raf.current);
+    if (typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      from.current = value; setShown(value); return;
+    }
+    const start = from.current;
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const p = Math.min(1, (t - t0) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setShown(Math.round(start + (value - start) * eased));
+      if (p < 1) raf.current = requestAnimationFrame(tick);
+      else from.current = value;
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [value, duration]);
+
+  useEffect(() => () => cancelAnimationFrame(raf.current), []);
+  return shown;
+}
+
 // ── Stat ──────────────────────────────────────────────────────────────────────
 
 // The boxed tile is gone: an annual report rules a figure, it does not
@@ -265,25 +343,32 @@ function timeAgo(iso: string, nowMs: number) {
 // confident mono figure sitting directly on the paper. `lead` promotes the
 // one commanding figure on the page, under a heavier ink rule. Figures
 // render settled: the SSR HTML already carries the real values, and a page
-// that promises its numbers must not perform them.
-function StatCard({ label, value, prefix = "", lead = false, tip }: {
+// that promises its numbers must not perform them -- useSettledNumber holds
+// to that on first paint and only moves on a genuine later change (the 60s
+// refresh finding new real activity, or a tab switching in different data).
+function StatCard({ label, value, prefix = "", lead = false, tip, accent }: {
   label: string;
   value: number;
   prefix?: string;
   lead?: boolean;
   /** One InfoTip beside the label: what this total counts, what it excludes. */
   tip?: React.ReactNode;
+  /** Top-hairline color keyed to what the figure means (e.g. --cr-up once a
+   *  deal has actually closed) rather than the uniform neutral rule every
+   *  supporting stat otherwise shares. */
+  accent?: string;
 }) {
+  const shown = useSettledNumber(value);
   return (
     <div style={{
-      borderTop: lead ? "2px solid var(--cr-ink)" : "1px solid var(--cr-rule-dark)",
+      borderTop: lead ? "2px solid var(--cr-ink)" : `1px solid ${accent ?? "var(--cr-rule-dark)"}`,
       // A full step apart, not 16 beside 12: near-equal insets on the lead
       // and its supporters read as a mistake rather than a hierarchy.
       paddingTop: lead ? "24px" : "12px",
     }}>
       <p style={{ ...capsLabel, ...(lead ? { color: "var(--cr-ink-3)" } : null), marginBottom: LABEL_GAP }}>{label}{tip}</p>
       <p style={{ ...monoFigure, fontSize: lead ? FIG_LEAD : FIG_2, overflowWrap: "anywhere" }}>
-        {prefix}{value.toLocaleString()}
+        {prefix}{shown.toLocaleString()}
       </p>
     </div>
   );
@@ -370,9 +455,25 @@ function PairedColumns({ labels, series, ariaLabel }: {
       }}
       onBlur={() => setActive(null)}
     >
-      <div style={{ display: "flex", alignItems: "stretch" }}>
+      <div style={{ display: "flex", alignItems: "stretch", position: "relative" }}>
+        {/* One dotted gridline at the 50%-of-max mark, mirroring the line
+            chart's own tick treatment (line-chart.tsx). At low bar counts the
+            frame used to be a solid baseline plus a void -- this single rule
+            is enough to say "the frame is intentional", the same honesty
+            device the line chart already carries into its sibling tab. */}
+        <div aria-hidden style={{
+          position: "absolute", left: 0, right: 0,
+          top: `${22 + PLOT_H * 0.5}px`,
+          borderTop: "1px dashed var(--cr-rule-dark)",
+          pointerEvents: "none",
+        }} />
         {labels.map((label, i) => {
           const dim = active !== null && active !== i;
+          // A month with nothing in ANY series is a genuine absence, not a
+          // rounding error -- rendered as a dashed placeholder column rather
+          // than two invisible 0px bars, so "no listings this month" is a
+          // mark on the page, not a gap in it.
+          const monthEmpty = series.every(s => !Number.isFinite(s.values[i]) || s.values[i] === 0);
           return (
             <div
               key={label + i}
@@ -421,7 +522,13 @@ function PairedColumns({ labels, series, ariaLabel }: {
                     })}
                   </div>
                 )}
-                {series.map((s) => {
+                {monthEmpty ? (
+                  <div aria-hidden style={{
+                    width: "clamp(10px, 3vw, 24px)", height: `${Math.round(PLOT_H * 0.16)}px`,
+                    border: "1px dashed var(--cr-rule-dark)", borderRadius: "2px 2px 0 0",
+                    boxSizing: "border-box",
+                  }} />
+                ) : series.map((s) => {
                   const v = Number.isFinite(s.values[i]) ? s.values[i] : 0;
                   const h = Math.round((v / max) * PLOT_H);
                   return (
@@ -435,7 +542,14 @@ function PairedColumns({ labels, series, ariaLabel }: {
                       }}>
                         {fmt(s, v)}
                       </span>
-                      <div style={{
+                      {/* The height transition costs nothing at first paint --
+                          a CSS transition never runs on the value an element
+                          is FIRST rendered with, only on a later change to it
+                          -- and fires for free whenever a tab switch or the
+                          60s quiet refresh swaps in different data, so a real
+                          state change gets real motion without staging a
+                          fake draw-in on load. */}
+                      <div className="cr-grow-h" style={{
                         width: "clamp(10px, 3vw, 24px)", height: `${h}px`,
                         background: s.color, borderRadius: "2px 2px 0 0",
                       }} />
@@ -466,6 +580,80 @@ function PairedColumns({ labels, series, ariaLabel }: {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── Daily pulse ──────────────────────────────────────────────────────────────
+
+/**
+ * Real anonymous pageviews across the platform's real startups, one bar per
+ * day, oldest first. This is the one chart on the page shaped enough by real
+ * traffic (bursts, quiet days, weekends) to be worth a genuine draw-in: bars
+ * grow into place left to right on mount, staggered a few milliseconds apart
+ * -- the same spirit as globals.css's own drawLine, expressed as height
+ * rather than stroke because the mark here is 42 discrete days, not one
+ * continuous line. Skipped entirely under reduced motion, which sees the
+ * finished chart with nothing to wait on.
+ */
+function PulseBars({ days, ariaLabel, tf }: { days: Array<{ date: string; count: number }>; ariaLabel: string; tf: (key: string, fallback: string) => string }) {
+  const [drawn, setDrawn] = useState(false);
+  const [active, setActive] = useState<number | null>(null);
+  const n = days.length;
+  const H = 56;
+
+  useEffect(() => {
+    const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { setDrawn(true); return; }
+    const id = requestAnimationFrame(() => setDrawn(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const max = Math.max(1, ...days.map(d => d.count));
+  const total = days.reduce((s, d) => s + d.count, 0);
+
+  return (
+    <div>
+      <div
+        className="cr-chart"
+        role="group"
+        aria-label={ariaLabel}
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight") { setActive(a => Math.min(n - 1, (a ?? -1) + 1)); e.preventDefault(); }
+          else if (e.key === "ArrowLeft") { setActive(a => Math.max(0, (a ?? n) - 1)); e.preventDefault(); }
+          else if (e.key === "Home") { setActive(0); e.preventDefault(); }
+          else if (e.key === "End") { setActive(n - 1); e.preventDefault(); }
+          else if (e.key === "Escape") setActive(null);
+        }}
+        onBlur={() => setActive(null)}
+        style={{ display: "flex", alignItems: "flex-end", gap: "2px", height: `${H}px` }}
+      >
+        {days.map((d, i) => {
+          const h = Math.max(Math.round((d.count / max) * H), d.count > 0 ? 3 : 1);
+          return (
+            <div
+              key={d.date}
+              onPointerEnter={(e) => { if (e.pointerType !== "touch") setActive(i); }}
+              onPointerLeave={(e) => { if (e.pointerType !== "touch") setActive(null); }}
+              onPointerDown={(e) => { if (e.pointerType === "touch") setActive(a => (a === i ? null : i)); }}
+              style={{
+                flex: "1 1 0", minWidth: "2px",
+                height: drawn ? `${h}px` : "0px",
+                background: d.count > 0 ? "var(--cr-copper)" : "var(--cr-rule-dark)",
+                opacity: active !== null && active !== i ? 0.4 : 1,
+                borderRadius: "1px 1px 0 0",
+                transition: `height 480ms var(--ease-out) ${Math.min(i, 60) * 6}ms, opacity 120ms var(--ease-out)`,
+              }}
+            />
+          );
+        })}
+      </div>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "8px", minHeight: "16px" }}>
+        {active !== null
+          ? tf("data.pulseDayLabel", "{date} · {count} views").replace("{date}", dayLabel(days[active].date)).replace("{count}", days[active].count.toLocaleString())
+          : tf("data.pulseRangeLabel", "{from} to {to} · {total} views").replace("{from}", dayLabel(days[0].date)).replace("{to}", dayLabel(days[n - 1].date)).replace("{total}", total.toLocaleString())}
+      </p>
     </div>
   );
 }
@@ -505,6 +693,17 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const nowMs = mounted ? Date.now() : (initialData ? new Date(initialData.lastUpdated).getTime() : Date.now());
+
+  // The masthead's own staggered entrance -- see the hero band below. The
+  // hero sits in the first viewport, so the observer fires within a frame
+  // or two of mount; nothing here waits on scroll to feel intentional.
+  const heroRef = useReveal();
+
+  // Settled at first paint, animated on any later change -- same contract as
+  // every StatCard. Declared unconditionally (the hook that backs it cannot
+  // be called from inside a conditional branch) even though the figure it
+  // feeds only renders once data is loaded and the amount is positive.
+  const capitalInMotionShown = useSettledNumber(data?.capitalInMotion ?? 0);
 
   // Three disclosures, one device. Growth opens on the activity chart (the
   // page's single primary chart); the numbers behind it are the third tab, so
@@ -606,6 +805,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   // 0%-height columns sit next to one real deal and pass as a finished funnel.
   const dealStageTotal = data ? Object.values(data.byDealStage).reduce((s, v) => s + v, 0) : 0;
   const dealStageLowN = dealStageTotal > 0 && dealStageTotal < 5;
+  const dealStageTotalShown = useSettledNumber(dealStageTotal);
 
   // The strip only offers a tab it can fill, and the selected tab falls back
   // to the first available one -- a tab that opens on "no data yet" exists
@@ -674,31 +874,47 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
     <div style={{ minHeight: "100vh", background: "var(--cr-paper)", position: "relative" }}>
 
       {/* Header strip */}
-      <div style={{ position: "relative", background: "var(--cr-band-bg)", borderBottom: "1px solid var(--cr-copper-br)" }}>
+      <div style={{
+        position: "relative", borderBottom: "1px solid var(--cr-copper-br)",
+        // A barely-visible bleed of the platform's own accent, top-left: a
+        // few percent of copper (emerald, in this register) rather than a
+        // flat #0A0A0A slab. Invisible as a "trick", but the surface reads
+        // as considered rather than flat. The CTA band mirrors this from the
+        // opposite corner, so the two bookending slabs read as a matched
+        // pair with intentional variation rather than a copy-paste.
+        background: "radial-gradient(120% 100% at 15% 0%, color-mix(in srgb, var(--cr-copper) 10%, var(--cr-band-bg)) 0%, var(--cr-band-bg) 55%)",
+      }}>
         {/* Side gutters relax on small screens: a fixed 32px left 311px of
             content at 375px, which forced every grid into a squeeze. The
             vertical step ties to viewport height so the whole band stays
             near 40vh on a phone -- the lead figure below it belongs in the
             first viewport, and a masthead that fills the screen buries it. */}
-        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: `clamp(32px, 6vh, 64px) clamp(24px, 5vw, 32px)` }}>
+        <div ref={heroRef as React.RefObject<HTMLDivElement>} style={{ maxWidth: "1100px", margin: "0 auto", padding: `clamp(32px, 6vh, 64px) clamp(24px, 5vw, 32px)` }}>
           {/* The masthead opens like every chapter below it: the ruled label,
-              not an icon -- the pictogram repeated what the words say. */}
-          <div className="ruled-label" style={{ marginBottom: ROW_GAP, color: "var(--cr-band-ink-dim)" }}>{t("data.eyebrow")}</div>
+              not an icon -- the pictogram repeated what the words say. Fades
+              and lifts in on load, staggered 80ms apart from the title and
+              subtitle beneath it (useReveal's own device, already proven on
+              the homepage and the About page -- this file simply never used
+              it before). The figures below never perform themselves; this is
+              decorative entrance text, not a number promising a value. */}
+          <div className="ruled-label reveal-child" style={{ marginBottom: ROW_GAP, color: "var(--cr-band-ink-dim)" }}>{t("data.eyebrow")}</div>
           {/* The title steps down from 52px: the loudest thing on this page
               is the total raised, and a masthead competing with it left the
               reader with two headlines and no hierarchy. */}
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px, 4.5vw, 44px)", color: "var(--cr-band-ink)", letterSpacing: "-0.03em", marginBottom: ROW_GAP }}>
+          <h1 className="reveal-child" style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "clamp(30px, 4.5vw, 44px)", color: "var(--cr-band-ink)", letterSpacing: "-0.03em", marginBottom: ROW_GAP }}>
             {t("data.title")}
           </h1>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", maxWidth: "480px", lineHeight: 1.6 }}>
+          <p className="reveal-child" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", maxWidth: "480px", lineHeight: 1.6 }}>
             {t("data.subtitle")}
           </p>
           {/* The colophon: one hairline, the freshness stamp, the export.
-              Nothing performs liveness -- a quiet 60s refresh keeps the
-              numbers current, and the stamp is the honest record of it. */}
+              The dot beside "Updated" is a small, literally true claim, not
+              a decorative loop -- the data genuinely refreshes on a 60s
+              interval (below), and this is that interval's honest signal. */}
           {data && (
             <div style={{ display: "flex", alignItems: "center", gap: "8px 12px", marginTop: BLOCK_GAP, paddingTop: ROW_GAP, borderTop: "1px solid color-mix(in srgb, var(--cr-band-ink) 18%, transparent)", flexWrap: "wrap" }}>
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>
+              <span aria-hidden className="cr-live-dot" style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--cr-up)", display: "inline-block" }} />
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)", marginLeft: "-4px" }}>
                 {t("data.updated", { time: timeAgo(data.lastUpdated, nowMs) })}
               </span>
               <span aria-hidden style={{ fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>·</span>
@@ -776,23 +992,66 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   sum in dollars. One currency -> its own symbol; a mixed book
                   -> no symbol, with the mix disclosed right here rather than
                   two tabs away. */}
-              <StatCard lead label={t("data.raised")} value={data.totalRaised}
-                prefix={data.closedCurrencies?.length === 1 ? getCurrency(data.closedCurrencies[0]).symbol : ""}
-                tip={<InfoTip termKey={tipKey(t, "glossary.totalRaised", "Every amount confirmed at the close of a deal here, summed to date. Money still being negotiated or soft-circled is not counted, and passed deals never enter the figure.")} />} />
+              {/* The loud slot goes to the platform's real STAGE when there
+                  is no amount to show, not to whatever the digit happens to
+                  be. A bare "0" at 64px reads as a broken page; "Pre-raise"
+                  in the identical slot reads as a deliberate status line --
+                  the same honest fact, given the weight it deserves instead
+                  of being demoted to an 11px footnote under a shouting zero.
+                  The exact amount is still here, in a small mono chip next
+                  to it, at the same weight ScorePill gives a secondary
+                  figure -- nothing is hidden, only re-weighted. */}
+              {data.totalRaised === 0 && (data.closedCurrencies?.length ?? 0) === 0 ? (
+                <div style={{ borderTop: "2px solid var(--cr-ink)", paddingTop: "24px" }}>
+                  <p style={{ ...capsLabel, color: "var(--cr-ink-3)", marginBottom: LABEL_GAP }}>
+                    {t("data.raised")}
+                    <InfoTip termKey={tipKey(t, "glossary.totalRaised", "Every amount confirmed at the close of a deal here, summed to date. Money still being negotiated or soft-circled is not counted, and passed deals never enter the figure.")} />
+                  </p>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "16px", flexWrap: "wrap" }}>
+                    <p style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: FIG_LEAD, color: "var(--cr-ink-3)", lineHeight: 1, letterSpacing: "-0.02em" }}>
+                      {tf("data.preRaiseLabel", "Pre-raise")}
+                    </p>
+                    <span style={{
+                      fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "12px",
+                      color: "var(--cr-ink-4)", background: "color-mix(in srgb, var(--cr-ink-4) 8%, transparent)",
+                      borderRadius: "4px", padding: "3px 9px", whiteSpace: "nowrap",
+                    }}>
+                      $0 {tf("data.raisedSoFar", "raised so far")}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <StatCard lead label={t("data.raised")} value={data.totalRaised}
+                  prefix={data.closedCurrencies?.length === 1 ? getCurrency(data.closedCurrencies[0]).symbol : ""}
+                  tip={<InfoTip termKey={tipKey(t, "glossary.totalRaised", "Every amount confirmed at the close of a deal here, summed to date. Money still being negotiated or soft-circled is not counted, and passed deals never enter the figure.")} />} />
+              )}
               {(data.closedCurrencies?.length ?? 0) > 1 && (
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                   {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
                 </p>
               )}
-              {/* A bare "0" at 64px with no currency prefix reads as a broken
-                  page, not an honest "nothing closed yet" -- every other
-                  zero-prone figure on this surface (close rate, the
-                  multi-currency note, the medians tab) has an equivalent
-                  honest-empty treatment; the lead figure did not. */}
-              {data.totalRaised === 0 && (data.closedCurrencies?.length ?? 0) === 0 && (
-                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
-                  {tf("data.noDealsClosedYet", "No deals have closed yet.")}
-                </p>
+              {/* Capital in motion: what is being negotiated right now, real
+                  and traceable to the open deals themselves, placed directly
+                  beside the total raised so a $0 close total is not the only
+                  fact the fold offers -- a platform can be early and still be
+                  moving. Never invented: this is zero right alongside the
+                  total raised whenever nothing is actually in motion. */}
+              {(data.capitalInMotion ?? 0) > 0 && (
+                <div style={{ marginTop: BLOCK_GAP, maxWidth: "360px" }}>
+                  <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
+                    {tf("data.capitalInMotion", "Capital in motion")}
+                    <InfoTip termKey={tipKey(t, "glossary.capitalInMotion", "The sum of amounts on deals still being discussed or under diligence, not yet closed. Distinct from the total raised above, which counts only money that has actually closed.")} />
+                  </p>
+                  <p style={{ ...monoFigure, fontSize: FIG_2, color: "var(--cr-ink-2)" }}>
+                    {data.capitalInMotionCurrencies?.length === 1 ? getCurrency(data.capitalInMotionCurrencies[0]).symbol : ""}
+                    {capitalInMotionShown.toLocaleString()}
+                  </p>
+                  {(data.capitalInMotionCurrencies?.length ?? 0) > 1 && (
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                      {tf("data.multiCurrencyNoteOpen", "In-progress deals span {list}; figures are not converted to a single currency.").replace("{list}", data.capitalInMotionCurrencies!.join(", "))}
+                    </p>
+                  )}
+                </div>
               )}
               {/* The three supporting totals as one hairline-divided strip:
                   vertical rules between the figures, not a grid of tiles.
@@ -802,7 +1061,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                   stacks clean at phone widths. */}
               {/* The supporting totals speak through their caps labels alone:
                   once "Active startups" reads, a tooltip restating it is a
-                  second voice on a self-explanatory figure. */}
+                  second voice on a self-explanatory figure. Deals closed
+                  gets its own hairline colour once there IS a closed deal --
+                  the only one of the three that is an outcome rather than a
+                  headcount, so it is the only one that earns the money-moved
+                  green the rest of the page reserves for a closed round. */}
               <div style={{ overflow: "hidden", marginTop: BLOCK_GAP }}>
                 <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
@@ -812,7 +1075,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     <StatCard label={t("data.investors")} value={data.investorCount} />
                   </div>
                   <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
-                    <StatCard label={t("data.deals")} value={data.dealsCount} />
+                    <StatCard label={t("data.deals")} value={data.dealsCount} accent={data.dealsCount > 0 ? "var(--cr-up)" : undefined} />
                   </div>
                 </div>
               </div>
@@ -921,7 +1184,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                             ariaLabel={t("data.capitalSought")}
                           />
                           {capitalCaption && (
-                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+                            <p style={{ ...honestyCaption, marginTop: ROW_GAP }}>
                               {capitalCaption}
                             </p>
                           )}
@@ -930,7 +1193,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       {/* A window whose only month is still in progress has
                           no chart to draw; the caption carries the month. */}
                       {completeMonths.length === 0 && capitalCaption && (
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", maxWidth: "560px", lineHeight: 1.6 }}>
+                        <p style={honestyCaption}>
                           {capitalCaption}
                         </p>
                       )}
@@ -965,20 +1228,61 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                             ariaLabel={`${t("data.newListings")} · ${t("data.dealsClosed")}`}
                           />
                           {activityCaption && (
-                            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+                            <p style={{ ...honestyCaption, marginTop: ROW_GAP }}>
                               {activityCaption}
                             </p>
                           )}
                         </>
                       ))}
                       {completeMonths.length === 0 && activityCaption && (
-                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", maxWidth: "560px", lineHeight: 1.6 }}>
+                        <p style={honestyCaption}>
                           {activityCaption}
                         </p>
                       )}
                     </>
                   )}
                 </TabPanel>
+              </section>
+            )}
+
+            {/* ── Site activity ─────────────────────────────────────────────
+                Real anonymous pageviews across the platform's real startups,
+                and separately the investor-attributed views: two honest
+                figures, deliberately not blended into one, because "views"
+                without saying whose reads as bigger than it is. Only renders
+                when there is a real signal to show -- a 42-bar chart that is
+                every bar the same flat grey would be the same "reads as
+                broken" failure the rest of this pass exists to fix. */}
+            {(data.dailyPageviews?.length ?? 0) > 0
+              && ((data.dailyPageviews ?? []).reduce((s, d) => s + d.count, 0) > 0 || (data.investorViewCount ?? 0) > 0)
+              && (
+              <section style={{ marginBottom: SECTION_GAP }}>
+                <div className="ruled-label" style={{ marginBottom: ROW_GAP }}>{tf("data.pulseLabel", "Site activity")}</div>
+                <p style={{ ...capsLabel, margin: `0 0 ${ROW_GAP}` }}>
+                  {tf("data.pulseSub", "Daily pageviews, last 42 days")}
+                </p>
+                <PulseBars
+                  days={data.dailyPageviews!}
+                  ariaLabel={tf("data.pulseAria", "Daily pageviews over the last 42 days")}
+                  tf={tf}
+                />
+                <div style={{ overflow: "hidden", marginTop: BLOCK_GAP }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
+                    <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                      <Figure label={tf("data.publicViews", "Public views (42d)")}>
+                        {(data.dailyPageviews ?? []).reduce((s, d) => s + d.count, 0).toLocaleString()}
+                      </Figure>
+                    </div>
+                    <div style={{ flex: "1 1 170px", minWidth: 0, borderLeft: "1px solid var(--cr-rule)", padding: "0 24px" }}>
+                      <Figure label={tf("data.investorViews", "Investor views")}>
+                        {(data.investorViewCount ?? 0).toLocaleString()}
+                      </Figure>
+                    </div>
+                  </div>
+                </div>
+                <p style={{ ...honestyCaption, marginTop: BLOCK_GAP }}>
+                  {tf("data.pulseCaption", "Public views are anonymous visits to a listing. Investor views are visits made while signed into an investor account. Counted separately so one figure never blends the two.")}
+                </p>
               </section>
             )}
 
@@ -1030,72 +1334,133 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                       )}
                     </div>
 
-                    {/* The funnel as an open strip, not a boxed grid: five
-                        columns split by vertical hairlines, each opened by
-                        its own overline rule, sitting directly on the paper.
-                        The crop trick handles every wrap state -- five across
-                        on desktop, a stacked funnel at phone widths --
-                        without a media query. */}
-                    <div style={{ overflow: "hidden" }}>
-                      <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
-                        {DEAL_STAGES.map(({ key, color }) => {
-                          const n = data.byDealStage[key] ?? 0;
-                          const max = Math.max(...Object.values(data.byDealStage), 1);
-                          return (
-                            <div key={key} style={{ flex: "1 1 150px", minWidth: 0, display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule-dark)", borderLeft: "1px solid var(--cr-rule)", padding: "12px 24px 0" }}>
-                              {/* No 01-05 rail here. Numbering a row of
-                                  figures asserts that one becomes the next,
-                                  and these are occupancy counts: how many
-                                  deals stand at each stage right now, read at
-                                  one instant. Intro 8 beside Diligence 10 is
-                                  ordinary for a distribution and impossible
-                                  for a cohort, so the device was claiming a
-                                  flow the numbers cannot show. The columns
-                                  keep pipeline order, which is real; what went
-                                  is the implication that they are a sequence. */}
-                              {/* The base Label voice, and the label-to-figure
-                                  gap every other labelled figure uses: 9px
-                                  with wider tracking was a third caps size
-                                  the page did not need. */}
-                              <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
+                    {/* A five-way grid earns its place once there are enough
+                        deals for five simultaneous bars to mean something.
+                        At a handful of deals it fights the data instead --
+                        four empty, meter-less cells beside one filled one
+                        reads as a broken grid, not a funnel. Below that
+                        threshold the honest layout is a sentence: the one
+                        real figure, said plainly, with the five-stage
+                        vocabulary demoted to a compact key rather than
+                        dropped -- every deal is still counted and every
+                        stage is still named, just not forced into five
+                        equal-width columns that a sample this size cannot
+                        fill. */}
+                    {dealStageLowN ? (
+                      <div>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: "14px", flexWrap: "wrap", marginBottom: LABEL_GAP }}>
+                          <span style={{ ...monoFigure, fontSize: FIG_2 }}>{dealStageTotalShown}</span>
+                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-2)" }}>
+                            {dealStageTotal === 1
+                              ? tf("data.dealFlowSentenceOne", "deal on the platform so far.")
+                              : tf("data.dealFlowSentence", "deals on the platform so far.")}
+                          </span>
+                        </div>
+                        {/* The compact key: a dot and a count per stage, in
+                            pipeline order, for anyone who wants the stage
+                            vocabulary without five forced columns. */}
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 20px", marginTop: BLOCK_GAP }}>
+                          {DEAL_STAGES.map(({ key, color }) => {
+                            const n = data.byDealStage[key] ?? 0;
+                            return (
+                              <span key={key} style={{ display: "inline-flex", alignItems: "center", gap: "6px", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: n > 0 ? "var(--cr-ink-2)" : "var(--cr-ink-4)" }}>
+                                <span aria-hidden style={{ width: "7px", height: "7px", borderRadius: "50%", background: n > 0 ? color : "var(--cr-paper-4)", display: "inline-block", flexShrink: 0 }} />
                                 {t(`data.stage_${key}`)}
                                 <InfoTip termKey={tipKey(t, STAGE_TIP[key].key, STAGE_TIP[key].fallback)} />
-                              </p>
-                              {/* Same figure size as every other second-rank
-                                  number on the page. The meter pins to the
-                                  bottom so the five bars align even when a
-                                  stage name wraps. */}
-                              <p style={{ ...monoFigure, fontSize: FIG_2, marginBottom: "12px" }}>{n}</p>
-                              {/* The track is capped at a fixed width: when
-                                  the strip wraps, cells differ in width, and
-                                  a percentage of the cell would give the same
-                                  count a longer bar on a wider row. 6px deep
-                                  so the meter reads as a mark, not a rule. */}
-                              <div style={{ height: "6px", maxWidth: "120px", background: "var(--cr-paper-3)", borderRadius: "4px", overflow: "hidden", marginTop: "auto" }}>
-                                <div style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
-                              </div>
-                            </div>
-                          );
-                        })}
+                                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, color: "var(--cr-ink)" }}>{n}</span>
+                              </span>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <>
+                        {/* The funnel as an open strip, not a boxed grid: five
+                            columns split by vertical hairlines, each opened by
+                            its own overline rule, sitting directly on the paper.
+                            The crop trick handles every wrap state -- five across
+                            on desktop, a stacked funnel at phone widths --
+                            without a media query. */}
+                        <div style={{ overflow: "hidden" }}>
+                          <div style={{ display: "flex", flexWrap: "wrap", rowGap: BLOCK_GAP, marginLeft: "-24px" }}>
+                            {DEAL_STAGES.map(({ key, color }) => {
+                              const n = data.byDealStage[key] ?? 0;
+                              const max = Math.max(...Object.values(data.byDealStage), 1);
+                              return (
+                                <div key={key} style={{ flex: "1 1 150px", minWidth: 0, display: "flex", flexDirection: "column", borderTop: "1px solid var(--cr-rule-dark)", borderLeft: "1px solid var(--cr-rule)", padding: "12px 24px 0" }}>
+                                  {/* No 01-05 rail here. Numbering a row of
+                                      figures asserts that one becomes the next,
+                                      and these are occupancy counts: how many
+                                      deals stand at each stage right now, read at
+                                      one instant. Intro 8 beside Diligence 10 is
+                                      ordinary for a distribution and impossible
+                                      for a cohort, so the device was claiming a
+                                      flow the numbers cannot show. The columns
+                                      keep pipeline order, which is real; what went
+                                      is the implication that they are a sequence. */}
+                                  {/* The base Label voice, and the label-to-figure
+                                      gap every other labelled figure uses: 9px
+                                      with wider tracking was a third caps size
+                                      the page did not need. */}
+                                  <p style={{ ...capsLabel, marginBottom: LABEL_GAP }}>
+                                    {t(`data.stage_${key}`)}
+                                    <InfoTip termKey={tipKey(t, STAGE_TIP[key].key, STAGE_TIP[key].fallback)} />
+                                  </p>
+                                  {/* Same figure size as every other second-rank
+                                      number on the page. The meter pins to the
+                                      bottom so the five bars align even when a
+                                      stage name wraps. */}
+                                  <p style={{ ...monoFigure, fontSize: FIG_2, marginBottom: "12px" }}>{n}</p>
+                                  {/* The track is capped at a fixed width: when
+                                      the strip wraps, cells differ in width, and
+                                      a percentage of the cell would give the same
+                                      count a longer bar on a wider row. 6px deep
+                                      so the meter reads as a mark, not a rule. A
+                                      whisper of the stage's own colour even at
+                                      zero, so an empty track still announces
+                                      which stage it belongs to. */}
+                                  <div style={{ height: "6px", maxWidth: "120px", background: `color-mix(in srgb, ${color} 8%, var(--cr-paper-3))`, borderRadius: "4px", overflow: "hidden", marginTop: "auto" }}>
+                                    <div className="cr-grow-w" style={{ width: `${(n / max) * 100}%`, height: "100%", background: color }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
 
-                    {/* Says what the row is before anyone reads it as a
-                        funnel. Without this the two largest bars sit at the
-                        end and the strip appears to show deals multiplying. */}
-                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
-                      {tf("data.stageDistributionNote", "Deals standing at each stage right now. Closed and passed are totals to date, so this is a snapshot rather than one group moving left to right.")}
-                    </p>
+                        {/* Says what the row is before anyone reads it as a
+                            funnel. Without this the two largest bars sit at the
+                            end and the strip appears to show deals multiplying. */}
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+                          {tf("data.stageDistributionNote", "Deals standing at each stage right now. Closed and passed are totals to date, so this is a snapshot rather than one group moving left to right.")}
+                        </p>
+                      </>
+                    )}
 
-                    {/* Discloses the sample size rather than letting four
-                        empty tracks sit beside one real deal and pass as a
-                        finished funnel. Not shown once the platform has
-                        enough deals in flight for the shape to mean something. */}
+                    {/* Discloses the sample size even in the demoted sentence
+                        form -- the sentence already says the count plainly,
+                        but the same disclosure the 5-column funnel carried is
+                        kept here too, so nothing about the thin sample is
+                        said only once. */}
                     {dealStageLowN && (
-                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: LABEL_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+                      <p style={{ ...honestyCaption, marginTop: BLOCK_GAP }}>
                         {(dealStageTotal === 1
                           ? tf("data.dealFlowLowNOne", "Only 1 deal on the platform so far, so this funnel is a thin sample.")
                           : tf("data.dealFlowLowN", "Only {count} deals on the platform so far, so this funnel is a thin sample.").replace("{count}", String(dealStageTotal)))}
+                      </p>
+                    )}
+
+                    {/* The platform's one open deal's own trend: honest at
+                        n=1 the way a single company's own trajectory is
+                        honest, and null (so nothing renders) the moment
+                        there is more than one open deal, where an average
+                        days-in-stage would stand in for a distribution the
+                        platform does not have yet. */}
+                    {data.activeDealDaysInStage != null && data.activeDealStage && (
+                      <p style={{ ...honestyCaption, marginTop: LABEL_GAP }}>
+                        {tf("data.daysInStage", "The one deal in progress has been in {stage} for {days} days.")
+                          .replace("{stage}", t(`data.stage_${data.activeDealStage}`).toLowerCase())
+                          .replace("{days}", String(data.activeDealDaysInStage))}
                       </p>
                     )}
 
@@ -1304,6 +1669,16 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                             </div>
                           </Link>
                         ))}
+                        {/* The funnel and the lead total both carry an honest
+                            note when the sample is thin; the ledger used to
+                            just trail into a long run of white space below
+                            its two rows with nothing explaining why. Same
+                            threshold as the funnel's own low-N disclosure. */}
+                        {data.startupCount < 5 && (
+                          <p style={{ ...honestyCaption, marginTop: BLOCK_GAP }}>
+                            {tf("data.ledgerShortNote", "Every current listing is shown here. Check back as new rounds launch.")}
+                          </p>
+                        )}
                       </>
                     )}
                   </>
@@ -1314,11 +1689,21 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
 
             {/* CTA: a closing band, not a card -- hairlines top and bottom,
                 no radius, the diamond as the single ornament. It is now the
-                page's only slab: the medians band that used to sit above it
-                became a table, so one moment on the surface is a band and it
-                is the one asking for something. */}
-            <div style={{ background: "var(--cr-band-bg)", borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)", padding: "clamp(48px, 6vw, 64px) clamp(24px, 5vw, 32px)", textAlign: "center" }}>
-              <div aria-hidden style={{ fontSize: "15px", color: "var(--cr-copper)", marginBottom: ROW_GAP, lineHeight: 1 }}>{"✦"}</div>
+                page's only OTHER slab besides the hero: the two bookend the
+                page, and the gradient origin mirrors the hero's (top-left
+                there, bottom-right here) so they read as a matched pair with
+                intentional variation rather than the same flat rectangle
+                twice. */}
+            <div style={{
+              borderTop: "1px solid var(--cr-copper-br)", borderBottom: "1px solid var(--cr-copper-br)",
+              padding: "clamp(48px, 6vw, 64px) clamp(24px, 5vw, 32px)", textAlign: "center",
+              background: "radial-gradient(120% 100% at 85% 100%, color-mix(in srgb, var(--cr-copper) 10%, var(--cr-band-bg)) 0%, var(--cr-band-bg) 55%)",
+            }}>
+              {/* A slow ambient glint rather than a static glyph -- the
+                  brand's own diamond mark glints on greeting (cr-diamond-live
+                  above); this glints at rest, since a closing ornament has
+                  no pointer to wait on. */}
+              <div aria-hidden className="cr-glint" style={{ fontSize: "15px", color: "var(--cr-copper)", marginBottom: ROW_GAP, lineHeight: 1 }}>{"✦"}</div>
               <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "28px", color: "var(--cr-band-ink)", marginBottom: "12px" }}>{t("data.featuredHere")}</h2>
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-band-ink-dim)", maxWidth: "380px", margin: "0 auto 24px", lineHeight: 1.65 }}>
                 {t("data.featuredHereSub")}
