@@ -1,105 +1,104 @@
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
- * Founder dashboard loading state.
+ * Startup dashboard loading state.
  *
- * The chrome the dashboard actually draws renders at once: the container
- * geometry, the hairline under the stage row, the dark rule under each
- * section head, and the row hairlines at their true 3.5rem pitch. Only the
- * words are suppressed, so nothing moves when the data lands.
- *
- * Geometry is shared with components/dashboard/startup-dashboard-client.tsx
- * and the LEDGER SYSTEM block in app/globals.css: page header 2rem top and
- * 1.5rem below, stage row 3rem below, 3rem between sections, 0.75rem from a
- * section head to its first row.
+ * The static chrome renders immediately at the dashboard's TRUE geometry --
+ * the copper ruled bar, the serif h1 line box, the header action frames, the
+ * four stat-cell frames, and the tab bar with its copper active underline.
+ * Only the data is suppressed: quiet paper-3 slugs hold the place of text,
+ * and a mono dash holds the place of every number, which is exactly how the
+ * live dashboard writes absence.
  */
 
-const CONTAINER: React.CSSProperties = {
-  maxWidth: "68.75rem",
-  marginInline: "auto",
-  paddingInline: "clamp(1rem, 4vw, 2rem)",
-  paddingBlockEnd: "4rem",
+// Label slugs vary in width the way real locale strings do -- four stat
+// labels, four tab labels, four header actions. Not identical gray towers.
+const STAT_LABEL_WIDTHS = [72, 84, 64, 52];
+const TAB_WIDTHS = [56, 68, 72, 44];
+const ACTION_WIDTHS = [80, 96, 76, 72];
+
+const monoDash: React.CSSProperties = {
+  fontFamily: "'JetBrains Mono', monospace",
+  fontVariantNumeric: "tabular-nums",
+  fontWeight: 700,
+  fontSize: "26px",
+  color: "var(--cr-ink-4)",
 };
-
-const ROW: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "1.5rem",
-  minHeight: "3.5rem",
-  paddingBlock: "1rem",
-  borderBlockEnd: "1px solid var(--cr-rule)",
-};
-
-// Slug widths vary the way real locale strings do, rather than making an
-// identical grey tower.
-const ROWS: Array<[string, string]> = [
-  ["min(17rem, 62vw)", "3rem"],
-  ["min(13rem, 52vw)", "2.5rem"],
-  ["min(15rem, 58vw)", "3.5rem"],
-];
-
-function SectionBlock({ titleWidth }: { titleWidth: string }) {
-  return (
-    <section style={{ marginBlockStart: "3rem" }}>
-      <div style={{ paddingBlockEnd: "0.75rem", borderBlockEnd: "1px solid var(--cr-rule-dark)" }}>
-        {/* h2 line box at 1.125rem/1.3 so the heading does not shift in. */}
-        <div style={{ height: "1.4625rem", display: "flex", alignItems: "center" }}>
-          <Skeleton w={titleWidth} h="0.875rem" />
-        </div>
-      </div>
-      {ROWS.map(([label, figure], i) => (
-        <div key={i} style={ROW}>
-          <Skeleton w={label} h="0.875rem" />
-          <Skeleton w={figure} h="0.875rem" />
-        </div>
-      ))}
-    </section>
-  );
-}
 
 export default function Loading() {
   return (
-    <main style={{ backgroundColor: "var(--cr-paper)", minHeight: "100vh" }} aria-busy="true">
-      <div style={CONTAINER}>
+    <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }} aria-busy="true">
 
-        {/* Page header: h1 line box at 1.75rem/1.2, the status chip beside it,
-            and the two header action frames at their real 2.75rem height. */}
-        <div style={{
-          display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between",
-          columnGap: "1.5rem", rowGap: "0.75rem",
-          paddingBlockStart: "2rem", marginBlockEnd: "1.5rem",
-        }}>
-          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "0.75rem", flex: "1 1 18rem", minWidth: 0 }}>
-            <div style={{ height: "2.1rem", display: "flex", alignItems: "center" }}>
-              <Skeleton w="min(16rem, 70vw)" h="1.5rem" />
+      {/* Header band: real hairline, real paddings. The ruled label's copper
+          bar is chrome and renders at once; label and name are data, so quiet
+          slugs hold their slots at the true serif metrics. */}
+      <div style={{ borderBottom: "1px solid var(--cr-rule-dark)" }}>
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 40px 32px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+          <div>
+            <div className="ruled-label" style={{ marginBottom: "10px" }}>
+              <Skeleton w="112px" h="11px" />
             </div>
-            <Skeleton w="4.5rem" h="1.25rem" />
+            {/* h1 line box at clamp(26-34px) serif metrics, so nothing
+                shifts when the company name streams in. */}
+            <div style={{ height: "clamp(32px, 4.8vw, 41px)", display: "flex", alignItems: "center", marginBottom: "10px" }}>
+              <Skeleton w="min(260px, 70vw)" h="clamp(26px, 4vw, 34px)" />
+            </div>
+            {/* Status badge + tier line. */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <Skeleton w="72px" h="22px" />
+              <Skeleton w="88px" h="13px" />
+            </div>
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            <Skeleton w="7rem" h="2.75rem" />
-            <Skeleton w="9rem" h="2.75rem" />
-          </div>
-        </div>
-
-        {/* Stage row: the four steps on one hairline row, the next action at
-            the inline end. */}
-        <div style={{
-          display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between",
-          columnGap: "1.5rem", rowGap: "0.75rem",
-          minHeight: "3.5rem", paddingBlock: "0.75rem", marginBlockEnd: "3rem",
-          borderBlockEnd: "1px solid var(--cr-rule)",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-            {["3rem", "4.5rem", "2.5rem", "5rem"].map((w, i) => (
-              <Skeleton key={i} w={w} h="0.8125rem" />
+          {/* Four quiet action frames at the live outline-button geometry;
+              their labels are locale data, so slugs sit inside real frames. */}
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {ACTION_WIDTHS.map((w, i) => (
+              <span key={i} style={{ display: "inline-flex", alignItems: "center", border: "1px solid var(--cr-rule-dark)", background: "var(--cr-paper-2)", borderRadius: "4px", padding: "7px 14px" }}>
+                <span style={{ height: "17px", display: "flex", alignItems: "center" }}>
+                  <Skeleton w={`${w}px`} h="11px" />
+                </span>
+              </span>
             ))}
           </div>
-          <Skeleton w="10rem" h="2.75rem" />
+        </div>
+      </div>
+
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "28px 40px 64px" }}>
+
+        {/* Four stat cells: real frames, suppressed contents. The dash is
+            the dashboard's own glyph for a number that is not here yet. */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "10px", marginBottom: "32px" }}>
+          {STAT_LABEL_WIDTHS.map((w, i) => (
+            <div key={i} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px 18px" }}>
+              <div style={{ height: "13px", display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                <Skeleton w={`${w}px`} h="9px" />
+              </div>
+              <p style={monoDash}>{"—"}</p>
+            </div>
+          ))}
         </div>
 
-        <SectionBlock titleWidth="min(7rem, 40vw)" />
-        <SectionBlock titleWidth="min(6rem, 36vw)" />
+        {/* Tab bar: the hairline and the copper underline of the default tab
+            are real chrome; the four labels are locale data. */}
+        <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", marginBottom: "28px", display: "flex", overflowX: "hidden" }}>
+          {TAB_WIDTHS.map((w, i) => (
+            <div key={i} style={{ padding: "10px 18px 9px", borderBottom: i === 0 ? "2px solid var(--cr-copper)" : "2px solid transparent" }}>
+              <span style={{ height: "17px", display: "flex", alignItems: "center" }}>
+                <Skeleton w={`${w}px`} h="11px" />
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Overview region at the true third/two-thirds split: the profile
+            completion card on the left, the working cards stacked right. */}
+        <div className="grid-third-stack">
+          <Skeleton h="320px" />
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            <Skeleton h="152px" />
+            <Skeleton h="152px" />
+          </div>
+        </div>
       </div>
     </main>
   );

@@ -1,37 +1,28 @@
 "use client";
 
-/* Hallmark · genre: modern-minimal · surface: investor dashboard
- * One column of sections in job order: waiting on you, what moved, who
- * viewed you, recently viewed, the watchlist, positions, reports. A section
- * renders only with rows.
- * states: default · hover · focus · active · disabled · loading · error
- */
-
-import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { StartupCard } from "@/components/startup/startup-card";
 import { notify } from "@/components/ui/toast-notify";
+import { Bookmark, Brain, CheckCircle2, ChevronDown, CreditCard, Download, Eye, Lock, TrendingUp } from "lucide-react";
+import { createClient } from "@/lib/supabase";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { buildAccessContext, investorCan } from "@/lib/access";
-import { formatDate } from "@/lib/format";
+import { formatDate } from "@/lib/utils";
 import { formatMoney } from "@/lib/currency";
 import { allocationSummary } from "@/lib/round-math";
-import { safeFormatCurrencyAmount } from "@/lib/validators";
-import { STAGE_LABELS } from "@/lib/utils";
-import { displayLocale } from "@/lib/display-locale";
-import { createClient } from "@/lib/supabase";
 import type { Profile, Investor, Watchlist, Deal, AiReport } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useProfile } from "@/hooks/useProfile";
 import { useMessagingAvailable } from "@/hooks/useMessagingAvailable";
 import { InvitePanel } from "@/components/shared/invite-panel";
+import { Sparkline } from "@/components/ui/sparkline";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { WatchlistChanges } from "@/components/investor/watchlist-changes";
+import { InfoTip } from "@/components/shared/info-tip";
 import { ReadOnlyProvider, useReadOnly } from "@/components/dashboard/read-only";
-import { PageHeader } from "@/components/ui/page-header";
-import { Ledger, LedgerCell, LedgerHead, LedgerRow, Section } from "@/components/ui/ledger";
-import { FilterMenu } from "@/components/ui/filter-bar";
+import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
 
 interface Props {
   profile:    Profile;
@@ -56,537 +47,350 @@ export interface PortfolioPosition {
   mrr: number | null; mrrSeries: number[]; latestUpdate: { title: string; created_at: string } | null;
 }
 
-// Dashboard-only layout rules. Everything shared (rows, sections, buttons,
-// fields) comes from the LEDGER SYSTEM block in app/globals.css; these only
-// place cells the shared grid does not know about. Tokens only.
-const DASH_CSS = `
-.crd-page{max-width:1100px;margin-inline:auto;padding-inline:clamp(1rem,4vw,2rem);padding-block-end:4rem}
-.crd-viewas{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;column-gap:1rem;padding-block:0.25rem;padding-inline:1.5rem;background-color:var(--cr-ink);color:var(--cr-paper);font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;line-height:1.4}
-.crd-viewas a{display:inline-flex;align-items:center;min-height:2.75rem;color:inherit;font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
-.crd-viewas a:focus-visible{outline:2px solid var(--cr-copper) !important;outline-offset:2px;box-shadow:none !important}
-.crd-passed .cr-row-title{color:var(--cr-ink-3)}
-.crd-note{margin:0.25rem 0 0;max-width:60ch;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;font-weight:400;line-height:1.4;color:var(--cr-ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
-.crd-note-field{display:block;margin-block-start:0.5rem;max-width:60ch}
-.crd-controls{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:0.5rem}
-.crd-priority{display:inline-flex;align-items:center;gap:0.25rem}
-.crd-priority-dot{inline-size:0.75rem;block-size:0.75rem;padding:0;border-radius:50%;border:1px solid var(--cr-rule-dark);background:transparent;cursor:pointer}
-.crd-priority-dot[data-on]{border-color:var(--cr-copper);background-color:var(--cr-copper)}
-.crd-priority-dot:disabled{cursor:default}
-.crd-toggle-cell{align-self:center;justify-self:end}
-.crd-expand{grid-column:1 / -1;grid-row-start:2}
-.crd-report{margin:0.5rem 0 0;max-width:72ch;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.9375rem;font-weight:400;line-height:1.55;color:var(--cr-ink-2);white-space:pre-wrap;overflow-wrap:anywhere}
-.crd-actions{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem;margin-block-start:0.75rem}
-.crd-flush{margin-inline-start:-0.5rem}
-.crd-meta{display:inline-flex;flex-wrap:wrap;align-items:baseline;column-gap:0.75rem;row-gap:0.25rem}
-.crd-figure-lg{font-family:var(--font-serif);font-size:1.75rem;font-weight:600;font-style:normal;line-height:1.2;letter-spacing:-0.02em;color:var(--cr-ink);font-variant-numeric:tabular-nums;font-optical-sizing:auto}
-.crd-end-text{font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;line-height:1.4;color:var(--cr-ink-2);font-variant-numeric:tabular-nums;white-space:nowrap}
-.crd-mlabel{margin-inline-end:0.5rem;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;font-weight:400;color:var(--cr-ink-3)}
-.crd-up{color:var(--cr-up)}
-.crd-down{color:var(--cr-down)}
-.crd-alloc{display:flex;flex-wrap:wrap;align-items:flex-end;gap:0.5rem 0.75rem;padding-block:1rem}
-.crd-alloc label{display:flex;flex-direction:column;gap:0.25rem;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;font-weight:400;line-height:1.4;color:var(--cr-ink-3)}
-.crd-alloc .cr-input{width:10rem}
-.crd-field-error{flex-basis:100%;margin:0;font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;line-height:1.4;color:var(--cr-down)}
-.crd-undo{display:flex;flex-wrap:wrap;align-items:center;gap:0.5rem 1rem}
-.crd-undo:not(:empty){padding-block-start:0.75rem}
-.crd-undo-text{font-family:var(--font-dm-sans),system-ui,sans-serif;font-size:0.8125rem;line-height:1.4;color:var(--cr-ink-2)}
-.crd-skel{display:flex;flex-direction:column}
-.crd-skel-line{display:flex;align-items:center;height:1.3125rem}
-.crd-skel-line--sub{height:1.1375rem}
-.crd-foot{margin-block-start:3rem}
-/* Flush on the row, so whichever text button comes first lines up with the text column. */
-.crd-foot-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 0.5rem;margin-inline-start:-0.5rem}
-.crd-foot-panel{margin-block-start:1rem}
-@media (min-width:768px){
-  .crd-mlabel{display:none}
-  .crd-waiting .cr-row:not(:has(> .cr-cell--trailing)){grid-template-columns:minmax(0,1fr) auto}
-}
-@media (max-width:767px){
-  .crd-controls{justify-content:flex-start}
-  .cr-row > .cr-cell.crd-toggle-cell{grid-column:3;grid-row:1;margin-inline-start:0.5rem}
-}
-`;
+type InvestorTab = "watchlist" | "portfolio" | "reports" | "billing";
 
-// The shared formatters answer an em dash for implausible values; a ledger
-// says "Not stated" in words instead (S13).
-const FORMATTER_DASH = "\u2014";
-const UNDO_MS = 6000;
+// InfoTip resolves its termKey through t(), and t() echoes an unknown key
+// back raw. The glossary keys this pass adds are new, so until the
+// dictionaries carry them the English wording itself is passed as the key:
+// t() returns unknown strings verbatim, the same fallback path the local
+// tf() helpers give plain labels.
+const tipKey = (t: (k: string) => string, key: string, fallback: string) =>
+  t(key) === key ? fallback : key;
 
-type Vars = Record<string, string | number>;
+// ── Shared button styles ──────────────────────────────────────────────────────
 
-function fill(text: string, vars?: Vars): string {
-  if (!vars) return text;
-  return text.replace(/\{(\w+)\}/g, (_, k: string) => String(vars[k] ?? `{${k}}`));
-}
+// Secondary: hairline outline pill, ink text. Primary: the one copper fill
+// per view. --cr-band-ink resolves to the light paper tone in both themes,
+// which is what "white on copper" means without a hex literal.
+const outlineBtn: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "8px",
+  border: "1px solid var(--cr-paper-4)", background: "transparent",
+  borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
+  fontSize: "13px", color: "var(--cr-ink-2)", padding: "8px 16px", cursor: "pointer",
+  textDecoration: "none",
+};
+
+const primaryBtn: React.CSSProperties = {
+  display: "inline-flex", alignItems: "center", gap: "8px",
+  background: "var(--cr-copper)", border: "none",
+  borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
+  fontSize: "13px", color: "var(--cr-on-accent)", padding: "8px 16px", cursor: "pointer",
+  textDecoration: "none",
+};
+
+// ── Aux panel shell ───────────────────────────────────────────────────────────
 
 /**
- * t() plus English fallbacks for keys the dictionaries do not carry yet.
- * t() echoes an unknown key back, so an echo means "use the fallback".
+ * The vertical rhythm of this surface, in one place so every block obeys it:
+ * 64 between major sections, 24 between blocks (aux panels, cards, the header
+ * cluster), 12-16 inside a block, 8 between a label and its value.
+ *
+ * WHY one constant: the surface used to mix 32/48/64 for the same job, so the
+ * eye could not tell a section break from a block break. Every gap on the page
+ * now comes from here, which is what makes the density read as calm rather
+ * than as less information.
  */
-function useStrings() {
+const RHYTHM = { section: "64px", block: "24px", inner: "16px", pair: "8px" } as const;
+
+/**
+ * One block of the aux stack: a ruled label, the block's own figure, and the
+ * detail behind a disclosure.
+ *
+ * WHY collapsed: five stacked bordered cards each shouting a number is why the
+ * dashboard read as busy. Nothing is removed -- the summary keeps the figure on
+ * screen and the detail is one click away -- but the page opens on one clear
+ * headline (the instrument strip) instead of six competing ones. Each caller
+ * returns null when it has nothing, so an empty account never renders an empty
+ * row, and the rule/padding pair lives here so the whole stack shares one beat.
+ */
+function AuxPanel({ label, summary, defaultOpen = false, children }: {
+  label: string;
+  summary?: React.ReactNode;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: RHYTHM.block, marginBottom: RHYTHM.block }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        style={{
+          display: "flex", alignItems: "baseline", justifyContent: "space-between",
+          gap: RHYTHM.inner, width: "100%", flexWrap: "wrap",
+          background: "none", border: "none", padding: 0, cursor: "pointer", textAlign: "left",
+        }}
+      >
+        <span className="ruled-label">{label}</span>
+        <span style={{ display: "inline-flex", alignItems: "baseline", gap: RHYTHM.inner, flexWrap: "wrap" }}>
+          {summary}
+          <ChevronDown aria-hidden style={{ width: 14, height: 14, color: "var(--cr-ink-4)", alignSelf: "center", flexShrink: 0, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms ease" }} />
+        </span>
+      </button>
+      {open && <div style={{ marginTop: RHYTHM.inner }}>{children}</div>}
+    </section>
+  );
+}
+
+/** A supporting figure: one step below the strip's headline, never copper. */
+function AuxFigure({ value, label }: { value: React.ReactNode; label?: string }) {
+  return (
+    <span style={{ display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair }}>
+      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{value}</span>
+      {label && <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>{label}</span>}
+    </span>
+  );
+}
+
+// ── Feature access rows ───────────────────────────────────────────────────────
+
+const FEATURE_ROWS = [
+  { labelKey: "dashboard.fr1", unlocked: true },
+  { labelKey: "dashboard.fr2", unlocked: true },
+  { labelKey: "dashboard.fr3", tier: "Angel", key: "financials" },
+  { labelKey: "dashboard.fr4", tier: "Angel", key: "financials" },
+  { labelKey: "dashboard.fr5", tier: "Angel", key: "msg" },
+  { labelKey: "dashboard.fr6", tier: "Angel", key: "msg" },
+  { labelKey: "dashboard.fr7", tier: "Pro",   key: "ai" },
+  { labelKey: "dashboard.fr8", tier: "Pro",   key: "export" },
+  { labelKey: "dashboard.fr9", tier: "Pro",   key: "ai" },
+] as const;
+
+// ── Watchlist note ────────────────────────────────────────────────────────────
+
+/**
+ * Why a startup was saved, attached to the save.
+ *
+ * A watchlist of twenty bookmarks with no reasons is a pile, not a shortlist --
+ * you end up re-reading profiles to remember what caught your eye. The note
+ * column landed in migration 020 and the API accepted it; this is the only way
+ * a human can actually write one.
+ *
+ * Saves on blur rather than behind a button: this is a scratchpad, and asking
+ * someone to press Save on a one-line thought is how the field goes unused.
+ */
+/**
+ * D43: allocation for the period -- what you meant to deploy, what is spoken
+ * for, and what is left. The target is yours to set; the rest is computed
+ * from your deals so it cannot drift out of date.
+ */
+function AllocationTracker({ investor, committed, deployed }: { investor: Investor; committed: number; deployed: number }) {
   const { t } = useTranslation();
-  const tf = useCallback(
-    (key: string, fallback: string, vars?: Vars) => {
-      const out = t(key, vars);
-      return out === key ? fill(fallback, vars) : out;
-    },
-    [t],
-  );
-  const tfn = useCallback(
-    (key: string, count: number, one: string, other: string) => tf(key, count === 1 ? one : other, { count }),
-    [tf],
-  );
-  return { t, tf, tfn };
-}
+  const readOnly = useReadOnly();
+  const inv = investor as unknown as { allocation_target?: number | null; allocation_period?: string | null };
+  const [target, setTarget] = useState<number | null>(inv.allocation_target ?? null);
+  const [period, setPeriod] = useState(inv.allocation_period ?? "");
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(String(inv.allocation_target ?? ""));
 
-function stageLabel(stage: string | null | undefined): string {
-  if (!stage) return "";
-  return STAGE_LABELS[stage] ?? STAGE_LABELS[stage.replace("_", "-")] ?? stage.replace(/_/g, " ");
-}
+  const summary = allocationSummary(target, committed, deployed);
+  const cur = (investor as unknown as { currency?: string }).currency || "USD";
 
-function compactMoney(amount: number | null | undefined, currency?: string | null): string | null {
-  if (amount == null || !Number.isFinite(amount) || amount <= 0) return null;
-  const out = formatMoney(amount, currency ?? undefined, { compact: true });
-  return out === FORMATTER_DASH ? null : out;
-}
+  async function save() {
+    const n = Number(draft.replace(/[^0-9.]/g, ""));
+    const next = draft.trim() === "" ? null : (Number.isFinite(n) ? n : null);
+    setEditing(false);
+    const res = await fetch("/api/investors/allocation", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ target: next, period: period || null }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    setTarget(next);
+  }
 
-function NotStated() {
-  const { tf } = useStrings();
-  return <span className="cr-absent">{tf("common.ledger.notStated", "Not stated")}</span>;
-}
+  if (summary.target === null && !editing) {
+    if (readOnly) return null;
+    return (
+      <section style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: RHYTHM.block, marginBottom: RHYTHM.block }}>
+        <div className="ruled-label" style={{ marginBottom: RHYTHM.pair }}>{t("allocation.title")}</div>
+        <button onClick={() => setEditing(true)} style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)" }}>
+          + {t("allocation.set")}
+        </button>
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: RHYTHM.pair }}>{t("allocation.setHint")}</p>
+      </section>
+    );
+  }
 
-function RowSkeleton() {
   return (
-    <div className="crd-skel" aria-hidden="true">
-      <div className="crd-skel-line"><Skeleton w="min(14rem, 60%)" h="0.9375rem" /></div>
-      <div className="crd-skel-line crd-skel-line--sub"><Skeleton w="min(9rem, 40%)" h="0.8125rem" /></div>
-    </div>
-  );
-}
-
-// ── Reversible deletes ──────────────────────────────────────────────────────
-
-/**
- * Optimistic delete with Undo (S9). The row disappears at once; the server
- * delete is sent only when the undo window closes, another delete starts, the
- * page is hidden, or the component unmounts. commit resolves false on failure,
- * which brings the row back.
- */
-function useUndoableDelete(commit: (id: string) => Promise<boolean>) {
-  const [pending, setPending] = useState<string | null>(null);
-  const [gone, setGone] = useState<ReadonlySet<string>>(() => new Set());
-  const pendingRef = useRef<string | null>(null);
-  const timerRef = useRef<number | null>(null);
-  const commitRef = useRef(commit);
-  useEffect(() => { commitRef.current = commit; });
-
-  const clearTimer = () => {
-    if (timerRef.current !== null) { window.clearTimeout(timerRef.current); timerRef.current = null; }
-  };
-
-  const flush = useCallback(() => {
-    clearTimer();
-    const id = pendingRef.current;
-    if (!id) return;
-    pendingRef.current = null;
-    setPending(null);
-    setGone((prev) => new Set(prev).add(id));
-    void commitRef.current(id).then((ok) => {
-      if (!ok) setGone((prev) => { const next = new Set(prev); next.delete(id); return next; });
-    });
-  }, []);
-
-  const remove = useCallback((id: string) => {
-    flush();
-    pendingRef.current = id;
-    setPending(id);
-    timerRef.current = window.setTimeout(flush, UNDO_MS);
-  }, [flush]);
-
-  const undo = useCallback(() => {
-    clearTimer();
-    pendingRef.current = null;
-    setPending(null);
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("pagehide", flush);
-    return () => { window.removeEventListener("pagehide", flush); flush(); };
-  }, [flush]);
-
-  const isHidden = (id: string) => id === pending || gone.has(id);
-  return { pending, remove, undo, isHidden };
-}
-
-/** The live region under a ledger that offers Undo while a delete is pending. */
-function UndoFoot({ pendingId, message, onUndo }: { pendingId: string | null; message: string; onUndo: () => void }) {
-  const { tf } = useStrings();
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  // Each delete takes its focused Delete button with it, so every new
-  // pending row moves focus here, even when the message text is unchanged.
-  useEffect(() => { if (pendingId) buttonRef.current?.focus(); }, [pendingId]);
-  return (
-    <div className="crd-undo" role="status">
-      {pendingId && (
-        <>
-          <span className="crd-undo-text">{message}</span>
-          <button ref={buttonRef} type="button" className="cr-btn cr-btn--text" onClick={onUndo}>
-            {tf("common.ledger.undo", "Undo")}
+    <AuxPanel
+      label={t("allocation.title")}
+      defaultOpen={editing}
+      summary={<AuxFigure
+        value={`${formatMoney(deployed, cur, { compact: true })} / ${formatMoney(summary.target ?? 0, cur, { compact: true })}`}
+        label={t("allocation.deployed")}
+      />}
+    >
+      {/* Deployed is the solid copper, committed the lighter tint of the same
+          hue -- one scale of certainty, not two competing colors. Green stays
+          reserved for money direction elsewhere on the page. */}
+      <div style={{ display: "flex", height: 4, borderRadius: 2, overflow: "hidden", background: "var(--cr-paper-3)" }}>
+        <div style={{ width: `${summary.target ? Math.min(100, (deployed / summary.target) * 100) : 0}%`, background: "var(--cr-copper)" }} />
+        <div style={{ width: `${summary.target ? Math.min(100, (committed / summary.target) * 100) : 0}%`, background: "color-mix(in srgb, var(--cr-copper) 40%, transparent)" }} />
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: RHYTHM.inner, marginTop: RHYTHM.inner, alignItems: "baseline" }}>
+        {([
+          [t("allocation.deployed"), formatMoney(deployed, cur, { compact: true }), "var(--cr-copper)"],
+          [t("allocation.committed"), formatMoney(committed, cur, { compact: true }), "color-mix(in srgb, var(--cr-copper) 40%, transparent)"],
+          [t("allocation.remaining"), summary.remaining === null ? "—" : formatMoney(summary.remaining, cur, { compact: true }), "var(--cr-paper-3)"],
+        ] as const).map(([label, val, swatch]) => (
+          <span key={label} style={{ display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: swatch, alignSelf: "center", flexShrink: 0 }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{label}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{val}</span>
+          </span>
+        ))}
+      </div>
+      {/* The target is the one editable thing here, so it sits below the read
+          -only figures rather than competing with the panel's own label. */}
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginTop: RHYTHM.inner, paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: RHYTHM.pair, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+          {t("allocation.targetPh")}<InfoTip termKey="glossary.allocation" />
+        </span>
+        {editing ? (
+          <div style={{ display: "flex", gap: RHYTHM.pair, alignItems: "center", flexWrap: "wrap" }}>
+            <input value={draft} onChange={(e) => setDraft(e.target.value)} inputMode="decimal" placeholder={t("allocation.targetPh")} autoFocus
+              style={{ width: 120, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+            <input value={period} onChange={(e) => setPeriod(e.target.value.slice(0, 40))} placeholder={t("allocation.periodPh")}
+              style={{ width: 96, background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: 4, fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "var(--cr-ink)", padding: "4px 8px", outline: "none" }} />
+            <button onClick={save} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 12, color: "var(--cr-copper)" }}>{t("common.save")}</button>
+          </div>
+        ) : (
+          <button onClick={() => { setDraft(String(target ?? "")); setEditing(true); }} disabled={readOnly}
+            style={{ background: "none", border: "none", padding: 0, cursor: readOnly ? "default" : "pointer", fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: 13, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
+            {formatMoney(summary.target ?? 0, cur, { compact: true })}{period ? ` · ${period}` : ""}
           </button>
-        </>
-      )}
-    </div>
+        )}
+      </div>
+    </AuxPanel>
   );
 }
 
-// ── Waiting on you ──────────────────────────────────────────────────────────
-
-type IncomingOffer = {
-  id: string; status?: string; fromSide?: string;
-  amount?: number | null; currency?: string | null; createdAt?: string | null;
-  counterpart?: { name?: string | null } | null;
-};
-
-type Share = {
-  id: string; note: string | null; created_at: string; thread_id: string | null;
-  startup: { name: string; slug: string } | null;
-  from_investor?: { slug: string; display_name: string | null; firm_name: string | null } | null;
-};
-
-type WaitRow = {
-  key: string; href?: string; title: string; sub: string; note?: string | null;
-  figure: string | null; action: string; extra?: ReactNode;
-};
-
+/** C31: listings other investors sent you, with the note and the thread. */
 /**
- * What waits on this investor's decision: offers sent to them, deals at due
- * diligence or term sheet, listings other investors shared, and missing
- * thesis fields as one row. The one primary action of the page sits on the
- * first row.
- *
- * In view-as the proposals and share APIs would answer with the ADMIN's own
- * inbox under the member's name, and every row link would open the admin's
- * surfaces, so only the thesis row renders there, without a link.
+ * Who is looking at YOU (migration 107) -- the first inbound-engagement
+ * surface investors have ever had. Founders always had viewers/savers panels;
+ * an investor profile accumulated nothing. Counts for every plan; names for
+ * paid tiers, blurred-teaser upsell otherwise (the founder-side shape).
  */
-function WaitingOnYou({ deals, investor, live }: { deals: Deal[]; investor: Investor; live: boolean }) {
-  const { t, tf } = useStrings();
-  // A share's thread is between two investors, which no member may use; only
-  // an admin is offered the way into it.
-  const { profile } = useProfile();
-  const shareThreadsOpen = profile?.role === "admin";
-  const [offers, setOffers] = useState<IncomingOffer[] | null>(live ? null : []);
-  const [shares, setShares] = useState<Share[] | null>(live ? null : []);
+function WhoViewedYou() {
+  const { t } = useTranslation();
+  const [data, setData] = useState<{
+    views: number; series: number[];
+    viewers: Array<{ name: string; kind: "investor" | "founder"; slug: string | null; lastAt: string }>;
+    interest: number; conversations: number; locked: boolean;
+  } | null>(null);
 
   useEffect(() => {
-    if (!live) return;
-    let alive = true;
-    fetch("/api/deals/proposals")
-      .then((r) => (r.ok ? r.json() : null))
-      // Incoming chains carry their closed ancestors; only pending rounds a
-      // founder sent to this investor are waiting on a reply.
-      .then((j: { incoming?: IncomingOffer[] } | null) => {
-        if (alive) setOffers((j?.incoming ?? []).filter((p) => p.status === "pending" && p.fromSide === "startup"));
-      })
-      .catch(() => { if (alive) setOffers([]); });
-    fetch("/api/deals/share")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j: { received?: Share[] } | null) => { if (alive) setShares(j?.received ?? []); })
-      .catch(() => { if (alive) setShares([]); });
-    return () => { alive = false; };
-  }, [live]);
-
-  const gaps: string[] = [];
-  if (!investor.investment_thesis) gaps.push(t("dashboard.thesisGapThesis"));
-  if (!investor.stages?.length) gaps.push(t("dashboard.thesisGapStages"));
-  if (!investor.industries?.length) gaps.push(t("dashboard.thesisGapIndustries"));
-  if (!investor.geography?.length) gaps.push(t("dashboard.thesisGapGeo"));
-  if (!investor.min_check && !investor.max_check) gaps.push(t("dashboard.thesisGapCheck"));
-
-  const rows: WaitRow[] = [];
-  if (live) {
-    for (const o of offers ?? []) {
-      rows.push({
-        key: `offer-${o.id}`,
-        href: "/deals",
-        title: o.counterpart?.name || t("dashboard.startupLabel"),
-        sub: [tf("dashboard.investor.waitOffer", "Offer awaiting your reply"), o.createdAt ? formatDate(o.createdAt) : null].filter(Boolean).join(" · "),
-        figure: compactMoney(o.amount, o.currency),
-        action: tf("dashboard.investor.reply", "Reply"),
-      });
-    }
-    const negotiating = deals
-      .filter((d) => d.status === "term_sheet" || d.status === "due_diligence")
-      .sort((a, b) => Number(a.status !== "term_sheet") - Number(b.status !== "term_sheet"));
-    for (const d of negotiating) {
-      rows.push({
-        key: `deal-${d.id}`,
-        href: `/deals?deal=${d.id}`,
-        title: d.startup?.name || t("dashboard.startupLabel"),
-        sub: d.status === "term_sheet"
-          ? tf("dashboard.investor.waitTermSheet", "Term sheet on the table")
-          : tf("dashboard.investor.waitDiligence", "In due diligence"),
-        figure: compactMoney(d.amount, d.currency),
-        action: tf("dashboard.investor.review", "Review"),
-      });
-    }
-    for (const s of shares ?? []) {
-      const from = s.from_investor?.display_name || s.from_investor?.firm_name || t("deals.investorFallback");
-      rows.push({
-        key: `share-${s.id}`,
-        href: s.startup?.slug ? `/startups/${s.startup.slug}` : undefined,
-        title: s.startup?.name || t("dashboard.startupLabel"),
-        sub: `${tf("dashboard.investor.sharedBy", "Shared by {name}", { name: from })} · ${formatDate(s.created_at)}`,
-        note: s.note,
-        figure: null,
-        action: t("common.open"),
-        extra: s.thread_id && shareThreadsOpen
-          ? <Link href={`/dashboard/messages?thread=${s.thread_id}`} className="cr-btn cr-btn--text">{t("coInvestors.continueThread")}</Link>
-          : undefined,
-      });
-    }
-  }
-  if (gaps.length > 0) {
-    rows.push({
-      key: "thesis",
-      href: live ? "/dashboard/investor/settings" : undefined,
-      title: tf("dashboard.investor.thesisRow", "Finish your investment profile"),
-      sub: `${t("dashboard.thesisMissing")}: ${gaps.join(", ")}`,
-      figure: null,
-      action: t("dashboard.completeProfile"),
-    });
-  }
-
-  const title = tf("dashboard.investor.waitingTitle", "Waiting on you");
-  const loaded = offers !== null && shares !== null;
-
-  if (!loaded) {
-    return (
-      <Section id="waiting" title={title}>
-        {/* Separated variant (globals.css "Ledger: separated variant") on the
-           skeleton too, so the loading state doesn't flash as a flat hairline
-           list a moment before the loaded rows resolve into cards. */}
-        <Ledger busy columns="minmax(0,1fr)" className="cr-ledger--separated">
-          {Array.from({ length: Math.max(1, rows.length) }, (_, i) => (
-            <LedgerRow key={i}>
-              <LedgerCell primary><RowSkeleton /></LedgerCell>
-            </LedgerRow>
-          ))}
-        </Ledger>
-      </Section>
-    );
-  }
-
-  if (rows.length === 0) {
-    if (!live) return null;
-    return (
-      <Section id="waiting" title={title}>
-        <EmptyState title={tf("dashboard.investor.waitingNone", "Nothing is waiting on you.")} />
-      </Section>
-    );
-  }
-
-  return (
-    <Section id="waiting" title={title}>
-      {/* Opt-in separated variant (globals.css "Ledger: separated variant")
-         -- each row here is a distinct deal, offer or share in motion, not
-         a line in a dense table, so it gets the same treatment as the
-         investor directory and the watchlist below. */}
-      <Ledger columns="minmax(0,1fr) auto auto" className="crd-waiting cr-ledger--separated">
-        {rows.map((r, i) => {
-          const primaryAction = i === 0 && r.href
-            ? <Link href={r.href} className="cr-btn cr-btn--primary">{r.action}</Link>
-            : null;
-          const trailing = primaryAction || r.extra ? <>{primaryAction}{r.extra}</> : undefined;
-          const cells = [
-            <LedgerCell key="name" primary>
-              <span className="cr-row-title">{r.title}</span>
-              <span className="cr-row-sub">{r.sub}</span>
-              {r.note && <span className="cr-row-sub">{`“${r.note}”`}</span>}
-            </LedgerCell>,
-            <LedgerCell key="figure" figure>{r.figure}</LedgerCell>,
-          ];
-          return r.href ? (
-            <LedgerRow key={r.key} href={r.href} label={r.title} trailing={trailing}>{cells}</LedgerRow>
-          ) : (
-            <LedgerRow key={r.key} trailing={trailing}>{cells}</LedgerRow>
-          );
-        })}
-      </Ledger>
-    </Section>
-  );
-}
-
-// ── Saved searches ──────────────────────────────────────────
-
-/**
- * Saved searches live on /startups: the Saved menu there lists them, applies
- * one in place, and deletes one with an Undo, and "Save search" creates them.
- * The daily cron matches every saved search either way, so there is no
- * per-search switch to carry across.
- *
- * This is the way back to that menu. `enabled` carries the same investorCan
- * savedSearches capability that /startups resolves server-side, so the link
- * never leads to a menu that will not render there. Mounted only outside
- * view-as: the API answers with the caller's own searches, and in view-as the
- * caller is the admin.
- */
-function SavedSearchesLink({ enabled }: { enabled: boolean }) {
-  const { t } = useStrings();
-  const [count, setCount] = useState(0);
-
-  useEffect(() => {
-    if (!enabled) return;
-    let alive = true;
-    fetch("/api/saved-searches")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => { if (alive) setCount(Array.isArray(j?.searches) ? j.searches.length : 0); })
-      .catch(() => { if (alive) setCount(0); });
-    return () => { alive = false; };
-  }, [enabled]);
-
-  // The Saved menu only exists once a search does, so until then this would
-  // point at nothing.
-  if (!enabled || count === 0) return null;
-
-  return (
-    <Link href="/startups" className="cr-btn cr-btn--text">
-      {t("startups.savedSearches")}
-    </Link>
-  );
-}
-
-// ── Who viewed you ──────────────────────────────────────────────────────────
-
-type EngagementViewer = { name: string; kind: "investor" | "founder"; slug: string | null; lastAt: string };
-type EngagementData = {
-  views: number; viewers: EngagementViewer[];
-  interest: number; conversations: number; locked: boolean;
-};
-
-/**
- * Migration 107's engagement layer -- the investor-side mirror of the
- * founder's own "Investors" section (startup-dashboard-client.tsx): counts
- * for every plan, names for paid tiers (and everyone during launch), a
- * private viewer counted but never named. The API (/api/investors/engagement)
- * was built and shipped in the 09-05 "wow features" round and stayed live
- * through the redesign; only the panel reading it was dropped. Mounted only
- * outside view-as -- the endpoint answers as the CALLER, and in view-as the
- * caller is the admin, not the investor being viewed.
- */
-function ProfileViewersSection() {
-  const { t, tf, tfn } = useStrings();
-  const [data, setData] = useState<EngagementData | null>(null);
-
-  useEffect(() => {
-    let alive = true;
     fetch("/api/investors/engagement")
       .then((r) => (r.ok ? r.json() : null))
-      .then((j: EngagementData | null) => { if (alive) setData(j); })
-      .catch(() => { if (alive) setData(null); });
-    return () => { alive = false; };
+      .then(setData)
+      .catch(() => setData(null));
   }, []);
 
   if (!data || (data.views === 0 && data.interest === 0 && data.conversations === 0)) return null;
 
-  // The dictionary's "engagement.*" strings are bare labels meant to sit
-  // beside a separately rendered figure (the pre-redesign shape); this meta
-  // line is one sentence, so it uses its own {count}-carrying fallbacks
-  // rather than an interpolation the old keys were never written for.
-  const clauses: string[] = [];
-  if (data.views > 0) clauses.push(tfn("dashboard.investor.viewsCount", data.views, "{count} view in 30 days", "{count} views in 30 days"));
-  if (data.interest > 0) clauses.push(tfn("dashboard.investor.interestCount", data.interest, "{count} interested", "{count} interested"));
-  if (data.conversations > 0) clauses.push(tfn("dashboard.investor.conversationsCount", data.conversations, "{count} conversation", "{count} conversations"));
+  // The daily view series arrives with the counts; normalised for the kit
+  // sparkline, which draws itself in beside the headline figure. Guarded,
+  // since nothing rendered this field before now.
+  const series = Array.isArray(data.series) ? data.series : [];
+  const seriesMax = Math.max(1, ...series);
 
   return (
-    <Section id="viewers" title={t("engagement.whoViewedYou")} meta={clauses.join(" · ")}>
+    <AuxPanel
+      label={t("engagement.whoViewedYou")}
+      // The counts stay on screen at rest; the names are the detail. Views
+      // dropped from 24px copper to a supporting ink figure so the instrument
+      // strip keeps the one headline on this view.
+      summary={
+        <>
+          {/* Sparklines render only with 8+ points; below that, nothing. */}
+          {series.length >= 8 && (
+            <span aria-hidden style={{ display: "inline-flex", alignSelf: "center" }}>
+              <Sparkline points={series.map((v) => v / seriesMax)} width={96} height={24} />
+            </span>
+          )}
+          <AuxFigure value={data.views} label={t("engagement.views30d")} />
+          {data.interest > 0 && <AuxFigure value={data.interest} label={t("engagement.interestedInYou")} />}
+          {data.conversations > 0 && <AuxFigure value={data.conversations} label={t("engagement.conversations30d")} />}
+        </>
+      }
+    >
       {data.locked && data.views > 0 ? (
-        <p className="crd-note" style={{ paddingBlock: "0.75rem" }}>
-          {tf("dashboard.investor.viewersLocked", "Names are a paid feature.")}{" "}
-          <Link href="/pricing" className="cr-link">{t("dashboard.upgradeSeeWho")}</Link>
-        </p>
+        <>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", filter: "blur(4px)", userSelect: "none", pointerEvents: "none" }} aria-hidden>
+            {Array.from({ length: Math.min(data.views, 3) }).map((_, i) => (
+              <div key={i} style={{ height: "12px", width: `${55 + i * 12}%`, background: "var(--cr-paper-4)", borderRadius: "4px" }} />
+            ))}
+          </div>
+          <Link href="/pricing" style={{ display: "inline-block", marginTop: RHYTHM.inner, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+            {t("dashboard.upgradeSeeWho")} →
+          </Link>
+        </>
       ) : data.viewers.length > 0 ? (
-        <Ledger columns="minmax(0,1fr) auto">
-          {data.viewers.slice(0, 8).map((v, i) => {
-            const href = v.slug ? (v.kind === "investor" ? `/investors/${v.slug}` : `/startups/${v.slug}`) : undefined;
-            const row = (
-              <>
-                <LedgerCell primary>
-                  <span className="cr-row-title">{v.name}</span>
-                </LedgerCell>
-                <LedgerCell align="end">
-                  <time className="cr-row-sub" dateTime={v.lastAt} style={{ fontVariantNumeric: "tabular-nums" }}>{formatDate(v.lastAt)}</time>
-                </LedgerCell>
-              </>
-            );
-            return href
-              ? <LedgerRow key={`${v.slug}-${i}`} href={href} label={v.name}>{row}</LedgerRow>
-              : <LedgerRow key={`${v.slug}-${i}`}>{row}</LedgerRow>;
-          })}
-        </Ledger>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+          {data.viewers.slice(0, 8).map((v, i) => (
+            <div key={`${v.slug}-${i}`} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+              {v.slug ? (
+                <Link href={v.kind === "investor" ? `/investors/${v.slug}` : `/startups/${v.slug}`}
+                  style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)", textDecoration: "none" }}>
+                  {v.name}
+                </Link>
+              ) : (
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>{v.name}</span>
+              )}
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>
+                {v.lastAt ? new Date(v.lastAt).toLocaleDateString() : ""}
+              </span>
+            </div>
+          ))}
+        </div>
       ) : null}
-    </Section>
+    </AuxPanel>
   );
 }
 
-// ── Recently viewed ──────────────────────────────────────────────────────────
-
-type RecentView = { slug: string; name: string; viewedAt: string };
-
-/**
- * The last listings this investor opened, from their own startup_views
- * history (RLS scopes the read to the caller's own rows). Deal-flow triage
- * starts where it left off instead of from a cold directory. Mounted only
- * outside view-as: in view-as this would read the ADMIN's own trail, not the
- * member's.
- */
-function JumpBackInSection() {
-  const { t } = useStrings();
-  const supabase = useRef(createClient()).current;
-  const [rows, setRows] = useState<RecentView[] | null>(null);
-
+function SharedWithYou() {
+  const { t } = useTranslation();
+  // A share's thread is between two investors, which no member may use; only
+  // an admin is offered the way into it.
+  const { profile } = useProfile();
+  const shareThreadsOpen = profile?.role === "admin";
+  type Share = { id: string; note: string | null; created_at: string; thread_id: string | null; startup: { name: string; slug: string } | null; from_investor?: { slug: string; display_name: string | null; firm_name: string | null } | null };
+  const [received, setReceived] = useState<Share[]>([]);
   useEffect(() => {
-    let alive = true;
-    supabase
-      .from("startup_views")
-      .select("viewed_at, startup:startups(slug, name, status)")
-      .order("viewed_at", { ascending: false })
-      .limit(30)
-      .then(({ data }: { data: any[] | null }) => {
-        if (!alive) return;
-        const seen = new Map<string, RecentView>();
-        for (const r of (data ?? []) as any[]) {
-          const s = r.startup;
-          if (!s?.slug || s.status !== "active" || seen.has(s.slug)) continue;
-          seen.set(s.slug, { slug: s.slug, name: s.name, viewedAt: r.viewed_at });
-        }
-        setRows(Array.from(seen.values()).slice(0, 6));
-      });
-    return () => { alive = false; };
-  }, [supabase]);
-
-  if (!rows || rows.length === 0) return null;
-
+    fetch("/api/deals/share").then(r => r.ok ? r.json() : null).then(j => setReceived(j?.received ?? [])).catch(() => {});
+  }, []);
+  if (received.length === 0) return null;
   return (
-    <Section id="recently-viewed" title={t("dashboard.jumpBackIn")}>
-      <Ledger columns="minmax(0,1fr) auto">
-        {rows.map((r) => (
-          <LedgerRow key={r.slug} href={`/startups/${r.slug}`} label={r.name}>
-            <LedgerCell primary><span className="cr-row-title">{r.name}</span></LedgerCell>
-            <LedgerCell align="end">
-              <time className="cr-row-sub" dateTime={r.viewedAt} style={{ fontVariantNumeric: "tabular-nums" }}>{formatDate(r.viewedAt)}</time>
-            </LedgerCell>
-          </LedgerRow>
+    // The label already carries the count, so this header needs no second figure.
+    <AuxPanel label={t("coInvestors.sharedTitle", { count: received.length })}>
+      {/* Structure is rules: shares separate with hairlines, not boxes. */}
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {received.map((sh, i) => (
+          <div key={sh.id} style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8, flexWrap: "wrap" }}>
+              <Link href={`/startups/${sh.startup?.slug ?? ""}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                {sh.startup?.name ?? "—"}
+              </Link>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{formatDate(sh.created_at)}</span>
+            </div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: 4 }}>
+              {t("coInvestors.sharedBy")}{" "}
+              {sh.from_investor ? <Link href={`/investors/${sh.from_investor.slug}`} style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{sh.from_investor.display_name || sh.from_investor.firm_name || t("deals.investorFallback")}</Link> : t("deals.investorFallback")}
+            </p>
+            {sh.note && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", marginTop: 8, lineHeight: 1.5 }}>“{sh.note}”</p>}
+            {sh.thread_id && shareThreadsOpen && (
+              <Link href={`/dashboard/messages?thread=${sh.thread_id}`} style={{ display: "inline-block", marginTop: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                {t("coInvestors.continueThread")} →
+              </Link>
+            )}
+          </div>
         ))}
-      </Ledger>
-    </Section>
+      </div>
+    </AuxPanel>
   );
 }
-
-// ── Watchlist ───────────────────────────────────────────────────────────────
 
 /**
  * C26: the watchlist is a pipeline, not a pile. Status moves a save through
- * triage and persists through PATCH /api/watchlist.
+ * triage; priority stars it. Both persist through PATCH /api/watchlist.
  */
 const WL_STATUSES = ["watching", "reviewing", "contacted", "passed"] as const;
 type WlStatus = typeof WL_STATUSES[number];
@@ -594,619 +398,327 @@ const WL_KEY: Record<WlStatus, string> = {
   watching: "watchlist.stWatching", reviewing: "watchlist.stReviewing",
   contacted: "watchlist.stContacted", passed: "watchlist.stPassed",
 };
+// Green/red are reserved for money direction, so triage states speak in the
+// house accents instead: copper = in motion, verdigris = success/contacted,
+// ink shades for the resting states (a passed card also dims to 0.6).
+const WL_COLOR: Record<WlStatus, string> = {
+  watching: "var(--cr-ink-4)", reviewing: "var(--cr-copper)",
+  contacted: "var(--verdigris)", passed: "var(--cr-ink-3)",
+};
 
-type SavedStartup = NonNullable<Watchlist["startup"]>;
-
-/**
- * One saved company: the row opens the listing (a real link, so the detail
- * page counts the visit), priority, the status select and the note sit above
- * the link.
- *
- * The note says why the company was saved. It saves on blur rather than
- * behind a button: this is a scratchpad, and a Save press on a one-line
- * thought is how the field goes unused. Every write is gated on the ReadOnly
- * context, because in view-as these APIs authenticate as the admin.
- */
-function WatchlistRow({ startup, note, status, priority, onStatus, onPriority }: {
-  startup: SavedStartup; note: string | null; status: WlStatus; priority: number;
-  onStatus: (next: WlStatus) => void; onPriority: (next: number) => void;
-}) {
-  const { t, tf } = useStrings();
+function WatchlistTriage({ startupId, status, priority, onChange }: { startupId: string; status: WlStatus; priority: number; onChange: (patch: { status?: WlStatus; priority?: number }) => void }) {
+  const { t } = useTranslation();
   const readOnly = useReadOnly();
-  const [statusBusy, setStatusBusy] = useState(false);
-  const [priorityBusy, setPriorityBusy] = useState(false);
-  const [saved, setSaved] = useState(note ?? "");
-  const [draft, setDraft] = useState(note ?? "");
+  const [busy, setBusy] = useState(false);
+
+  async function patch(body: { status?: WlStatus; priority?: number }) {
+    if (readOnly || busy) return;
+    const prev = { status, priority };
+    onChange(body);                       // optimistic
+    setBusy(true);
+    const res = await fetch("/api/watchlist", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId, ...body }) });
+    setBusy(false);
+    if (!res.ok) { onChange(prev); notify.error(t("errors.generic")); }
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap", marginTop: "12px" }}>
+      <select value={status} onChange={(e) => patch({ status: e.target.value as WlStatus })} disabled={readOnly}
+        aria-label={t("watchlist.statusLabel")}
+        style={{ background: "var(--cr-paper-2)", border: `1px solid ${WL_COLOR[status]}`, color: WL_COLOR[status], borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em", cursor: readOnly ? "default" : "pointer", outline: "none" }}>
+        {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
+      </select>
+      {/* Priority: three dots, click to set, click the current one to clear. */}
+      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginLeft: "4px" }}>{t("watchlist.priorityLabel")}</span>
+      <div style={{ display: "inline-flex", gap: "4px", alignItems: "center" }} role="group" aria-label={t("watchlist.priorityLabel")}>
+        {[1, 2, 3].map((n) => (
+          <button key={n} onClick={() => patch({ priority: priority === n ? 0 : n })} disabled={readOnly}
+            aria-label={`${t("watchlist.priorityLabel")} ${n}`} aria-pressed={priority >= n}
+            style={{ width: 12, height: 12, borderRadius: "50%", padding: 0, cursor: readOnly ? "default" : "pointer", border: `1px solid ${priority >= n ? "var(--cr-copper)" : "var(--cr-rule-dark)"}`, background: priority >= n ? "var(--cr-copper)" : "transparent" }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WatchlistNote({ startupId, initial }: { startupId: string; initial: string | null }) {
+  const { t } = useTranslation();
+  const readOnly = useReadOnly();
+  const [value, setValue]     = useState(initial ?? "");
+  const [saved, setSaved]     = useState(initial ?? "");
+  const [busy, setBusy]       = useState(false);
   const [editing, setEditing] = useState(false);
-  const cancelled = useRef(false);
-  const toggleRef = useRef<HTMLButtonElement>(null);
-  const fieldRef = useRef<HTMLTextAreaElement>(null);
-  const fieldId = useId();
-  const priorityLabel = tf("watchlist.priorityLabel", "Priority");
-
-  async function patchStatus(next: WlStatus) {
-    if (readOnly || statusBusy) return;
-    const prev = status;
-    onStatus(next);
-    setStatusBusy(true);
-    const res = await fetch("/api/watchlist", {
-      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id, status: next }),
-    }).catch(() => null);
-    setStatusBusy(false);
-    if (!res?.ok) { onStatus(prev); notify.error(t("errors.generic")); }
-  }
-
-  // Three dots, click to set, click the current one to clear (0-3, C26).
-  async function patchPriority(next: number) {
-    if (readOnly || priorityBusy) return;
-    const prev = priority;
-    onPriority(next);
-    setPriorityBusy(true);
-    const res = await fetch("/api/watchlist", {
-      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id, priority: next }),
-    }).catch(() => null);
-    setPriorityBusy(false);
-    if (!res?.ok) { onPriority(prev); notify.error(t("errors.generic")); }
-  }
 
   async function persist() {
+    if (readOnly) { setEditing(false); return; }
+    const next = value.trim();
     setEditing(false);
-    if (cancelled.current) { cancelled.current = false; setDraft(saved); return; }
-    if (readOnly) return;
-    const next = draft.trim();
-    if (next === saved) return;
-    const prev = saved;
-    setSaved(next);
+    if (next === saved) return;          // nothing changed -- don't write
+    setBusy(true);
     const res = await fetch("/api/watchlist", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ startupId: startup.id, note: next || null }),
-    }).catch(() => null);
-    if (!res?.ok) { setSaved(prev); setDraft(prev); notify.error(t("dashboard.noteSaveFailed")); }
-  }
-
-  const raise = safeFormatCurrencyAmount(startup.funding_target);
-  const meta = [stageLabel(startup.stage), startup.industry].filter(Boolean).join(" · ");
-
-  return (
-    <LedgerRow href={`/startups/${startup.slug}`} label={startup.name} className={status === "passed" ? "crd-passed" : undefined}>
-      <LedgerCell primary>
-        <span className="cr-row-title">{startup.name}</span>
-        {meta && <span className="cr-row-sub">{meta}</span>}
-        {editing ? (
-          <textarea
-            ref={fieldRef}
-            id={fieldId}
-            className="cr-input cr-row__raised crd-note-field"
-            autoFocus
-            rows={2}
-            maxLength={1000}
-            value={draft}
-            aria-label={tf("dashboard.investor.noteFor", "Note on {name}", { name: startup.name })}
-            placeholder={t("dashboard.notePlaceholder")}
-            onChange={(e) => setDraft(e.target.value)}
-            onBlur={persist}
-            onKeyDown={(e) => {
-              // Focus returns to the toggle, and the blur that causes saves.
-              if (e.key === "Escape") { e.preventDefault(); cancelled.current = true; toggleRef.current?.focus(); }
-              // Shift+Enter keeps the newline; notes run to a couple of lines.
-              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); toggleRef.current?.focus(); }
-            }}
-          />
-        ) : saved ? (
-          <p className="crd-note">{saved}</p>
-        ) : null}
-      </LedgerCell>
-      <LedgerCell figure>{raise === FORMATTER_DASH ? <NotStated /> : raise}</LedgerCell>
-      <LedgerCell align="end">
-        <div className="crd-controls">
-          {!readOnly && (
-            <button
-              ref={toggleRef}
-              type="button"
-              className="cr-btn cr-btn--text cr-row__raised"
-              aria-expanded={editing}
-              aria-controls={editing ? fieldId : undefined}
-              // Keeps focus in the field so this press commits instead of reopening.
-              onMouseDown={(e) => { if (editing) e.preventDefault(); }}
-              onClick={() => { if (editing) fieldRef.current?.blur(); else setEditing(true); }}
-            >
-              {saved ? tf("dashboard.investor.editNote", "Edit note") : t("dashboard.addNote")}
-            </button>
-          )}
-          <div className="crd-priority cr-row__raised" role="group" aria-label={priorityLabel}>
-            {[1, 2, 3].map((n) => (
-              <button
-                key={n}
-                type="button"
-                className="crd-priority-dot"
-                disabled={readOnly}
-                aria-pressed={priority >= n}
-                aria-label={`${priorityLabel} ${n}`}
-                data-on={priority >= n || undefined}
-                onClick={() => void patchPriority(priority === n ? 0 : n)}
-              />
-            ))}
-          </div>
-          <select
-            className="cr-select cr-row__raised"
-            value={status}
-            disabled={readOnly}
-            aria-label={tf("dashboard.investor.statusFor", "Status of {name}", { name: startup.name })}
-            onChange={(e) => void patchStatus(e.target.value as WlStatus)}
-          >
-            {WL_STATUSES.map((s) => <option key={s} value={s}>{t(WL_KEY[s])}</option>)}
-          </select>
-        </div>
-      </LedgerCell>
-    </LedgerRow>
-  );
-}
-
-function WatchlistSection({ watchlist, canExport, showBrowse }: { watchlist: Watchlist[]; canExport: boolean; showBrowse: boolean }) {
-  const { t, tf } = useStrings();
-  const [statusById, setStatusById] = useState<Record<string, WlStatus>>(() =>
-    Object.fromEntries(watchlist.map((w) => [w.id, (w.status ?? "watching") as WlStatus])),
-  );
-  const [priorityById, setPriorityById] = useState<Record<string, number>>(() =>
-    Object.fromEntries(watchlist.map((w) => [w.id, w.priority ?? 0])),
-  );
-  const [filter, setFilter] = useState<WlStatus | null>(null);
-  const saved = watchlist.filter((w): w is Watchlist & { startup: SavedStartup } => Boolean(w.startup));
-  const statusOf = (w: Watchlist): WlStatus => statusById[w.id] ?? "watching";
-  const priorityOf = (w: Watchlist): number => priorityById[w.id] ?? w.priority ?? 0;
-
-  function exportCsv() {
-    if (saved.length === 0) return;
-    // Every cell quoted: a tagline is free text, and one comma in it shifts
-    // every later column of that row.
-    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const header = [
-      t("watchlist.statusLabel"), t("watchlist.priorityLabel"), t("dashboard.startupLabel"),
-      tf("dashboard.investor.csvTagline", "Tagline"), t("filters.industry"), t("filters.stage"),
-      tf("dashboard.investor.csvTarget", "Funding target"), t("startupDetail.mrr"),
-    ];
-    const lines = saved.map((w) => [
-      t(WL_KEY[statusOf(w)]), priorityOf(w), w.startup.name, w.startup.tagline, w.startup.industry,
-      stageLabel(w.startup.stage), w.startup.funding_target, w.startup.mrr,
-    ].map(esc).join(","));
-    const csv = [header.map(esc).join(","), ...lines].join("\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    const a = document.createElement("a");
-    a.href = url; a.download = "capitalreach-watchlist.csv"; a.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  }
-
-  const visible = filter ? saved.filter((w) => statusOf(w) === filter) : saved;
-  // Triage by status earns a control only once the list is long enough to scan.
-  const showFilter = saved.length >= 8;
-  const showExport = canExport && saved.length > 0;
-  const end = showFilter || showExport ? (
-    <>
-      {showFilter && (
-        <FilterMenu<WlStatus>
-          label={t("dashboard.statusLabel")}
-          options={WL_STATUSES.map((s) => ({ value: s, label: t(WL_KEY[s]), count: saved.filter((w) => statusOf(w) === s).length }))}
-          multiple={false}
-          value={filter}
-          onChange={setFilter}
-          align="end"
-        />
-      )}
-      {showExport && (
-        <button type="button" className="cr-btn cr-btn--text" onClick={exportCsv}>{t("dashboard.exportCsv")}</button>
-      )}
-    </>
-  ) : undefined;
-
-  const meta = saved.length === 0 ? undefined
-    : saved.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: saved.length });
-
-  return (
-    <Section id="watchlist" title={t("dashboard.watchlist")} meta={meta} end={end}>
-      {saved.length === 0 ? (
-        <EmptyState
-          title={t("dashboard.noSavedYet")}
-          action={showBrowse ? <Link href="/startups" className="cr-link">{t("dashboard.browseStartups")}</Link> : undefined}
-        />
-      ) : visible.length === 0 ? (
-        <EmptyState
-          title={tf("dashboard.investor.noStatusMatch", "No saved companies have this status.")}
-          action={
-            <button type="button" className="cr-btn cr-btn--text crd-flush" onClick={() => setFilter(null)}>
-              {tf("dashboard.investor.showAll", "Show all")}
-            </button>
-          }
-        />
-      ) : (
-        <Ledger
-          columns="minmax(0,1fr) auto auto"
-          /* Opt-in separated variant (globals.css "Ledger: separated
-             variant") -- same class the investor directory uses: each row
-             is a distinct saved company, not a line in a dense table. */
-          className="cr-ledger--separated"
-          head={
-            <LedgerHead>
-              <LedgerCell>{t("dashboard.startupLabel")}</LedgerCell>
-              <LedgerCell figure>{tf("dashboard.investor.colRaising", "Raising")}</LedgerCell>
-              <LedgerCell align="end">{t("dashboard.statusLabel")}</LedgerCell>
-            </LedgerHead>
-          }
-        >
-          {visible.map((w) => (
-            <WatchlistRow
-              key={w.id}
-              startup={w.startup}
-              note={w.note ?? null}
-              status={statusOf(w)}
-              priority={priorityOf(w)}
-              onStatus={(next) => setStatusById((prev) => ({ ...prev, [w.id]: next }))}
-              onPriority={(next) => setPriorityById((prev) => ({ ...prev, [w.id]: next }))}
-            />
-          ))}
-        </Ledger>
-      )}
-    </Section>
-  );
-}
-
-// ── Positions ───────────────────────────────────────────────────────────────
-
-/**
- * D40 + D43: closed deals as positions, with the allocation target in the
- * section head for plans that track it. Deployed and committed are computed
- * from deals server-side so they cannot drift; the target is the investor's.
- */
-function PositionsSection({ positions, investor, allocation, canTrack, canExport }: {
-  positions: PortfolioPosition[]; investor: Investor; allocation?: { committed: number; deployed: number }; canTrack: boolean; canExport: boolean;
-}) {
-  const { t, tf } = useStrings();
-  const readOnly = useReadOnly();
-  const inv = investor as unknown as { allocation_target?: number | null; allocation_period?: string | null; currency?: string | null };
-  const cur = inv.currency || "USD";
-  const [target, setTarget] = useState<number | null>(inv.allocation_target ?? null);
-  const [period, setPeriod] = useState(inv.allocation_period ?? "");
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState("");
-  const [periodDraft, setPeriodDraft] = useState("");
-  const [invalid, setInvalid] = useState(false);
-  const toggleRef = useRef<HTMLButtonElement>(null);
-  const formId = useId();
-  const errorId = `${formId}-error`;
-
-  // A sum across currencies would be a number nobody holds.
-  const currencies = new Set(positions.map((p) => p.currency));
-  const total = positions.reduce((a, p) => a + (p.amount ?? 0), 0);
-  const totalText = currencies.size === 1 && total > 0 ? formatMoney(total, positions[0].currency) : null;
-
-  const summary = allocationSummary(target, allocation?.committed ?? 0, allocation?.deployed ?? 0);
-  const targetText = summary.target !== null
-    ? `${formatMoney(summary.target, cur, { compact: true })}${period ? ` · ${period}` : ""}`
-    : null;
-  const remainingText = canTrack && summary.remaining ? formatMoney(summary.remaining, cur, { compact: true }) : null;
-
-  function openForm() {
-    setDraft(target ? String(target) : "");
-    setPeriodDraft(period);
-    setInvalid(false);
-    setEditing(true);
-  }
-  function closeForm() {
-    setEditing(false);
-    setInvalid(false);
-    toggleRef.current?.focus();
-  }
-
-  async function save(e: FormEvent) {
-    e.preventDefault();
-    if (readOnly) return;
-    const raw = draft.trim();
-    let next: number | null = null;
-    if (raw !== "") {
-      const n = Number(raw.replace(/[^0-9.]/g, ""));
-      if (!Number.isFinite(n) || n <= 0) { setInvalid(true); return; }
-      next = n;
-    }
-    const nextPeriod = periodDraft.trim().slice(0, 40);
-    const prev = { target, period };
-    setTarget(next);
-    setPeriod(nextPeriod);
-    closeForm();
-    const res = await fetch("/api/investors/allocation", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ target: next, period: nextPeriod || null }),
-    }).catch(() => null);
-    if (!res?.ok) { setTarget(prev.target); setPeriod(prev.period); notify.error(t("errors.generic")); }
-  }
-
-  const meta = totalText || remainingText ? (
-    <span className="crd-meta">
-      {totalText && <span>{t("dashboard.totalDeployed")}</span>}
-      {totalText && <span className="crd-figure-lg">{totalText}</span>}
-      {remainingText && <span>{tf("dashboard.investor.remaining", "{amount} remaining", { amount: remainingText })}</span>}
-    </span>
-  ) : undefined;
-
-  const markUp = (p: PortfolioPosition) =>
-    p.valuationAtClose && p.currentValuation && p.valuationAtClose > 0
-      ? Math.round((p.currentValuation / p.valuationAtClose - 1) * 100)
-      : null;
-
-  // Same CSV-escaping/download pattern as WatchlistSection's exportCsv: every
-  // cell quoted, since a listing name or update title is free text and one
-  // stray comma shifts every later column of that row.
-  const showExport = canExport && positions.length > 0;
-  function exportCsv() {
-    if (positions.length === 0) return;
-    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const header = [
-      t("dashboard.startupLabel"),
-      tf("dashboard.investor.csvStatus", "Status"),
-      t("dashboard.amountLabel"), tf("dashboard.investor.csvCurrency", "Currency"),
-      t("portfolio.ownership"),
-      tf("dashboard.investor.csvValuationClose", "Valuation at close"),
-      tf("dashboard.investor.csvValuationCurrent", "Current valuation"),
-      t("portfolio.markChange"),
-      tf("dashboard.investor.csvClosedDate", "Closed date"),
-      t("portfolio.latestUpdate"),
-      tf("dashboard.investor.csvProfile", "Profile"),
-    ];
-    const lines = positions.map((p) => {
-      const listed = p.status === "active";
-      const mu = markUp(p);
-      return [
-        p.name, listed ? tf("dashboard.investor.csvListed", "Listed") : t("portfolio.notListed"),
-        p.amount ?? "", p.currency,
-        p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : "",
-        p.valuationAtClose ?? "", p.currentValuation ?? "",
-        mu != null ? `${mu > 0 ? "+" : ""}${mu}%` : "",
-        p.closedAt ? formatDate(p.closedAt) : "",
-        p.latestUpdate ? `${p.latestUpdate.title} · ${formatDate(p.latestUpdate.created_at)}` : t("portfolio.noUpdates"),
-        listed ? `${window.location.origin}/startups/${p.slug}` : `${window.location.origin}/deals?deal=${p.dealId}`,
-      ].map(esc).join(",");
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId, note: next || null }),
     });
-    const csv = [header.map(esc).join(","), ...lines].join("\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    const a = document.createElement("a");
-    a.href = url; a.download = "capitalreach-positions.csv"; a.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    setBusy(false);
+    if (!res.ok) { notify.error(t("dashboard.noteSaveFailed")); setValue(saved); return; }
+    setSaved(next);
   }
 
-  const targetControl = !canTrack ? undefined
-    : readOnly
-      ? (targetText ? <span className="crd-end-text">{tf("dashboard.investor.target", "Target {amount}", { amount: targetText })}</span> : undefined)
-      : (
-        <button
-          ref={toggleRef}
-          type="button"
-          className="cr-btn cr-btn--text"
-          aria-expanded={editing}
-          aria-controls={editing ? formId : undefined}
-          onClick={() => (editing ? closeForm() : openForm())}
-        >
-          {targetText ? tf("dashboard.investor.targetEdit", "Target {amount}, edit", { amount: targetText }) : t("allocation.set")}
-        </button>
-      );
-  const end = targetControl || showExport ? (
-    <>
-      {targetControl}
-      {showExport && (
-        <button type="button" className="cr-btn cr-btn--text" onClick={exportCsv}>{t("dashboard.exportCsv")}</button>
-      )}
-    </>
-  ) : undefined;
+  if (!editing && !saved) {
+    return (
+      <button
+        onClick={() => setEditing(true)}
+        style={{ background: "none", border: "none", padding: "8px 0 0", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-copper)", textDecoration: "underline" }}
+      >
+        + {t("dashboard.addNote")}
+      </button>
+    );
+  }
+
+  if (!editing) {
+    return (
+      <p
+        onClick={() => setEditing(true)}
+        title={t("dashboard.editNote")}
+        style={{ margin: "8px 0 0", cursor: "text", fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", lineHeight: 1.5, color: "var(--cr-ink-3)", whiteSpace: "pre-wrap" }}
+      >
+        {saved}
+      </p>
+    );
+  }
 
   return (
-    <Section id="positions" title={tf("dashboard.investor.positionsTitle", "Positions")} meta={meta} end={end}>
-      {editing && !readOnly && (
-        <form id={formId} className="crd-alloc" onSubmit={save} noValidate>
-          <label>
-            {t("allocation.targetPh")}
-            <input
-              className="cr-input"
-              inputMode="decimal"
-              autoFocus
-              value={draft}
-              aria-invalid={invalid || undefined}
-              aria-describedby={invalid ? errorId : undefined}
-              onChange={(e) => { setDraft(e.target.value); if (invalid) setInvalid(false); }}
-            />
-          </label>
-          <label>
-            {t("allocation.periodPh")}
-            <input className="cr-input" maxLength={40} value={periodDraft} onChange={(e) => setPeriodDraft(e.target.value)} />
-          </label>
-          <button type="submit" className="cr-btn">{t("common.save")}</button>
-          <button type="button" className="cr-btn cr-btn--text" onClick={closeForm}>{t("common.cancel")}</button>
-          {invalid && (
-            <p id={errorId} className="crd-field-error">
-              {tf("dashboard.investor.targetInvalid", "Enter the target as a number, like 250000.")}
-            </p>
-          )}
-        </form>
-      )}
-      <Ledger
-        columns="minmax(0,1fr) auto auto auto"
-        head={
-          <LedgerHead>
-            <LedgerCell>{t("dashboard.startupLabel")}</LedgerCell>
-            <LedgerCell figure>{t("dashboard.amountLabel")}</LedgerCell>
-            <LedgerCell figure>{t("portfolio.ownership")}</LedgerCell>
-            <LedgerCell figure>{t("portfolio.markChange")}</LedgerCell>
-          </LedgerHead>
-        }
-      >
-        {positions.map((p) => {
-          const mu = markUp(p);
-          const amount = compactMoney(p.amount, p.currency);
-          const update = p.latestUpdate
-            ? `${t("portfolio.latestUpdate")}: ${p.latestUpdate.title} · ${formatDate(p.latestUpdate.created_at)}`
-            : t("portfolio.noUpdates");
-          // D41: a company that archived its listing is still yours; its deal
-          // record is where the position lives once the listing is gone.
-          const listed = p.status === "active";
-          return (
-            <LedgerRow key={p.dealId} href={listed ? `/startups/${p.slug}` : `/deals?deal=${p.dealId}`} label={p.name}>
-              <LedgerCell primary>
-                <span className="cr-row-title">{p.name}</span>
-                <span className="cr-row-sub">{listed ? update : `${t("portfolio.notListed")} · ${update}`}</span>
-              </LedgerCell>
-              <LedgerCell figure>{amount ?? <NotStated />}</LedgerCell>
-              <LedgerCell figure>
-                <span className="crd-mlabel">{t("portfolio.ownership")}</span>
-                {p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : <NotStated />}
-              </LedgerCell>
-              <LedgerCell figure>
-                <span className="crd-mlabel">{t("portfolio.markChange")}</span>
-                {mu === null ? <NotStated /> : (
-                  <span className={mu > 0 ? "crd-up" : mu < 0 ? "crd-down" : undefined}>{`${mu > 0 ? "+" : ""}${mu}%`}</span>
-                )}
-              </LedgerCell>
-            </LedgerRow>
-          );
-        })}
-      </Ledger>
-    </Section>
+    <textarea
+      autoFocus
+      value={value}
+      disabled={busy}
+      onChange={(e) => setValue(e.target.value)}
+      onBlur={persist}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") { setValue(saved); setEditing(false); }
+        // Enter commits; Shift+Enter keeps the newline, since these run to a
+        // couple of lines often enough to be worth allowing.
+        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); (e.target as HTMLTextAreaElement).blur(); }
+      }}
+      maxLength={1000}
+      rows={2}
+      placeholder={t("dashboard.notePlaceholder")}
+      style={{ width: "100%", marginTop: "8px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-ink)", outline: "none", resize: "vertical", boxSizing: "border-box" }}
+    />
   );
 }
 
-// ── Reports ─────────────────────────────────────────────────────────────────
-
-type ReportItem = {
-  id: string; type: string; content: string; created_at: string;
-  startup?: { name: string; slug: string } | null; dealId?: string | null;
-};
-
-const REPORT_TYPE: Record<string, readonly [string, string]> = {
-  due_diligence:  ["dashboard.investor.reportDueDiligence", "Due diligence"],
-  startup_score:  ["dashboard.investor.reportScore", "Consistency score"],
-  pitch_feedback: ["dashboard.investor.reportPitch", "Pitch feedback"],
-  match:          ["dashboard.investor.reportMatch", "Match"],
-};
+// ── Component ─────────────────────────────────────────────────────────────────
 
 /**
- * C36: every report, each opening in place with export, delete and the links
- * to its listing and deal. The server hands over the first ten; the client
- * reads the full list, except in view-as, where that API answers as the admin.
+ * The last listings this investor opened, straight from their own
+ * startup_views history (RLS returns only the caller's rows). Deal-flow
+ * triage starts where it left off instead of from a cold directory.
  */
-function ReportsSection({ initial, live }: { initial: AiReport[]; live: boolean }) {
-  const { t, tf } = useStrings();
-  const readOnly = useReadOnly();
-  const [reports, setReports] = useState<ReportItem[]>(initial as unknown as ReportItem[]);
-  const [openIds, setOpenIds] = useState<ReadonlySet<string>>(() => new Set());
+function RecentlyViewedStrip() {
+  const { t } = useTranslation();
+  const supabase = useRef(createClient()).current;
+  const [rows, setRows] = useState<Array<{ slug: string; name: string; viewedAt: string }>>([]);
 
   useEffect(() => {
-    if (!live) return;
-    fetch("/api/ai/reports")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => { if (j?.reports) setReports(j.reports); })
-      .catch(() => {});
-  }, [live]);
+    supabase.from("startup_views")
+      .select("viewed_at, startup:startups(slug, name, status)")
+      .order("viewed_at", { ascending: false })
+      .limit(30)
+      .then(({ data }: { data: any[] | null }) => {
+        const seen = new Map<string, { slug: string; name: string; viewedAt: string }>();
+        for (const r of (data ?? []) as any[]) {
+          const s = r.startup;
+          if (!s?.slug || s.status !== "active" || seen.has(s.slug)) continue;
+          seen.set(s.slug, { slug: s.slug, name: s.name, viewedAt: r.viewed_at });
+        }
+        setRows(Array.from(seen.values()).slice(0, 6));
+      });
+  }, [supabase]);
 
-  const del = useUndoableDelete(async (id) => {
-    const res = await fetch("/api/ai/reports", {
-      method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }), keepalive: true,
-    }).catch(() => null);
-    if (!res?.ok) { notify.error(t("errors.generic")); return false; }
-    setReports((prev) => prev.filter((r) => r.id !== id));
-    return true;
-  });
-
-  const typeLabel = (type: string) => {
-    const entry = REPORT_TYPE[type];
-    return entry ? tf(entry[0], entry[1]) : tf("dashboard.investor.reportGeneric", "Report");
-  };
-
-  const toggle = (id: string) => setOpenIds((prev) => {
-    const next = new Set(prev);
-    if (next.has(id)) next.delete(id); else next.add(id);
-    return next;
-  });
-
-  function exportReport(r: ReportItem) {
-    const name = r.startup?.name ?? tf("dashboard.investor.reportGeneric", "Report");
-    const md = `# ${name}: ${typeLabel(r.type)}\n\n_${new Date(r.created_at).toLocaleString(displayLocale())}_\n\n${r.content}\n\n---\n${tf("dashboard.investor.reportDisclaimer", "AI-generated for informational purposes only. Not investment advice.")}\n`;
-    const url = URL.createObjectURL(new Blob([md], { type: "text/markdown;charset=utf-8;" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${r.type}.md`;
-    a.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  }
-
-  const visible = reports.filter((r) => !del.isHidden(r.id));
-  if (visible.length === 0 && !del.pending) return null;
+  if (rows.length === 0) return null;
 
   return (
-    <Section id="reports" title={tf("dashboard.investor.reportsTitle", "Reports")}>
-      {visible.length > 0 && (
-        <Ledger columns="minmax(0,1fr) auto">
-          {visible.map((r) => {
-            const open = openIds.has(r.id);
-            const panelId = `report-${r.id}`;
-            const name = r.startup?.name ?? tf("dashboard.investor.reportGeneric", "Report");
-            return (
-              <LedgerRow key={r.id}>
-                <LedgerCell primary>
-                  <span className="cr-row-title">{name}</span>
-                  <span className="cr-row-sub">{`${typeLabel(r.type)} · ${formatDate(r.created_at)}`}</span>
-                </LedgerCell>
-                <LedgerCell className="crd-toggle-cell">
-                  <button
-                    type="button"
-                    className="cr-btn cr-btn--text"
-                    aria-expanded={open}
-                    aria-controls={open ? panelId : undefined}
-                    aria-label={`${open ? t("common.close") : t("common.open")}: ${name}`}
-                    onClick={() => toggle(r.id)}
-                  >
-                    {open ? t("common.close") : t("common.open")}
-                  </button>
-                </LedgerCell>
-                {open && (
-                  <LedgerCell className="crd-expand">
-                    <div id={panelId}>
-                      <p className="crd-report">{r.content}</p>
-                      <div className="crd-actions">
-                        {r.startup?.slug && (
-                          <Link href={`/startups/${r.startup.slug}`} className="cr-btn cr-btn--text crd-flush">{t("dashboard.viewStartup")}</Link>
-                        )}
-                        {r.dealId && (
-                          <Link href={`/deals?deal=${r.dealId}`} className="cr-btn cr-btn--text">{t("dashboard.reportViewDeal")}</Link>
-                        )}
-                        <button type="button" className="cr-btn cr-btn--text" onClick={() => exportReport(r)}>
-                          {t("dashboard.reportExport")}
-                        </button>
-                        {!readOnly && (
-                          <button type="button" className="cr-btn cr-btn--text" onClick={() => { toggle(r.id); del.remove(r.id); }}>
-                            {t("common.delete")}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </LedgerCell>
-                )}
-              </LedgerRow>
-            );
-          })}
-        </Ledger>
-      )}
-      <UndoFoot
-        pendingId={del.pending}
-        message={tf("dashboard.investor.reportDeleted", "Report deleted.")}
-        onUndo={del.undo}
-      />
-    </Section>
+    <AuxPanel
+      label={t("dashboard.jumpBackIn")}
+      summary={<AuxFigure value={rows.length} />}
+    >
+      <div style={{ display: "flex", gap: RHYTHM.pair, flexWrap: "wrap" }}>
+        {rows.map((r) => (
+          <Link key={r.slug} href={`/startups/${r.slug}`}
+            style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "13px", color: "var(--cr-ink)", background: "transparent", border: "1px solid var(--cr-paper-4)", borderRadius: "4px", padding: "8px 12px", textDecoration: "none" }}>
+            {r.name}
+          </Link>
+        ))}
+      </div>
+    </AuxPanel>
   );
 }
 
-// ── Page ────────────────────────────────────────────────────────────────────
+/**
+ * The saved searches themselves, finally manageable: name, a one-line filter
+ * summary, open (the URL-synced browse makes every search addressable), and
+ * delete. The daily cron keeps matching either way.
+ */
+function SavedSearchManager() {
+  const readOnly = useReadOnly();
+  const { t } = useTranslation();
+  const [rows, setRows] = useState<Array<{ id: string; name: string; filters: Record<string, unknown> }> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/saved-searches").then(r => r.ok ? r.json() : null).then(j => setRows(j?.searches ?? null)).catch(() => setRows(null));
+  }, []);
+
+  if (!rows || rows.length === 0) return null;
+
+  const toQuery = (f: Record<string, unknown>) => {
+    const p = new URLSearchParams();
+    if (f.query)      p.set("q", String(f.query));
+    if (Array.isArray(f.industries) && f.industries.length) p.set("industries", f.industries.join(","));
+    if (Array.isArray(f.stages) && f.stages.length)         p.set("stages", f.stages.join(","));
+    if (Number(f.mrrMin) > 0)     p.set("mrr", String(f.mrrMin));
+    if (Number(f.aiScoreMin) > 0) p.set("score", String(f.aiScoreMin));
+    if (f.country)                p.set("country", String(f.country));
+    return p.toString();
+  };
+  const summary = (f: Record<string, unknown>) => [
+    ...(Array.isArray(f.industries) ? f.industries : []),
+    ...(Array.isArray(f.stages) ? f.stages : []),
+    Number(f.mrrMin) > 0 ? `MRR $${Number(f.mrrMin)/1000}k+` : null,
+    Number(f.aiScoreMin) > 0 ? `Score ${f.aiScoreMin}+` : null,
+    f.country || null, f.query ? `"${f.query}"` : null,
+  ].filter(Boolean).join(" · ") || "—";
+
+  async function remove(id: string) {
+    if (readOnly) return;
+    const prevRows = rows;
+    setRows(prev => prev?.filter(r => r.id !== id) ?? prev);
+    const res = await fetch("/api/saved-searches", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) }).catch(() => null);
+    if (!res?.ok) { setRows(prevRows); notify.error(t("errors.generic")); }
+  }
+
+  return (
+    <AuxPanel
+      label={t("dashboard.savedSearches")}
+      summary={<AuxFigure value={rows.length} />}
+    >
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {rows.map((r, i) => (
+          <div key={r.id} style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+            <div style={{ minWidth: 0 }}>
+              <Link href={`/startups?${toQuery(r.filters)}`}
+                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                {r.name}
+              </Link>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{summary(r.filters)}</p>
+            </div>
+            <button onClick={() => remove(r.id)} aria-label={`delete ${r.name}`}
+              style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "13px", lineHeight: 1, flexShrink: 0 }}>×</button>
+          </div>
+        ))}
+      </div>
+    </AuxPanel>
+  );
+}
+
+/**
+ * What is waiting on a decision, above the tabs: offers still open in your
+ * inbox (incoming, pending -- the sender is waiting on YOU) and deals
+ * mid-negotiation (due diligence or a term sheet on the table). Both counts
+ * are answered in the Deal Portal, so both are links there, not dead numbers.
+ * Renders nothing when nothing waits: attention must never be asked for
+ * idly. Saved-search matches reach members through notifications; there is
+ * no per-search count to put on this row.
+ *
+ * Never mounted in view-as -- the proposals API authenticates as the ADMIN,
+ * so this row would show the admin's own inbox under the member's name.
+ */
+function NeedsAttention({ deals }: { deals: Deal[] }) {
+  const { t } = useTranslation();
+  // Renders sensibly before the keys land in messages/; the orchestrated
+  // dictionary pass replaces the fallbacks with localized strings.
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
+  const [awaiting, setAwaiting] = useState(0);
+  useEffect(() => {
+    fetch("/api/deals/proposals")
+      .then((r) => (r.ok ? r.json() : null))
+      // The endpoint returns negotiation chains: ancestors arrive with their
+      // closed statuses, so only pending incoming rounds count as waiting.
+      .then((j) => setAwaiting(((j?.incoming ?? []) as Array<{ status?: string }>).filter((p) => p.status === "pending").length))
+      .catch(() => setAwaiting(0));
+  }, []);
+  const negotiating = deals.filter((d) => d.status === "due_diligence" || d.status === "term_sheet").length;
+  if (awaiting === 0 && negotiating === 0) return null;
+
+  const item: React.CSSProperties = { display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair, textDecoration: "none", minHeight: "40px" };
+  const figure: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", fontVariantNumeric: "tabular-nums" };
+  // Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
+  const label: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" };
+  return (
+    <div style={{ borderBottom: "1px solid var(--cr-rule)", paddingBottom: RHYTHM.inner, marginBottom: RHYTHM.block, display: "flex", alignItems: "baseline", gap: RHYTHM.block, flexWrap: "wrap" }}>
+      <span className="ruled-label">{tf("dashboard.attnTitle", "Needs your attention")}</span>
+      {awaiting > 0 && (
+        <Link href="/deals" style={item}>
+          {/* The one copper figure on this row: an unanswered offer is the
+              single most actionable thing an investor can be shown. */}
+          <span style={{ ...figure, color: "var(--cr-copper)" }}>{awaiting}</span>
+          <span style={label}>{tf("dashboard.attnOffers", "Offers awaiting your reply")}</span>
+          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
+        </Link>
+      )}
+      {negotiating > 0 && (
+        <Link href="/deals" style={item}>
+          <span style={{ ...figure, color: "var(--cr-ink-2)" }}>{negotiating}</span>
+          <span style={label}>{tf("dashboard.attnNegotiating", "Deals mid-negotiation")}</span>
+          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
+        </Link>
+      )}
+    </div>
+  );
+}
 
 export function InvestorDashboardClient({ profile, investor, watchlist, deals, aiReports, viewingAs, allocation, portfolio = [], isLaunchMode = false }: Props) {
   const router       = useRouter();
   const searchParams = useSearchParams();
-  const { t, tf, tfn } = useStrings();
+  const { t }        = useTranslation();
   const messagingAvailable = useMessagingAvailable();
-  const live = !viewingAs;
+  const [activeTab, setActiveTab] = useState<InvestorTab>("watchlist");
+  // C26: local triage state so status/priority edits are instant.
+  const [wlState, setWlState] = useState<Record<string, { status: WlStatus; priority: number }>>(() =>
+    Object.fromEntries(watchlist.map((w) => [w.id, { status: (w.status ?? "watching") as WlStatus, priority: w.priority ?? 0 }])),
+  );
+  const [wlFilter, setWlFilter] = useState<"all" | WlStatus>("all");
+  // C36: reports were capped at 10 and inert. Full list, delete, export,
+  // and a link to the deal they belong to.
+  const [reports, setReports] = useState<Array<{ id: string; type: string; content: string; created_at: string; startup?: { name: string; slug: string } | null; dealId?: string | null }>>(aiReports as never[]);
+  useEffect(() => {
+    fetch("/api/ai/reports").then(r => r.ok ? r.json() : null).then(j => { if (j?.reports) setReports(j.reports); }).catch(() => {});
+  }, []);
+  async function deleteReport(id: string) {
+    if (!window.confirm(t("dashboard.reportDeleteConfirm"))) return;
+    const res = await fetch("/api/ai/reports", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    if (!res.ok) { notify.error(t("errors.generic")); return; }
+    setReports(prev => prev.filter(r => r.id !== id));
+  }
+  function exportReport(r: { content: string; created_at: string; startup?: { name: string } | null; type: string }) {
+    const md = `# ${r.startup?.name ?? "Report"} — ${r.type.replace(/_/g, " ")}\n\n_${new Date(r.created_at).toLocaleString()}_\n\n${r.content}\n\n---\nAI-generated for informational purposes only. Not investment advice.\n`;
+    const url = URL.createObjectURL(new Blob([md], { type: "text/markdown;charset=utf-8;" }));
+    const a = document.createElement("a"); a.href = url;
+    a.download = `${(r.startup?.name ?? "report").toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${r.type}.md`;
+    a.click(); URL.revokeObjectURL(url);
+  }
 
-  // Arrival notices: async outcomes the investor cannot otherwise see.
+  const TABS: { value: InvestorTab; label: string; Icon: React.ElementType }[] = [
+    { value: "watchlist", label: t("dashboard.watchlist"), Icon: Bookmark   },
+    { value: "portfolio", label: t("dashboard.portfolio"), Icon: TrendingUp },
+    { value: "reports",   label: t("dashboard.aiReports"), Icon: Brain      },
+    { value: "billing",   label: t("dashboard.billing"),   Icon: CreditCard },
+  ];
+
   useEffect(() => {
     if (searchParams.get("billing") === "soon") {
       notify.info(t("dashboard.billingSoon"));
@@ -1224,84 +736,581 @@ export function InvestorDashboardClient({ profile, investor, watchlist, deals, a
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // One capability object instead of legacy tier-string checks. isLaunchMode
-  // comes from the server, so the client gates exactly what the server grants.
-  const caps = investorCan(buildAccessContext(profile, isLaunchMode));
+  // One capability object instead of four legacy tier-string checks; admin
+  // and suspension handling come along for free. Launch mode is a server
+  // concern and is already reflected in subscription_tier upgrades.
+  // isLaunchMode was hardcoded false here, so during launch the client
+  // gated features the server had granted. The server passes the live flag.
+  const caps             = investorCan(buildAccessContext(profile, isLaunchMode));
+  const canExport        = caps.dataExport;
+  const canSeeFinancials = caps.viewFinancials;
+  const canMsg           = caps.message;
+  const canAi            = caps.aiDiligence !== "no";
 
-  const savedCount = watchlist.filter((w) => w.startup).length;
-  const inDeals = deals.filter((d) => d.status !== "closed" && d.status !== "passed").length;
-  const name = investor.display_name || profile.full_name || t("dashboard.yourPortfolio");
+  const tierLabel = investor.subscription_tier === "free"
+    ? "Explorer"
+    : investor.subscription_tier.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  async function exportWatchlist() {
+    if (!watchlist.length) return;
+    const rows = watchlist.map((w) => ({
+      status: wlState[w.id]?.status ?? "watching",
+      priority: wlState[w.id]?.priority ?? 0,
+      name: w.startup?.name, tagline: w.startup?.tagline,
+      industry: w.startup?.industry, stage: w.startup?.stage,
+      funding_target: w.startup?.funding_target, mrr: w.startup?.mrr,
+    }));
+    // Every cell quoted: a tagline is free text, and one comma in it shifts
+    // every later column of that row. Same escaping as the NDA roster export.
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = [
+      Object.keys(rows[0]).map(esc).join(","),
+      ...rows.map((r) => Object.values(r).map(esc).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "capitalreach-watchlist.csv"; a.click();
+  }
+
+  const [portalBusy, setPortalBusy] = useState(false);
+  async function openBillingPortal() {
+    if (viewingAs) return;
+    if (portalBusy) return;
+    setPortalBusy(true);
+    try {
+      const res = await fetch("/api/checkout/portal", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.url) { window.location.href = data.url; return; }
+      notify.error(data.error || t("errors.generic"));
+    } catch {
+      notify.error(t("errors.generic"));
+    } finally { setPortalBusy(false); }
+  }
+
+  const activeDeals = deals.filter((d) => !["closed", "passed"].includes(d.status)).length;
+  const closedDeals = deals.filter((d) => d.status === "closed").length;
+
+  function isUnlocked(key?: string) {
+    if (!key) return true;
+    if (key === "financials" || key === "msg") return canSeeFinancials;
+    if (key === "ai") return canAi;
+    if (key === "export") return canExport;
+    return false;
+  }
 
   return (
     <ReadOnlyProvider value={!!viewingAs}>
-    <style dangerouslySetInnerHTML={{ __html: DASH_CSS }} />
     <main style={{ background: "var(--cr-paper)", minHeight: "100vh" }}>
 
-      {/* Every write path below is gated on the ReadOnly context, because the
-          APIs authenticate as the admin: an ungated click would write to the
-          admin's own account while appearing to act on this investor's. */}
+      {/* Same banner as the founder view. Every write path below -- including
+          the ones inside WatchlistNote and SavedSearchManager -- is gated on
+          the ReadOnly context, because those post to APIs that authenticate as
+          the *admin*: an ungated click would write to the admin's own
+          watchlist while appearing to act on this investor's. */}
       {viewingAs && (
-        <div role="status" className="crd-viewas">
-          <span>{t("viewAs.banner", { name: viewingAs })}</span>
-          <span>{t("viewAs.readOnly")}</span>
-          <Link href="/admin">{t("viewAs.exit")}</Link>
+        <div
+          role="status"
+          style={{
+            background: "var(--cr-ink)", color: "var(--cr-paper)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            gap: "12px", flexWrap: "wrap", padding: "12px 24px",
+            fontFamily: "'DM Sans', sans-serif", fontSize: "13px",
+          }}
+        >
+          <span style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+            <Eye style={{ width: 14, height: 14, color: "var(--cr-copper-l)" }} />
+            {t("viewAs.banner", { name: viewingAs })}
+          </span>
+          <span style={{ opacity: 0.55, fontSize: "12px" }}>{t("viewAs.readOnly")}</span>
+          <Link href="/admin" style={{ color: "var(--cr-copper-l)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "3px" }}>
+            {t("viewAs.exit")}
+          </Link>
         </div>
       )}
 
-      <div className="crd-page">
-        <PageHeader
-          title={name}
-          count={savedCount > 0 ? tfn("dashboard.investor.headSaved", savedCount, "{count} saved", "{count} saved") : null}
-          meta={inDeals > 0 ? tfn("dashboard.investor.headInDeals", inDeals, "{count} in deals", "{count} in deals") : undefined}
-          // Hidden in view-as: it navigates the admin's own inbox and silently
-          // leaves the impersonation; the banner owns the exit.
-          end={live && messagingAvailable === true
-            ? <Link href="/dashboard/messages" className="cr-btn cr-btn--text">{t("dashboard.messages")}</Link>
-            : undefined}
+      {/* ── Header ── */}
+      <div style={{ borderBottom: "1px solid var(--cr-rule-dark)", position: "relative", overflow: "hidden" }}>
+        {/* No background line-work here: the header is a working surface, so
+            structure comes from the rule underneath it and nothing else. */}
+        <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px 32px 48px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "16px", position: "relative" }}>
+          <div>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("dashboard.investorDashboard")}</div>
+            <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 700, fontStyle: "italic", fontSize: "clamp(28px, 4vw, 36px)", color: "var(--cr-ink)", letterSpacing: "-0.02em", marginBottom: "8px" }}>
+              {profile.full_name || t("dashboard.yourPortfolio")}
+            </h1>
+            {/* One diamond -- the house glyph -- marks the membership line,
+                the same rhythm as the founder header's badge row. */}
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", display: "flex", alignItems: "center", gap: "8px" }}>
+              <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "11px" }}>✦</span>
+              {t("dashboard.membership", { tier: tierLabel })}
+            </p>
+          </div>
+          {/* Hidden in view-as: these navigate the ADMIN's own surfaces and
+              silently leave the impersonation -- the banner owns the exit. */}
+          {!viewingAs && <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {messagingAvailable === true && <Link href="/dashboard/messages" style={outlineBtn}>{t("dashboard.messages")}</Link>}
+            <Link href="/dashboard/team" style={outlineBtn}>{t("team.navLabel")}</Link>
+            <Link href="/dashboard/investor/settings" style={outlineBtn}>{t("dashboard.settings")}</Link>
+          </div>}
+        </div>
+      </div>
+
+      <div style={{ maxWidth: "1100px", margin: "0 auto", padding: "64px 32px 96px" }}>
+
+        {/* Thesis completeness -- the fields that drive matching. Shown only
+            while something is missing; each gap links straight to Settings. */}
+        {(() => {
+          const gaps: string[] = [];
+          if (!investor.investment_thesis) gaps.push(t("dashboard.thesisGapThesis"));
+          if (!investor.stages?.length) gaps.push(t("dashboard.thesisGapStages"));
+          if (!investor.industries?.length) gaps.push(t("dashboard.thesisGapIndustries"));
+          if (!investor.geography?.length) gaps.push(t("dashboard.thesisGapGeo"));
+          if (!investor.min_check && !investor.max_check) gaps.push(t("dashboard.thesisGapCheck"));
+          const total = 5, done = total - gaps.length, pct = Math.round((done / total) * 100);
+          if (gaps.length === 0) return null;
+          return (
+            <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "var(--radius)", padding: "24px", marginBottom: RHYTHM.block }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+                <div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{t("dashboard.thesisBannerTitle")}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginTop: "4px" }}>{t("dashboard.thesisBannerBody")}</p>
+                </div>
+                {/* Tertiary, not a second copper pill: the tinted banner
+                    already carries the emphasis, and the one primary action
+                    per view lives further down the page. */}
+                <Link href="/dashboard/investor/settings" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none", whiteSpace: "nowrap" }}>{t("dashboard.completeProfile")} →</Link>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "16px" }}>
+                <div style={{ flex: 1, height: "4px", background: "color-mix(in srgb, var(--cr-copper) 15%, transparent)", borderRadius: "2px", overflow: "hidden" }}>
+                  <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-copper)" }} />
+                </div>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-copper)", fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>{pct}%</span>
+              </div>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)", marginTop: "8px" }}>
+                {t("dashboard.thesisMissing")}: {gaps.join(" · ")}
+              </p>
+            </div>
+          );
+        })()}
+
+        {/* Instrument strip: one hairline-divided row instead of four boxed
+            cards. The watchlist count is the headline figure; the rest sit a
+            size down; closed deals take verdigris once anything has matured.
+            The strip and the tab bar are one header cluster, so they sit a
+            block apart (24) and the section gap (64) falls below the tabs. */}
+        <div style={{ borderTop: "1px solid var(--cr-rule-dark)", borderBottom: "1px solid var(--cr-rule-dark)", overflow: "hidden", marginBottom: RHYTHM.block }}>
+          {/* The deal counts were plain divs, so the two most important numbers
+              on an investor's home screen -- how many deals are live, how many
+              closed -- led nowhere, and the Deal Portal was reachable only
+              through the top nav. They link now; reports switches to its own
+              tab, since that content lives behind it. Only the watchlist
+              headline stays inert: its list is directly below this strip. */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", marginLeft: "-1px" }}>
+            {/* The deal cells navigate through the same role="link" cell the
+                reports cell (and the founder strip's /deals cell) already
+                use, rather than a wrapping <Link>: each label now carries an
+                InfoTip, the tip is a button, and a button must never nest
+                inside an anchor. The click target and Enter key behave as
+                before. */}
+            {[
+              { label: t("dashboard.watchlist"),   val: watchlist.length,  go: null,                              headline: true,  color: "var(--cr-ink)",
+                tip: tipKey(t, "glossary.watchlist", "Companies you saved from the directory. Each save can carry a note, a triage status and a priority, so the list works as a pipeline rather than a pile of bookmarks.") },
+              { label: t("dashboard.activeDeals"), val: activeDeals,       go: () => router.push("/deals"),       headline: false, color: "var(--cr-ink-2)",
+                tip: tipKey(t, "glossary.activeDeals", "Deals still in play: everything in the pipeline that has not yet been finalised and has not been passed, whatever stage it stands at.") },
+              { label: t("dashboard.closedDeals"), val: closedDeals,       go: () => router.push("/deals"),       headline: false, color: closedDeals > 0 ? "var(--verdigris)" : "var(--cr-ink-2)",
+                tip: tipKey(t, "glossary.closedDeals", "Deals of yours where both sides confirmed the investment. Once a deal closes it stops counting as active and becomes a position the portfolio tab tracks.") },
+              { label: t("dashboard.aiReports"),   val: reports.length,    go: () => setActiveTab("reports"),     headline: false, color: "var(--cr-ink-2)",
+                tip: "glossary.aiDiligence" },
+            ].map(({ label, val, go, headline, color, tip }) => {
+              const cell = (
+                <div style={{ borderLeft: "1px solid var(--cr-rule)", padding: "24px", height: "100%" }}>
+                  {/* Caps-label spec: 11/500/0.08em ink-3. */}
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: RHYTHM.pair }}>
+                    {label}
+                    {tip && <InfoTip termKey={tip} />}
+                    {go && <span aria-hidden style={{ color: "var(--cr-copper)", marginLeft: "8px" }}>→</span>}
+                  </p>
+                  {/* Same scale as the founder strip: 40px headline, the rest
+                      a size down at 500 -- one obvious number per strip. */}
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: headline ? 700 : 500, fontSize: headline ? "40px" : "22px", lineHeight: 1.05, color, fontVariantNumeric: "tabular-nums" }}>{val}</p>
+                </div>
+              );
+              if (go) {
+                return (
+                  <div key={label} onClick={go} role="link" tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === "Enter") go(); }}
+                    style={{ cursor: "pointer" }}>
+                    {cell}
+                  </div>
+                );
+              }
+              return <div key={label}>{cell}</div>;
+            })}
+          </div>
+        </div>
+
+        {/* What waits on a decision, still inside the header cluster: the
+            strip says how big the desk is, this row says what is on it. */}
+        {!viewingAs && <ErrorBoundary labelKey="sections.needsAttention"><NeedsAttention deals={deals} /></ErrorBoundary>}
+
+        {/* Tab bar: the house TabStrip rather than a hand-rolled row -- one
+            caps voice, roving focus, and the shared panel crossfade. */}
+        <TabStrip
+          tabs={TABS.map(({ value, label }) => ({ key: value, label }))}
+          active={activeTab}
+          onSelect={setActiveTab}
+          idBase="investor-dash"
+          label={t("dashboard.investorDashboard")}
+          style={{ marginBottom: RHYTHM.section }}
         />
 
-        <ErrorBoundary labelKey="sections.needsAttention">
-          <WaitingOnYou deals={deals} investor={investor} live={live} />
-        </ErrorBoundary>
-
-        {/* Reads the caller's own watch history; in view-as that is the admin's. */}
-        {live && <ErrorBoundary labelKey="sections.recentlyViewed"><WatchlistChanges /></ErrorBoundary>}
-
-        {/* Reads the caller's own engagement/view history; in view-as both
-            would answer as the admin, not the member being viewed. */}
-        {live && <ErrorBoundary labelKey="sections.profileViewers"><ProfileViewersSection /></ErrorBoundary>}
-        {live && <ErrorBoundary labelKey="sections.recentlyViewed"><JumpBackInSection /></ErrorBoundary>}
-
-        <WatchlistSection watchlist={watchlist} canExport={caps.dataExport} showBrowse={live} />
-
-        {caps.portfolio && portfolio.length > 0 && (
-          <ErrorBoundary labelKey="dashboard.portfolio">
-            <PositionsSection positions={portfolio} investor={investor} allocation={allocation} canTrack={caps.allocationTracking} canExport={caps.dataExport} />
-          </ErrorBoundary>
+        <TabPanel idBase="investor-dash" active={activeTab}>
+        {/* ── Watchlist ── */}
+        {activeTab === "watchlist" && (
+          <div>
+            {/* What moved on the companies already saved, above the list of
+                them: the list says what you picked, this says what happened. */}
+            <ErrorBoundary labelKey="sections.recentlyViewed"><WatchlistChanges /></ErrorBoundary>
+            {/* The aux stack. One rhythm for all of it -- hairline, 24 above,
+                24 below -- and each block's detail behind its own disclosure,
+                so five panels read as one quiet ledger instead of five cards
+                each competing for the eye. Nothing here was dropped. */}
+            {!viewingAs && <ErrorBoundary labelKey="sections.profileViewers"><WhoViewedYou /></ErrorBoundary>}
+            {allocation && caps.allocationTracking && <ErrorBoundary labelKey="sections.savedSearches"><AllocationTracker investor={investor} committed={allocation.committed} deployed={allocation.deployed} /></ErrorBoundary>}
+            <ErrorBoundary labelKey="sections.savedSearches"><SharedWithYou /></ErrorBoundary>
+            <ErrorBoundary labelKey="sections.savedSearches"><SavedSearchManager /></ErrorBoundary>
+            {/* Fetches the CALLER's own view history -- in view-as that is the
+                admin's trail, not the member's. Hidden rather than wrong. */}
+            {!viewingAs && <ErrorBoundary labelKey="sections.recentlyViewed"><RecentlyViewedStrip /></ErrorBoundary>}
+            {/* The saved list is its own section, so it opens the house way:
+                ruled label, quiet count beside it, the one control at right. */}
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", margin: `${RHYTHM.section} 0 ${RHYTHM.block}`, flexWrap: "wrap", gap: "12px" }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                <div className="ruled-label">{t("dashboard.watchlist")}</div>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+                  {watchlist.length === 1 ? t("dashboard.savedCountOne") : t("dashboard.savedCount", { count: watchlist.length })}
+                </span>
+              </div>
+              {canExport && watchlist.length > 0 && (
+                <button onClick={exportWatchlist} style={outlineBtn}>
+                  <Download style={{ width: 12, height: 12 }} /> {t("dashboard.exportCsv")}
+                </button>
+              )}
+            </div>
+            {/* Triage filter -- counts come from live local state. */}
+            {watchlist.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: RHYTHM.pair, marginBottom: RHYTHM.block }}>
+                {(["all", ...WL_STATUSES] as const).map((f) => {
+                  const n = f === "all" ? watchlist.length : watchlist.filter((w) => (wlState[w.id]?.status ?? "watching") === f).length;
+                  const active = wlFilter === f;
+                  return (
+                    <button key={f} onClick={() => setWlFilter(f)} aria-pressed={active}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", padding: "8px 16px", borderRadius: "999px", cursor: "pointer",
+                        background: active ? "var(--cr-copper-bg)" : "transparent", color: active ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                        border: `1px solid ${active ? "var(--cr-copper-br)" : "var(--cr-paper-4)"}` }}>
+                      {f === "all" ? t("dashboard.filterAll") : t(WL_KEY[f])}{" "}
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", fontVariantNumeric: "tabular-nums" }}>{n}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            {watchlist.length === 0 ? (
+              <EmptyState
+                title={t("dashboard.noSavedYet")}
+                body={t("dashboard.noSavedYetSub")}
+                action={<Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>}
+              />
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: RHYTHM.block }}>
+                {watchlist
+                  .filter((w) => wlFilter === "all" || (wlState[w.id]?.status ?? "watching") === wlFilter)
+                  .map((w) => w.startup && (
+                  <div key={w.id} style={{ opacity: (wlState[w.id]?.status ?? "watching") === "passed" ? 0.6 : 1 }}>
+                    <StartupCard startup={w.startup} investorTier={investor.subscription_tier} />
+                    <WatchlistTriage
+                      startupId={w.startup.id}
+                      status={wlState[w.id]?.status ?? "watching"}
+                      priority={wlState[w.id]?.priority ?? 0}
+                      onChange={(patch) => setWlState((p) => ({ ...p, [w.id]: { ...(p[w.id] ?? { status: "watching", priority: 0 }), ...patch } }))}
+                    />
+                    <WatchlistNote startupId={w.startup.id} initial={w.note ?? null} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
-        <ReportsSection initial={aiReports} live={live} />
+        {/* ── Portfolio ── */}
+        {activeTab === "portfolio" && !caps.portfolio && (
+          <EmptyState
+            title={t("dashboard.portfolioUpgrade")}
+            action={<Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewPlans")} →</Link>}
+          />
+        )}
+        {activeTab === "portfolio" && caps.portfolio && (() => {
+          const positions = portfolio;
+          const total = positions.reduce((a, p) => a + (p.amount ?? 0), 0);
+          const cur = positions[0]?.currency ?? "USD";
+          // D40: a position is worth what it grew into, not just what it cost.
+          const markUp = (p: PortfolioPosition) =>
+            p.valuationAtClose && p.currentValuation && p.valuationAtClose > 0
+              ? (p.currentValuation / p.valuationAtClose - 1) * 100
+              : null;
 
-        {live && (
-          <div className="crd-foot">
-            {/* InvitePanel owns its own trigger and its own expand/collapse
-                (see invite-panel.tsx) -- both dashboards mount it directly,
-                per its own doc comment. This surface used to wrap it in a
-                SECOND "Invite a founder" toggle that only revealed the
-                panel's own identical "Invite a founder" trigger underneath,
-                which read as one button leading nowhere but to another copy
-                of itself. Removing the outer wrapper leaves exactly one
-                trigger, exactly like the founder dashboard's InvitePanel
-                mount (components/dashboard/startup-dashboard-client.tsx). */}
-            <div className="crd-foot-links">
-              <SavedSearchesLink enabled={caps.savedSearches} />
+          return positions.length === 0 ? (
+            /* The way a first position happens: pick a company, open a deal,
+               close it -- so the one action is the front door of that path. */
+            <EmptyState
+              title={t("dashboard.noPortfolio")}
+              body={t("dashboard.noPortfolioSub")}
+              action={<Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>}
+            />
+          ) : (
+            <div>
+              {/* Section opener + the one headline figure of this tab. */}
+              {/* The one loud figure of this tab; the cards below all step down. */}
+              <div style={{ marginBottom: RHYTHM.section }}>
+                <div className="ruled-label" style={{ marginBottom: RHYTHM.pair }}>{t("dashboard.totalDeployed")}</div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                  {/* 28, not 40: the strip above already holds this page's one lead figure. */}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1.05, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatMoney(total, cur)}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>· {positions.length}</span>
+                </div>
+              </div>
+
+              <div style={{ display: "grid", gap: RHYTHM.block }}>
+                {positions.map((p) => {
+                  const mu = markUp(p);
+                  const series = p.mrrSeries;
+                  const max = Math.max(1, ...series);
+                  return (
+                    <div key={p.dealId} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px" }}>
+                      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+                        <div style={{ display: "flex", alignItems: "baseline", gap: "8px", flexWrap: "wrap" }}>
+                          <Link href={`/startups/${p.slug}`} style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)", textDecoration: "none" }}>
+                            {p.name}
+                          </Link>
+                          {/* D41: a company that archived its listing is still
+                              yours -- say so instead of letting it disappear. */}
+                          {p.status !== "active" && (
+                            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--cr-ink-3)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px 8px" }}>
+                              {t("portfolio.notListed")}
+                            </span>
+                          )}
+                        </div>
+                        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>
+                          {p.amount != null ? formatMoney(p.amount, p.currency) : "—"}
+                        </span>
+                      </div>
+
+                      {/* Hairline-divided metric strip; only the mark change
+                          keeps money-direction color. Enclosed by rules and
+                          given 12 of vertical padding: the cells used to have
+                          none at all, so five figures sat jammed against the
+                          card's own edges -- the same strip the browse card
+                          uses, on the same beat. */}
+                      <div style={{ overflow: "hidden", marginTop: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", borderBottom: "1px solid var(--cr-rule)" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(96px, 1fr))", marginLeft: "-1px" }}>
+                          {[
+                            [t("portfolio.ownership"), p.ownershipPercent != null ? `${p.ownershipPercent.toFixed(2)}%` : "—"],
+                            [t("portfolio.atClose"), p.valuationAtClose ? formatMoney(p.valuationAtClose, p.currency, { compact: true }) : "—"],
+                            [t("portfolio.nowValued"), p.currentValuation ? formatMoney(p.currentValuation, p.currency, { compact: true }) : "—"],
+                            [t("portfolio.markChange"), mu == null ? "—" : `${mu > 0 ? "+" : ""}${mu.toFixed(0)}%`],
+                            [t("startupDetail.mrr"), p.mrr != null ? formatMoney(p.mrr, p.currency, { compact: true }) : "—"],
+                          ].map(([label, value]) => (
+                            // Label above its figure, 4 apart -- the same order
+                            // as the instrument strip at the top of this page
+                            // and as the browse card, so a metric cell reads
+                            // the same way everywhere in the product.
+                            <div key={label} style={{ borderLeft: "1px solid var(--cr-rule)", padding: "12px" }}>
+                              <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{label}</div>
+                              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", fontVariantNumeric: "tabular-nums", color: label === t("portfolio.markChange") && mu != null ? (mu >= 0 ? "var(--cr-up)" : "var(--cr-down)") : "var(--cr-ink)" }}>{value}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Metric curve -- the reason a position is worth watching.
+                          The kit sparkline draws itself in; fixed pixel box, no
+                          %-height against a flex parent. */}
+                      {/* Sparklines render only with 8+ points; below that, nothing. */}
+                      {series.length >= 8 && (
+                        <div style={{ marginTop: RHYTHM.inner }}>
+                          <Sparkline points={series.map((v) => v / max)} width={144} height={24} />
+                        </div>
+                      )}
+
+                      {/* D42: the founder's latest word reaches the people who funded it. */}
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginTop: RHYTHM.block, paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
+                        <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-3)" }}>
+                          {p.latestUpdate
+                            ? <>{t("portfolio.latestUpdate")}: <span style={{ color: "var(--cr-ink)", fontWeight: 500 }}>{p.latestUpdate.title}</span> · {formatDate(p.latestUpdate.created_at)}</>
+                            : t("portfolio.noUpdates")}
+                        </span>
+                        <Link href={`/deals?deal=${p.dealId}`} style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                          {t("dashboard.reportViewDeal")} →
+                        </Link>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="crd-foot-panel">
-              <InvitePanel defaultRole="startup" />
+          );
+        })()}
+
+        {activeTab === "reports" && (
+          reports.length === 0 ? (
+            /* Reports are generated from a listing page, so the action for a
+               member who CAN run them is the way to a listing; for one who
+               cannot, it is the plan that unlocks them. Never a dead end. */
+            <EmptyState
+              title={t("dashboard.noAiReportsTitle")}
+              body={canAi
+                ? t("dashboard.aiReportsHintPro")
+                : t("dashboard.aiReportsHintUpgrade")}
+              action={canAi
+                ? <Link href="/startups" style={primaryBtn}>{t("dashboard.browseStartups")} →</Link>
+                : <Link href="/pricing" style={primaryBtn}>{t("dashboard.viewPlans")}</Link>}
+            />
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: RHYTHM.block }}>
+              {reports.map((report) => (
+                <div key={report.id} style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule)", borderRadius: "var(--radius)", padding: "24px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "12px", flexWrap: "wrap", gap: "8px" }}>
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                      <span style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "15px", color: "var(--cr-ink)" }}>
+                        {report.startup?.name}
+                      </span>
+                      <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                        {report.type.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>
+                      {formatDate(report.created_at)}
+                    </span>
+                  </div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.65, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {report.content}
+                  </p>
+                  <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.inner, marginTop: RHYTHM.block, paddingTop: RHYTHM.inner, borderTop: "1px solid var(--cr-rule)", flexWrap: "wrap" }}>
+                    <Link href={`/startups/${report.startup?.slug}`}
+                      style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                      {t("dashboard.viewStartup")} →
+                    </Link>
+                    {report.dealId && (
+                      <Link href={`/deals?deal=${report.dealId}`}
+                        style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-copper)", textDecoration: "none" }}>
+                        {t("dashboard.reportViewDeal")} →
+                      </Link>
+                    )}
+                    <button onClick={() => exportReport(report)}
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                      {t("dashboard.reportExport")}
+                    </button>
+                    {/* Quiet destructive action: red stays reserved for money
+                        direction; the confirm dialog carries the weight. */}
+                    <button onClick={() => deleteReport(report.id)}
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+                      {t("common.delete")}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        )}
+
+        {/* ── Billing ── */}
+        {activeTab === "billing" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: RHYTHM.block }}>
+            {/* No card around cards: the plan slab is the one tinted moment,
+                everything after it hangs off hairlines. */}
+            <div>
+              <div className="ruled-label" style={{ marginBottom: RHYTHM.inner }}>{t("dashboard.membershipBilling")}</div>
+
+              {/* Current plan row */}
+              <div style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "var(--radius)", padding: "24px", marginBottom: RHYTHM.section, display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+                <div>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{t("dashboard.tier", { tier: tierLabel })}</p>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                    {profile.subscription_status || t("dashboard.statusActive")}
+                  </p>
+                </div>
+                {investor.subscription_tier !== "free" ? (
+                  <button onClick={openBillingPortal} style={outlineBtn}>
+                    <CreditCard style={{ width: 13, height: 13 }} /> {t("dashboard.manageBilling")}
+                  </button>
+                ) : (
+                  <Link href="/pricing" style={primaryBtn}>{t("dashboard.upgradePlan")}</Link>
+                )}
+              </div>
+
+              {/* Feature list */}
+              <div>
+                <div className="ruled-label" style={{ marginBottom: RHYTHM.inner }}>{t("dashboard.accessLevel")}</div>
+                {/* Ledger lines: one hairline per capability row. */}
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                  {FEATURE_ROWS.map((item, i) => {
+                    const unlocked = "unlocked" in item ? item.unlocked : isUnlocked(item.key);
+                    return (
+                      <div key={item.labelKey} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          {/* Verdigris is the success accent; green stays for
+                              money direction. */}
+                          {unlocked
+                            ? <CheckCircle2 style={{ width: 14, height: 14, color: "var(--verdigris)", flexShrink: 0 }} />
+                            : <Lock style={{ width: 14, height: 14, color: "var(--cr-ink-4)", flexShrink: 0 }} />}
+                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: unlocked ? "var(--cr-ink)" : "var(--cr-ink-4)" }}>
+                            {t(item.labelKey)}
+                          </span>
+                        </div>
+                        {!unlocked && "tier" in item && (
+                          <span style={{ background: "transparent", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "4px 8px", whiteSpace: "nowrap" }}>
+                            {item.tier}+
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* The pitch rides a hairline, not a second tinted box; the
+                    plan slab above already holds this view's primary pill,
+                    so the way to the full grid is a tertiary link. */}
+                {investor.subscription_tier === "free" && (
+                  <div style={{ marginTop: RHYTHM.section, borderTop: "1px solid var(--cr-rule-dark)", paddingTop: RHYTHM.block }}>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)", marginBottom: RHYTHM.pair }}>
+                      {t("dashboard.upgradeAngel")}
+                    </p>
+                    <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", marginBottom: RHYTHM.inner }}>
+                      {t("dashboard.upgradeAngelSub")}
+                    </p>
+                    <Link href="/pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-copper)", textDecoration: "none" }}>{t("dashboard.viewAllPlans")} →</Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}
+        </TabPanel>
+        {!viewingAs && (
+          <div style={{ marginTop: RHYTHM.section }}>
+            <InvitePanel defaultRole="startup" />
+          </div>
+        )}
       </div>
+
+      {/* A second, dashboard-local bottom tab bar used to live here. It carried
+          an inline display:none alongside its sm:hidden class, so the inline
+          rule always won and it never rendered once -- the tab strip above,
+          which scrolls horizontally, has always been the real control on
+          every width. The global mobile tab bar (components/shared/bottom-nav)
+          now owns the bottom of the viewport, so a second one would collide
+          even if it were fixed. */}
     </main>
     </ReadOnlyProvider>
   );

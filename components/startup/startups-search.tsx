@@ -119,13 +119,7 @@ interface Startup {
 
 interface Filters {
   query: string; industries: string[]; stages: string[];
-  mrrMin: number; aiScoreMin: number; sort: string;
-  /** Multi-select, mirroring the investor directory's `geographies` filter
-   *  (components/investors/investors-client.tsx) -- a listing matches if its
-   *  country is any one of these. Was a single-select `country: string`,
-   *  which is why lib/search-match.ts still accepts that shape too, for
-   *  saved searches written before this change. */
-  countries: string[];
+  mrrMin: number; aiScoreMin: number; sort: string; country: string;
   newOnly?: boolean;
   raisingMin?: number; runwayMin?: number; growthMin?: number;
   closingSoon?: boolean; businessModel?: string; hasDemo?: boolean;
@@ -133,7 +127,7 @@ interface Filters {
 
 const DEFAULT_FILTERS: Filters = {
   query: "", industries: [], stages: [],
-  mrrMin: 0, aiScoreMin: 0, sort: "recent", countries: [], newOnly: false,
+  mrrMin: 0, aiScoreMin: 0, sort: "recent", country: "", newOnly: false,
   raisingMin: 0, runwayMin: 0, growthMin: 0, closingSoon: false, businessModel: "", hasDemo: false,
 };
 
@@ -154,7 +148,7 @@ function tractionActive(f: Filters) {
  * screen by default, and nothing is more than one click away.
  */
 function advancedActive(f: Filters) {
-  return tractionActive(f) + f.countries.length + (f.businessModel ? 1 : 0);
+  return tractionActive(f) + (f.country ? 1 : 0) + (f.businessModel ? 1 : 0);
 }
 
 // ── Saved searches ────────────────────────────────────────────────────────────
@@ -290,12 +284,10 @@ function SavedSearches({ filters, onApply, isDefault }: {
  * always-visible chip soup: fifteen chips in a scrolling strip read as
  * noise, three labelled groups with counts read as a system.
  */
-function FilterGroup({ label, count, open, onToggle, children, tipKey, tipFallback }: {
+function FilterGroup({ label, count, open, onToggle, children, tipKey }: {
   label: string; count: number; open: boolean; onToggle: () => void; children: React.ReactNode;
   /** glossary.* key explaining what this group filters on and how. */
   tipKey?: string;
-  /** English text for tipKey when the dictionaries do not carry it yet. */
-  tipFallback?: string;
 }) {
   const { t } = useTranslation();
   const doneLabel = t("common.done");
@@ -323,15 +315,15 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey, tipFallba
           cursor: "pointer", whiteSpace: "nowrap",
         }}>
         {label}{count > 0 ? ` · ${count}` : ""}
-        <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 160ms var(--ease-out)" }} />
+        <ChevronDown style={{ width: 12, height: 12, transform: open ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
       </button>
       {/* Beside the trigger, never inside it: a button cannot nest a button,
           and the tip must stay reachable while the panel is closed -- the
           reader deciding whether to open a group is exactly who needs it. */}
-      {tipKey && <InfoTip termKey={tipKey} fallback={tipFallback} />}
+      {tipKey && <InfoTip termKey={tipKey} />}
       {/* Desktop: a panel anchored under its chip. */}
       {open && (
-        <div className="hidden lg:flex animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
+        <div className="hidden lg:flex" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, minWidth: "280px", maxWidth: "min(90vw, 420px)", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", padding: RHYTHM.inner, flexWrap: "wrap", gap: RHYTHM.pair, zIndex: 50 }}>
           {children}
         </div>
       )}
@@ -370,7 +362,7 @@ function FilterGroup({ label, count, open, onToggle, children, tipKey, tipFallba
                 {label}
                 {/* Repeated in the sheet header because the 12px trigger
                     beside the chip is a poor tap target; here there is room. */}
-                {tipKey && <InfoTip termKey={tipKey} fallback={tipFallback} />}
+                {tipKey && <InfoTip termKey={tipKey} />}
               </span>
               <button
                 onClick={onToggle}
@@ -430,7 +422,7 @@ function FilterChip({ active, onClick, children, disabled, title }: { active: bo
         cursor:        disabled ? "not-allowed" : "pointer",
         opacity:       disabled ? 0.55 : 1,
         whiteSpace:    "nowrap",
-        transition:    "background-color 140ms var(--ease-out), color 140ms var(--ease-out)",
+        transition:    "background-color 100ms ease, color 100ms ease",
       }}
     >
       {children}
@@ -701,14 +693,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
     stages:     searchParams.get("stages")?.split(",").filter(Boolean) ?? [],
     mrrMin:     Number(searchParams.get("mrr")) || 0,
     aiScoreMin: Number(searchParams.get("score")) || 0,
-    // "geo" is current (mirrors the investor directory's ?geo=); "country"
-    // is the pre-multi-select param name, folded in so a bookmarked or
-    // shared ?country=Germany link still filters exactly as it did.
-    countries: (() => {
-      const geo = searchParams.get("geo")?.split(",").filter(Boolean) ?? [];
-      const legacy = searchParams.get("country");
-      return legacy && !geo.includes(legacy) ? [...geo, legacy] : geo;
-    })(),
+    country:    searchParams.get("country") ?? "",
     newOnly:    searchParams.get("new") === "1",
     raisingMin: Number(searchParams.get("raising")) || 0,
     runwayMin:  Number(searchParams.get("runway")) || 0,
@@ -1072,7 +1057,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
   const activeCount = [
     filters.industries.length, filters.stages.length,
     filters.mrrMin > 0 ? 1 : 0, filters.aiScoreMin > 0 ? 1 : 0,
-    filters.countries.length,
+    filters.country ? 1 : 0,
     filters.newOnly ? 1 : 0,
     filters.raisingMin ? 1 : 0, filters.runwayMin ? 1 : 0, filters.growthMin ? 1 : 0,
     filters.closingSoon ? 1 : 0, filters.businessModel ? 1 : 0, filters.hasDemo ? 1 : 0,
@@ -1110,7 +1095,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       if (filters.stages.length)      p.set("stages", filters.stages.join(","));
       if (filters.mrrMin > 0)         p.set("mrr", String(filters.mrrMin));
       if (filters.aiScoreMin > 0)     p.set("score", String(filters.aiScoreMin));
-      if (filters.countries.length)   p.set("geo", filters.countries.join(","));
+      if (filters.country)            p.set("country", filters.country);
       if (filters.newOnly)            p.set("new", "1");
       if (filters.raisingMin)         p.set("raising", String(filters.raisingMin));
       if (filters.runwayMin)          p.set("runway", String(filters.runwayMin));
@@ -1261,10 +1246,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                     ordering reads, and that sorting never removes a listing. */}
                 <InfoTip termKey="glossary.filterSort" />
                 {sortOpen && (
-                  <div className="animate-fade-in" style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
+                  <div style={{ position: "absolute", right: 0, top: "calc(100% + 4px)", width: "180px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "4px", zIndex: 50 }}>
                     {sortOptions.map((o) => (
                       <button key={o.value} onClick={() => { patch({ sort: o.value }); setSortOpen(false); }}
-                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px", transition: "background 120ms var(--ease-out)" }}
+                        style={{ display: "block", width: "100%", textAlign: "left", padding: "8px 12px", fontFamily: "'DM Sans', sans-serif", fontWeight: filters.sort === o.value ? 600 : 400, fontSize: "13px", color: filters.sort === o.value ? "var(--cr-copper)" : "var(--cr-ink-3)", background: "transparent", border: "none", cursor: "pointer", borderRadius: "4px" }}
                         onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
                         onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}
                       >
@@ -1279,7 +1264,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               <div style={{ display: "flex", background: "var(--cr-paper-3)", border: "1px solid var(--cr-rule)", borderRadius: "4px", overflow: "hidden" }}>
                 {(["grid", "list"] as const).map((v) => (
                   <button key={v} onClick={() => chooseView(v)} aria-label={v} aria-pressed={viewMode === v}
-                    style={{ padding: "8px 12px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 140ms var(--ease-out)" }}>
+                    style={{ padding: "8px 12px", background: viewMode === v ? "var(--cr-ink)" : "transparent", color: viewMode === v ? "var(--cr-paper)" : "var(--cr-ink-4)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", transition: "background 100ms ease" }}>
                     {v === "grid" ? <LayoutGrid style={{ width: 16, height: 16 }} /> : <List style={{ width: 16, height: 16 }} />}
                   </button>
                 ))}
@@ -1306,14 +1291,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           state it describes. No overflowX here: it clipped the open panels. */}
       {/* top is the navbar's own height (components/shared/navbar: h-[56px]),
           not a rhythm value -- the bar has to come to rest exactly under it. */}
-      <div style={{
-        position: "sticky", top: "56px", zIndex: 40,
-        // Frosted glass: results scroll beneath the bar, same material as the navbar.
-        background: "var(--cr-nav-glass)",
-        backdropFilter: "blur(14px) saturate(1.4)",
-        WebkitBackdropFilter: "blur(14px) saturate(1.4)",
-        borderBottom: "1px solid var(--cr-rule-dark)",
-      }}>
+      <div style={{ position: "sticky", top: "56px", zIndex: 40, background: "var(--cr-paper)", borderBottom: "1px solid var(--cr-rule-dark)" }}>
         <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingTop: "12px", paddingBottom: "12px", display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
           {/* Search */}
           <div style={{ position: "relative", flexShrink: 0 }}>
@@ -1347,7 +1325,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               onBlur={e  => { (e.currentTarget as HTMLElement).style.borderColor = "var(--cr-rule-dark)"; setTimeout(() => setSuggestOpen(false), 150); }}
             />
             {suggestOpen && filters.query.trim().length < 2 && recent.length > 0 && (
-              <div className="animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", padding: "12px 12px 8px" }}>
                   {t("startups.recentSearches")}
                 </p>
@@ -1364,7 +1342,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
             )}
             {suggestOpen && suggestions.length > 0 && (
-              <div className="animate-fade-in" style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
+              <div style={{ position: "absolute", top: "calc(100% + 8px)", left: 0, width: "280px", background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", boxShadow: "var(--cr-card-shadow-hover)", overflow: "hidden", zIndex: 50 }}>
                 {suggestions.map((s, si) => (
                   <Link key={s.id} href={`/startups/${s.slug}`} onClick={() => rememberQuery(filters.query)}
                     style={{ display: "flex", flexDirection: "column", gap: "4px", padding: "8px 12px", textDecoration: "none", borderBottom: "1px solid var(--cr-rule)", background: si === suggestIdx ? "var(--cr-paper-3)" : "transparent" }}
@@ -1418,7 +1396,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               cursor: "pointer", whiteSpace: "nowrap",
             }}>
             {t("filters.more")}{advancedCount > 0 ? ` · ${advancedCount}` : ""}
-            <ChevronDown style={{ width: 12, height: 12, transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform 160ms var(--ease-out)" }} />
+            <ChevronDown style={{ width: 12, height: 12, transform: moreOpen ? "rotate(180deg)" : "none", transition: "transform 120ms" }} />
           </button>
 
           {/* The full-list bottom sheet, below lg only. It also carried an
@@ -1450,7 +1428,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             renders at every width, so the presets stay reachable on mobile
             (the full-list sheet behind "Filters" does not carry them). */}
         {moreOpen && (
-          <div className="px-6 md:px-10 lg:px-20 animate-fade-in" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
+          <div className="px-6 md:px-10 lg:px-20" style={{ maxWidth: "1280px", margin: "0 auto", paddingBottom: "12px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: RHYTHM.pair, flexWrap: "wrap" }}>
             <FilterGroup label={t("startups.traction")} tipKey="glossary.filterTraction"
               count={tractionActive(filters)}
@@ -1538,13 +1516,12 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
                 </p>
               )}
             </FilterGroup>
-            <FilterGroup label={t("investors.geography")} count={filters.countries.length} tipKey="glossary.filterGeography"
-              tipFallback="Shows companies based in one or more countries, as reported on the listing. Spellings are normalized, so each country appears once, with its listing count. Pick as many as you like -- a listing matches if it is based in any of them."
+            <FilterGroup label={t("startups.region")} count={filters.country ? 1 : 0} tipKey="glossary.filterRegion"
               open={openGroup === "region"} onToggle={() => setOpenGroup(openGroup === "region" ? null : "region")}>
               {Array.from(new Set(allStartups.map(s => s.country).filter((c): c is string => !!c))).sort().map((c) => (
                 <FilterChip key={c}
-                  active={filters.countries.includes(c)}
-                  onClick={() => patch({ countries: filters.countries.includes(c) ? filters.countries.filter(x => x !== c) : [...filters.countries, c] })}>
+                  active={filters.country === c}
+                  onClick={() => patch({ country: filters.country === c ? "" : c })}>
                   {c}{facets.country[c] ? ` (${facets.country[c]})` : ""}
                 </FilterChip>
               ))}
@@ -1600,10 +1577,9 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
             {filters.newOnly && (
               <AppliedChip label={t("startups.newThisWeek")} onRemove={() => patch({ newOnly: false })} />
             )}
-            {filters.countries.map((c) => (
-              <AppliedChip key={`geo-${c}`} label={c}
-                onRemove={() => patch({ countries: filters.countries.filter((x) => x !== c) })} />
-            ))}
+            {filters.country && (
+              <AppliedChip label={filters.country} onRemove={() => patch({ country: "" })} />
+            )}
             {(filters.raisingMin ?? 0) > 0 && (
               <AppliedChip label={RAISING_PRESETS.find(r => r.value === filters.raisingMin)?.label ?? "Raising+"}
                 onRemove={() => patch({ raisingMin: 0 })} />
@@ -1728,7 +1704,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
           // dense need the room between them more than they need the density.
           <div style={{ display: "grid", gridTemplateColumns: viewMode === "grid" ? "repeat(auto-fill, minmax(280px, 1fr))" : "1fr", gap: RHYTHM.block }}>
             {visible.map((s) => (
-              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onHide={toggleHide} onCompare={toggleCompare} />
+              <ResultCard key={s.id} s={s} saved={savedIds.has(s.id)} viewed={viewedIds.has(s.id)} hidden={dismissedIds.has(s.id)} comparing={compareIds.includes(s.id)} match={myThesis ? computeMatchScore(myThesis, s).score : undefined} spark={sparks[s.id]} onSave={toggleSave} onCompare={toggleCompare} />
             ))}
           </div>
         )}
@@ -1758,10 +1734,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
       {/* The tray clears the mobile tab bar via --cr-tabbar-h, which is 0
           wherever no tab bar is on screen (desktop, or signed out). */}
       {compareIds.length > 0 && (
-        // animate-fade-in, not fade-up: the tray is horizontally centered via
-        // transform: translateX(-50%), which fade-up's translateY keyframe
-        // would overwrite once the animation settles.
-        <div className="animate-fade-in" style={{ position: "fixed", bottom: "calc(16px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "4px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
+        <div style={{ position: "fixed", bottom: "calc(16px + var(--cr-tabbar-h, 0px))", left: "50%", transform: "translateX(-50%)", zIndex: 60, display: "flex", alignItems: "center", gap: "12px", background: "var(--cr-band-bg)", borderRadius: "4px", padding: "12px 16px", boxShadow: "var(--cr-card-shadow-hover)" }}>
           <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-band-ink)" }}>
             {compareIds.map(id => allStartups.find(s => s.id === id)?.name).filter(Boolean).join(" · ")}
           </span>
@@ -1782,7 +1755,7 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         const METRICS: Array<{ label: string; get: (s: Startup) => string }> = [
           { label: t("listings.stage"),          get: (s) => STAGE_LABELS[s.stage] ?? s.stage.replace(/_/g, " ") },
           { label: t("onboarding.su.industry"),  get: (s) => s.industry },
-          { label: t("investors.geography"),     get: (s) => s.country ?? "—" },
+          { label: t("startups.region"),         get: (s) => s.country ?? "—" },
           { label: t("startupDetail.founded"),   get: (s) => s.founded_year ? String(s.founded_year) : "—" },
           { label: t("startupDetail.teamSize"),  get: (s) => (s as unknown as { team_size?: number | null }).team_size ? String((s as unknown as { team_size?: number | null }).team_size) : "—" },
           { label: t("startupDetail.mrr"),       get: (s) => safeFormatMRR(s.mrr) },
@@ -1806,12 +1779,8 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
         }
         return (
           <div role="dialog" aria-modal="true" style={{ position: "fixed", inset: 0, zIndex: 70 }}>
-            {/* animate-fade-in only, not fade-up: the panel's transform is
-                already doing centering work (translate(-50%,-50%)), and
-                fade-up's keyframe transform would stomp that after the
-                animation settles. */}
-            <div className="animate-fade-in" style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
-            <div className="animate-fade-in" style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: RHYTHM.block }}>
+            <div style={{ position: "absolute", inset: 0, background: "var(--cr-scrim)" }} onClick={() => setShowCompare(false)} />
+            <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "min(92vw, 760px)", maxHeight: "84vh", overflowY: "auto", background: "var(--cr-paper)", border: "1px solid var(--cr-rule-dark)", borderRadius: "6px", padding: RHYTHM.block }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: RHYTHM.block }}>
                 <h2 style={{ fontFamily: "'Playfair Display', serif", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)" }}>{t("startups.compareTitle")}</h2>
                 <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -1966,11 +1935,10 @@ export function StartupsSearch({ initialStartups, initialIsPartial, marketTotal 
               </div>
               {countries.length > 0 && (
                 <div>
-                  <p style={SECTION}>{t("investors.geography")}<InfoTip termKey="glossary.filterGeography" fallback="Shows companies based in one or more countries, as reported on the listing. Spellings are normalized, so each country appears once, with its listing count. Pick as many as you like -- a listing matches if it is based in any of them." /></p>
+                  <p style={SECTION}>{t("startups.region")}<InfoTip termKey="glossary.filterRegion" /></p>
                   <div style={ROW}>
                     {countries.map((c) => (
-                      <FilterChip key={c} active={filters.countries.includes(c)}
-                        onClick={() => patch({ countries: filters.countries.includes(c) ? filters.countries.filter(x => x !== c) : [...filters.countries, c] })}>
+                      <FilterChip key={c} active={filters.country === c} onClick={() => patch({ country: filters.country === c ? "" : c })}>
                         {c}{facets.country?.[c] ? ` (${facets.country[c]})` : ""}
                       </FilterChip>
                     ))}
