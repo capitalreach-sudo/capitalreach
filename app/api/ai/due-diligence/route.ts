@@ -207,6 +207,16 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     const { logSystemEvent } = await import("@/lib/system-events");
     await logSystemEvent("ai/due-diligence", "error", "Due-diligence report failed", { message: String((err as Error)?.message ?? err).slice(0, 400) }).catch(() => {});
+    // Same distinction as analyze-pitch: a provider quota/billing failure is
+    // a standing outage, not the one-off "please try again" implies.
+    const status = (err as { status?: number } | null)?.status;
+    const code = (err as { code?: string } | null)?.code;
+    if (status === 429 || code === "insufficient_quota") {
+      return NextResponse.json(
+        { error: "AI tools are temporarily unavailable. Please try again shortly." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json({ error: "Could not generate the report right now. Please try again." }, { status: 502 });
   }
 }

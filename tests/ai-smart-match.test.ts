@@ -120,4 +120,18 @@ describe("smart-match identity protection", () => {
     const names = (json.matches as Array<{ name: string }>).map((m) => m.name);
     expect(names).not.toContain("Sarah Personalname");
   });
+
+  // Audit finding: with investors in the database but none scoring above the
+  // 30-point floor, the route returned {matches: []} with no `message` --
+  // indistinguishable on the client from "empty database", whose branch does
+  // set one. Neither of the client's two render conditions fired, so a real
+  // search that legitimately found nothing left the panel silently blank.
+  it("returns an honest message when investors exist but none score above the match floor", async () => {
+    const res = await post({ industry: "Crypto / Web3", stage: "Series B+", mrr: "$200K+" });
+    const json = await res.json();
+    expect(res.status).toBe(200);
+    expect(json.matches).toEqual([]);
+    expect(typeof json.message).toBe("string");
+    expect(json.message.length).toBeGreaterThan(0);
+  });
 });

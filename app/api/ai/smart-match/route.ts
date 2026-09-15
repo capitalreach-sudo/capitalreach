@@ -151,7 +151,15 @@ export async function POST(req: NextRequest) {
         initials: m.name.split(" ").map((w: string) => w[0]).slice(0, 2).join("").toUpperCase(),
       }));
 
-    return NextResponse.json({ matches: scored });
+    // A real, scored miss is not the same state as an empty roster -- the
+    // client renders neither the message nor the results block when both
+    // `matches` and `message` come back empty/falsy, which reads to the user
+    // as nothing happening at all. With a small public roster and a 30-point
+    // floor (above), most combinations legitimately clear no bar; say so.
+    const message = scored.length === 0
+      ? "No investors matched this combination closely enough to show. Try a different industry, stage, or revenue band."
+      : undefined;
+    return NextResponse.json({ matches: scored, ...(message ? { message } : {}) });
   } catch (err) {
     console.error("[smart-match]", err);
     return NextResponse.json({ error: "Matching failed. Please try again." }, { status: 500 });

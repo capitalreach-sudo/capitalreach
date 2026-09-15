@@ -59,6 +59,10 @@ function ErrorBox({ msg }: { msg: string }) {
 // never founder ones.
 interface Viewer { signedIn: boolean; role: string | null }
 
+// Today's AI allowance, as reported by /api/ai/usage. Shared by the hub's
+// banner and every tab, so a "0 left" reading is one number, not three.
+type Usage = { unlimited: boolean; used: number; limit: number; remaining: number } | null;
+
 function dashboardHref(role: string | null): string {
   return role === "startup" ? "/dashboard/startup"
     : role === "investor" ? "/dashboard/investor"
@@ -73,24 +77,35 @@ interface PitchResult {
   verdict: string; strengths: string[]; improvements: string[]; key_insight: string;
 }
 
-function PitchTab({ viewer }: { viewer: Viewer }) {
+function PitchTab({ viewer, usage }: { viewer: Viewer; usage: Usage }) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const [pitch, setPitch]     = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult]   = useState<PitchResult | null>(null);
   const [error, setError]     = useState("");
   const [focused, setFocused] = useState(false);
+  // The usage banner above the tabs can read "0 left" while this button
+  // stays clickable -- a click then only ever earns a 429 round trip. Gate
+  // the button on the same number the banner already shows.
+  const exhausted = !!usage && !usage.unlimited && usage.remaining === 0;
 
   async function analyze() {
-    if (pitch.trim().length < 30) return;
+    if (pitch.trim().length < 30 || exhausted) return;
     setLoading(true); setError(""); setResult(null);
     try {
       const res  = await fetch("/api/ai/analyze-pitch", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pitch_text: pitch }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t("ai.pitch.analysisFailedErr"));
+      // A platform-level gateway/timeout page (502/504, a WAF block) is not
+      // JSON -- res.json() throwing there used to leave the raw parser
+      // SyntaxError as the message the user sees. Parse defensively and fall
+      // back to the same honest copy every other failure here already uses.
+      let data: any = null;
+      try { data = await res.json(); } catch { /* non-JSON body; data stays null */ }
+      if (!res.ok) throw new Error((data && data.error) || t("ai.pitch.analysisFailedErr"));
       setResult(data);
     } catch (e: any) {
       setError(e.message || t("ai.pitch.analysisFailedFull"));
@@ -136,14 +151,14 @@ function PitchTab({ viewer }: { viewer: Viewer }) {
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           {/* Disabled reads as a state, not a ghost: ink-3 on paper-3 stays
               legible where faded copper failed the contrast floor. */}
-          <button onClick={analyze} disabled={pitch.trim().length < 30 || loading}
+          <button onClick={analyze} disabled={pitch.trim().length < 30 || loading || exhausted}
             style={{
               flex: "1 1 auto", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-              background: pitch.trim().length < 30 || loading ? "var(--cr-paper-3)" : "var(--cr-copper)",
-              color: pitch.trim().length < 30 || loading ? "var(--cr-ink-3)" : "var(--cr-on-accent)",
+              background: pitch.trim().length < 30 || loading || exhausted ? "var(--cr-paper-3)" : "var(--cr-copper)",
+              color: pitch.trim().length < 30 || loading || exhausted ? "var(--cr-ink-3)" : "var(--cr-on-accent)",
               fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
               fontSize: "13px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
-              cursor: pitch.trim().length < 30 || loading ? "not-allowed" : "pointer",
+              cursor: pitch.trim().length < 30 || loading || exhausted ? "not-allowed" : "pointer",
               transition: "background-color 150ms, color 150ms",
             }}>
             {loading ? <><Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> {t("ai.pitch.analyzing")}</> : <><Sparkles style={{ width: 14, height: 14 }} /> {t("ai.pitch.analyzeBtn")}</>}
@@ -159,6 +174,12 @@ function PitchTab({ viewer }: { viewer: Viewer }) {
             </button>
           )}
         </div>
+        {exhausted && (
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+            {tf("ai.usageExhaustedNote", "Today's limit reached.")}{" "}
+            <Link href="/pricing" style={{ color: "var(--cr-copper)", fontWeight: 500 }}>{t("ai.usageUpgrade")}</Link>
+          </p>
+        )}
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)" }}>
           {t("ai.pitch.footerInfo")}
         </p>
@@ -341,8 +362,10 @@ function StageChip({ value, active, onClick }: { value: string; active: boolean;
   );
 }
 
-function MatchingTab({ viewer }: { viewer: Viewer }) {
+function MatchingTab({ viewer, usage }: { viewer: Viewer; usage: Usage }) {
   const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const [industry, setIndustry]       = useState("B2B SaaS");
   const [stage, setStage]             = useState("Seed");
   const [mrr, setMrr]                 = useState("$0–10K");
@@ -351,18 +374,25 @@ function MatchingTab({ viewer }: { viewer: Viewer }) {
   const [message, setMessage]         = useState("");
   const [error, setError]             = useState("");
   const [descFocused, setDescFocused] = useState(false);
+  // Matching is deterministic (no model call) but still spends today's paid
+  // allowance, same as the other two tools -- so it gates the same way.
+  const exhausted = !!usage && !usage.unlimited && usage.remaining === 0;
 
   async function findMatches() {
+    if (exhausted) return;
     setLoading(true); setError(""); setMatches(null); setMessage("");
     try {
       const res  = await fetch("/api/ai/smart-match", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ industry, stage, mrr }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || t("ai.matching.matchingFailedErr"));
-      setMatches(data.matches || []);
-      if (data.message) setMessage(data.message);
+      // See PitchTab.analyze: a non-JSON error body (gateway/edge page) must
+      // not leak a raw parser SyntaxError into the UI.
+      let data: any = null;
+      try { data = await res.json(); } catch { /* non-JSON body; data stays null */ }
+      if (!res.ok) throw new Error((data && data.error) || t("ai.matching.matchingFailedErr"));
+      setMatches((data && data.matches) || []);
+      if (data && data.message) setMessage(data.message);
     } catch (e: any) {
       setError(e.message || t("ai.matching.matchingFailedFull"));
     } finally {
@@ -411,20 +441,26 @@ function MatchingTab({ viewer }: { viewer: Viewer }) {
 
 
       {/* Same disabled register as the analyzer: ink-3 on paper-3. */}
-      <button onClick={findMatches} disabled={loading}
+      <button onClick={findMatches} disabled={loading || exhausted}
         style={{
           display: "inline-flex", alignItems: "center", gap: "8px",
-          background: loading ? "var(--cr-paper-3)" : "var(--cr-copper)",
-          color: loading ? "var(--cr-ink-3)" : "var(--cr-on-accent)",
+          background: loading || exhausted ? "var(--cr-paper-3)" : "var(--cr-copper)",
+          color: loading || exhausted ? "var(--cr-ink-3)" : "var(--cr-on-accent)",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
           fontSize: "13px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
-          cursor: loading ? "not-allowed" : "pointer", transition: "background-color 150ms, color 150ms",
+          cursor: loading || exhausted ? "not-allowed" : "pointer", transition: "background-color 150ms, color 150ms",
         }}>
         {loading
           ? <><Loader2 style={{ width: 14, height: 14 }} className="animate-spin" /> {t("ai.matching.finding")}</>
           : <><Brain style={{ width: 14, height: 14 }} /> {t("ai.matching.findBtn")}</>
         }
       </button>
+      {exhausted && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)", marginTop: "-16px" }}>
+          {tf("ai.usageExhaustedNote", "Today's limit reached.")}{" "}
+          <Link href="/pricing" style={{ color: "var(--cr-copper)", fontWeight: 500 }}>{t("ai.usageUpgrade")}</Link>
+        </p>
+      )}
 
       {error && <ErrorBox msg={error} />}
 
@@ -529,11 +565,23 @@ interface StartupSuggestion {
   id: string; slug: string; name: string; industry: string | null; stage: string | null;
 }
 
-function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolean }) {
+interface PastReport {
+  id: string; startupId: string; startupName: string; startupSlug: string | null; createdAt: string;
+  /** Set only for a report generated this session, so re-opening it needs no fetch. */
+  content?: string;
+}
+
+function DiligenceTab({ viewer, usage }: { viewer: Viewer; usage: Usage }) {
   const { t } = useTranslation();
   // Renders the fallback until the key lands in every locale.
   const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
   const isFounder = viewer.role === "startup";
+  const isInvestor = viewer.role === "investor";
+  const unlimited = usage?.unlimited === true;
+  // Same gate as the other two tools: the banner above already shows "0
+  // left", so the button should not still invite a click that only earns a
+  // 429 round trip.
+  const exhausted = !!usage && !usage.unlimited && usage.remaining === 0;
   const DD_STEPS = [
     t("ai.diligence.step1"),
     t("ai.diligence.step2"),
@@ -549,6 +597,42 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
   const [report, setReport]             = useState<string | null>(null);
   const [error, setError]               = useState("");
   const [inputFocused, setInputFocused] = useState(false);
+  // Reports are already saved server-side on every success (ai_reports); the
+  // tier table markets "Saved Reports" as a Pro feature but nothing on the
+  // page ever let an investor look at one again. Read-only history, sourced
+  // from real rows -- not shown to a founder, who never generates these.
+  const [pastReports, setPastReports]   = useState<PastReport[] | null>(null);
+  const [pastLoading, setPastLoading]   = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isInvestor) return;
+    fetch("/api/ai/due-diligence/reports")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => { if (j?.reports) setPastReports(j.reports); })
+      .catch(() => { /* history is a bonus panel; failing quietly beats breaking the tool */ });
+  }, [isInvestor]);
+
+  async function openPastReport(r: PastReport) {
+    setSelected({ id: r.startupId, slug: r.startupSlug ?? "", name: r.startupName, industry: null, stage: null });
+    setQuery(r.startupName);
+    // A report generated this session already has its content in hand --
+    // nothing to fetch, and its id is a local placeholder, not a real row id.
+    if (r.content) { setReport(r.content); setError(""); return; }
+    setPastLoading(r.id); setError("");
+    try {
+      const res = await fetch(`/api/ai/due-diligence/reports/${r.id}`);
+      let data: any = null;
+      try { data = await res.json(); } catch { /* non-JSON body; data stays null */ }
+      if (!res.ok || !data?.content) throw new Error((data && data.error) || tf("ai.diligence.historyLoadFailed", "Could not open that report."));
+      setReport(data.content);
+      setSelected({ id: r.startupId, slug: r.startupSlug ?? "", name: data.startupName ?? r.startupName, industry: null, stage: null });
+      setQuery(r.startupName);
+    } catch (e: any) {
+      setError(e.message || tf("ai.diligence.historyLoadFailed", "Could not open that report."));
+    } finally {
+      setPastLoading(null);
+    }
+  }
 
   async function searchStartups(q: string) {
     setQuery(q);
@@ -565,7 +649,7 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
   }
 
   async function generateReport() {
-    if (!selected) return;
+    if (!selected || exhausted) return;
     setLoading(true); setReport(null); setError(""); setStepIdx(0);
     const interval = setInterval(() => setStepIdx((i) => Math.min(i + 1, DD_STEPS.length - 1)), 1400);
     try {
@@ -581,7 +665,17 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
           setError(data.error || t("ai.diligence.generationFailed"));
         }
       } else {
-        setReport(data.report || data.content || "");
+        const content = data.report || data.content || "";
+        setReport(content);
+        // The route already persisted this to ai_reports; reflect it in the
+        // history panel immediately rather than waiting on a refetch. Only
+        // an investor has a history panel to update.
+        if (isInvestor) {
+          setPastReports((prev) => [
+            { id: `local-${Date.now()}`, startupId: selected.id, startupName: selected.name, startupSlug: selected.slug, createdAt: new Date().toISOString(), content },
+            ...(prev ?? []).filter((r) => r.startupId !== selected.id || !r.id.startsWith("local-")),
+          ]);
+        }
       }
     } catch {
       setError(t("ai.diligence.networkError"));
@@ -651,16 +745,55 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
         )}
       </div>
 
+      {/* Reports are already saved server-side on every success; this is the
+          first place on the page an investor can get back to one instead of
+          losing it the moment the tab is closed or a new search overwrites
+          the in-memory result. Founders never generate these, so it never
+          shows for them. */}
+      {isInvestor && pastReports && pastReports.length > 0 && (
+        <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "16px" }}>
+          <p className="ruled-label" style={{ fontFamily: "'DM Sans', sans-serif", marginBottom: "8px" }}>
+            {tf("ai.diligence.pastReports", "Past reports")}
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            {pastReports.slice(0, 8).map((r) => (
+              <button key={r.id} onClick={() => openPastReport(r)} disabled={pastLoading === r.id}
+                style={{
+                  display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px",
+                  width: "100%", background: "transparent", border: "none", borderRadius: "4px",
+                  padding: "8px", cursor: pastLoading === r.id ? "wait" : "pointer", textAlign: "left",
+                  transition: "background 120ms ease",
+                }}
+                onMouseEnter={e => ((e.currentTarget as HTMLElement).style.background = "var(--cr-paper-3)")}
+                onMouseLeave={e => ((e.currentTarget as HTMLElement).style.background = "transparent")}>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
+                  <FileSearch style={{ width: 13, height: 13, color: "var(--cr-ink-3)", flexShrink: 0 }} />
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.startupName}</span>
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>
+                    {new Date(r.createdAt).toLocaleDateString()}
+                  </span>
+                  {pastLoading === r.id
+                    ? <Loader2 style={{ width: 13, height: 13, color: "var(--cr-copper)" }} className="animate-spin" />
+                    : <ChevronRight style={{ width: 13, height: 13, color: "var(--cr-ink-4)" }} />}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Disabled until a startup is chosen -- ink-3 on paper-3 keeps the
           label readable instead of half-transparent copper. */}
-      <button onClick={generateReport} disabled={loading || !selected}
+      <button onClick={generateReport} disabled={loading || !selected || exhausted}
         style={{
           display: "inline-flex", alignItems: "center", gap: "8px",
-          background: loading || !selected ? "var(--cr-paper-3)" : "var(--cr-copper)",
-          color: loading || !selected ? "var(--cr-ink-3)" : "var(--cr-on-accent)",
+          background: loading || !selected || exhausted ? "var(--cr-paper-3)" : "var(--cr-copper)",
+          color: loading || !selected || exhausted ? "var(--cr-ink-3)" : "var(--cr-on-accent)",
           fontFamily: "'DM Sans', sans-serif", fontWeight: 600,
           fontSize: "13px", height: "42px", padding: "0 24px", borderRadius: "4px", border: "none",
-          cursor: loading || !selected ? "not-allowed" : "pointer",
+          cursor: loading || !selected || exhausted ? "not-allowed" : "pointer",
           transition: "background-color 150ms, color 150ms",
         }}>
         {loading
@@ -668,6 +801,12 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
           : <><FileSearch style={{ width: 14, height: 14 }} /> {t("ai.diligence.generateBtn")}</>
         }
       </button>
+      {exhausted && (
+        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+          {tf("ai.usageExhaustedNote", "Today's limit reached.")}{" "}
+          <Link href="/pricing" style={{ color: "var(--cr-copper)", fontWeight: 500 }}>{t("ai.usageUpgrade")}</Link>
+        </p>
+      )}
 
       {error === "auth_required" && (
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", padding: "24px", textAlign: "center" }}>
@@ -716,6 +855,30 @@ function DiligenceTab({ viewer, unlimited }: { viewer: Viewer; unlimited: boolea
         </div>
       )}
       {error && error !== "auth_required" && error !== "upgrade_required" && <ErrorBox msg={error} />}
+
+      {/* A report generation can run up to a minute (maxDuration=60); with no
+          content pane here yet, the whole panel below sat blank the entire
+          time, the only feedback being the button's own step text. Match the
+          Pitch Analyzer's animated placeholder so the wait reads as "working"
+          rather than "did this break". */}
+      {loading && (
+        <div style={{
+          minHeight: "280px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", borderRadius: "4px",
+          padding: "48px", textAlign: "center",
+        }}>
+          <div style={{ position: "relative", display: "inline-flex", marginBottom: "16px" }}>
+            <div style={{ width: 56, height: 56, borderRadius: "4px", background: "var(--cr-paper-2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <FileSearch style={{ width: 28, height: 28, color: "var(--cr-copper)" }} />
+            </div>
+            <Loader2 style={{ position: "absolute", top: "-6px", right: "-6px", width: 20, height: 20, color: "var(--cr-copper)" }} className="animate-spin" />
+          </div>
+          <p style={{ fontFamily: "var(--font-serif)", fontStyle: "italic", fontWeight: 700, fontSize: "22px", color: "var(--cr-ink)", letterSpacing: "-0.01em", marginBottom: "8px" }}>{DD_STEPS[stepIdx]}</p>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-3)", lineHeight: 1.5 }}>
+            {tf("ai.diligence.loadingSub", "Reading the data room and screening the web. This can take up to a minute.")}
+          </p>
+        </div>
+      )}
 
       {report && (
         <div style={{ background: "var(--cr-paper-2)", border: "1px solid var(--cr-rule-dark)", borderRadius: "4px", overflow: "hidden" }}>
@@ -812,7 +975,7 @@ export function AiToolsHub({ initialAuthed, viewerRole = null }: { initialAuthed
   }, []);
   // Today's allowance, so the limit is visible before a pitch is written
   // rather than discovered as a 429 afterwards.
-  const [usage, setUsage] = useState<{ unlimited: boolean; used: number; limit: number; remaining: number } | null>(null);
+  const [usage, setUsage] = useState<Usage>(null);
   useEffect(() => {
     createClient().auth.getUser().then(({ data, error }) => {
       // A network failure says nothing about the session: keep the server's
@@ -972,9 +1135,9 @@ export function AiToolsHub({ initialAuthed, viewerRole = null }: { initialAuthed
           // TabPanel wires the strip's aria-controls ids and remounts on every
           // swap, so all three tools share the strip's 160ms crossfade.
           <TabPanel idBase="ai-tools" active={activeTab}>
-            {activeTab === "pitch"     && <PitchTab viewer={viewer} />}
-            {activeTab === "matching"  && <MatchingTab viewer={viewer} />}
-            {activeTab === "diligence" && <DiligenceTab viewer={viewer} unlimited={usage?.unlimited === true} />}
+            {activeTab === "pitch"     && <PitchTab viewer={viewer} usage={usage} />}
+            {activeTab === "matching"  && <MatchingTab viewer={viewer} usage={usage} />}
+            {activeTab === "diligence" && <DiligenceTab viewer={viewer} usage={usage} />}
           </TabPanel>
         )}
       </div>

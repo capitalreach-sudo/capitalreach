@@ -136,6 +136,25 @@ Return ONLY valid JSON with these EXACT keys — no commentary outside the JSON:
     });
   } catch (err) {
     console.error("[analyze-pitch]", err);
+    // This route's own failures were invisible to the admin System Health
+    // panel: due-diligence and pitch-feedback both log here, analyze-pitch
+    // did not, so the tool a founder is most likely to open first was the
+    // one whose OpenAI failures nobody watching that panel would ever see.
+    const { logSystemEvent } = await import("@/lib/system-events");
+    await logSystemEvent("ai/analyze-pitch", "error", "Pitch analysis failed", { message: String((err as Error)?.message ?? err).slice(0, 400) }).catch(() => {});
+    // A quota/billing failure at the provider is not the transient blip
+    // "try again" implies -- it is a standing outage until credits are added,
+    // and generic retry copy just sends the user back into the same wall.
+    // Answer it with copy that says so, distinctly from a genuine one-off
+    // failure (parse error, network blip), without naming the cause.
+    const status = (err as { status?: number } | null)?.status;
+    const code = (err as { code?: string } | null)?.code;
+    if (status === 429 || code === "insufficient_quota") {
+      return NextResponse.json(
+        { error: "AI tools are temporarily unavailable. Please try again shortly." },
+        { status: 503 }
+      );
+    }
     return NextResponse.json(
       { error: "Analysis failed. Please try again." },
       { status: 500 }
