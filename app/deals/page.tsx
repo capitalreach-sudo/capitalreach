@@ -178,6 +178,12 @@ export default async function DealsPage() {
     const { data: deals } = await resolved.admin
       .from("deals")
       .select("*, startup:startups(name, slug, equity_offered, funding_target, stage, industry, mrr, arr), investor:investors(slug, type, display_name, firm_name, is_external)")
+      // Demo deals outnumber real ones roughly 100 to 1 on this platform right
+      // now, and they update_at-sort to the top like anything else -- "All
+      // deals" without this filter is a pipeline of almost entirely seeded
+      // test data with the one real deal buried in it. Same default-real-rows
+      // rule the admin startup/investor lists already apply.
+      .eq("is_demo", false)
       .order("updated_at", { ascending: false })
       // 250 most-recent: the board previews columns and the list paginates
       // visually anyway -- 500 rows of joined JSON was pure transfer weight.

@@ -497,7 +497,39 @@ function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: 
 
 // ── Search result card ────────────────────────────────────────────────────────
 
-function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
+/**
+ * The revenue shape, in one glance. Values arrive normalised 0..1 (server-side,
+ * so no absolute figure ever reaches an anonymous or free-tier viewer) --
+ * this just maps them onto a small polyline. Four points is the sparklines
+ * API's own floor for "a trend, not a squiggle," so nothing below that
+ * renders here either.
+ */
+function Sparkline({ values }: { values: number[] }) {
+  if (values.length < 4) return null;
+  const W = 64, H = 20, PAD = 2;
+  const points = values
+    .map((v, i) => {
+      const x = PAD + (i / (values.length - 1)) * (W - PAD * 2);
+      const y = PAD + (1 - v) * (H - PAD * 2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    })
+    .join(" ");
+  const up = values[values.length - 1] >= values[0];
+  return (
+    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden focusable="false" style={{ display: "block", flexShrink: 0 }}>
+      <polyline
+        points={points}
+        fill="none"
+        stroke={up ? "var(--cr-up)" : "var(--cr-ink-4)"}
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+function ResultCard({ s, saved, viewed, hidden, comparing, match, spark, onSave, onHide, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; hidden?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onHide?: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   const score = s.vaultrise_score ?? null;
   const isNew = Math.floor((Date.now() - new Date(s.created_at).getTime()) / 86400000) <= 5;
@@ -644,8 +676,9 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
           return (
             // The stat idiom: one hairline above, caps label over figure,
             // left-aligned, and no interior fences -- space and alignment do
-            // what the cell borders used to.
-            <div style={{ display: "flex", gap: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: RHYTHM.inner }}>
+            // what the cell borders used to. The sparkline docks at the end
+            // of the strip, the shape beside the numbers it summarises.
+            <div style={{ display: "flex", alignItems: "flex-end", gap: RHYTHM.block, borderTop: "1px solid var(--cr-rule)", paddingTop: "12px", marginBottom: RHYTHM.inner }}>
               {metrics.map((m) => (
                 <div key={m.label} style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "4px" }}>{m.label}</div>
@@ -654,6 +687,7 @@ function ResultCard({ s, saved, viewed, hidden, comparing, match, onSave, onHide
                   </div>
                 </div>
               ))}
+              {spark && spark.length >= 4 && <Sparkline values={spark} />}
             </div>
           );
         })()}
