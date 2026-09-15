@@ -235,10 +235,15 @@ const STAGE_TIP: Record<(typeof DEAL_STAGES)[number]["key"], { key: string; fall
 // implausible values rather than a wrong number.
 function fmtRaising(n: number | null | undefined) { return safeFormatCurrency(n); }
 
-function timeAgo(iso: string) {
+// nowMs is passed in rather than read from Date.now() here, so the caller
+// controls when the clock ticks. Before mount, callers pass a value that was
+// already part of the server payload (never Date.now()), so server and
+// first-client-render agree; a mounted effect then swaps in the real clock,
+// same pattern as the rest of this file's SSR-safe values.
+function timeAgo(iso: string, nowMs: number) {
   // Localized: the old English "0m ago" was interpolated INTO localized
   // sentences ("0m agoに更新" on the Japanese page).
-  const secs = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  const secs = Math.max(0, Math.floor((nowMs - new Date(iso).getTime()) / 1000));
   try {
     const rtf = new Intl.RelativeTimeFormat(displayLocale(), { numeric: "auto", style: "narrow" });
     if (secs < 60) return rtf.format(0, "second").replace(/^in /, "");
@@ -488,6 +493,19 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState(false);
 
+  // The mounted gate for every render-time clock read on this page (the two
+  // timeAgo() captions below). Before mount, "now" is pinned to the server's
+  // own freshness stamp (data.lastUpdated), a value that is part of the
+  // server-rendered payload and therefore identical on the server and on the
+  // first client render, so there is nothing for hydration to disagree
+  // about. The effect below flips mounted true right after hydration and
+  // every later render then reads the real clock, refining the captions
+  // from "as of the server response" to "as of right now" without ever
+  // flashing blank content.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const nowMs = mounted ? Date.now() : (initialData ? new Date(initialData.lastUpdated).getTime() : Date.now());
+
   // Three disclosures, one device. Growth opens on the activity chart (the
   // page's single primary chart); the numbers behind it are the third tab, so
   // every chart still has a table for anyone the colours fail.
@@ -681,7 +699,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
           {data && (
             <div style={{ display: "flex", alignItems: "center", gap: "8px 12px", marginTop: BLOCK_GAP, paddingTop: ROW_GAP, borderTop: "1px solid color-mix(in srgb, var(--cr-band-ink) 18%, transparent)", flexWrap: "wrap" }}>
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>
-                {t("data.updated", { time: timeAgo(data.lastUpdated) })}
+                {t("data.updated", { time: timeAgo(data.lastUpdated, nowMs) })}
               </span>
               <span aria-hidden style={{ fontSize: "11px", color: "var(--cr-band-ink-dim)" }}>·</span>
               <button
@@ -1282,7 +1300,7 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                             </div>
                             <div style={{ textAlign: "right", flexShrink: 0 }}>
                               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink)" }}>{fmtRaising(s.funding_target)}</p>
-                              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{timeAgo(s.created_at)}</p>
+                              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>{timeAgo(s.created_at, nowMs)}</p>
                             </div>
                           </Link>
                         ))}
