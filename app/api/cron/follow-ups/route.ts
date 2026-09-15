@@ -123,9 +123,14 @@ export async function GET(req: NextRequest) {
           milestones: (s.milestones as { description: string }[]) || [],
           stage: s.stage,
         });
+        const scoredAt = new Date().toISOString();
         await admin.from("startups")
-          .update({ vaultrise_score: score, scored_at: new Date().toISOString() })
+          .update({ vaultrise_score: score, scored_at: scoredAt })
           .eq("id", s.id);
+        // 140: same append-only log as the approval scorer -- this is the
+        // loop that ages scores over time, so it is the write path a trend
+        // view actually depends on.
+        await admin.from("score_history").insert({ startup_id: s.id, score, scored_at: scoredAt });
         rescored++;
       } catch (e) {
         // One refusal must not stop the queue, but the refusal itself is

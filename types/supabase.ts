@@ -2516,6 +2516,38 @@ export type Database = {
           },
         ]
       }
+      score_history: {
+        Row: {
+          created_at: string
+          id: string
+          score: number
+          scored_at: string
+          startup_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          score: number
+          scored_at: string
+          startup_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          score?: number
+          scored_at?: string
+          startup_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "score_history_startup_id_fkey"
+            columns: ["startup_id"]
+            isOneToOne: false
+            referencedRelation: "startups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       saved_searches: {
         Row: {
           alert_enabled: boolean

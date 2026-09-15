@@ -78,9 +78,13 @@ export async function POST(req: NextRequest) {
       documents: startup.documents || [],
       milestones: startup.milestones || [],
       stage: startup.stage,
-    }).then(score =>
-      adminClient.from("startups").update({ vaultrise_score: score, scored_at: new Date().toISOString() }).eq("id", startupId)
-    ).catch(() => {});
+    }).then(async score => {
+      const scoredAt = new Date().toISOString();
+      await adminClient.from("startups").update({ vaultrise_score: score, scored_at: scoredAt }).eq("id", startupId);
+      // 140: append-only log beside the snapshot above, so a later re-score
+      // does not erase the climb -- see score_history's migration note.
+      await adminClient.from("score_history").insert({ startup_id: startupId, score, scored_at: scoredAt });
+    }).catch(() => {});
   }
 
   // Going live is the moment a founder has been waiting on since they

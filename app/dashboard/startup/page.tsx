@@ -155,6 +155,13 @@ export default async function StartupDashboardPage() {
       .select("mrr, growth_rate, runway_months, vaultrise_score")
       .eq("status", "active")
       .eq("stage", startup.stage)
+      // Latent hole, not yet triggered: prod's ~1001 is_demo rows all
+      // happen to be non-active today, so this cohort is real-only by
+      // accident. Staging already seeds 10k active is_demo rows (see
+      // capitalreach-open-items) -- without this filter, reintroducing
+      // demo/scale data at status='active' would silently mix fake
+      // companies into a founder's real percentile with no label.
+      .eq("is_demo", false)
       .neq("id", startup.id)
       .limit(500);
     benchmarks = computeBenchmarks(

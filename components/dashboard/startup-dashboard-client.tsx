@@ -432,6 +432,45 @@ function ViewsSparkline({ series, width = 96, height = 20 }: { series: number[];
 }
 
 /**
+ * Audit finding #2: startups.vaultrise_score is a snapshot, overwritten on
+ * every re-score -- a founder who improved their pitch had no way to see the
+ * climb. Migration 140 (score_history) logs every scoring event; this reads
+ * it back under the AI Score cell.
+ *
+ * Unlike ViewsSparkline, points are NOT normalised to their own local max --
+ * a score is already a fixed 0-100 scale, and rescaling a 62-74 run to fill
+ * the box would make a small real move look like a swing. Sparkline's own
+ * `values` prop carries the raw figures for the hover flag.
+ */
+function ScoreTrend() {
+  const [history, setHistory] = useState<Array<{ score: number; scored_at: string }> | null>(null);
+
+  useEffect(() => {
+    fetch("/api/startups/score-history")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setHistory(j?.history ?? []))
+      .catch(() => setHistory([]));
+  }, []);
+
+  // Sparkline itself refuses fewer than two points; the delta line below
+  // needs the same floor, so both are gated here together.
+  if (!history || history.length < 2) return null;
+  const scores = history.map((h) => h.score);
+  const delta = scores[scores.length - 1] - scores[0];
+
+  return (
+    <div style={{ marginTop: "auto", paddingTop: "16px", display: "flex", alignItems: "center", gap: "8px", maxWidth: "100%", overflow: "hidden" }}>
+      <Sparkline points={scores.map((s) => s / 100)} values={scores} width={72} height={20} />
+      {delta !== 0 && (
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "11px", color: delta > 0 ? "var(--cr-up)" : "var(--cr-down)", whiteSpace: "nowrap" }}>
+          {delta > 0 ? "+" : ""}{delta}
+        </span>
+      )}
+    </div>
+  );
+}
+
+/**
  * The founder's only question, answered at the top of the dashboard: how much
  * of the target is soft-circled (open term sheets) or committed (closed),
  * straight from the deal amounts. Renders nothing until any deal carries an
@@ -490,6 +529,86 @@ function RaiseTracker({ target, softCircled, committed }: { target: number; soft
           {t("dashboard.softCircled")}: {formatCurrency(softCircled, true)}
         </span>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Audit finding #4: round_close_date has been captured on the edit form
+ * since the beginning and used only as a boolean (FundraiseChecklist's
+ * "closeDate" step, done/not-done) -- the date itself, and how the round is
+ * pacing toward it, appeared nowhere on the dashboard. This renders both
+ * from data the page already holds.
+ *
+ * The audit's fuller ask was a benchmark against OTHER rounds' historical
+ * time-to-close. That needs data that does not exist yet: round_state_
+ * changed_at is written only on an actual state CHANGE (see round-state/
+ * route.ts), so a listing that has been "open" since launch has never set
+ * it, and there is no platform-wide "round opened" timestamp to build a peer
+ * cohort from -- the same missing-anchor problem migration 140's note
+ * documents for score history. Faking that comparison with a thin proxy
+ * would be worse than not building it, so it is left for its own pass
+ * (schema first, same as score history). What today's data DOES support
+ * honestly is the round against its own timeline: how far through the time
+ * to close vs. how far through the target.
+ */
+function RoundPacePanel({ startup, raised }: { startup: Startup; raised: number }) {
+  const { t } = useTranslation();
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    return out === key ? fallback.replace(/\{(\w+)\}/g, (_, k) => String(vars?.[k] ?? `{${k}}`)) : out;
+  };
+  const st = startup as unknown as { round_close_date?: string | null; round_state_changed_at?: string | null; listed_at?: string | null };
+  if (!st.round_close_date) return null;
+  const closeDate = new Date(st.round_close_date);
+  const now = new Date();
+  const daysLeft = Math.ceil((closeDate.getTime() - now.getTime()) / 86_400_000);
+
+  // Best available anchor for "when this round started": the last real
+  // round_state transition, falling back to when the listing went live. Both
+  // can be missing on an older row -- the pace comparison below simply does
+  // not render then, while the countdown above still does.
+  const anchorStr = st.round_state_changed_at || st.listed_at;
+  const anchor = anchorStr ? new Date(anchorStr) : null;
+
+  let pace: { timePct: number; moneyPct: number } | null = null;
+  if (anchor && startup.funding_target && closeDate.getTime() > anchor.getTime()) {
+    const totalMs = closeDate.getTime() - anchor.getTime();
+    const elapsedMs = Math.min(Math.max(now.getTime() - anchor.getTime(), 0), totalMs);
+    pace = {
+      timePct: Math.round((elapsedMs / totalMs) * 100),
+      moneyPct: Math.round(Math.min(100, (raised / startup.funding_target) * 100)),
+    };
+  }
+
+  return (
+    <div style={panel}>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: pace ? "16px" : 0 }}>
+        <h3 className="ruled-label" data-cr-visible="1">{tf("dashboard.roundPaceTitle", "Close date")}</h3>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "15px", fontVariantNumeric: "tabular-nums", color: daysLeft < 0 ? "var(--cr-down)" : daysLeft <= 14 ? "var(--cr-copper)" : "var(--cr-ink)" }}>
+          {daysLeft < 0
+            ? tf("dashboard.roundPaceOverdue", "{days} days past target", { days: Math.abs(daysLeft) })
+            : daysLeft === 0
+            ? tf("dashboard.roundPaceToday", "Closes today")
+            : tf("dashboard.roundPaceDaysLeft", "{days} days left", { days: daysLeft })}
+        </span>
+      </div>
+      {pace && (
+        <>
+          <div style={{ position: "relative", height: "8px", background: "var(--cr-paper-4)", borderRadius: "4px", overflow: "hidden" }}>
+            <div style={{ width: `${pace.moneyPct}%`, height: "100%", background: "var(--cr-copper)" }} />
+            {/* The time marker: a plain tick, not a second bar -- two colours
+                racing each other reads as a competition, not one figure
+                measured against one clock. */}
+            <div aria-hidden style={{ position: "absolute", top: 0, bottom: 0, left: `${Math.min(100, pace.timePct)}%`, width: "2px", background: "var(--cr-ink)" }} />
+          </div>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "8px", lineHeight: 1.5 }}>
+            {pace.moneyPct >= pace.timePct
+              ? tf("dashboard.roundPaceAhead", "{money}% of target raised at {time}% of the way to your close date -- ahead of pace.", { money: pace.moneyPct, time: pace.timePct })
+              : tf("dashboard.roundPaceBehind", "{money}% of target raised at {time}% of the way to your close date -- behind pace.", { money: pace.moneyPct, time: pace.timePct })}
+          </p>
+        </>
+      )}
     </div>
   );
 }
@@ -977,11 +1096,33 @@ function UpdateComposer() {
     setHistory((h) => h.filter((u) => u.id !== id));
   }
   const AUD_KEY: Record<string, string> = { watchers: "dashboard.audWatchers", deals: "dashboard.audDeals", all: "dashboard.audAll" };
+  // Renders sensibly before the key lands in messages/; same fallback idiom
+  // as RaiseTracker/RaiseGlance above.
+  const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+    const out = t(key, vars);
+    return out === key ? fallback.replace(/\{(\w+)\}/g, (_, k) => String(vars?.[k] ?? `{${k}}`)) : out;
+  };
+  // Audit finding #3: nothing on the dashboard ever said how long it had
+  // been since the founder last spoke to their savers. A cadence a founder
+  // cannot see is a cadence they forget -- this is computed client-side from
+  // the history the composer already fetches, no new write path.
+  const daysSinceUpdate = history.length > 0
+    ? Math.floor((Date.now() - new Date(history[0].created_at).getTime()) / 86_400_000)
+    : null;
 
   return (
     <div style={panel}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-        <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.postUpdate")}</h3>
+        <div>
+          <h3 className="ruled-label" data-cr-visible="1">{t("dashboard.postUpdate")}</h3>
+          {daysSinceUpdate !== null && !open && (
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: daysSinceUpdate > 28 ? "var(--cr-copper)" : "var(--cr-ink-4)", marginTop: "4px" }}>
+              {daysSinceUpdate === 0
+                ? tf("dashboard.updLastToday", "Last update: today")
+                : tf("dashboard.updLastDaysAgo", "Last update: {days} days ago -- savers expect one every 2-4 weeks", { days: daysSinceUpdate })}
+            </p>
+          )}
+        </div>
         {!open && (
           <button onClick={() => setOpen(true)}
             style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "999px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", minHeight: "40px", padding: "0 16px", cursor: "pointer" }}>
@@ -1110,6 +1251,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   const router       = useRouter();
   const messagingAvailable = useMessagingAvailable();
   const [aiFeedback, setAiFeedback]           = useState<any>(null);
+  const [aiHistory, setAiHistory]             = useState<any[]>([]);
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [activeTab, setActiveTab]             = useState<StartupTab>("overview");
   // The signature is a listing-level record, not a step in a wizard: a founder
@@ -1163,6 +1305,24 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
   const canDocs          = isLaunchMode || tier === "starter" || tier === "growth";
   const canGrowth        = isLaunchMode || tier === "growth";
 
+  // Audit finding #1: a generated report used to live only in this
+  // component's memory -- gone on refresh, with no way back to it short of
+  // paying AI allowance again. This restores the founder's own history on
+  // arrival and seats the newest report as "current" so a reload never
+  // starts blank.
+  useEffect(() => {
+    if (!startup || !canGrowth) return;
+    fetch("/api/startups/ai-reports")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        const reports = j?.reports ?? [];
+        setAiHistory(reports);
+        setAiFeedback((cur: any) => cur ?? reports[0] ?? null);
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startup?.id, canGrowth]);
+
   async function generatePitchFeedback() {
     if (!startup || viewingAs) return;
     setLoadingFeedback(true);
@@ -1174,6 +1334,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
         return;
       }
       setAiFeedback(data);
+      // The POST response carries no id/createdAt (it is the raw model
+      // output, not the ai_reports row it was just written into) -- a local
+      // id is enough to key this entry in the history list below until the
+      // next mount re-fetches the real one.
+      setAiHistory((h) => [{ ...data, id: `local-${Date.now()}`, createdAt: new Date().toISOString() }, ...h]);
     } catch {
       notify.error(t("errors.generic"));
     } finally {
@@ -1431,6 +1596,7 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "22px", lineHeight: 1, color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{val}</p>
                   )}
                   {series && <ViewsSparkline series={series} />}
+                  {dial && <ScoreTrend />}
                 </div>
                 );
               })}
@@ -1655,6 +1821,11 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                 <RaiseTracker target={startup.funding_target} softCircled={analytics.raise.softCircled} committed={analytics.raise.committed} />
               </ErrorBoundary>
             )}
+            {startup && analytics.raise && (
+              <ErrorBoundary labelKey="sections.raiseProgress">
+                <RoundPacePanel startup={startup} raised={analytics.raise.softCircled + analytics.raise.committed} />
+              </ErrorBoundary>
+            )}
             {startup && <ErrorBoundary labelKey="sections.raiseProgress"><RoundControls startup={startup} /></ErrorBoundary>}
             {startup && analytics.funnel && (
               <ErrorBoundary labelKey="sections.raiseProgress">
@@ -1811,10 +1982,18 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
               <div>
                 {/* The one loud thing on this view -- nothing else here is
                     bigger than 13px, so the score can hold 40. */}
-                <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginBottom: "24px" }}>
-                  {/* 28, not 40: the 48px strip headline above the tabs is this page's one lead figure. */}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{aiFeedback.overall_score}</span>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)" }}>/100</span>
+                <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "24px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "4px" }}>
+                    {/* 28, not 40: the 48px strip headline above the tabs is this page's one lead figure. */}
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", color: "var(--cr-copper)", lineHeight: 1, fontVariantNumeric: "tabular-nums" }}>{aiFeedback.overall_score}</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)" }}>/100</span>
+                  </div>
+                  {/* The report now survives a refresh, so it needs a date --
+                      "current" was previously implicit (whatever was still in
+                      memory); it is now one of several saved reports. */}
+                  {aiFeedback.createdAt && (
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{formatDate(aiFeedback.createdAt)}</span>
+                  )}
                 </div>
                 {/* Blocks split by rules, not boxes inside the card. */}
                 <div style={{ display: "flex", flexDirection: "column", marginBottom: "24px" }}>
@@ -1830,8 +2009,34 @@ export function StartupDashboardClient({ profile, startup, analytics, isLaunchMo
                     </div>
                   ))}
                 </div>
-                {viewingAs ? null : <button onClick={generatePitchFeedback} style={outlineBtn}>{t("dashboard.regenerate")}</button>}
+                {viewingAs ? null : <button onClick={generatePitchFeedback} disabled={loadingFeedback} style={{ ...outlineBtn, opacity: loadingFeedback ? 0.6 : 1 }}>{loadingFeedback ? t("dashboard.analyzing") : t("dashboard.regenerate")}</button>}
               </div>
+            )}
+            {/* Consistency over time: every past report stays reachable, one
+                click behind the current one -- same idiom as UpdateComposer's
+                history a few tabs over. Only the reports OTHER than the one
+                on screen are listed here, so nothing appears twice. */}
+            {aiHistory.filter((r) => r.id !== aiFeedback?.id).length > 0 && (
+              <details style={{ marginTop: "24px", borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
+                <summary style={{ cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                  {(() => {
+                    const tf = (key: string, fallback: string, vars?: Record<string, string | number>) => {
+                      const out = t(key, vars);
+                      return out === key ? fallback.replace(/\{(\w+)\}/g, (_, k) => String(vars?.[k] ?? `{${k}}`)) : out;
+                    };
+                    return tf("dashboard.aiFeedbackHistory", "{count} earlier reports", { count: aiHistory.filter((r) => r.id !== aiFeedback?.id).length });
+                  })()}
+                </summary>
+                <div style={{ display: "grid", marginTop: "12px" }}>
+                  {aiHistory.filter((r) => r.id !== aiFeedback?.id).map((r) => (
+                    <button key={r.id} onClick={() => setAiFeedback(r)}
+                      style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", borderTop: "1px solid var(--cr-rule)", padding: "12px 0", background: "none", width: "100%", cursor: "pointer", textAlign: "left" }}>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>{r.overall_score}<span style={{ fontWeight: 300, color: "var(--cr-ink-4)" }}>/100</span></span>
+                      <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)" }}>{formatDate(r.createdAt)}</span>
+                    </button>
+                  ))}
+                </div>
+              </details>
             )}
           </div>
         )}

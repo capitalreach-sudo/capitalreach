@@ -728,21 +728,53 @@ function NeedsAttention({ deals }: { deals: Deal[] }) {
     return out === key ? fallback : out;
   };
   const [awaiting, setAwaiting] = useState(0);
+  // Audit #3: outgoing pending proposals never showed up anywhere on the
+  // dashboard -- an offer that is never accepted or declined has no expiry
+  // and never becomes a deals row, so it was invisible everywhere else too.
+  // The endpoint already returns j.outgoing; this reads it, same fetch.
+  const [outgoing, setOutgoing] = useState<{ count: number; oldestAt: string | null }>({ count: 0, oldestAt: null });
   useEffect(() => {
     fetch("/api/deals/proposals")
       .then((r) => (r.ok ? r.json() : null))
-      // The endpoint returns negotiation chains: ancestors arrive with their
-      // closed statuses, so only pending incoming rounds count as waiting.
-      .then((j) => setAwaiting(((j?.incoming ?? []) as Array<{ status?: string }>).filter((p) => p.status === "pending").length))
-      .catch(() => setAwaiting(0));
+      .then((j) => {
+        // The endpoint returns negotiation chains: ancestors arrive with their
+        // closed statuses, so only pending incoming rounds count as waiting.
+        setAwaiting(((j?.incoming ?? []) as Array<{ status?: string }>).filter((p) => p.status === "pending").length);
+        const out = ((j?.outgoing ?? []) as Array<{ status?: string; createdAt?: string }>).filter((p) => p.status === "pending");
+        const oldestAt = out.reduce<string | null>((oldest, p) => (p.createdAt && (!oldest || p.createdAt < oldest) ? p.createdAt : oldest), null);
+        setOutgoing({ count: out.length, oldestAt });
+      })
+      .catch(() => { setAwaiting(0); setOutgoing({ count: 0, oldestAt: null }); });
   }, []);
   const negotiating = deals.filter((d) => d.status === "due_diligence" || d.status === "term_sheet").length;
-  if (awaiting === 0 && negotiating === 0) return null;
+
+  // Audit #5: next_follow_up already exists on deals, is already written by
+  // create/update, and already drives the follow-up cron and the kanban --
+  // it just never reached the dashboard. Email is muted pending domain setup
+  // (memory), so this is currently the only live surface for it. A deal's
+  // own reminder date is what counts, no separate fetch: `deals` already
+  // carries next_follow_up (it's a plain column, included by the page's `*`
+  // select).
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const weekOut = new Date(today); weekOut.setDate(weekOut.getDate() + 7);
+  const dueDeals = deals.filter((d) => {
+    const nf = (d as unknown as { next_follow_up?: string | null }).next_follow_up;
+    if (!nf || d.status === "closed" || d.status === "passed") return false;
+    const at = new Date(nf);
+    return !Number.isNaN(at.getTime()) && at <= weekOut;
+  });
+  const overdueCount = dueDeals.filter((d) => {
+    const nf = (d as unknown as { next_follow_up?: string | null }).next_follow_up!;
+    return new Date(nf) < today;
+  }).length;
+
+  if (awaiting === 0 && negotiating === 0 && outgoing.count === 0 && dueDeals.length === 0) return null;
 
   const item: React.CSSProperties = { display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair, textDecoration: "none", minHeight: "40px" };
   const figure: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", fontVariantNumeric: "tabular-nums" };
   // Caps-label spec: 11/500/0.08em ink-3 -- sub-11 ink-4 caps are illegal.
   const label: React.CSSProperties = { fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" };
+  const aside: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" };
   return (
     <div style={{ borderBottom: "1px solid var(--cr-rule)", paddingBottom: RHYTHM.inner, marginBottom: RHYTHM.block, display: "flex", alignItems: "baseline", gap: RHYTHM.block, flexWrap: "wrap" }}>
       <span className="ruled-label">{tf("dashboard.attnTitle", "Needs your attention")}</span>
@@ -762,6 +794,78 @@ function NeedsAttention({ deals }: { deals: Deal[] }) {
           <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
         </Link>
       )}
+      {outgoing.count > 0 && (
+        <Link href="/deals" style={item}>
+          <span style={{ ...figure, color: "var(--cr-ink-2)" }}>{outgoing.count}</span>
+          <span style={label}>{tf("dashboard.attnOutgoing", "Offers you sent, still awaiting a reply")}</span>
+          {/* Staleness is the actual signal here -- an offer with no reply
+              and no expiry can sit for weeks with nothing else marking it. */}
+          {outgoing.oldestAt && (
+            <span style={aside}>{tf("dashboard.attnSince", "since")} {new Date(outgoing.oldestAt).toLocaleDateString()}</span>
+          )}
+          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
+        </Link>
+      )}
+      {dueDeals.length > 0 && (
+        <Link href="/deals" style={item}>
+          <span style={{ ...figure, color: overdueCount > 0 ? "var(--cr-copper)" : "var(--cr-ink-2)" }}>{dueDeals.length}</span>
+          <span style={label}>{tf("dashboard.attnFollowUps", "Follow-ups due this week")}</span>
+          {overdueCount > 0 && (
+            <span style={aside}>{overdueCount} {tf("dashboard.attnOverdue", "overdue")}</span>
+          )}
+          <span aria-hidden style={{ color: "var(--cr-copper)", fontSize: "12px" }}>→</span>
+        </Link>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Audit #4: the instrument strip's "Active" cell lumps every non-closed,
+ * non-passed deal into one number, but the platform's own stage vocabulary
+ * (deals.status, already broken out on the /deals kanban) exists and is
+ * already a client prop here -- the dashboard itself never showed where
+ * those deals actually sit. Purely a client-side aggregation of the same
+ * `deals` array the instrument strip already reads: no new query, and no
+ * viewingAs gate, since (unlike NeedsAttention) nothing here calls the
+ * admin-authenticated proposals API.
+ */
+function DealStageBreakdown({ deals }: { deals: Deal[] }) {
+  const { t } = useTranslation();
+  const tf = (key: string, fallback: string) => {
+    const out = t(key);
+    return out === key ? fallback : out;
+  };
+  const stages: { status: string; label: string }[] = [
+    { status: "intro", label: t("deals.colIntro") },
+    { status: "due_diligence", label: t("deals.colNegotiation") },
+    { status: "term_sheet", label: t("deals.colTermSheet") },
+  ];
+  const counts = stages.map((s) => ({ ...s, n: deals.filter((d) => d.status === s.status).length }));
+  const total = counts.reduce((a, c) => a + c.n, 0);
+  if (total === 0) return null;
+
+  // Same tint family AllocationTracker's bar uses -- one hue stepping down in
+  // strength, so the stage bar reads as one scale rather than three colors.
+  const tint = (i: number) => `color-mix(in srgb, var(--cr-copper) ${100 - i * 30}%, transparent)`;
+
+  return (
+    <div style={{ borderBottom: "1px solid var(--cr-rule)", paddingBottom: RHYTHM.inner, marginBottom: RHYTHM.block }}>
+      <span className="ruled-label">{tf("dashboard.attnPipeline", "Active deals by stage")}</span>
+      <div style={{ display: "flex", height: 6, borderRadius: 3, overflow: "hidden", background: "var(--cr-paper-3)", marginTop: RHYTHM.inner }}>
+        {counts.map((c, i) => c.n > 0 && (
+          <div key={c.status} style={{ width: `${(c.n / total) * 100}%`, background: tint(i) }} />
+        ))}
+      </div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: RHYTHM.inner, marginTop: RHYTHM.inner }}>
+        {counts.map((c, i) => c.n > 0 && (
+          <span key={c.status} style={{ display: "inline-flex", alignItems: "baseline", gap: RHYTHM.pair }}>
+            <span aria-hidden style={{ width: 8, height: 8, borderRadius: 2, background: tint(i), alignSelf: "center", flexShrink: 0 }} />
+            <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em" }}>{c.label}</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "12px", color: "var(--cr-ink-2)", fontVariantNumeric: "tabular-nums" }}>{c.n}</span>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
@@ -856,6 +960,35 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement("a");
     a.href = url; a.download = "capitalreach-watchlist.csv"; a.click();
+  }
+
+  // Audit #6: exportWatchlist and exportReport both exist and are gated on
+  // canExport; the Portfolio tab had no equivalent, despite being exactly
+  // the tier (dataExport: true) that would want closed positions as CSV for
+  // tax/LP reporting. Same esc/CSV-join pattern as exportWatchlist, applied
+  // to the portfolio prop.
+  async function exportPortfolio() {
+    if (!portfolio.length) return;
+    const rows = portfolio.map((p) => ({
+      name: p.name,
+      status: p.status,
+      amount: p.amount,
+      currency: p.currency,
+      closed_at: p.closedAt,
+      ownership_percent: p.ownershipPercent,
+      valuation_at_close: p.valuationAtClose,
+      current_valuation: p.currentValuation,
+      mrr: p.mrr,
+    }));
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = [
+      Object.keys(rows[0]).map(esc).join(","),
+      ...rows.map((r) => Object.values(r).map(esc).join(",")),
+    ].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href = url; a.download = "capitalreach-portfolio.csv"; a.click();
   }
 
   const [portalBusy, setPortalBusy] = useState(false);
@@ -1038,6 +1171,10 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
         {/* What waits on a decision, still inside the header cluster: the
             strip says how big the desk is, this row says what is on it. */}
         {!viewingAs && <ErrorBoundary labelKey="sections.needsAttention"><NeedsAttention deals={deals} /></ErrorBoundary>}
+        {/* Visible in view-as too -- unlike NeedsAttention this reads only the
+            `deals` prop (already scoped server-side via RLS), no admin-auth
+            fetch of its own. */}
+        <ErrorBoundary labelKey="sections.needsAttention"><DealStageBreakdown deals={deals} /></ErrorBoundary>
 
         {/* Tab bar: the house TabStrip rather than a hand-rolled row -- one
             caps voice, roving focus, and the shared panel crossfade. */}
@@ -1161,13 +1298,22 @@ export function InvestorDashboardClient({ profile, investor, watchlist, watchedI
             <div>
               {/* Section opener + the one headline figure of this tab. */}
               {/* The one loud figure of this tab; the cards below all step down. */}
-              <div style={{ marginBottom: RHYTHM.section }}>
-                <div className="ruled-label" style={{ marginBottom: RHYTHM.pair }}>{t("dashboard.totalDeployed")}</div>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
-                  {/* 28, not 40: the strip above already holds this page's one lead figure. */}
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1.05, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatMoney(total, cur)}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>· {positions.length}</span>
+              <div style={{ marginBottom: RHYTHM.section, display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+                <div>
+                  <div className="ruled-label" style={{ marginBottom: RHYTHM.pair }}>{t("dashboard.totalDeployed")}</div>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: "12px", flexWrap: "wrap" }}>
+                    {/* 28, not 40: the strip above already holds this page's one lead figure. */}
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "28px", lineHeight: 1.05, color: "var(--cr-ink)", fontVariantNumeric: "tabular-nums" }}>{formatMoney(total, cur)}</span>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 500, fontSize: "13px", color: "var(--cr-ink-4)", fontVariantNumeric: "tabular-nums" }}>· {positions.length}</span>
+                  </div>
                 </div>
+                {/* Audit #6: same export affordance the Watchlist tab already
+                    has, same tier gate (canExport). */}
+                {canExport && positions.length > 0 && (
+                  <button onClick={exportPortfolio} style={outlineBtn}>
+                    <Download style={{ width: 12, height: 12 }} /> {t("dashboard.exportCsv")}
+                  </button>
+                )}
               </div>
 
               <div style={{ display: "grid", gap: RHYTHM.block }}>
