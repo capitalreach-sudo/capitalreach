@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
-import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
-import { buildAccessContext, investorCan } from "@/lib/access";
-import { getLaunchStatus } from "@/lib/launchMode";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
+import { viewerMayNameStartups } from "@/lib/data-centre-access";
 import { Navbar } from "@/components/shared/navbar";
 import { Footer } from "@/components/shared/footer";
 import { DataCentre } from "@/components/shared/data-centre";
@@ -39,19 +38,11 @@ export default async function DataPage() {
   const { data: { user } } = await sb.auth.getUser();
   if (!user) redirect("/auth/login?redirect=/data");
 
-  let mayName = false;
-  try {
-    const { data: prof } = await createAdminClient()
-      .from("profiles").select("id, role, subscription_tier, suspended, account_status")
-      .eq("id", user.id).maybeSingle();
-    if (prof) {
-      const launch = await getLaunchStatus();
-      const ctx = buildAccessContext(prof as Parameters<typeof buildAccessContext>[0], launch.isLaunch);
-      mayName = prof.role === "admin" || prof.role === "startup"
-        ? true
-        : investorCan(ctx).viewListingDetail;
-    }
-  } catch { /* the aggregates still render; only the names are withheld */ }
+  // Shared with app/api/platform-data/route.ts -- see lib/data-centre-access.ts,
+  // so this privacy gate cannot silently desync between the two copies that
+  // used to hold it separately. Never throws: any failure withholds names
+  // and the aggregates still render.
+  const mayName = await viewerMayNameStartups();
 
   // Aggregates are computed on the server so the dashboard is in the HTML on
   // first paint — no "Loading platform data…". If the DB is unreachable the

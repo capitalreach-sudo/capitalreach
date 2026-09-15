@@ -583,6 +583,11 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
   const medianEntries = data
     ? Object.entries(data.report?.medianByStage ?? {}).sort((a, b) => (data.byStage[b[0]] ?? 0) - (data.byStage[a[0]] ?? 0))
     : [];
+  // Same device the median table's MEDIAN_MIN_N gate and the chart's
+  // quietLine already use: disclose a thin sample rather than let four empty
+  // 0%-height columns sit next to one real deal and pass as a finished funnel.
+  const dealStageTotal = data ? Object.values(data.byDealStage).reduce((s, v) => s + v, 0) : 0;
+  const dealStageLowN = dealStageTotal > 0 && dealStageTotal < 5;
 
   // The strip only offers a tab it can fill, and the selected tab falls back
   // to the first available one -- a tab that opens on "no data yet" exists
@@ -627,7 +632,16 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
         .replace("{month}", monthLong(currentMonth.month))
         .replace("{sought}", safeFormatTotal(currentMonth.sought))
     : "";
-  const activityCaption = [soFarActivity, quietLine].filter(Boolean).join(" ");
+  // A "deals closed" series sitting at zero height for every plotted month
+  // needs to say so, the same way the funnel's low-N line and the lead
+  // total's zero-state caption already do -- a silent flat baseline reads as
+  // "nothing rendered" rather than "nothing has closed yet". Reads the
+  // platform's real total rather than just the plotted window, so a deal
+  // that closed outside the current chart domain does not trigger it.
+  const noDealsClosedNote = data && data.dealsCount === 0
+    ? tf("data.noDealsClosedNote", "No deals have closed on the platform yet.")
+    : "";
+  const activityCaption = [soFarActivity, quietLine, noDealsClosedNote].filter(Boolean).join(" ");
   const capitalCaption = [soFarCapital, quietLine].filter(Boolean).join(" ");
 
   // The two ledgers are the only NAMED thing on this page, and both the server
@@ -750,6 +764,16 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
               {(data.closedCurrencies?.length ?? 0) > 1 && (
                 <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
                   {t("data.multiCurrencyNote", { list: data.closedCurrencies.join(", ") })}
+                </p>
+              )}
+              {/* A bare "0" at 64px with no currency prefix reads as a broken
+                  page, not an honest "nothing closed yet" -- every other
+                  zero-prone figure on this surface (close rate, the
+                  multi-currency note, the medians tab) has an equivalent
+                  honest-empty treatment; the lead figure did not. */}
+              {data.totalRaised === 0 && (data.closedCurrencies?.length ?? 0) === 0 && (
+                <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "4px" }}>
+                  {tf("data.noDealsClosedYet", "No deals have closed yet.")}
                 </p>
               )}
               {/* The three supporting totals as one hairline-divided strip:
@@ -1044,6 +1068,18 @@ export function DataCentre({ initialData }: { initialData?: PlatformData | null 
                     <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
                       {tf("data.stageDistributionNote", "Deals standing at each stage right now. Closed and passed are totals to date, so this is a snapshot rather than one group moving left to right.")}
                     </p>
+
+                    {/* Discloses the sample size rather than letting four
+                        empty tracks sit beside one real deal and pass as a
+                        finished funnel. Not shown once the platform has
+                        enough deals in flight for the shape to mean something. */}
+                    {dealStageLowN && (
+                      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: LABEL_GAP, maxWidth: "560px", lineHeight: 1.6 }}>
+                        {(dealStageTotal === 1
+                          ? tf("data.dealFlowLowNOne", "Only 1 deal on the platform so far, so this funnel is a thin sample.")
+                          : tf("data.dealFlowLowN", "Only {count} deals on the platform so far, so this funnel is a thin sample.").replace("{count}", String(dealStageTotal)))}
+                      </p>
+                    )}
 
                     {data.closedCurrencies?.length > 1 && (
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: ROW_GAP }}>
