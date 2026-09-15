@@ -7,10 +7,11 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { notify } from "@/components/ui/toast-notify";
 import { Navbar } from "@/components/shared/navbar";
-import { ArrowLeft, Save, X, Check, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, X, Check, Loader2, ImagePlus } from "lucide-react";
 import { listingCompleteness } from "@/lib/listing-completeness";
 import Link from "next/link";
 import { INDUSTRIES, STAGES } from "@/types";
+import type { StartupFounder } from "@/types";
 import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
 import { LogoUploader } from "@/components/shared/logo-uploader";
@@ -38,6 +39,13 @@ const TARGET_MARKET_OPTIONS = [
   { value: "US",      labelKey: "dashboard.tm5" },
   { value: "UK",      labelKey: "dashboard.tm6" },
   { value: "Asia",    labelKey: "dashboard.tm7" },
+];
+// Migration 141 (rich profiles).
+const INSTRUMENT_OPTIONS = ["SAFE", "Equity", "Convertible Note", "Revenue Share", "Debt"];
+const LEAD_STATUS_OPTIONS: Array<{ value: string; labelKey: string }> = [
+  { value: "have_lead",    labelKey: "dashboard.leadStatusHave" },
+  { value: "seeking_lead", labelKey: "dashboard.leadStatusSeeking" },
+  { value: "open",         labelKey: "dashboard.leadStatusOpen" },
 ];
 
 // ── Shared form element styles ────────────────────────────────────────────────
@@ -109,6 +117,138 @@ function TagInput({ tags, onChange, placeholder }: { tags: string[]; onChange: (
   );
 }
 
+// ── RepeaterField ────────────────────────────────────────────────────────────
+//
+// The one generic row editor migration 141 needs six of (key_metrics,
+// customers, advisors, press, awards, hiring): add a row, edit its cells,
+// remove it. A flex-wrap row rather than a fixed CSS grid, so 3-4 short
+// fields reflow to their own line at 390px instead of forcing the page to
+// scroll sideways -- the standing "no horizontal scroll at 390px" rule.
+interface RepeaterFieldSpec<T extends Record<string, string>> {
+  key: keyof T & string;
+  placeholder: string;
+  type?: "text" | "number" | "date";
+  basis?: number;
+}
+
+function RepeaterField<T extends Record<string, string>>({
+  rows, onChange, fields, emptyRow, addLabel, removeLabel,
+}: {
+  rows: T[];
+  onChange: (rows: T[]) => void;
+  fields: RepeaterFieldSpec<T>[];
+  emptyRow: T;
+  addLabel: string;
+  removeLabel: string;
+}) {
+  function update(i: number, key: string, value: string) {
+    const next = rows.slice();
+    next[i] = { ...next[i], [key]: value };
+    onChange(next);
+  }
+  function remove(i: number) { onChange(rows.filter((_, idx) => idx !== i)); }
+  function add() { onChange([...rows, { ...emptyRow }]); }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      {rows.map((row, i) => (
+        <div key={i} style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px", background: "var(--cr-paper-3)" }}>
+          {fields.map((f) => (
+            <div key={f.key} style={{ flex: `1 1 ${f.basis ?? 110}px`, minWidth: `${f.basis ?? 110}px` }}>
+              <WarmInput
+                type={f.type ?? "text"}
+                placeholder={f.placeholder}
+                value={row[f.key] ?? ""}
+                onChange={(e) => update(i, f.key, e.target.value)}
+              />
+            </div>
+          ))}
+          <button type="button" onClick={() => remove(i)} aria-label={removeLabel}
+            style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "4px", flexShrink: 0 }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        style={{ alignSelf: "flex-start", border: "1px dashed var(--cr-rule-dark)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 14px", cursor: "pointer" }}>
+        + {addLabel}
+      </button>
+    </div>
+  );
+}
+
+// ── Customer logos ───────────────────────────────────────────────────────────
+//
+// The one repeater that is not a plain text row: each customer is a logo
+// upload plus an optional name, per the brief. Upload goes through
+// /api/startups/customer-logo (sibling to /api/logo, not a reuse of it --
+// that route is one canonical path per ENTITY, which is the wrong shape for
+// a list of several marks). A row without a saved id yet gets a client-side
+// one purely to give the upload a stable storage path; it is never sent to
+// the server as a real id.
+interface CustomerRow { _rid: string; name: string; logo_url: string; since: string }
+
+function newCustomerRow(): CustomerRow {
+  const rid = typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `c${Date.now()}${Math.random().toString(36).slice(2)}`;
+  return { _rid: rid, name: "", logo_url: "", since: "" };
+}
+
+function CustomerLogosField({ rows, onChange }: { rows: CustomerRow[]; onChange: (rows: CustomerRow[]) => void }) {
+  const { t } = useTranslation();
+  const [busyIdx, setBusyIdx] = useState<number | null>(null);
+
+  function update(i: number, patch: Partial<CustomerRow>) {
+    const next = rows.slice();
+    next[i] = { ...next[i], ...patch };
+    onChange(next);
+  }
+  function remove(i: number) { onChange(rows.filter((_, idx) => idx !== i)); }
+  function add() { onChange([...rows, newCustomerRow()]); }
+
+  async function upload(i: number, file: File) {
+    if (busyIdx !== null) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) { notify.error(t("logo.typeError")); return; }
+    if (file.size > 2 * 1024 * 1024) { notify.error(t("logo.sizeError")); return; }
+    setBusyIdx(i);
+    try {
+      const rid = rows[i]._rid || (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `c${Math.random().toString(36).slice(2)}`);
+      const form = new FormData();
+      form.set("file", file);
+      form.set("rowId", rid);
+      const res = await fetch("/api/startups/customer-logo", { method: "POST", body: form });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) { notify.error(j.error || t("errors.generic")); return; }
+      update(i, { logo_url: j.url, _rid: rid });
+    } finally {
+      setBusyIdx(null);
+    }
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      {rows.map((row, i) => (
+        <div key={row._rid ?? i} style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center", border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "10px", background: "var(--cr-paper-3)" }}>
+          <label style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "4px", border: "1px dashed var(--cr-rule-dark)", background: row.logo_url ? `var(--cr-paper) url(${row.logo_url}) center/contain no-repeat` : "var(--cr-paper)", display: "flex", alignItems: "center", justifyContent: "center", cursor: busyIdx === i ? "wait" : "pointer" }}>
+            {!row.logo_url && (busyIdx === i ? <Loader2 style={{ width: 16, height: 16, animation: "spin 1s linear infinite", color: "var(--cr-ink-4)" }} /> : <ImagePlus style={{ width: 16, height: 16, color: "var(--cr-ink-4)" }} />)}
+            <input type="file" accept="image/png,image/jpeg,image/webp" style={{ display: "none" }}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) upload(i, f); e.target.value = ""; }} />
+          </label>
+          <div style={{ flex: "1 1 160px", minWidth: 140 }}>
+            <WarmInput placeholder={t("dashboard.customerNamePh")} value={row.name} onChange={(e) => update(i, { name: e.target.value })} />
+          </div>
+          <div style={{ flex: "1 1 110px", minWidth: 100 }}>
+            <WarmInput type="date" value={row.since} onChange={(e) => update(i, { since: e.target.value })} title={t("dashboard.customerSincePh")} />
+          </div>
+          <button type="button" onClick={() => remove(i)} aria-label={t("dashboard.repeaterRemove")}
+            style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "18px", lineHeight: 1, padding: "4px", flexShrink: 0 }}>×</button>
+        </div>
+      ))}
+      <button type="button" onClick={add}
+        style={{ alignSelf: "flex-start", border: "1px dashed var(--cr-rule-dark)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 14px", cursor: "pointer" }}>
+        + {t("dashboard.customerAdd")}
+      </button>
+    </div>
+  );
+}
+
 // ── WarmInput / WarmTextarea / WarmSelect ────────────────────────────────────
 
 function WarmInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
@@ -170,21 +310,17 @@ function Field({ label, children, hint, termKey }: { label: string; children: Re
 // ── Milestones ────────────────────────────────────────────────────────────────
 //
 // Onboarding could create milestones; until this section nothing after it
-// could, even though the dashboard checklist asks for one. Self-contained:
-// reads via the RLS client (milestones are public on the profile anyway),
-// writes through /api/milestones so adding one also notifies savers.
-function MilestonesSection({ startupId, supabase }: { startupId: string; supabase: ReturnType<typeof createClient> }) {
+// could, even though the dashboard checklist asks for one. Writes through
+// /api/milestones so adding one also notifies savers. Rows are lifted to the
+// parent page rather than fetched here: the completeness meter needs the same
+// array (see the get_my_startup gap noted where it is fetched), and fetching
+// it twice would risk the meter and this list disagreeing about whether a
+// milestone exists yet.
+function MilestonesSection({ rows, setRows }: { rows: Array<{ id: string; date: string; description: string }>; setRows: React.Dispatch<React.SetStateAction<Array<{ id: string; date: string; description: string }>>> }) {
   const { t } = useTranslation();
-  const [rows, setRows] = useState<Array<{ id: string; date: string; description: string }>>([]);
   const [date, setDate] = useState("");
   const [description, setDescription] = useState("");
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    supabase.from("startup_milestones").select("id, date, description")
-      .eq("startup_id", startupId).order("date", { ascending: false })
-      .then(({ data }) => setRows(data ?? []));
-  }, [startupId, supabase]);
 
   async function add() {
     if (!date || !description.trim() || busy) return;
@@ -215,9 +351,15 @@ function MilestonesSection({ startupId, supabase }: { startupId: string; supabas
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>
         {t("dashboard.msBroadcastHint")}
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: rows.length ? "16px" : 0 }}>
+      {/* Auto-sorted (the query already orders by date desc, newest first --
+          the edit surface itself, not the deeper diamond-marker timeline
+          already built on the revealed profile page) with a thin rule and
+          dot so it reads as a timeline rather than a plain list. */}
+      <div style={{ display: "flex", flexDirection: "column", marginBottom: rows.length ? "16px" : 0, position: "relative" }}>
+        {rows.length > 1 && <div aria-hidden style={{ position: "absolute", left: "3px", top: "6px", bottom: "6px", width: "1px", background: "var(--cr-rule)" }} />}
         {rows.map((m) => (
-          <div key={m.id} style={{ display: "flex", alignItems: "baseline", gap: "10px", borderBottom: "1px solid var(--cr-rule)", paddingBottom: "8px" }}>
+          <div key={m.id} style={{ display: "flex", alignItems: "baseline", gap: "10px", paddingBottom: "10px", position: "relative", paddingLeft: "16px" }}>
+            <span aria-hidden style={{ position: "absolute", left: 0, top: "6px", width: "7px", height: "7px", borderRadius: "50%", background: "var(--cr-copper)", border: "2px solid var(--cr-paper-2)" }} />
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{m.date}</span>
             <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-2)", flex: 1 }}>{m.description}</span>
             <button type="button" onClick={() => remove(m.id)} aria-label={t("dashboard.msRemove")}
@@ -237,6 +379,131 @@ function MilestonesSection({ startupId, supabase }: { startupId: string; supabas
   );
 }
 
+// ── Founders (team) ──────────────────────────────────────────────────────────
+//
+// The single biggest gap this pass closes: onboarding could write
+// startup_founders, and nothing after it could. Reuses onboarding's own
+// write pattern rather than inventing a second one -- read the prior row
+// ids, insert the current valid rows, delete the prior ids once the insert
+// has landed (never the other order: a refused insert must not leave a
+// founder with neither set). Direct RLS write, not through
+// /api/startups/save -- founders are a different table with a different
+// trust boundary, and unlike milestones there is no saver notification to
+// fire, so there is no reason to route this through an API at all.
+interface FounderDraft {
+  id?: string;
+  name: string; role: string; prev: string;
+  linkedin_url: string; twitter_url: string; photo_url: string; bio: string;
+}
+
+function emptyFounderDraft(): FounderDraft {
+  return { name: "", role: "", prev: "", linkedin_url: "", twitter_url: "", photo_url: "", bio: "" };
+}
+
+function FoundersSection({ startupId, initial, onSaved }: {
+  startupId: string;
+  initial: FounderDraft[];
+  onSaved: (rows: StartupFounder[]) => void;
+}) {
+  const { t } = useTranslation();
+  // Renders the fallback until the key lands in every locale.
+  const tf = (key: string, fallback: string) => { const out = t(key); return out === key ? fallback : out; };
+  const [rows, setRows] = useState<FounderDraft[]>(initial.length ? initial : [emptyFounderDraft()]);
+  const [busy, setBusy] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saved" | "error">("idle");
+
+  function update(i: number, field: keyof FounderDraft, value: string) {
+    setRows((r) => { const next = r.slice(); next[i] = { ...next[i], [field]: value }; return next; });
+    setSaveState("idle");
+  }
+  function add() { setRows((r) => [...r, emptyFounderDraft()]); setSaveState("idle"); }
+  function remove(i: number) { setRows((r) => r.filter((_, idx) => idx !== i)); setSaveState("idle"); }
+
+  async function save() {
+    if (busy) return;
+    setBusy(true);
+    const valid = rows.filter((f) => f.name.trim() && f.role.trim());
+    if (rows.length > 0 && valid.length === 0) {
+      notify.error(t("dashboard.teamNeedNameRole"));
+      setBusy(false);
+      return;
+    }
+    // Routed through the server (not a direct client write) so name/role/
+    // prev/bio get the same contact-detail masking every other piece of
+    // listing prose already gets -- RLS alone only ever scoped ownership,
+    // never content.
+    const res = await fetch("/api/startups/founders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ startupId, founders: valid }),
+    });
+    const data = await res.json().catch(() => null);
+    if (!res.ok) {
+      notify.error(data?.error || t("errors.generic"));
+      setSaveState("error");
+      setBusy(false);
+      return;
+    }
+    const written = (data?.founders ?? []) as StartupFounder[];
+    setRows(written.length ? written.map((f) => ({
+      id: f.id, name: f.name, role: f.role, prev: f.prev ?? "",
+      linkedin_url: f.linkedin_url ?? "", twitter_url: f.twitter_url ?? "",
+      photo_url: f.photo_url ?? "", bio: f.bio ?? "",
+    })) : [emptyFounderDraft()]);
+    onSaved(written);
+    setSaveState("saved");
+    if (data?.masked) notify.info(tf("dashboard.teamContactMasked", "Saved. A contact detail was removed from your team's info, deals happen through the platform, not directly."));
+    else notify.success(t("dashboard.teamSaved"));
+    setBusy(false);
+  }
+
+  return (
+    <section id="sec-team" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
+      <h2 style={sectionHeadStyle}>{t("dashboard.secTeam")}</h2>
+      <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "14px" }}>
+        {t("dashboard.teamHint")}
+      </p>
+      <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+        {rows.map((f, i) => (
+          <div key={f.id ?? i} style={{ border: "1px solid var(--cr-rule)", borderRadius: "4px", padding: "14px", background: "var(--cr-paper-3)", display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", color: "var(--cr-ink-3)" }}>{t("dashboard.teamMemberN", { n: i + 1 })}</span>
+              {rows.length > 1 && (
+                <button type="button" onClick={() => remove(i)} aria-label={t("dashboard.repeaterRemove")}
+                  style={{ background: "none", border: "none", color: "var(--cr-ink-4)", cursor: "pointer", fontSize: "16px", lineHeight: 1 }}>×</button>
+              )}
+            </div>
+            <div className="form-row-2" style={{ gap: "10px" }}>
+              <Field label={t("onboarding.su.fullName")}><WarmInput value={f.name} onChange={(e) => update(i, "name", e.target.value)} /></Field>
+              <Field label={t("onboarding.su.roleTitle")}><WarmInput value={f.role} onChange={(e) => update(i, "role", e.target.value)} placeholder="CEO & Co-founder" /></Field>
+            </div>
+            <Field label={t("dashboard.teamPrev")} hint={t("dashboard.teamPrevHint")}>
+              <WarmInput value={f.prev} onChange={(e) => update(i, "prev", e.target.value)} placeholder="Ex-Stripe, Head of Growth" />
+            </Field>
+            <div className="form-row-2" style={{ gap: "10px" }}>
+              <Field label={t("onboarding.su.linkedin")}><WarmInput value={f.linkedin_url} onChange={(e) => update(i, "linkedin_url", e.target.value)} placeholder="https://linkedin.com/in/…" /></Field>
+              <Field label={t("onboarding.su.twitterX")}><WarmInput value={f.twitter_url} onChange={(e) => update(i, "twitter_url", e.target.value)} placeholder="https://x.com/…" /></Field>
+            </div>
+            <Field label={t("dashboard.teamPhotoUrl")}><WarmInput value={f.photo_url} onChange={(e) => update(i, "photo_url", e.target.value)} placeholder="https://…" /></Field>
+            <Field label={t("onboarding.su.shortBio")}><WarmTextarea value={f.bio} maxLength={500} onChange={(e) => update(i, "bio", e.target.value)} placeholder={t("onboarding.su.bioPh")} style={{ minHeight: 60 }} /></Field>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "14px" }}>
+        <button type="button" onClick={add}
+          style={{ border: "1px dashed var(--cr-rule-dark)", background: "transparent", color: "var(--cr-ink-3)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", padding: "8px 14px", cursor: "pointer" }}>
+          + {t("dashboard.teamAddMember")}
+        </button>
+        <button type="button" onClick={save} disabled={busy}
+          style={{ border: "1px solid var(--cr-copper-br)", background: "transparent", color: "var(--cr-copper)", borderRadius: "4px", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "13px", padding: "8px 16px", cursor: busy ? "wait" : "pointer" }}>
+          {busy ? "…" : t("dashboard.teamSave")}
+        </button>
+        {saveState === "saved" && <Check style={{ width: 14, height: 14, color: "var(--cr-up)" }} />}
+      </div>
+    </section>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function EditStartupPage() {
@@ -246,6 +513,15 @@ export default function EditStartupPage() {
   const [saving, setSaving]   = useState(false);
   const router                = useRouter();
   const supabaseRef           = useRef(createClient());
+  // get_my_startup() is `select * from startups where owner_id = ...` --
+  // no join. Fetched alongside it so the completeness meter on THIS page
+  // scores founders/documents/milestones the same way the founder dashboard
+  // and admin pulse already do (both fetch the joined row); without this the
+  // two surfaces can legitimately disagree about how finished a listing is,
+  // which is exactly what listingCompleteness exists to make impossible.
+  const [founders, setFounders] = useState<StartupFounder[]>([]);
+  const [milestones, setMilestones] = useState<Array<{ id: string; date: string; description: string }>>([]);
+  const [documentsCount, setDocumentsCount] = useState(0);
   const supabase              = supabaseRef.current;
 
   useEffect(() => {
@@ -257,7 +533,40 @@ export default function EditStartupPage() {
       // authorizes by auth.uid() and returns rows pre-ordered.
       const { data: ownRows } = await (supabase.rpc as CallableFunction)("get_my_startup");
       const data = (Array.isArray(ownRows) ? ownRows[0] : null) ?? null;
-      if (data) data.competitors_json = Array.isArray(data.competitors_json) ? data.competitors_json : [];
+      if (data) {
+        data.competitors_json = Array.isArray(data.competitors_json) ? data.competitors_json : [];
+        // Migration 141 jsonb/array columns: null on every listing pre-dating
+        // this pass (confirmed live on both real startups), and every
+        // repeater below maps over its array unconditionally.
+        data.key_metrics = Array.isArray(data.key_metrics) ? data.key_metrics : [];
+        data.advisors = Array.isArray(data.advisors) ? data.advisors : [];
+        data.hiring = Array.isArray(data.hiring) ? data.hiring : [];
+        data.press = Array.isArray(data.press) ? data.press : [];
+        data.awards = Array.isArray(data.awards) ? data.awards : [];
+        data.use_of_funds_breakdown = Array.isArray(data.use_of_funds_breakdown) ? data.use_of_funds_breakdown : [];
+        data.instruments_accepted = Array.isArray(data.instruments_accepted) ? data.instruments_accepted : [];
+        data.product_screenshots = Array.isArray(data.product_screenshots) ? data.product_screenshots : [];
+        // A client-only row id, so the customer-logo uploader has a stable
+        // storage path per row -- never sent back (buildPayload strips it).
+        data.customers = (Array.isArray(data.customers) ? data.customers : []).map((c: Record<string, unknown>) => ({
+          _rid: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `c${Math.random().toString(36).slice(2)}`,
+          name: "", logo_url: "", since: "", ...c,
+        }));
+      }
+      // Founders, milestones and a document count -- RLS-scoped reads, the
+      // same trust boundary onboarding and MilestonesSection already use for
+      // these tables. Fetched once here rather than in each section, so the
+      // completeness meter and the section below it read the same arrays.
+      if (data) {
+        const [{ data: fRows }, { data: mRows }, { count: dCount }] = await Promise.all([
+          supabase.from("startup_founders").select("id, startup_id, name, role, prev, linkedin_url, twitter_url, photo_url, bio").eq("startup_id", data.id),
+          supabase.from("startup_milestones").select("id, date, description").eq("startup_id", data.id).order("date", { ascending: false }),
+          supabase.from("startup_documents").select("id", { count: "exact", head: true }).eq("startup_id", data.id),
+        ]);
+        setFounders((fRows ?? []) as unknown as StartupFounder[]);
+        setMilestones(mRows ?? []);
+        setDocumentsCount(dCount ?? 0);
+      }
       // A local backup newer than the database (tab closed mid-edit) is
       // restored — the founder loses nothing.
       if (data) {
@@ -278,6 +587,15 @@ export default function EditStartupPage() {
       setLoading(false);
     })();
   }, []);
+
+  // A repeater row the founder opened but never filled (every text cell
+  // still "") must not be saved -- the profile page renders whatever is in
+  // the array, so an empty row would ship as a blank line no "hide
+  // gracefully" check downstream can catch, because it is not missing, it is
+  // present and empty.
+  function nonEmptyRows<T extends Record<string, unknown>>(rows: T[] | null | undefined): T[] {
+    return (rows || []).filter((r) => Object.values(r).some((v) => typeof v === "string" ? v.trim() : !!v));
+  }
 
   // The column payload the form owns. Built once, used by both autosave and
   // the explicit Save so the two can never diverge.
@@ -323,6 +641,25 @@ export default function EditStartupPage() {
       instrument: st.instrument || null,
       safe_cap: parseFloat(st.safe_cap) || null,
       safe_discount: parseFloat(st.safe_discount) || null,
+      // Migration 141 (rich profiles). why_now runs through the same
+      // contact-detail masking as problem/solution/description -- see
+      // LISTING_PROSE_FIELDS in lib/message-safety.
+      why_now: st.why_now || null,
+      key_metrics: nonEmptyRows(st.key_metrics),
+      customers: nonEmptyRows((st.customers || []).map((c: any) => ({ name: c.name || undefined, logo_url: c.logo_url, since: c.since || undefined }))).filter((c: any) => c.logo_url),
+      advisors: nonEmptyRows(st.advisors),
+      hiring: nonEmptyRows(st.hiring),
+      round_type: st.round_type || null,
+      instruments_accepted: st.instruments_accepted || null,
+      committed_amount: parseFloat(st.committed_amount) || null,
+      // pct is typed numeric (types/index.ts, and the DonutChart consuming it
+      // sums values arithmetically) but the row editor's number input hands
+      // back a string -- cast here, once, rather than at every reader.
+      use_of_funds_breakdown: nonEmptyRows(st.use_of_funds_breakdown).map((r: Record<string, unknown>) => ({ category: r.category, pct: parseFloat(String(r.pct)) || 0 })),
+      press: nonEmptyRows(st.press),
+      awards: nonEmptyRows(st.awards),
+      product_screenshots: (st.product_screenshots || []).filter((u: string) => u && u.trim()),
+      lead_investor_status: st.lead_investor_status || null,
     };
   }
 
@@ -466,12 +803,24 @@ export default function EditStartupPage() {
           {/* Section nav + completeness — sticky, so long forms stay navigable. */}
           {(() => {
             const sections: Array<[string, string]> = [
-              ["sec-basics", t("dashboard.secCompanyBasics")], ["sec-model", t("onboarding.su.businessModel")],
+              ["sec-basics", t("dashboard.secCompanyBasics")], ["sec-team", t("dashboard.secTeam")],
+              ["sec-model", t("onboarding.su.businessModel")],
               ["sec-pitch", t("onboarding.su.step3")], ["sec-traction", t("dashboard.secTraction")],
-              ["sec-raise", t("onboarding.su.step5")], ["sec-links", t("dashboard.secLinks")],
+              ["sec-social-proof", t("dashboard.secSocialProof")],
+              ["sec-raise", t("onboarding.su.step5")], ["sec-hiring", t("dashboard.secHiring")],
+              ["sec-links", t("dashboard.secLinks")],
               ["sec-visibility", t("dashboard.secVisibility")], ["sec-settings", t("dashboard.settings")],
             ];
-            const { percent, items } = listingCompleteness(startup);
+            // Same joined shape the founder dashboard and admin pulse score --
+            // the fix for the edit page previously scoring founders/documents/
+            // milestones as missing even when they exist (get_my_startup has
+            // no join). Built here rather than merged into `startup` state so
+            // buildPayload's outgoing patch never picks up these read-only
+            // arrays.
+            const { percent, items } = listingCompleteness({
+              ...startup, founders, milestones,
+              documents: Array.from({ length: documentsCount }),
+            });
             const missing = items.filter((i) => !i.done).slice(0, 3);
             return (
               <div style={{ position: "sticky", top: "64px", zIndex: 20, background: "var(--cr-paper)", padding: "8px 0 10px", marginBottom: "16px", borderBottom: "1px solid var(--cr-rule)" }}>
@@ -571,6 +920,16 @@ export default function EditStartupPage() {
               </div>
             </section>
 
+            <FoundersSection
+              startupId={startup.id}
+              initial={founders.map((f) => ({
+                id: f.id, name: f.name, role: f.role, prev: f.prev ?? "",
+                linkedin_url: f.linkedin_url ?? "", twitter_url: f.twitter_url ?? "",
+                photo_url: f.photo_url ?? "", bio: f.bio ?? "",
+              }))}
+              onSaved={setFounders}
+            />
+
             {/* Business Model */}
             <section id="sec-model" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("onboarding.su.businessModel")}</h2>
@@ -598,6 +957,9 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.solution")}><WarmTextarea value={startup.solution || ""} onChange={e => update("solution", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.targetMarket")}><WarmTextarea value={startup.market || ""} onChange={e => update("market", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.advantage")}><WarmTextarea value={startup.competitive_advantage || ""} onChange={e => update("competitive_advantage", e.target.value)} /></Field>
+                <Field label={t("dashboard.whyNowLabel")} hint={t("dashboard.whyNowHint")}>
+                  <WarmTextarea maxLength={600} value={startup.why_now || ""} onChange={e => update("why_now", e.target.value)} placeholder={t("dashboard.whyNowPh")} />
+                </Field>
                 <Field label={t("onboarding.su.competitors")} hint={t("dashboard.competitorsHintEnter")}>
                   <TagInput tags={startup.competitors_json || []} onChange={tags => update("competitors_json", tags)} placeholder={t("onboarding.su.competitorNamePh")} />
                 </Field>
@@ -622,19 +984,144 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.churn")}><WarmInput type="number" step="0.1" value={startup.churn_rate || ""} onChange={e => update("churn_rate", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.runwayMonths")}><WarmInput type="number" value={startup.runway_months || ""} onChange={e => update("runway_months", e.target.value)} /></Field>
               </div>
+              <div style={{ borderTop: "1px solid var(--cr-rule)", marginTop: "20px", paddingTop: "18px" }}>
+                <Field label={t("dashboard.keyMetricsLabel")} hint={t("dashboard.keyMetricsHint")}>
+                  <RepeaterField
+                    rows={startup.key_metrics || []}
+                    onChange={(rows) => update("key_metrics", rows)}
+                    emptyRow={{ label: "", value: "", unit: "" }}
+                    addLabel={t("dashboard.keyMetricAdd")}
+                    removeLabel={t("dashboard.repeaterRemove")}
+                    fields={[
+                      { key: "label", placeholder: t("dashboard.keyMetricLabelPh"), basis: 140 },
+                      { key: "value", placeholder: t("dashboard.keyMetricValuePh"), basis: 90 },
+                      { key: "unit", placeholder: t("dashboard.keyMetricUnitPh"), basis: 70 },
+                    ]}
+                  />
+                </Field>
+              </div>
             </section>
 
-            <MilestonesSection startupId={startup.id} supabase={supabase} />
+            <MilestonesSection rows={milestones} setRows={setMilestones} />
+
+            {/* Social proof: customers, advisors, press, awards. Each is its
+                own optional block rather than one crowded section -- an
+                investor scanning for validation looks for these as separate
+                signals, not one paragraph. */}
+            <section id="sec-social-proof" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
+              <h2 style={sectionHeadStyle}>{t("dashboard.secSocialProof")}</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+                <Field label={t("dashboard.customersLabel")} hint={t("dashboard.customersHint")}>
+                  <CustomerLogosField rows={startup.customers || []} onChange={(rows) => update("customers", rows)} />
+                </Field>
+                <Field label={t("dashboard.advisorsLabel")} hint={t("dashboard.advisorsHint")}>
+                  <RepeaterField
+                    rows={startup.advisors || []}
+                    onChange={(rows) => update("advisors", rows)}
+                    emptyRow={{ name: "", role: "", linkedin: "" }}
+                    addLabel={t("dashboard.advisorAdd")}
+                    removeLabel={t("dashboard.repeaterRemove")}
+                    fields={[
+                      { key: "name", placeholder: t("dashboard.advisorNamePh"), basis: 130 },
+                      { key: "role", placeholder: t("dashboard.advisorRolePh"), basis: 130 },
+                      { key: "linkedin", placeholder: "https://linkedin.com/in/…", basis: 160 },
+                    ]}
+                  />
+                </Field>
+                <Field label={t("dashboard.pressLabel")} hint={t("dashboard.pressHint")}>
+                  <RepeaterField
+                    rows={startup.press || []}
+                    onChange={(rows) => update("press", rows)}
+                    emptyRow={{ outlet: "", title: "", url: "", date: "" }}
+                    addLabel={t("dashboard.pressAdd")}
+                    removeLabel={t("dashboard.repeaterRemove")}
+                    fields={[
+                      { key: "outlet", placeholder: t("dashboard.pressOutletPh"), basis: 110 },
+                      { key: "title", placeholder: t("dashboard.pressTitlePh"), basis: 160 },
+                      { key: "url", placeholder: "https://…", basis: 140 },
+                      { key: "date", placeholder: "", type: "date", basis: 130 },
+                    ]}
+                  />
+                </Field>
+                <Field label={t("dashboard.awardsLabel")} hint={t("dashboard.awardsHint")}>
+                  <RepeaterField
+                    rows={startup.awards || []}
+                    onChange={(rows) => update("awards", rows)}
+                    emptyRow={{ name: "", year: "" }}
+                    addLabel={t("dashboard.awardAdd")}
+                    removeLabel={t("dashboard.repeaterRemove")}
+                    fields={[
+                      { key: "name", placeholder: t("dashboard.awardNamePh"), basis: 180 },
+                      { key: "year", placeholder: "2025", basis: 70 },
+                    ]}
+                  />
+                </Field>
+              </div>
+            </section>
 
             {/* The Ask */}
             <section id="sec-raise" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
               <h2 style={sectionHeadStyle}>{t("onboarding.su.step5")}</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Field label={t("onboarding.su.fundingTarget")}><WarmInput type="number" value={startup.funding_target || ""} onChange={e => update("funding_target", e.target.value)} /></Field>
+                <div className="form-row-2" style={{ gap: "14px" }}>
+                  <Field label={t("onboarding.su.fundingTarget")}><WarmInput type="number" value={startup.funding_target || ""} onChange={e => update("funding_target", e.target.value)} /></Field>
+                  <Field label={t("dashboard.roundTypeLabel")} hint={t("dashboard.roundTypeHint")}>
+                    <WarmInput value={startup.round_type || ""} onChange={e => update("round_type", e.target.value)} placeholder="Seed extension" />
+                  </Field>
+                </div>
+                <Field label={t("dashboard.committedAmountLabel")} hint={t("dashboard.committedAmountHint")}>
+                  <WarmInput type="number" min={0} value={startup.committed_amount ?? ""} onChange={e => update("committed_amount", e.target.value)} placeholder="0" />
+                </Field>
+                <Field label={t("dashboard.instrumentsAcceptedLabel")} hint={t("dashboard.instrumentsAcceptedHint")}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                    {INSTRUMENT_OPTIONS.map(opt => (
+                      <button key={opt} type="button"
+                        onClick={() => {
+                          const cur: string[] = startup.instruments_accepted || [];
+                          update("instruments_accepted", cur.includes(opt) ? cur.filter((x: string) => x !== opt) : [...cur, opt]);
+                        }}
+                        style={{
+                          fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px",
+                          padding: "6px 14px", borderRadius: "3px", cursor: "pointer",
+                          border: (startup.instruments_accepted || []).includes(opt) ? "1px solid var(--cr-copper-br)" : "1px solid var(--cr-rule)",
+                          background: (startup.instruments_accepted || []).includes(opt) ? "var(--cr-copper-bg)" : "var(--cr-paper-3)",
+                          color: (startup.instruments_accepted || []).includes(opt) ? "var(--cr-copper)" : "var(--cr-ink-3)",
+                        }}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </Field>
                 <Field label={t("onboarding.su.equityOffered")}><WarmInput type="number" step="0.1" value={startup.equity_offered || ""} onChange={e => update("equity_offered", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.minCheckSize")}><WarmInput type="number" value={startup.min_check_size || ""} onChange={e => update("min_check_size", e.target.value)} /></Field>
                 <Field label={t("onboarding.su.useOfFunds")}><WarmTextarea value={startup.use_of_funds || ""} onChange={e => update("use_of_funds", e.target.value)} /></Field>
-              
+                {(() => {
+                  const rows: Array<{ category: string; pct: string }> = startup.use_of_funds_breakdown || [];
+                  const total = rows.reduce((s, r) => s + (parseFloat(r.pct) || 0), 0);
+                  const complete = rows.length > 0 && total === 100;
+                  return (
+                    <Field label={t("dashboard.useOfFundsBreakdownLabel")} hint={t("dashboard.useOfFundsBreakdownHint")}>
+                      <RepeaterField
+                        rows={rows}
+                        onChange={(next) => update("use_of_funds_breakdown", next)}
+                        emptyRow={{ category: "", pct: "" }}
+                        addLabel={t("dashboard.useOfFundsBreakdownAdd")}
+                        removeLabel={t("dashboard.repeaterRemove")}
+                        fields={[
+                          { key: "category", placeholder: t("dashboard.useOfFundsCategoryPh"), basis: 160 },
+                          { key: "pct", placeholder: "%", type: "number", basis: 70 },
+                        ]}
+                      />
+                      {rows.length > 0 && (
+                        <p style={{ marginTop: "8px", fontFamily: "'JetBrains Mono', monospace", fontSize: "12px", fontWeight: 600, color: complete ? "var(--cr-up)" : "var(--cr-down)" }}>
+                          {t("dashboard.useOfFundsBreakdownTotal", { pct: total })}{!complete && `, ${t("dashboard.useOfFundsBreakdownMustSum100")}`}
+                        </p>
+                      )}
+                    </Field>
+                  );
+                })()}
+
                 {/* D44: valuation, so investors do not have to reverse-engineer
                     it from the equity number (and so the two can be checked). */}
                 <div className="form-row-2" style={{ gap: "14px" }}>
@@ -692,7 +1179,28 @@ export default function EditStartupPage() {
                 <Field label={t("onboarding.su.productHuntUrl")}>
                   <WarmInput value={startup.product_hunt_url || ""} onChange={e => update("product_hunt_url", e.target.value)} placeholder="https://producthunt.com/posts/…" />
                 </Field>
+                <Field label={t("dashboard.screenshotsLabel")} hint={t("dashboard.screenshotsHint")}>
+                  <TagInput tags={startup.product_screenshots || []} onChange={urls => update("product_screenshots", urls)} placeholder="https://…" />
+                </Field>
               </div>
+            </section>
+
+            {/* Hiring */}
+            <section id="sec-hiring" style={{ ...sectionStyle, scrollMarginTop: "150px" }}>
+              <h2 style={sectionHeadStyle}>{t("dashboard.secHiring")}</h2>
+              <Field label={t("dashboard.hiringLabel")} hint={t("dashboard.hiringHint")}>
+                <RepeaterField
+                  rows={startup.hiring || []}
+                  onChange={(rows) => update("hiring", rows)}
+                  emptyRow={{ role: "", location: "" }}
+                  addLabel={t("dashboard.hiringAdd")}
+                  removeLabel={t("dashboard.repeaterRemove")}
+                  fields={[
+                    { key: "role", placeholder: t("dashboard.hiringRolePh"), basis: 160 },
+                    { key: "location", placeholder: t("dashboard.hiringLocationPh"), basis: 130 },
+                  ]}
+                />
+              </Field>
             </section>
 
             {/* Visibility & Outreach */}
@@ -755,6 +1263,12 @@ export default function EditStartupPage() {
                     <WarmInput type="number" value={startup.previous_funding || ""} onChange={e => update("previous_funding", e.target.value)} placeholder="0" />
                   </Field>
                 </div>
+                <Field label={t("dashboard.leadStatusLabel")} hint={t("dashboard.leadStatusHint")}>
+                  <WarmSelect value={startup.lead_investor_status || ""} onChange={e => update("lead_investor_status", e.target.value)}>
+                    <option value="">{t("dashboard.selectDots")}</option>
+                    {LEAD_STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{t(opt.labelKey)}</option>)}
+                  </WarmSelect>
+                </Field>
                 <Field label={t("dashboard.teamLanguages")} hint={t("dashboard.teamLanguagesHint")}>
                   <TagInput tags={startup.languages || []} onChange={tags => update("languages", tags)} placeholder="English, German, French…" />
                 </Field>

@@ -60,7 +60,9 @@ export interface Profile extends Omit<ProfileRow, "role" | "subscription_tier"> 
 // optional -- they exist only when the query selects them.
 type StartupRow = import("@/types/supabase").Database["public"]["Tables"]["startups"]["Row"];
 export interface Startup extends Omit<StartupRow,
-  "stage" | "status" | "subscription_tier" | "competitors_json" | "social_proof"> {
+  "stage" | "status" | "subscription_tier" | "competitors_json" | "social_proof"
+  | "key_metrics" | "customers" | "advisors" | "hiring" | "instruments_accepted"
+  | "use_of_funds_breakdown" | "press" | "awards" | "product_screenshots" | "lead_investor_status"> {
   stage: StartupStage;
   status: StartupStatus;
   subscription_tier: SubscriptionTier;
@@ -69,6 +71,19 @@ export interface Startup extends Omit<StartupRow,
   founders?: StartupFounder[];
   documents?: StartupDocument[];
   milestones?: StartupMilestone[];
+  // Migration 141. jsonb columns typed to the shape the app writes; text[]
+  // and text columns pass through unchanged from the generated Row.
+  key_metrics: Array<{ label: string; value: string; unit?: string }> | null;
+  customers: Array<{ name?: string; logo_url: string; since?: string }> | null;
+  advisors: Array<{ name: string; role?: string; linkedin?: string }> | null;
+  hiring: Array<{ role: string; location?: string }> | null;
+  instruments_accepted: string[] | null;
+  use_of_funds_breakdown: Array<{ category: string; pct: number }> | null;
+  press: Array<{ outlet: string; title: string; url?: string; date?: string }> | null;
+  awards: Array<{ name: string; year?: string }> | null;
+  product_screenshots: string[] | null;
+  /** Repurposed (141): have_lead / seeking_lead / open. Was unused before. */
+  lead_investor_status: "have_lead" | "seeking_lead" | "open" | null;
 }
 
 export interface StartupFounder {
@@ -80,6 +95,8 @@ export interface StartupFounder {
   twitter_url: string | null;
   photo_url: string | null;
   bio: string | null;
+  /** Migration 141: previous notable company or role. */
+  prev: string | null;
 }
 
 export interface StartupDocument {
@@ -103,11 +120,17 @@ export interface StartupMilestone {
 
 type InvestorRow = import("@/types/supabase").Database["public"]["Tables"]["investors"]["Row"];
 export interface Investor extends Omit<InvestorRow,
-  "type" | "stages" | "subscription_tier" | "portfolio_json"> {
+  "type" | "stages" | "subscription_tier" | "portfolio_json"
+  | "instruments_preferred" | "notable_exits" | "co_investors" | "value_add"> {
   type: InvestorType;
   stages: StartupStage[];
   subscription_tier: SubscriptionTier;
   portfolio_json: Array<{ name: string; stage: string; year: string }>;
+  // Migration 141.
+  instruments_preferred: string[] | null;
+  notable_exits: Array<{ company: string; outcome: string }> | null;
+  co_investors: Array<{ name: string }> | null;
+  value_add: string[] | null;
 }
 
 export interface Thread {

@@ -166,6 +166,8 @@ export async function GET(req: NextRequest) {
       tagline, problem, solution, market, competitive_advantage, use_of_funds,
       website, pitch_deck_url, funding_target, equity_offered, min_check_size,
       booking_url, mrr, arr, paying_customers, user_count,
+      why_now, key_metrics, customers, advisors, hiring, round_type,
+      use_of_funds_breakdown, press, awards, product_screenshots,
       founders:startup_founders(linkedin_url),
       documents:startup_documents(id),
       milestones:startup_milestones(id)

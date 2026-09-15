@@ -124,6 +124,17 @@ export async function POST(req: NextRequest) {
   const safe = await maskProse({
     fields: patch,
     proseFields: LISTING_PROSE_FIELDS,
+    // Migration 141's short structured rows: a name, a title, a role can
+    // carry a pasted contact detail exactly as free prose can. Their own URL
+    // fields (customers[].logo_url, press[].url) are excluded here --
+    // sanitizeUrlFields above already governs those.
+    jsonArrayProseFields: {
+      customers: ["name"],
+      advisors: ["name", "role"],
+      press: ["outlet", "title"],
+      awards: ["name"],
+      hiring: ["role", "location"],
+    },
     surface: "listing_prose",
     // Before the first save there is no listing to hang the signal on, and
     // trust_signals takes a bare account as a subject for exactly this.

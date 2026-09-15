@@ -1511,16 +1511,22 @@ export type Database = {
           bio: string | null
           board_seat_pref: string | null
           booking_url: string | null
+          co_investors: Json | null
           contact_email: string | null
           contact_note: string | null
           created_at: string
+          decision_speed: string | null
           display_name: string | null
           firm_name: string | null
+          firm_type: string | null
           follow_on_policy: string | null
           geography: string[]
+          headline: string | null
           id: string
           industries: string[]
+          instruments_preferred: string[] | null
           investment_thesis: string | null
+          involvement: string | null
           is_demo: boolean
           is_external: boolean
           is_public: boolean
@@ -1532,18 +1538,23 @@ export type Database = {
           managed_by_startup_id: string | null
           max_check: number | null
           min_check: number | null
+          notable_exits: Json | null
           number_of_investments: number | null
           owner_id: string | null
           portfolio_json: Json
+          responds_within: string | null
           search_vector: unknown
           slug: string
           stages: string[]
           subscription_tier: string
+          sweet_spot: number | null
+          total_deployed_band: string | null
           trust_expires_at: string | null
           trust_level: number
           trust_reviewed_at: string | null
           twitter_url: string | null
           type: string
+          value_add: string[] | null
           verification_checks: Json | null
           verified_at: string | null
           verified_by: string | null
@@ -1559,16 +1570,22 @@ export type Database = {
           bio?: string | null
           board_seat_pref?: string | null
           booking_url?: string | null
+          co_investors?: Json | null
           contact_email?: string | null
           contact_note?: string | null
           created_at?: string
+          decision_speed?: string | null
           display_name?: string | null
           firm_name?: string | null
+          firm_type?: string | null
           follow_on_policy?: string | null
           geography?: string[]
+          headline?: string | null
           id?: string
           industries?: string[]
+          instruments_preferred?: string[] | null
           investment_thesis?: string | null
+          involvement?: string | null
           is_demo?: boolean
           is_external?: boolean
           is_public?: boolean
@@ -1580,18 +1597,23 @@ export type Database = {
           managed_by_startup_id?: string | null
           max_check?: number | null
           min_check?: number | null
+          notable_exits?: Json | null
           number_of_investments?: number | null
           owner_id?: string | null
           portfolio_json?: Json
+          responds_within?: string | null
           search_vector?: unknown
           slug: string
           stages?: string[]
           subscription_tier?: string
+          sweet_spot?: number | null
+          total_deployed_band?: string | null
           trust_expires_at?: string | null
           trust_level?: number
           trust_reviewed_at?: string | null
           twitter_url?: string | null
           type: string
+          value_add?: string[] | null
           verification_checks?: Json | null
           verified_at?: string | null
           verified_by?: string | null
@@ -1607,16 +1629,22 @@ export type Database = {
           bio?: string | null
           board_seat_pref?: string | null
           booking_url?: string | null
+          co_investors?: Json | null
           contact_email?: string | null
           contact_note?: string | null
           created_at?: string
+          decision_speed?: string | null
           display_name?: string | null
           firm_name?: string | null
+          firm_type?: string | null
           follow_on_policy?: string | null
           geography?: string[]
+          headline?: string | null
           id?: string
           industries?: string[]
+          instruments_preferred?: string[] | null
           investment_thesis?: string | null
+          involvement?: string | null
           is_demo?: boolean
           is_external?: boolean
           is_public?: boolean
@@ -1628,18 +1656,23 @@ export type Database = {
           managed_by_startup_id?: string | null
           max_check?: number | null
           min_check?: number | null
+          notable_exits?: Json | null
           number_of_investments?: number | null
           owner_id?: string | null
           portfolio_json?: Json
+          responds_within?: string | null
           search_vector?: unknown
           slug?: string
           stages?: string[]
           subscription_tier?: string
+          sweet_spot?: number | null
+          total_deployed_band?: string | null
           trust_expires_at?: string | null
           trust_level?: number
           trust_reviewed_at?: string | null
           twitter_url?: string | null
           type?: string
+          value_add?: string[] | null
           verification_checks?: Json | null
           verified_at?: string | null
           verified_by?: string | null
@@ -2689,6 +2722,7 @@ export type Database = {
           linkedin_url: string | null
           name: string
           photo_url: string | null
+          prev: string | null
           role: string
           startup_id: string
           twitter_url: string | null
@@ -2699,6 +2733,7 @@ export type Database = {
           linkedin_url?: string | null
           name: string
           photo_url?: string | null
+          prev?: string | null
           role: string
           startup_id: string
           twitter_url?: string | null
@@ -2709,6 +2744,7 @@ export type Database = {
           linkedin_url?: string | null
           name?: string
           photo_url?: string | null
+          prev?: string | null
           role?: string
           startup_id?: string
           twitter_url?: string | null
@@ -2928,16 +2964,20 @@ export type Database = {
       }
       startups: {
         Row: {
+          advisors: Json | null
           arr: number | null
+          awards: Json | null
           booking_url: string | null
           business_model: string | null
           churn_rate: number | null
           city: string | null
+          committed_amount: number | null
           company_type: string | null
           competitive_advantage: string | null
           competitors_json: Json
           country: string
           created_at: string
+          customers: Json | null
           deck_language: string | null
           demo_video_url: string | null
           description: string | null
@@ -2954,10 +2994,13 @@ export type Database = {
           founder_attestation_version: string | null
           funding_target: number
           growth_rate: number | null
+          hiring: Json | null
           id: string
           industry: string
           instrument: string | null
+          instruments_accepted: string[] | null
           is_demo: boolean
+          key_metrics: Json | null
           languages: string[] | null
           languages_spoken: string[] | null
           last_review_id: string | null
@@ -2976,9 +3019,11 @@ export type Database = {
           pageviews: number
           paying_customers: number | null
           pitch_deck_url: string | null
+          press: Json | null
           previous_funding: number | null
           problem: string | null
           product_hunt_url: string | null
+          product_screenshots: string[] | null
           register_number: string | null
           register_type: string | null
           require_nda: boolean
@@ -2986,6 +3031,7 @@ export type Database = {
           round_close_date: string | null
           round_state: string
           round_state_changed_at: string | null
+          round_type: string | null
           runway_months: number | null
           safe_cap: number | null
           safe_discount: number | null
@@ -3011,6 +3057,7 @@ export type Database = {
           twitter_url: string | null
           updated_at: string
           use_of_funds: string | null
+          use_of_funds_breakdown: Json | null
           user_count: number | null
           valuation: number | null
           valuation_type: string | null
@@ -3020,18 +3067,23 @@ export type Database = {
           verified_by: string | null
           video_pitch_url: string | null
           website: string | null
+          why_now: string | null
         }
         Insert: {
+          advisors?: Json | null
           arr?: number | null
+          awards?: Json | null
           booking_url?: string | null
           business_model?: string | null
           churn_rate?: number | null
           city?: string | null
+          committed_amount?: number | null
           company_type?: string | null
           competitive_advantage?: string | null
           competitors_json?: Json
           country: string
           created_at?: string
+          customers?: Json | null
           deck_language?: string | null
           demo_video_url?: string | null
           description?: string | null
@@ -3048,10 +3100,13 @@ export type Database = {
           founder_attestation_version?: string | null
           funding_target?: number
           growth_rate?: number | null
+          hiring?: Json | null
           id?: string
           industry: string
           instrument?: string | null
+          instruments_accepted?: string[] | null
           is_demo?: boolean
+          key_metrics?: Json | null
           languages?: string[] | null
           languages_spoken?: string[] | null
           last_review_id?: string | null
@@ -3070,9 +3125,11 @@ export type Database = {
           pageviews?: number
           paying_customers?: number | null
           pitch_deck_url?: string | null
+          press?: Json | null
           previous_funding?: number | null
           problem?: string | null
           product_hunt_url?: string | null
+          product_screenshots?: string[] | null
           register_number?: string | null
           register_type?: string | null
           require_nda?: boolean
@@ -3080,6 +3137,7 @@ export type Database = {
           round_close_date?: string | null
           round_state?: string
           round_state_changed_at?: string | null
+          round_type?: string | null
           runway_months?: number | null
           safe_cap?: number | null
           safe_discount?: number | null
@@ -3105,6 +3163,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           use_of_funds?: string | null
+          use_of_funds_breakdown?: Json | null
           user_count?: number | null
           valuation?: number | null
           valuation_type?: string | null
@@ -3114,18 +3173,23 @@ export type Database = {
           verified_by?: string | null
           video_pitch_url?: string | null
           website?: string | null
+          why_now?: string | null
         }
         Update: {
+          advisors?: Json | null
           arr?: number | null
+          awards?: Json | null
           booking_url?: string | null
           business_model?: string | null
           churn_rate?: number | null
           city?: string | null
+          committed_amount?: number | null
           company_type?: string | null
           competitive_advantage?: string | null
           competitors_json?: Json
           country?: string
           created_at?: string
+          customers?: Json | null
           deck_language?: string | null
           demo_video_url?: string | null
           description?: string | null
@@ -3142,10 +3206,13 @@ export type Database = {
           founder_attestation_version?: string | null
           funding_target?: number
           growth_rate?: number | null
+          hiring?: Json | null
           id?: string
           industry?: string
           instrument?: string | null
+          instruments_accepted?: string[] | null
           is_demo?: boolean
+          key_metrics?: Json | null
           languages?: string[] | null
           languages_spoken?: string[] | null
           last_review_id?: string | null
@@ -3164,9 +3231,11 @@ export type Database = {
           pageviews?: number
           paying_customers?: number | null
           pitch_deck_url?: string | null
+          press?: Json | null
           previous_funding?: number | null
           problem?: string | null
           product_hunt_url?: string | null
+          product_screenshots?: string[] | null
           register_number?: string | null
           register_type?: string | null
           require_nda?: boolean
@@ -3174,6 +3243,7 @@ export type Database = {
           round_close_date?: string | null
           round_state?: string
           round_state_changed_at?: string | null
+          round_type?: string | null
           runway_months?: number | null
           safe_cap?: number | null
           safe_discount?: number | null
@@ -3199,6 +3269,7 @@ export type Database = {
           twitter_url?: string | null
           updated_at?: string
           use_of_funds?: string | null
+          use_of_funds_breakdown?: Json | null
           user_count?: number | null
           valuation?: number | null
           valuation_type?: string | null
@@ -3208,6 +3279,7 @@ export type Database = {
           verified_by?: string | null
           video_pitch_url?: string | null
           website?: string | null
+          why_now?: string | null
         }
         Relationships: [
           {

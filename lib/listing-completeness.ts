@@ -48,6 +48,18 @@ export interface CompletenessInput {
   founders?: Array<{ linkedin_url?: string | null }> | null;
   documents?: Array<unknown> | null;
   milestones?: Array<unknown> | null;
+  // Migration 141 (rich profiles). Same "structural, not a cast" rule as
+  // everything above: the shapes only need enough of the row to score it.
+  why_now?: string | null;
+  key_metrics?: Array<unknown> | null;
+  customers?: Array<unknown> | null;
+  advisors?: Array<unknown> | null;
+  hiring?: Array<unknown> | null;
+  round_type?: string | null;
+  use_of_funds_breakdown?: Array<unknown> | null;
+  press?: Array<unknown> | null;
+  awards?: Array<unknown> | null;
+  product_screenshots?: string[] | null;
 }
 
 const filled = (v: string | null | undefined) => typeof v === "string" && v.trim().length > 0;
@@ -58,28 +70,43 @@ export function listingCompleteness(s: CompletenessInput): {
   items: CompletenessItem[];
   next: CompletenessItem | null;
 } {
-  // Declared heaviest-first: `next` is then simply the first miss.
+  // Declared heaviest-first: `next` is then simply the first miss. Migration
+  // 141's twelve new columns are folded in at low-to-mid weight -- none of
+  // them are as persuasive to an investor as a deck or a problem statement,
+  // so the original items were scaled down (not dropped) to make room rather
+  // than diluted by simply appending 100 more points on top. Total is still
+  // exactly 100; tests/listing-completeness.test.ts enforces that.
+  const hasAny = (v: Array<unknown> | null | undefined) => (v?.length ?? 0) > 0;
   const items: CompletenessItem[] = [
-    { key: "deck", labelKey: "dashboard.ckDeck", weight: 15, done: (s.documents?.length ?? 0) > 0 || filled(s.pitch_deck_url) },
-    { key: "problem", labelKey: "dashboard.ckProblem", weight: 10, done: filled(s.problem) },
-    { key: "solution", labelKey: "dashboard.ckSolution", weight: 10, done: filled(s.solution) },
-    { key: "useOfFunds", labelKey: "dashboard.ckUseOfFunds", weight: 9, done: filled(s.use_of_funds) },
+    { key: "deck", labelKey: "dashboard.ckDeck", weight: 13, done: (s.documents?.length ?? 0) > 0 || filled(s.pitch_deck_url) },
+    { key: "problem", labelKey: "dashboard.ckProblem", weight: 8, done: filled(s.problem) },
+    { key: "solution", labelKey: "dashboard.ckSolution", weight: 8, done: filled(s.solution) },
+    { key: "useOfFunds", labelKey: "dashboard.ckUseOfFunds", weight: 7, done: filled(s.use_of_funds) },
     {
       key: "traction",
       labelKey: "completeness.traction",
-      weight: 9,
+      weight: 7,
       done: positive(s.mrr) || positive(s.arr) || positive(s.paying_customers) || positive(s.user_count),
     },
-    { key: "founder", labelKey: "dashboard.ckFounder", weight: 8, done: (s.founders?.length ?? 0) > 0 },
-    { key: "advantage", labelKey: "dashboard.ckAdvantage", weight: 7, done: filled(s.competitive_advantage) },
-    { key: "market", labelKey: "dashboard.ckMarket", weight: 6, done: filled(s.market) },
-    { key: "tagline", labelKey: "dashboard.ckTagline", weight: 5, done: filled(s.tagline) },
-    { key: "funding", labelKey: "dashboard.ckFunding", weight: 5, done: positive(s.funding_target) },
-    { key: "linkedin", labelKey: "dashboard.ckLinkedin", weight: 4, done: !!s.founders?.some((f) => filled(f.linkedin_url)) },
-    { key: "milestone", labelKey: "dashboard.ckMilestone", weight: 4, done: (s.milestones?.length ?? 0) > 0 },
-    { key: "website", labelKey: "completeness.website", weight: 3, done: filled(s.website) },
-    { key: "equity", labelKey: "completeness.equity", weight: 3, done: positive(s.equity_offered) },
+    { key: "founder", labelKey: "dashboard.ckFounder", weight: 6, done: (s.founders?.length ?? 0) > 0 },
+    { key: "advantage", labelKey: "dashboard.ckAdvantage", weight: 6, done: filled(s.competitive_advantage) },
+    { key: "market", labelKey: "dashboard.ckMarket", weight: 5, done: filled(s.market) },
+    { key: "tagline", labelKey: "dashboard.ckTagline", weight: 4, done: filled(s.tagline) },
+    { key: "funding", labelKey: "dashboard.ckFunding", weight: 4, done: positive(s.funding_target) },
+    { key: "whyNow", labelKey: "completeness.whyNow", weight: 3, done: filled(s.why_now) },
+    { key: "keyMetrics", labelKey: "completeness.keyMetrics", weight: 3, done: hasAny(s.key_metrics) },
+    { key: "useOfFundsBreakdown", labelKey: "completeness.useOfFundsBreakdown", weight: 3, done: hasAny(s.use_of_funds_breakdown) },
+    { key: "linkedin", labelKey: "dashboard.ckLinkedin", weight: 3, done: !!s.founders?.some((f) => filled(f.linkedin_url)) },
+    { key: "milestone", labelKey: "dashboard.ckMilestone", weight: 3, done: (s.milestones?.length ?? 0) > 0 },
+    { key: "customers", labelKey: "completeness.customers", weight: 2, done: hasAny(s.customers) },
+    { key: "advisors", labelKey: "completeness.advisors", weight: 2, done: hasAny(s.advisors) },
+    { key: "proof", labelKey: "completeness.proof", weight: 2, done: hasAny(s.press) || hasAny(s.awards) },
+    { key: "roundType", labelKey: "completeness.roundType", weight: 2, done: filled(s.round_type) },
+    { key: "screenshots", labelKey: "completeness.screenshots", weight: 2, done: hasAny(s.product_screenshots) },
+    { key: "website", labelKey: "completeness.website", weight: 2, done: filled(s.website) },
+    { key: "equity", labelKey: "completeness.equity", weight: 2, done: positive(s.equity_offered) },
     { key: "booking", labelKey: "completeness.booking", weight: 2, done: filled(s.booking_url) },
+    { key: "hiring", labelKey: "completeness.hiring", weight: 1, done: hasAny(s.hiring) },
   ];
 
   const percent = items.reduce((sum, i) => sum + (i.done ? i.weight : 0), 0);

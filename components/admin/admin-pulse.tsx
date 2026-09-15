@@ -42,6 +42,21 @@ export type HealthListing = {
   founders?: Array<{ linkedin_url?: string | null }> | null;
   documents?: Array<unknown> | null;
   milestones?: Array<unknown> | null;
+  // Migration 141 (rich profiles). Without these the health score would
+  // permanently under-count any listing that filled them in -- the same
+  // shared listingCompleteness() call as the founder dashboard, but scored
+  // against a narrower column list, is exactly the disagreement this scorer
+  // exists to make impossible.
+  why_now?: string | null;
+  key_metrics?: Array<unknown> | null;
+  customers?: Array<unknown> | null;
+  advisors?: Array<unknown> | null;
+  hiring?: Array<unknown> | null;
+  round_type?: string | null;
+  use_of_funds_breakdown?: Array<unknown> | null;
+  press?: Array<unknown> | null;
+  awards?: Array<unknown> | null;
+  product_screenshots?: string[] | null;
 };
 
 // Dense admin card: padding snaps 20 -> 16.

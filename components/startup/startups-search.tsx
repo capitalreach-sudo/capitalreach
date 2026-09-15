@@ -22,6 +22,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { InfoTip } from "@/components/shared/info-tip";
 import { ScoreCaption } from "@/components/review/ScoreWithDisclaimer";
 import { EntityLogo } from "@/components/shared/entity-logo";
+import { Sparkline } from "@/components/charts/sparkline";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -504,31 +505,6 @@ function NoResults({ query, hasFilters, onReset }: { query: string; hasFilters: 
  * API's own floor for "a trend, not a squiggle," so nothing below that
  * renders here either.
  */
-function Sparkline({ values }: { values: number[] }) {
-  if (values.length < 4) return null;
-  const W = 64, H = 20, PAD = 2;
-  const points = values
-    .map((v, i) => {
-      const x = PAD + (i / (values.length - 1)) * (W - PAD * 2);
-      const y = PAD + (1 - v) * (H - PAD * 2);
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    })
-    .join(" ");
-  const up = values[values.length - 1] >= values[0];
-  return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} aria-hidden focusable="false" style={{ display: "block", flexShrink: 0 }}>
-      <polyline
-        points={points}
-        fill="none"
-        stroke={up ? "var(--cr-up)" : "var(--cr-ink-4)"}
-        strokeWidth={1.5}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 function ResultCard({ s, saved, viewed, comparing, match, spark, onSave, onCompare }: { s: Startup; saved: boolean; viewed?: boolean; comparing?: boolean; match?: number; spark?: number[]; onSave: (id: string) => void; onCompare?: (id: string) => void }) {
   const { t } = useTranslation();
   // Renders the fallback until the key lands in every locale (see data-centre.tsx).

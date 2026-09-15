@@ -218,7 +218,7 @@ export async function maskFreeText(opts: {
 /** The prose a startup listing publishes. */
 export const LISTING_PROSE_FIELDS = [
   "tagline", "description", "problem", "solution", "market",
-  "competitive_advantage", "use_of_funds",
+  "competitive_advantage", "use_of_funds", "why_now",
 ] as const;
 
 /** The prose an investor profile publishes. */
@@ -249,19 +249,28 @@ export const PROFILE_PROSE_FIELDS = [
 export async function maskProse<T extends Record<string, unknown>>(opts: {
   fields: T;
   proseFields: readonly string[];
+  /**
+   * jsonb array columns, scanned one level deep: field name -> which string
+   * keys on each row to check. This is deliberately narrow -- a row's own
+   * URL field (press[].url, customers[].logo_url) already runs through
+   * sanitizeUrlFields and is never listed here, only short free-text
+   * sub-fields (a name, a title, a role) that a founder could paste contact
+   * details into the same way they could paste them into `description`.
+   */
+  jsonArrayProseFields?: Record<string, readonly string[]>;
   surface: FreeTextSurface;
   subjectType: "investor" | "startup" | "profile";
   subjectId: string;
   config?: SafetyConfig;
-}): Promise<{ fields: T; masked: MaskedKind[]; changed: Record<string, string> }> {
-  const { fields, proseFields, surface, subjectType, subjectId } = opts;
+}): Promise<{ fields: T; masked: MaskedKind[]; changed: Record<string, unknown> }> {
+  const { fields, proseFields, jsonArrayProseFields, surface, subjectType, subjectId } = opts;
 
   const config = opts.config ?? (await getSafetyConfig());
   if (!config.maskContacts) return { fields, masked: [], changed: {} };
 
   const kinds = new Set<MaskedKind>();
-  const changed: Record<string, string> = {};
-  const originals: Record<string, string> = {};
+  const changed: Record<string, unknown> = {};
+  const originals: Record<string, unknown> = {};
   const out: Record<string, unknown> = { ...fields };
 
   for (const key of proseFields) {
@@ -273,6 +282,30 @@ export async function maskProse<T extends Record<string, unknown>>(opts: {
     out[key] = res.text;
     changed[key] = res.text;
     originals[key] = value.slice(0, 2000);
+  }
+
+  for (const [key, subKeys] of Object.entries(jsonArrayProseFields ?? {})) {
+    const rows = fields[key];
+    if (!Array.isArray(rows) || !rows.length) continue;
+    let rowChanged = false;
+    const nextRows = rows.map((row) => {
+      if (!row || typeof row !== "object" || Array.isArray(row)) return row;
+      const nextRow = { ...(row as Record<string, unknown>) };
+      for (const sub of subKeys) {
+        const value = nextRow[sub];
+        if (typeof value !== "string" || !value) continue;
+        const res = maskContactDetails(value, { allowLinks: true });
+        if (!res.masked.length) continue;
+        res.masked.forEach((k) => kinds.add(k));
+        nextRow[sub] = res.text;
+        rowChanged = true;
+      }
+      return nextRow;
+    });
+    if (!rowChanged) continue;
+    out[key] = nextRows;
+    changed[key] = nextRows;
+    originals[key] = rows.slice(0, 50);
   }
 
   const masked = Array.from(kinds);

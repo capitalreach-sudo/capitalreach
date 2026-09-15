@@ -583,7 +583,15 @@ export default async function StartupDetailPage({ params, searchParams }: Props)
     // client's round-arithmetic block renders safe_cap/safe_discount with no
     // financials guard of its own, which leaked the SAFE valuation to a paid
     // investor who had not signed the NDA.
-    ...(showFinancials ? {} : { mrr: null, arr: null, user_count: null, growth_rate: null, valuation: null, paying_customers: null, runway_months: null, churn_rate: null, safe_cap: null, safe_discount: null, valuation_type: null, instrument: null }),
+    // Migration 141: key_metrics is founder-defined custom numbers "beyond
+    // the fixed MRR/ARR/users columns" per its own column comment -- the same
+    // category of sensitive figure as the columns already nulled here, and
+    // unlike those it is not covered by any column-level grant (109), so
+    // without this line it would ship to every viewer regardless of tier.
+    // committed_amount stays public, deliberately: it is round PROGRESS, the
+    // same category as the already-public funding_target and momentum bar,
+    // not a performance figure.
+    ...(showFinancials ? {} : { mrr: null, arr: null, user_count: null, growth_rate: null, valuation: null, paying_customers: null, runway_months: null, churn_rate: null, safe_cap: null, safe_discount: null, valuation_type: null, instrument: null, key_metrics: null }),
     founders: protectFounders(startup.founders, identityRevealed),
     documents: (startup.documents ?? []).map((d) => stripLockedUrl(d, docCtx, previewing ? null : shareToken)),
   };

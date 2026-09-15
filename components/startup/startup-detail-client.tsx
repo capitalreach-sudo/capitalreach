@@ -46,6 +46,8 @@ import { TractionChart, type MetricPoint } from "@/components/startup/traction-c
 import { NonCircumventionModal } from "@/components/ui/NonCircumventionModal";
 import { FeeCalculator } from "@/components/ui/FeeCalculator";
 import { TabStrip, TabPanel } from "@/components/ui/tab-strip";
+import { DonutChart } from "@/components/charts/donut-chart";
+import { Sparkline, normalizeSpark } from "@/components/charts/sparkline";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -637,6 +639,11 @@ export function StartupDetailClient({
   // Inline PDF viewer: keep the reader on the page instead of a new tab.
   const [viewerDoc, setViewerDoc] = useState<{ url: string; label: string } | null>(null);
   useEscapeKey(!!viewerDoc, () => setViewerDoc(null));
+  // Migration 141: product screenshots, opened full-size in the same inline
+  // dialog idiom as the PDF viewer and the booking iframe above -- a scrim, a
+  // close button, escape-to-close -- rather than a new visual device.
+  const [screenshotIdx, setScreenshotIdx] = useState<number | null>(null);
+  useEscapeKey(screenshotIdx !== null, () => setScreenshotIdx(null));
   // Best-effort view logging (migration 039); founders see the aggregate.
   function trackDoc(documentId: string) {
     fetch("/api/documents/track", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ documentId }) }).catch(() => {});
@@ -911,6 +918,17 @@ export function StartupDetailClient({
                       </span>
                     );
                   })()}
+                  {/* Migration 141: repurposed lead_investor_status. Same
+                      quiet chip treatment as industry/stage -- a fact about
+                      the round, not an urgency signal like the deadline
+                      chip above it. */}
+                  {startup.lead_investor_status && (
+                    <span style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", borderRadius: "4px", padding: "3px 8px", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                      {startup.lead_investor_status === "have_lead" ? tf("startupDetail.leadStatusHave", "Lead secured")
+                        : startup.lead_investor_status === "seeking_lead" ? tf("startupDetail.leadStatusSeeking", "Seeking a lead")
+                        : tf("startupDetail.leadStatusOpen", "No lead needed")}
+                    </span>
+                  )}
                   {startup.country && (
                     <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>
                       {countryLabel(t, startup.country)}
@@ -1173,6 +1191,31 @@ export function StartupDetailClient({
               );
             })()}
 
+            {/* Migration 141: committed_amount, the founder's own reported
+                figure -- distinct from the momentum bar above, which is
+                computed from this platform's own deal records. Public like
+                funding_target itself (not gated): a round's own progress
+                claim, not a number that discloses financial performance. */}
+            {startup.committed_amount != null && startup.committed_amount > 0 && startup.funding_target ? (() => {
+              const pct = Math.min(100, Math.round((startup.committed_amount! / startup.funding_target!) * 100));
+              return (
+                <div style={{ borderTop: "1px solid var(--cr-rule)", paddingTop: "16px" }}>
+                  <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "8px" }}>
+                    <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>
+                      {formatCurrency(startup.committed_amount!, true)}
+                      <span style={{ color: "var(--cr-ink-4)", fontWeight: 400 }}> / {formatCurrency(startup.funding_target!, true)}</span>
+                    </span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "12px", color: "var(--cr-ink-3)" }}>
+                      {tf("startupDetail.committedByFounder", "Reported committed by the founder")}
+                    </span>
+                  </div>
+                  <div style={{ height: "5px", background: "var(--cr-paper-4)", borderRadius: "4px", overflow: "hidden" }}>
+                    <div className="animate-draw-bar" style={{ ["--bar-width" as string]: `${pct}%`, width: `${pct}%`, height: "100%", background: "var(--cr-ink-3)" }} />
+                  </div>
+                </div>
+              );
+            })() : null}
+
             {/* Key metrics strip: the stat idiom -- one hairline above, then
                 caps labels over left-aligned figures, no boxed cells. Raising
                 is the page's one loud copper figure -- EXCEPT when the target
@@ -1291,6 +1334,7 @@ export function StartupDetailClient({
                 nothing else still hasn't written a pitch. */}
             {!(startup.problem || startup.solution || startup.market || startup.competitive_advantage
               || startup.use_of_funds || startup.tam || startup.sam || startup.som
+              || startup.why_now || (startup.key_metrics?.length ?? 0) > 0 || (startup.customers?.length ?? 0) > 0
               || (Array.isArray(startup.competitors_json) && startup.competitors_json.length > 0)) && (
               <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-4)", lineHeight: 1.75, maxWidth: "65ch" }}>
                 {isOwner
@@ -1300,8 +1344,95 @@ export function StartupDetailClient({
             )}
             {/* The prose sections read from the translation when one is
                 showing, and from the founder's own text otherwise. */}
+            {/* ── Narrative: problem, solution, why now, unfair advantage ── */}
             {startup.problem             && <Section title={t("startupDetail.problem")}><T field="problem">{startup.problem}</T></Section>}
             {startup.solution            && <Section title={t("startupDetail.solution")}><T field="solution">{startup.solution}</T></Section>}
+            {/* Migration 141: market-timing narrative. Runs through the same
+                LISTING_PROSE_FIELDS contact-detail masking as problem/solution
+                on save (lib/message-safety). */}
+            {startup.why_now             && <Section title={tf("startupDetail.whyNow", "Why now")}><T field="why_now">{startup.why_now}</T></Section>}
+            {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}><T field="competitive_advantage">{startup.competitive_advantage}</T></Section>}
+            {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}><T field="use_of_funds">{startup.use_of_funds}</T></Section>}
+            {/* use_of_funds_breakdown, a category split of the SAME raise the
+                prose above explains, shown as the house DonutChart rather than
+                a second free-text field. */}
+            {Array.isArray(startup.use_of_funds_breakdown) && startup.use_of_funds_breakdown.length > 0 && (
+              <div>
+                <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{tf("startupDetail.useOfFundsBreakdown", "Where the raise goes")}</h3>
+                <DonutChart
+                  slices={startup.use_of_funds_breakdown.map((r, i) => ({ key: String(i), label: r.category, value: r.pct }))}
+                  format={(n) => `${n}%`}
+                />
+              </div>
+            )}
+
+            {/* Product screenshots, a plain gallery, opened full-size in the
+                same inline dialog idiom as the PDF viewer and booking iframe
+                below (scrim, close button, escape-to-close). */}
+            {Array.isArray(startup.product_screenshots) && startup.product_screenshots.length > 0 && (
+              <div>
+                <h3 className="ruled-label" style={{ marginBottom: "16px" }}>{tf("startupDetail.screenshots", "Product")}</h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: "10px" }}>
+                  {startup.product_screenshots.map((url, i) => (
+                    <button key={i} type="button" onClick={() => setScreenshotIdx(i)}
+                      style={{ padding: 0, border: "1px solid var(--cr-rule)", borderRadius: "6px", overflow: "hidden", background: "var(--cr-paper-3)", cursor: "pointer", aspectRatio: "16/10" }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={url} alt={tf("startupDetail.screenshotAlt", "Product screenshot")} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* ── Traction signals: custom metrics, an MRR trend, customers ──
+                Distinct from the Traction TAB (raw MRR/ARR history behind the
+                financials gate) -- this is the lightweight, always-visible
+                credibility strip; metricHistory itself only ever arrives here
+                when the server already decided this viewer may see it, so no
+                extra gate is needed on the sparkline. */}
+            {((startup.key_metrics?.length ?? 0) > 0 || metricHistory.length >= 2 || (startup.customers?.length ?? 0) > 0) && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                <h3 className="ruled-label" style={{ margin: 0 }}>{tf("startupDetail.tractionSignals", "Traction highlights")}</h3>
+                {Array.isArray(startup.key_metrics) && startup.key_metrics.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4" style={{ gap: "16px 24px" }}>
+                    {startup.key_metrics.map((m, i) => (
+                      <MetricCell key={i} label={m.label} value={m.unit ? `${m.value}${m.unit}` : m.value} />
+                    ))}
+                  </div>
+                )}
+                {metricHistory.length >= 2 && (() => {
+                  const spark = normalizeSpark(metricHistory.map((p) => p.mrr));
+                  if (!spark.length) return null;
+                  const last = metricHistory[metricHistory.length - 1];
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <Sparkline values={spark} width={96} height={28} />
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>
+                        {tf("startupDetail.mrrTrend", "MRR trend, last {n} months").replace("{n}", String(metricHistory.length))}
+                        {last?.mrr != null && <> · <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--cr-ink-2)" }}>{safeFormatMRR(last.mrr)}</span></>}
+                      </span>
+                    </div>
+                  );
+                })()}
+                {Array.isArray(startup.customers) && startup.customers.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+                      {tf("startupDetail.customers", "Customers")}
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "12px" }}>
+                      {startup.customers.filter((c) => c?.logo_url).map((c, i) => (
+                        <div key={i} title={c.name || undefined} style={{ width: 56, height: 56, borderRadius: "6px", border: "1px solid var(--cr-rule)", background: "var(--cr-paper-3)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", flexShrink: 0 }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={c.logo_url} alt={c.name || tf("startupDetail.customerAlt", "Customer logo")} loading="lazy" decoding="async" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── Market: sizing and competitors, alongside the market prose above ── */}
             {startup.market              && <Section title={t("startupDetail.market")}><T field="market">{startup.market}</T></Section>}
             {/* Market sizing — only when at least one figure exists (never an empty card). */}
             {/* One closed ruled strip, same idiom as the header metrics: the
@@ -1317,8 +1448,6 @@ export function StartupDetailClient({
                 </div>
               </div>
             ) : null}
-            {startup.competitive_advantage && <Section title={t("startupDetail.competitiveAdvantage")}><T field="competitive_advantage">{startup.competitive_advantage}</T></Section>}
-            {startup.use_of_funds        && <Section title={t("startupDetail.useOfFunds")}><T field="use_of_funds">{startup.use_of_funds}</T></Section>}
 
             {/* Competitors — captured at onboarding, never shown until now.
                 Hairline-ruled rows, not a grid of tinted boxes: the border
@@ -1337,28 +1466,67 @@ export function StartupDetailClient({
               </div>
             )}
 
-            {/* Milestones */}
-            {startup.milestones && startup.milestones.length > 0 && (
-              <div>
-                <div className="ruled-label" style={{ marginBottom: "16px" }}>{t("startupDetail.milestones")}</div>
-                <div>
-                  {[...startup.milestones]
-                    .sort((a, b) => a.date.localeCompare(b.date))
-                    .map((m, idx, arr) => (
-                      <div key={m.id} style={{ display: "flex", gap: "16px" }}>
-                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                          <div style={{ width: 8, height: 8, borderRadius: "1px", background: "var(--cr-ink-3)", transform: "rotate(45deg)", marginTop: "4px", flexShrink: 0 }} />
-                          {idx < arr.length - 1 && (
-                            <div style={{ width: 1, flex: 1, background: "var(--cr-rule-dark)", margin: "4px 0" }} />
-                          )}
+            {/* ── Proof: press, awards, milestone timeline ── */}
+            {((startup.press?.length ?? 0) > 0 || (startup.awards?.length ?? 0) > 0 || (startup.milestones?.length ?? 0) > 0) && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                <h3 className="ruled-label" style={{ margin: 0 }}>{tf("startupDetail.proof", "Proof")}</h3>
+                {Array.isArray(startup.press) && startup.press.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+                      {tf("startupDetail.press", "Press")}
+                    </div>
+                    <div>
+                      {startup.press.map((p, i) => (
+                        <div key={i} style={{ padding: i > 0 ? "10px 0" : "0 0 10px", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+                          <span style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, fontSize: "13px", color: "var(--cr-ink-2)" }}>
+                            <span style={{ color: "var(--cr-ink-4)" }}>{p.outlet}</span>{p.outlet && p.title ? ", " : ""}
+                            {p.url ? <a href={p.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--cr-copper)", textDecoration: "none" }}>{p.title}</a> : p.title}
+                          </span>
+                          {p.date && <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", whiteSpace: "nowrap" }}>{formatDate(p.date)}</span>}
                         </div>
-                        <div style={{ paddingBottom: "16px" }}>
-                          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>{formatDate(m.date)}</p>
-                          <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>{m.description}</p>
-                        </div>
-                      </div>
-                    ))}
-                </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {Array.isArray(startup.awards) && startup.awards.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+                      {tf("startupDetail.awards", "Awards")}
+                    </div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                      {startup.awards.map((a, i) => (
+                        <span key={i} style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", borderRadius: "4px", padding: "4px 10px" }}>
+                          {a.name}{a.year ? ` · ${a.year}` : ""}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {startup.milestones && startup.milestones.length > 0 && (
+                  <div>
+                    <div style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-3)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "10px" }}>
+                      {t("startupDetail.milestones")}
+                    </div>
+                    <div>
+                      {[...startup.milestones]
+                        .sort((a, b) => a.date.localeCompare(b.date))
+                        .map((m, idx, arr) => (
+                          <div key={m.id} style={{ display: "flex", gap: "16px" }}>
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                              <div style={{ width: 8, height: 8, borderRadius: "1px", background: "var(--cr-ink-3)", transform: "rotate(45deg)", marginTop: "4px", flexShrink: 0 }} />
+                              {idx < arr.length - 1 && (
+                                <div style={{ width: 1, flex: 1, background: "var(--cr-rule-dark)", margin: "4px 0" }} />
+                              )}
+                            </div>
+                            <div style={{ paddingBottom: "16px" }}>
+                              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", marginBottom: "4px" }}>{formatDate(m.date)}</p>
+                              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "15px", color: "var(--cr-ink-3)" }}>{m.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1522,6 +1690,25 @@ export function StartupDetailClient({
               );
             })()}
 
+            {/* Migration 141: round_type and instruments_accepted. Independent
+                of whether the round math above could be computed -- a founder
+                can name their round and the instruments they'd take without
+                having filled in a valuation. */}
+            {(startup.round_type || (startup.instruments_accepted?.length ?? 0) > 0) && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", alignItems: "center" }}>
+                {startup.round_type && (
+                  <span style={{ background: "var(--cr-copper-bg)", border: "1px solid var(--cr-copper-br)", color: "var(--cr-copper)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", borderRadius: "4px", padding: "4px 10px" }}>
+                    {startup.round_type}
+                  </span>
+                )}
+                {startup.instruments_accepted?.map((inst) => (
+                  <span key={inst} style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", borderRadius: "4px", padding: "4px 10px" }}>
+                    {inst}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {/* The economics of this deal: the 2% success fee is on the founder,
                 at close, and nothing before. Investors see their share of it on
                 their own check size (it is zero); founders see 2% vs a broker. */}
@@ -1586,6 +1773,14 @@ export function StartupDetailClient({
                     <div>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "15px", color: "var(--cr-ink)" }}>{f.name}</p>
                       <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{f.role}</p>
+                      {/* Migration 141: prev. Same gate as bio just below it
+                          (canTeam, not identityRevealed) -- a credibility
+                          line, not a personal identifier on its own. */}
+                      {f.prev && (
+                        <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "11px", color: "var(--cr-ink-4)", marginTop: "2px" }}>
+                          {tf("startupDetail.previously", "Previously")}: {f.prev}
+                        </p>
+                      )}
                     </div>
                   </div>
                   {f.bio && (
@@ -1608,6 +1803,42 @@ export function StartupDetailClient({
           ) : (
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "13px", color: "var(--cr-ink-4)" }}>{t("startupDetail.noTeamInfo")}</p>
           )
+        )}
+
+        {/* Advisors, lighter treatment than founder cards: a name an
+            investor may already trust, not a full profile. Not gated by
+            identityRevealed (no socials shown here to protect), only by
+            canTeam like the rest of this tab. */}
+        {activeTab === "team" && canTeam && Array.isArray(startup.advisors) && startup.advisors.length > 0 && (
+          <div style={{ marginTop: "32px" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("startupDetail.advisors", "Advisors")}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "10px" }}>
+              {startup.advisors.map((a, i) => (
+                <div key={i} style={{ border: "1px solid var(--cr-rule)", borderRadius: "6px", padding: "10px 12px" }}>
+                  <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "13px", color: "var(--cr-ink)" }}>
+                    {a.linkedin ? <a href={a.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "none" }}>{a.name}</a> : a.name}
+                  </p>
+                  {a.role && <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)" }}>{a.role}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Hiring, an open-roles strip. Public with the team tab (no
+            identity or financial sensitivity in "we're hiring an Engineer,
+            Berlin"). */}
+        {activeTab === "team" && canTeam && Array.isArray(startup.hiring) && startup.hiring.length > 0 && (
+          <div style={{ marginTop: "32px" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("startupDetail.hiring", "Hiring")}</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+              {startup.hiring.map((h, i) => (
+                <span key={i} style={{ background: "transparent", border: "1px solid var(--cr-rule-dark)", color: "var(--cr-ink-3)", fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "12px", borderRadius: "4px", padding: "4px 10px" }}>
+                  {h.role}{h.location ? ` · ${h.location}` : ""}
+                </span>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* ── Tab: Financials ── */}
@@ -1685,6 +1916,15 @@ export function StartupDetailClient({
                   </Link>
                 </div>
               </div>
+            )}
+
+            {/* Data room summary, a live count from the same join the server
+                page already runs (select *, documents:startup_documents(*)),
+                never a stored counter that could drift from the table. */}
+            {startup.documents && startup.documents.length > 0 && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "12px", color: "var(--cr-ink-4)", marginBottom: "12px" }}>
+                {tf("startupDetail.dataRoomCount", "{n} documents in the data room").replace("{n}", String(startup.documents.length))}
+              </p>
             )}
 
             {startup.documents && startup.documents.length > 0 ? (
@@ -1887,6 +2127,32 @@ export function StartupDetailClient({
           </Link>
         )}
       </StickyActionBar>
+
+      {/* Product screenshot lightbox, same inline-dialog idiom as the
+          document viewer and booking modal below: scrim, close button,
+          escape-to-close (useEscapeKey above). */}
+      {screenshotIdx !== null && Array.isArray(startup.product_screenshots) && startup.product_screenshots[screenshotIdx] && (
+        <div role="dialog" aria-modal="true" aria-label={tf("startupDetail.screenshots", "Product")} onClick={() => setScreenshotIdx(null)}
+          style={{ position: "fixed", inset: 0, zIndex: 90, background: "var(--cr-scrim)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ position: "relative", maxWidth: "min(92vw, 1000px)", maxHeight: "90vh" }}>
+            <button onClick={() => setScreenshotIdx(null)} aria-label={t("common.close")}
+              style={{ position: "absolute", top: -36, right: 0, background: "none", border: "none", cursor: "pointer", color: "#fff", display: "flex" }}>
+              <X style={{ width: 20, height: 20 }} />
+            </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={startup.product_screenshots[screenshotIdx]} alt={tf("startupDetail.screenshotAlt", "Product screenshot")}
+              style={{ maxWidth: "100%", maxHeight: "90vh", display: "block", borderRadius: "6px", objectFit: "contain" }} />
+            {startup.product_screenshots.length > 1 && (
+              <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginTop: "12px" }}>
+                {startup.product_screenshots.map((_, i) => (
+                  <button key={i} onClick={() => setScreenshotIdx(i)} aria-label={`${i + 1}`}
+                    style={{ width: 7, height: 7, borderRadius: "50%", border: "none", cursor: "pointer", background: i === screenshotIdx ? "#fff" : "rgba(255,255,255,0.4)", padding: 0 }} />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Booking, without leaving the page. Some providers refuse framing —
           the fallback link inside the modal covers those. */}

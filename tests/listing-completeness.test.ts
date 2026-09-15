@@ -9,6 +9,15 @@ const complete = {
   founders: [{ linkedin_url: "https://linkedin.com/in/x" }],
   documents: [{}],
   milestones: [{}],
+  // Migration 141.
+  why_now: "n", key_metrics: [{ label: "l", value: "v" }],
+  use_of_funds_breakdown: [{ category: "c", pct: 100 }],
+  customers: [{ logo_url: "https://x.test/l.png" }],
+  advisors: [{ name: "a" }],
+  press: [{ outlet: "o", title: "t" }],
+  round_type: "Seed",
+  product_screenshots: ["https://x.test/s.png"],
+  hiring: [{ role: "Engineer" }],
 };
 
 describe("listingCompleteness", () => {

@@ -295,6 +295,39 @@ describe("maskProse", () => {
     expect(signals).toHaveLength(0);
   });
 
+  it("withholds a contact detail pasted into a jsonb array row", async () => {
+    const { maskProse, LISTING_PROSE_FIELDS } = await import("../lib/message-safety");
+    const r = await maskProse({
+      fields: { advisors: [{ name: "Jane, reach me at jane@acme.com", role: "Advisor" }] },
+      proseFields: LISTING_PROSE_FIELDS,
+      jsonArrayProseFields: { advisors: ["name", "role"] },
+      surface: "listing_prose",
+      subjectType: "startup",
+      subjectId: "22222222-2222-4222-8222-222222222222",
+      config: { maskContacts: true, scamWarnings: false },
+    });
+    const advisors = r.fields.advisors as Array<{ name: string; role: string }>;
+    expect(advisors[0].name).not.toContain("jane@acme.com");
+    expect(advisors[0].role).toBe("Advisor");
+    expect(r.masked).toContain("email");
+    expect(r.changed).toHaveProperty("advisors");
+  });
+
+  it("leaves a jsonb array's own URL field alone -- that is sanitizeUrlFields' job", async () => {
+    const { maskProse, LISTING_PROSE_FIELDS } = await import("../lib/message-safety");
+    const r = await maskProse({
+      fields: { customers: [{ name: "Acme", logo_url: "https://acme.io/logo.png" }] },
+      proseFields: LISTING_PROSE_FIELDS,
+      jsonArrayProseFields: { customers: ["name"] },
+      surface: "listing_prose",
+      subjectType: "startup",
+      subjectId: "22222222-2222-4222-8222-222222222222",
+      config: { maskContacts: true, scamWarnings: false },
+    });
+    expect(r.masked).toEqual([]);
+    expect(r.fields.customers).toEqual([{ name: "Acme", logo_url: "https://acme.io/logo.png" }]);
+  });
+
   it("covers the investor profile's own columns", async () => {
     const { maskProse, PROFILE_PROSE_FIELDS } = await import("../lib/message-safety");
     const r = await maskProse({
