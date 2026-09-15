@@ -62,6 +62,17 @@ const BADGE_ACTION: CSSProperties = {
   ...BADGE_COPPER, minHeight: "40px", padding: "0 12px",
 };
 
+// An outcome badge's text is not always short: notable_exits[].outcome and
+// portfolio_json[].outcome are free text, and maskProse can replace part of
+// it with "[contact details withheld until a deal is open]" (40+ chars).
+// BADGE_COPPER's nowrap is right for a stage or sector token but forces a
+// masked outcome's chip wider than a 390px viewport, overflowing the page
+// horizontally (found during mobile verification of this pass) -- this
+// variant wraps instead, same visual otherwise.
+const BADGE_COPPER_WRAP: CSSProperties = {
+  ...BADGE_COPPER, whiteSpace: "normal", maxWidth: "100%", wordBreak: "break-word",
+};
+
 const DATA: CSSProperties = {
   fontFamily: "'JetBrains Mono', monospace", fontVariantNumeric: "tabular-nums",
 };
@@ -181,6 +192,48 @@ export default async function InvestorProfilePage({ params }: Props) {
     no: t("onboarding.inv.followOnNo"),
   };
   const followOnLabel = (raw: string) => FOLLOW_ON_LABELS[raw] ?? raw;
+
+  // Migration 141. Every one of these five is written by the settings page
+  // as a fixed-vocabulary key (SegmentedControl, never free text -- see
+  // app/dashboard/investor/settings/page.tsx), so the label map is
+  // exhaustive by construction; the `?? raw` fallback exists only so a
+  // legacy or hand-written value never renders as a blank instead of
+  // whatever text it actually holds, same defensive pattern as
+  // boardSeatLabel/followOnLabel above.
+  const DECISION_SPEED_LABELS: Record<string, string> = {
+    days: tf("invSettings.decisionDays", "Days"),
+    two_weeks: tf("invSettings.decisionTwoWeeks", "2 weeks"),
+    month_plus: tf("invSettings.decisionMonthPlus", "A month+"),
+  };
+  const INVOLVEMENT_LABELS: Record<string, string> = {
+    hands_on: tf("invSettings.involvementHandsOn", "Hands-on"),
+    board_seat: tf("invSettings.involvementBoardSeat", "Board seat"),
+    passive: tf("invSettings.involvementPassive", "Passive"),
+  };
+  const RESPONDS_WITHIN_LABELS: Record<string, string> = {
+    same_day: tf("invSettings.respondsSameDay", "Same day"),
+    "24h": tf("invSettings.responds24h", "24 hours"),
+    "48h": tf("invSettings.responds48h", "48 hours"),
+    "1_week": tf("invSettings.responds1Week", "1 week"),
+  };
+  const TOTAL_DEPLOYED_BAND_LABELS: Record<string, string> = {
+    under_1m: tf("invSettings.deployedUnder1m", "Under $1M"),
+    "1m_5m": tf("invSettings.deployed1m5m", "$1M – $5M"),
+    "5m_25m": tf("invSettings.deployed5m25m", "$5M – $25M"),
+    "25m_plus": tf("invSettings.deployed25mPlus", "$25M+"),
+  };
+  const FIRM_TYPE_LABELS: Record<string, string> = {
+    angel: tf("invSettings.firmTypeAngel", "Angel"),
+    micro_vc: tf("invSettings.firmTypeMicroVc", "Micro VC"),
+    vc: tf("invSettings.firmTypeVc", "VC"),
+    family_office: tf("invSettings.firmTypeFamilyOffice", "Family Office"),
+    corporate_vc: tf("invSettings.firmTypeCorporateVc", "Corporate VC"),
+  };
+  const decisionSpeedLabel = (raw: string) => DECISION_SPEED_LABELS[raw] ?? raw;
+  const involvementLabel = (raw: string) => INVOLVEMENT_LABELS[raw] ?? raw;
+  const respondsWithinLabel = (raw: string) => RESPONDS_WITHIN_LABELS[raw] ?? raw;
+  const totalDeployedBandLabel = (raw: string) => TOTAL_DEPLOYED_BAND_LABELS[raw] ?? raw;
+  const firmTypeLabel = (raw: string) => FIRM_TYPE_LABELS[raw] ?? raw;
 
   // Reads `investors` only. This page is public, and `profiles` is not: it
   // holds emails, subscription tiers and Stripe ids, and is now restricted to
@@ -328,10 +381,23 @@ export default async function InvestorProfilePage({ params }: Props) {
   const memberSince = investor.created_at
     ? new Date(investor.created_at).toLocaleDateString(getLocale(), { month: "long", year: "numeric" })
     : null;
-  const portfolio: Array<{ name: string; stage?: string; outcome?: string }> =
+  const portfolio: Array<{ name: string; stage?: string; outcome?: string; year?: string; sector?: string; url?: string }> =
     Array.isArray(investor.portfolio_json)
-      ? (investor.portfolio_json as Array<{ name: string; stage?: string; outcome?: string }>).filter((c) => c?.name)
+      ? (investor.portfolio_json as Array<{ name: string; stage?: string; outcome?: string; year?: string; sector?: string; url?: string }>).filter((c) => c?.name)
       : [];
+  // Migration 141: free text, filtered the same way portfolio/similar lists
+  // already are -- a row opened in the editor and never filled must not
+  // render as a blank ledger line.
+  const notableExits: Array<{ company: string; outcome: string }> =
+    Array.isArray(investor.notable_exits)
+      ? (investor.notable_exits as Array<{ company: string; outcome: string }>).filter((e) => e?.company)
+      : [];
+  const coInvestors: string[] =
+    Array.isArray(investor.co_investors)
+      ? (investor.co_investors as Array<{ name: string }>).map((c) => c?.name).filter((n): n is string => !!n)
+      : [];
+  const valueAdd: string[] = (investor.value_add ?? []) as string[];
+  const instrumentsPreferred: string[] = (investor.instruments_preferred ?? []) as string[];
 
   // The mandate strip's derived figures. Stages resolve through the same
   // normalizer the directory loader uses (lib/investor-directory-rules) before
@@ -487,6 +553,14 @@ export default async function InvestorProfilePage({ params }: Props) {
                 />
               )}
             </div>
+            {/* Migration 141. The startup-tagline equivalent: one line,
+                right under the name, before any figure -- the fastest thing
+                a founder reads about the mandate. */}
+            {investor.headline && (
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, fontSize: "15px", lineHeight: 1.4, color: "var(--cr-ink-2)", marginBottom: "8px", maxWidth: "50ch" }}>
+                <T field="headline">{investor.headline}</T>
+              </p>
+            )}
             {/* The meta line: what kind of cheque this is and how long the
                 account has stood, quiet under the name. One fact, one place:
                 the type chip and the floating member-since line both lived
@@ -610,7 +684,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             These lived as a strip plus two sections of scattered pairs
             before; a founder rules this investor in or out from one block
             now. Only cells that HAVE values render. */}
-        {(investor.min_check || investor.max_check || stageSpan || industries.length > 0 || geographies.length > 0 || investor.board_seat_pref || investor.follow_on_policy || (investor.languages ?? []).length > 0) && (
+        {(investor.min_check || investor.max_check || investor.sweet_spot || stageSpan || industries.length > 0 || geographies.length > 0 || investor.board_seat_pref || investor.follow_on_policy || (investor.languages ?? []).length > 0 || instrumentsPreferred.length > 0) && (
           <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("investorProfile.mandate", "Mandate")}</div>
             <div className="grid grid-cols-2 sm:grid-cols-3" style={STRIP}>
@@ -620,6 +694,7 @@ export default async function InvestorProfilePage({ params }: Props) {
                   value={investor.min_check
                     ? `${formatCurrency(investor.min_check, true)} – ${investor.max_check ? formatCurrency(investor.max_check, true) : t("common.open")}`
                     : `${tf("investorProfile.upTo", "Up to")} ${formatCurrency(investor.max_check ?? 0, true)}`}
+                  sub={investor.sweet_spot ? `${tf("invSettings.sweetSpot", "Sweet spot")}: ${formatCurrency(investor.sweet_spot, true)}` : undefined}
                 />
               )}
               {stageSpan && (
@@ -627,6 +702,14 @@ export default async function InvestorProfilePage({ params }: Props) {
               )}
               {industries.length > 0 && (
                 <Cell label={t("investorProfile.industriesLabel")} value={industries.length} sub={industries.join(", ")} />
+              )}
+              {instrumentsPreferred.length > 0 && (
+                <Cell
+                  label={tf("invSettings.instrumentsPreferred", "Instruments preferred")}
+                  value={instrumentsPreferred[0]}
+                  valueStyle={CELL_SPAN}
+                  sub={instrumentsPreferred.length > 1 ? instrumentsPreferred.slice(1).join(", ") : undefined}
+                />
               )}
               {geographies.length > 0 && (
                 <Cell
@@ -667,7 +750,7 @@ export default async function InvestorProfilePage({ params }: Props) {
             render. portfolio_count is deliberately not repeated here -- it
             is the same number as number_of_investments. Member-since lives
             in the header meta line now, not as a floating footnote. */}
-        {(investor.aum || investor.number_of_investments || investor.avg_hold_period) && (
+        {(investor.aum || investor.number_of_investments || investor.avg_hold_period || investor.total_deployed_band) && (
           <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
             <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("investorProfile.trackRecord", "Track record")}</div>
             <div className="grid grid-cols-2 sm:grid-cols-3" style={STRIP}>
@@ -680,6 +763,49 @@ export default async function InvestorProfilePage({ params }: Props) {
               {investor.avg_hold_period && (
                 <Cell label={t("investorProfile.avgHold")} value={investor.avg_hold_period} />
               )}
+              {/* Migration 141. Banded on purpose (see the migration's own
+                  comment) -- rendered as text, not a mono figure, the same
+                  register as avg_hold_period: it is a range, not a count. */}
+              {investor.total_deployed_band && (
+                <Cell label={tf("invSettings.totalDeployedBand", "Total deployed")} value={totalDeployedBandLabel(investor.total_deployed_band)} valueStyle={CELL_TEXT} />
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── Approach (migration 141) ───────────────────────────────────────
+            How this investor operates once a cheque is written, as its own
+            strip -- distinct from Mandate (what they'll write a cheque for)
+            and Track record (what they've already done). Only cells that
+            HAVE values render, same rule as every strip above. */}
+        {(investor.firm_type || investor.decision_speed || investor.involvement || investor.responds_within) && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "16px" }}>{tf("investorProfile.approach", "How they work")}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-3" style={STRIP}>
+              {investor.firm_type && (
+                <Cell label={tf("invSettings.firmType", "Firm type")} value={firmTypeLabel(investor.firm_type)} valueStyle={CELL_SPAN} />
+              )}
+              {investor.decision_speed && (
+                <Cell label={tf("invSettings.decisionSpeed", "Decision speed")} value={decisionSpeedLabel(investor.decision_speed)} valueStyle={CELL_SPAN} />
+              )}
+              {investor.involvement && (
+                <Cell label={tf("invSettings.involvement", "Involvement")} value={involvementLabel(investor.involvement)} valueStyle={CELL_SPAN} />
+              )}
+              {investor.responds_within && (
+                <Cell label={tf("invSettings.respondsWithin", "Responds within")} value={respondsWithinLabel(investor.responds_within)} valueStyle={CELL_SPAN} />
+              )}
+            </div>
+          </section>
+        )}
+
+        {/* ── Value-add (migration 141) ──────────────────────────────────────
+            Chips, same shape as a badge row -- this is a set, not a ranked
+            list, so a strip's per-cell weight would overstate any one item. */}
+        {valueAdd.length > 0 && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{tf("invSettings.valueAdd", "Value-add")}</div>
+            <div className="flex flex-wrap gap-2">
+              {valueAdd.map((v) => <span key={v} style={BADGE}>{v}</span>)}
             </div>
           </section>
         )}
@@ -707,21 +833,38 @@ export default async function InvestorProfilePage({ params }: Props) {
             with no client component -- and the count is stated either way,
             so a folded list never understates a record. */}
         {portfolio.length > 0 && (() => {
-          const row = (co: { name: string; stage?: string; outcome?: string }, i: number) => (
+          const row = (co: { name: string; stage?: string; outcome?: string; year?: string; sector?: string; url?: string }, i: number) => (
             <div key={i} className="flex items-center justify-between gap-3 flex-wrap"
               style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
               <div className="flex items-baseline gap-3 min-w-0">
                 <span style={{ ...DATA, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", minWidth: "20px", flexShrink: 0 }}>
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="truncate" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{co.name}</span>
+                {/* url was already free text with no scheme check before this
+                    pass (found during investigation); it is sanitized to
+                    http(s)-only at write time now (app/api/investors/save),
+                    so an href straight from the column is safe to render. */}
+                {co.url ? (
+                  <a href={co.url} target="_blank" rel="noopener noreferrer" className="truncate hover:text-cr-copper transition-colors"
+                    style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+                    {co.name}
+                  </a>
+                ) : (
+                  <span className="truncate" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>{co.name}</span>
+                )}
+                {co.year && (
+                  <span style={{ ...DATA, fontWeight: 400, fontSize: "11px", color: "var(--cr-ink-4)", flexShrink: 0 }}>{co.year}</span>
+                )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap justify-end">
+                {co.sector && (
+                  <span style={BADGE}>{co.sector}</span>
+                )}
                 {co.stage && (
                   <span style={BADGE}>{co.stage.replace(/_/g, " ")}</span>
                 )}
                 {co.outcome && (
-                  <span style={BADGE_COPPER}>{co.outcome.replace(/_/g, " ")}</span>
+                  <span style={BADGE_COPPER_WRAP}>{co.outcome.replace(/_/g, " ")}</span>
                 )}
               </div>
             </div>
@@ -755,6 +898,54 @@ export default async function InvestorProfilePage({ params }: Props) {
             </section>
           );
         })()}
+
+        {/* ── Notable exits (migration 141) ──────────────────────────────────
+            Same numbered-ledger anatomy as Portfolio companies just above --
+            copied, not re-invented, so the two lists read as one register. */}
+        {notableExits.length > 0 && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="flex items-baseline justify-between gap-3" style={{ marginBottom: "8px" }}>
+              <div className="ruled-label">{tf("invSettings.notableExits", "Notable exits")}</div>
+              <span style={{ ...DATA, fontWeight: 500, fontSize: "11px", color: "var(--cr-ink-4)" }}>{notableExits.length}</span>
+            </div>
+            <div>
+              {notableExits.map((e, i) => (
+                // A column, not a row: the outcome is free prose (and can
+                // carry the long masked-contact placeholder), unlike a
+                // portfolio row's short stage/sector tokens, so it gets its
+                // own line under the company name rather than squeezing
+                // beside it -- the row layout tried first here overflowed a
+                // 390px viewport on a masked outcome (found during mobile
+                // verification of this pass).
+                <div key={i} style={{ padding: "12px 0", borderTop: i > 0 ? "1px solid var(--cr-rule)" : "none" }}>
+                  <div className="flex items-baseline gap-3 min-w-0" style={{ marginBottom: e.outcome ? "8px" : 0 }}>
+                    <span style={{ ...DATA, fontWeight: 600, fontSize: "11px", color: "var(--cr-copper)", minWidth: "20px", flexShrink: 0 }}>
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="truncate" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: "14px", color: "var(--cr-ink)" }}>
+                      {e.company}
+                    </span>
+                  </div>
+                  {e.outcome && (
+                    <span style={{ ...BADGE_COPPER_WRAP, marginLeft: "32px" }}>{e.outcome}</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ── Co-investors (migration 141) ───────────────────────────────────
+            Names only, never a link -- most co-investors named here are not
+            CapitalReach members (see the migration's own column comment). */}
+        {coInvestors.length > 0 && (
+          <section className="mt-12 pt-8" style={{ borderTop: "1px solid var(--cr-rule)" }}>
+            <div className="ruled-label" style={{ marginBottom: "12px" }}>{tf("invSettings.coInvestorsLabel", "Co-investors")}</div>
+            <p style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "14px", lineHeight: 1.7, color: "var(--cr-ink-3)" }}>
+              {coInvestors.join(", ")}
+            </p>
+          </section>
+        )}
 
         {/* ── Similar investors ── */}
         {similar.length > 0 && (

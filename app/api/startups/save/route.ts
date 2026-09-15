@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { LISTING_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
-import { sanitizeUrlFields } from "@/lib/url-safety";
+import { sanitizeUrlFields, httpUrlOrNull } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 
@@ -101,6 +101,35 @@ export async function POST(req: NextRequest) {
       return f;
     });
   }
+  // Migration 141's jsonb-array URL sub-fields. sanitizeUrlFields only ever
+  // walks the flat keys it is given (verified by reading lib/url-safety.ts),
+  // it does not reach into an array -- a comment below used to claim it
+  // already covered these, which it never did; press[].url and
+  // customers[].logo_url landed unsanitized. Fixed here, the same way
+  // founders[] is handled above and portfolio_json[].url is handled on the
+  // investor side.
+  if (Array.isArray(patch.customers)) {
+    patch.customers = (patch.customers as Array<Record<string, unknown>>).map((row) => {
+      if (!row || typeof row !== "object" || Array.isArray(row)) return row;
+      const next = { ...row };
+      if ("logo_url" in next) next.logo_url = httpUrlOrNull(next.logo_url);
+      return next;
+    });
+  }
+  if (Array.isArray(patch.press)) {
+    patch.press = (patch.press as Array<Record<string, unknown>>).map((row) => {
+      if (!row || typeof row !== "object" || Array.isArray(row)) return row;
+      const next = { ...row };
+      if ("url" in next) next.url = httpUrlOrNull(next.url);
+      return next;
+    });
+  }
+  // A flat array of raw URL strings (not objects), unlike the two above.
+  if (Array.isArray(patch.product_screenshots)) {
+    patch.product_screenshots = (patch.product_screenshots as unknown[])
+      .map((u) => httpUrlOrNull(u))
+      .filter((u): u is string => !!u);
+  }
 
   // ONE listing per founder, oldest first -- the same row the onboarding flow
   // reuses when checkout bounces somebody back into it. A plain insert there
@@ -126,8 +155,9 @@ export async function POST(req: NextRequest) {
     proseFields: LISTING_PROSE_FIELDS,
     // Migration 141's short structured rows: a name, a title, a role can
     // carry a pasted contact detail exactly as free prose can. Their own URL
-    // fields (customers[].logo_url, press[].url) are excluded here --
-    // sanitizeUrlFields above already governs those.
+    // fields (customers[].logo_url, press[].url) are excluded here -- those
+    // are sanitized inline above instead, the same "a URL sub-field is not
+    // prose" rule maskProse's own doc comment states.
     jsonArrayProseFields: {
       customers: ["name"],
       advisors: ["name", "role"],

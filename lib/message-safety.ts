@@ -225,6 +225,13 @@ export const LISTING_PROSE_FIELDS = [
 export const PROFILE_PROSE_FIELDS = [
   "bio", "investment_thesis", "aum", "follow_on_policy",
   "board_seat_pref", "avg_hold_period",
+  // Migration 141 (rich profiles): the one genuinely free-text top-level
+  // field the pass adds. decision_speed/involvement/total_deployed_band/
+  // firm_type/responds_within are built as fixed preset pickers (see
+  // app/dashboard/investor/settings/page.tsx), not open prose, so they do
+  // not belong here -- see jsonArrayProseFields at the call site for the
+  // free-text sub-fields inside notable_exits/co_investors/portfolio_json.
+  "headline",
 ] as const;
 
 /**

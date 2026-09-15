@@ -28,7 +28,10 @@ import { openai, isOpenAIConfigured } from "@/lib/openai";
 /** Fields worth translating, per entity. Names and URLs are deliberately absent. */
 export const TRANSLATABLE: Record<"startup" | "investor" | "update", string[]> = {
   startup: ["tagline", "problem", "solution", "market", "competitive_advantage", "use_of_funds"],
-  investor: ["bio", "investment_thesis"],
+  // headline (migration 141) added alongside bio/investment_thesis: same
+  // kind of investor-written prose, read by every founder who opens the
+  // profile, worth the same auto-translation the other two already get.
+  investor: ["bio", "investment_thesis", "headline"],
   update: ["title", "body"],
 };
 

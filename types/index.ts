@@ -121,16 +121,41 @@ export interface StartupMilestone {
 type InvestorRow = import("@/types/supabase").Database["public"]["Tables"]["investors"]["Row"];
 export interface Investor extends Omit<InvestorRow,
   "type" | "stages" | "subscription_tier" | "portfolio_json"
-  | "instruments_preferred" | "notable_exits" | "co_investors" | "value_add"> {
+  | "instruments_preferred" | "notable_exits" | "co_investors" | "value_add"
+  | "headline" | "sweet_spot" | "decision_speed" | "involvement" | "total_deployed_band"
+  | "firm_type" | "responds_within"> {
   type: InvestorType;
   stages: StartupStage[];
   subscription_tier: SubscriptionTier;
-  portfolio_json: Array<{ name: string; stage: string; year: string }>;
+  // Reconciled against the real shape live across three surfaces (settings
+  // form, onboarding, revealed profile) before this pass: onboarding wrote
+  // `year`, nothing ever read it; settings and the profile both wrote/read
+  // `outcome`, which the type never declared. Rather than dropping `year`
+  // (a founder-facing field someone may already have filled in), every
+  // surface now agrees on one row shape carrying both, plus the pass's new
+  // `sector` (from the same INDUSTRIES taxonomy used everywhere else) and
+  // `url` (a link to the portfolio company, sanitized on write same as any
+  // other stored URL).
+  portfolio_json: Array<{ name: string; stage?: string; outcome?: string; year?: string; sector?: string; url?: string }>;
   // Migration 141.
   instruments_preferred: string[] | null;
   notable_exits: Array<{ company: string; outcome: string }> | null;
   co_investors: Array<{ name: string }> | null;
   value_add: string[] | null;
+  /** One line, e.g. "Seed-stage B2B SaaS, DACH." The directory equivalent of a startup tagline. */
+  headline: string | null;
+  /** Typical single cheque size, distinct from the min_check/max_check range. */
+  sweet_spot: number | null;
+  /** Self-reported preset: days / two_weeks / month_plus. */
+  decision_speed: string | null;
+  /** Self-reported preset: hands_on / board_seat / passive. */
+  involvement: string | null;
+  /** Banded, not exact, deliberately -- see migration 141's comment. */
+  total_deployed_band: string | null;
+  /** e.g. Angel / Micro VC / VC / Family Office / Corporate VC. */
+  firm_type: string | null;
+  /** Self-set SLA preset, purely informational. */
+  responds_within: string | null;
 }
 
 export interface Thread {

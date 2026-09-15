@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerSupabaseClient, createAdminClient } from "@/lib/supabase-server";
 import { PROFILE_PROSE_FIELDS, maskProse } from "@/lib/message-safety";
-import { sanitizeUrlFields } from "@/lib/url-safety";
+import { sanitizeUrlFields, httpUrlOrNull } from "@/lib/url-safety";
 import { slugify } from "@/lib/utils";
 import { isAccountSuspended } from "@/lib/suspension-guard";
 
@@ -86,6 +86,22 @@ export async function POST(req: NextRequest) {
   // http(s), normalise a scheme-less domain to https, drop javascript:/data:.
   sanitizeUrlFields(patch);
 
+  // portfolio_json[].url is the one URL that lives inside a jsonb array
+  // rather than a flat column, so sanitizeUrlFields above (flat keys only --
+  // verified by reading lib/url-safety.ts, not assumed) never touches it.
+  // The startup-side pass shipped press[].url with a comment claiming the
+  // flat call already covered it, which it does not; sanitized inline here
+  // instead, the way founders[].linkedin_url is, so that mistake is not
+  // repeated on this column.
+  if (Array.isArray(patch.portfolio_json)) {
+    patch.portfolio_json = (patch.portfolio_json as Array<Record<string, unknown>>).map((row) => {
+      if (!row || typeof row !== "object") return row;
+      const next = { ...row };
+      if ("url" in next) next.url = httpUrlOrNull(next.url);
+      return next;
+    });
+  }
+
   // One profile per account, oldest first -- the plan buttons in onboarding
   // call this on every press and each one used to insert a twin.
   const { data: existing } = await supabase
@@ -107,6 +123,20 @@ export async function POST(req: NextRequest) {
   const safe = await maskProse({
     fields: patch,
     proseFields: PROFILE_PROSE_FIELDS,
+    // Migration 141: the free-text sub-fields inside these three jsonb
+    // arrays -- a company/outcome pair, a co-investor's name, a portfolio
+    // row's own name/outcome. portfolio_json[].name and .outcome were
+    // already live and already rendered on the public profile with no
+    // masking path at all before this pass (found during investigation,
+    // not assumed); closed here while the column is being touched anyway.
+    // The row's own .url is NOT listed -- it is sanitized above instead,
+    // the same "a URL sub-field is not prose" rule maskProse's own doc
+    // comment states.
+    jsonArrayProseFields: {
+      notable_exits: ["company", "outcome"],
+      co_investors: ["name"],
+      portfolio_json: ["name", "outcome"],
+    },
     surface: "profile_prose",
     subjectType: existing ? "investor" : "profile",
     subjectId: existing?.id ?? user.id,
