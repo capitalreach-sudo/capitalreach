@@ -27,7 +27,7 @@ interface Props {
   allStartups: (Startup & { owner: { email: string; full_name: string } })[];
   allInvestors: (Investor & { owner: { email: string; full_name: string; subscription_tier: string } })[];
   allDeals: (Deal & { startup: { name: string }; investor: { slug: string } })[];
-  stats: { totalStartups: number; totalInvestors: number; startupMrr: number; investorMrr: number };
+  stats: { totalStartups: number; totalInvestors: number; demoStartups?: number; demoInvestors?: number; startupMrr: number; investorMrr: number };
   /** E45: real revenue, computed over every account and every deal. */
   revenue?: RevenueSummary;
   /** Twelve months of fee flow, oldest first. */
@@ -370,13 +370,21 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
         </Card>
       )}
 
-      {/* Stats. Collected fees render as one term per currency actually
-          collected -- joined rather than summed, matching the byCurrency
-          pattern in components/shared/deal-kanban.tsx's pipeline stats. */}
+      {/* Stats. Real counts only, matching AdminList's own default-real-hide-
+          demo rule below -- a raw table count is not self-correcting the way
+          AdminList's rows are (its own effect swaps demo-heavy SSR rows for a
+          real-only fetch right after mount), so an unfiltered total here just
+          stayed wrong forever, showing a demo-inflated figure with nothing
+          to explain it. The demo count renders as a quiet caption instead of
+          folding into the headline number, same voice as the Data Centre's
+          other honest-empty/thin-sample captions. Collected fees render as
+          one term per currency actually collected -- joined rather than
+          summed, matching the byCurrency pattern in
+          components/shared/deal-kanban.tsx's pipeline stats. */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-cr-i3" },
-          { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-cr-i3" },
+          { label: t("admin.statTotalStartups"), value: stats.totalStartups, icon: Building2, color: "text-cr-i3", demoCount: stats.demoStartups },
+          { label: t("admin.statTotalInvestors"), value: stats.totalInvestors, icon: Users, color: "text-cr-i3", demoCount: stats.demoInvestors },
           { label: t("revenue.subscriptionMrr"), value: formatCurrency(revenue?.subscriptionMrr ?? stats.startupMrr), icon: DollarSign, color: "text-cr-copper" },
           {
             label: t("revenue.feesCollected"),
@@ -396,6 +404,11 @@ export function AdminClient({ pendingStartups, allStartups, allInvestors, allDea
                 <s.icon className={`h-4 w-4 ${s.color}`} />
               </div>
               <p className="font-mono text-[22px] font-bold text-cr-ink">{s.value}</p>
+              {!!s.demoCount && (
+                <p className="text-[11px] text-cr-i4 mt-1">
+                  {tf("admin.statDemoNote", "+{count} demo, hidden from this count", { count: s.demoCount })}
+                </p>
+              )}
             </CardContent>
           </Card>
         ))}

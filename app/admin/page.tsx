@@ -43,7 +43,16 @@ export default async function AdminPage() {
     return q;
   };
 
-  // Middleware already guards this — fetch all data
+  // Middleware already guards this — fetch all data. allStartups/allInvestors
+  // are real-only: AdminList's own client-side effect already replaces this
+  // server-sent page with a real-only fetch a moment after mount (see
+  // components/admin/admin-client.tsx), so an unfiltered SSR page here was
+  // pure flash-of-wrong-content -- with demo rows outnumbering real ones
+  // roughly 500 to 1 and sorted newest-first, first paint showed up to 50 rows
+  // of seed data before the client swap ever ran. The stat tiles' totalStartups/
+  // totalInvestors below are likewise real-only now, for the same reason
+  // AdminList defaults to real-only: nothing else on this dashboard corrects
+  // a raw table count after paint, so an unfiltered one stayed wrong forever.
   const [
     { data: pendingStartups },
     { data: allStartups },
@@ -51,13 +60,17 @@ export default async function AdminPage() {
     { data: allDeals },
     { count: startupCount },
     { count: investorCount },
+    { count: demoStartupCount },
+    { count: demoInvestorCount },
   ] = await Promise.all([
     supabase.from("startups").select("*, owner:profiles(email, full_name)").eq("status", "pending_review").order("created_at", { ascending: false }).limit(50).returns<AdminStartup[]>(),
-    supabase.from("startups").select("*, owner:profiles(email, full_name)").order("created_at", { ascending: false }).limit(50).returns<AdminStartup[]>(),
-    supabase.from("investors").select("*, owner:profiles(email, full_name, subscription_tier)").order("created_at", { ascending: false }).limit(50).returns<AdminInvestor[]>(),
+    supabase.from("startups").select("*, owner:profiles(email, full_name)").eq("is_demo", false).order("created_at", { ascending: false }).limit(50).returns<AdminStartup[]>(),
+    supabase.from("investors").select("*, owner:profiles(email, full_name, subscription_tier)").eq("is_demo", false).order("created_at", { ascending: false }).limit(50).returns<AdminInvestor[]>(),
     supabase.from("deals").select("*, startup:startups(name), investor:investors(slug)").order("updated_at", { ascending: false }).limit(50).returns<AdminDeal[]>(),
-    supabase.from("startups").select("*", { count: "exact", head: true }),
-    supabase.from("investors").select("*", { count: "exact", head: true }),
+    supabase.from("startups").select("*", { count: "exact", head: true }).eq("is_demo", false),
+    supabase.from("investors").select("*", { count: "exact", head: true }).eq("is_demo", false),
+    supabase.from("startups").select("*", { count: "exact", head: true }).eq("is_demo", true),
+    supabase.from("investors").select("*", { count: "exact", head: true }).eq("is_demo", true),
   ]);
 
   // Pulse + listing health. Separate from the block above because these are
@@ -189,6 +202,8 @@ export default async function AdminPage() {
         stats={{
           totalStartups: startupCount || 0,
           totalInvestors: investorCount || 0,
+          demoStartups: demoStartupCount || 0,
+          demoInvestors: demoInvestorCount || 0,
           startupMrr: revenue.subscriptionMrr,
           investorMrr: 0,
         }}
